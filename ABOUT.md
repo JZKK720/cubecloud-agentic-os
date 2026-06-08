@@ -1,26 +1,5 @@
 # About cubecloud-agentic-os
 
-> **REVIEWED 2026-06-08 by `JZKK720` (cubecloud.io).** This file is the
-> signed-off developer-facing description of the `cubecloud-agentic-os`
-> source tree. It went through three draft iterations during authoring
-> (v0.1, v0.2, v0.3); v0.3 was the version that was reviewed and is the
-> version on disk. The v0.3 draft trail is preserved in the conversation
-> history; only the final, signed-off version is in git.
->
-> The file's primary source is the cubecloud.io website (homepage,
-> demos, hardware, materials, manifest, footer). Chat-input framings
-> appear as clearly-tagged footnotes with `[SRC: user, 2026-06-08]`.
-> Citations used throughout:
-> - `[SRC: homepage H1]` — verbatim from the cubecloud.io homepage hero
-> - `[SRC: homepage CTA strip]` — verbatim from the cubecloud.io homepage CTA strip
-> - `[SRC: homepage graph]` — from the "under the hood" component graph on the homepage
-> - `[SRC: demos page]` — from cubecloud.io/demos
-> - `[SRC: hardware page]` — from cubecloud.io/hardware
-> - `[SRC: materials page]` — from cubecloud.io/materials
-> - `[SRC: manifest page]` — from cubecloud.io/manifest
-> - `[SRC: footer]` — verbatim from the cubecloud.io footer (every page)
-> - `[SRC: user, 2026-06-08]` — your framing in this conversation (not on the website)
-
 ---
 
 ## What cubecloud.io is
