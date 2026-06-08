@@ -1,8 +1,8 @@
 node_modules/
 dist/
-dist-check/  # V2.10.37: electron-builder / electron-vite build output. Source lives in cubecloud-desktop/build/ (build config), not here. ~1 GB of binary artifacts, must not be committed.
+**/dist-check/  # V2.10.37: electron-builder / electron-vite build output. Source lives in cubecloud-desktop/build/ (build config), not here. ~1 GB of binary artifacts, must not be committed. V2.10.43: **/ matches nested paths (cubecloud-desktop/dist-check/).
 out/
-release/  # V2.10.37: electron-builder release output dir. Binary installers, must not be committed unless intentionally versioning them (we don't, yet).
+**/release/  # V2.10.37: electron-builder release output dir. Binary installers, must not be committed unless intentionally versioning them (we don't, yet).
 *.tsbuildinfo
 coverage/
 .vite/

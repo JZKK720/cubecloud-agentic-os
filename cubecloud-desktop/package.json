@@ -6,9 +6,18 @@
   "author": "Cubecloud Contributors",
   "license": "(AGPL-3.0-or-later OR Apache-2.0 OR MIT) WITH framework-MIT-exception",
   "licenses": [
-    { "type": "AGPL-3.0-or-later", "url": "https://www.gnu.org/licenses/agpl-3.0.html" },
-    { "type": "Apache-2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0" },
-    { "type": "MIT", "url": "https://opensource.org/licenses/MIT" }
+    {
+      "type": "AGPL-3.0-or-later",
+      "url": "https://www.gnu.org/licenses/agpl-3.0.html"
+    },
+    {
+      "type": "Apache-2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    },
+    {
+      "type": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
   ],
   "spdx": {
     "expression": "(AGPL-3.0-or-later OR Apache-2.0 OR MIT)",
@@ -46,12 +55,13 @@
     "dev:fresh": "HERMES_HOME=$(mktemp -d -t hermes-fresh) electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
-    "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
-    "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux",
-    "build:rpm": "npm run build && electron-builder --linux rpm",
-    "test:watch": "vitest"
+    "build:unpack": "npm run build && electron-builder --project . --dir",
+    "build:win": "npm run build && electron-builder --project . --win",
+    "build:mac": "electron-vite build && electron-builder --project . --mac",
+    "build:linux": "electron-vite build && electron-builder --project . --linux",
+    "build:rpm": "npm run build && electron-builder --project . --linux rpm",
+    "test:watch": "vitest",
+    "verify:bundle": "vitest run tests/release-bundle.test.ts"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
@@ -85,6 +95,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "asar": "^3.2.0",
     "electron": "^39.2.6",
     "electron-builder": "^26.0.12",
     "electron-vite": "^5.0.0",

@@ -215,7 +215,7 @@ jobs:
         run: npm run build
 
       - name: Package Windows artifacts
-        run: npx electron-builder --win nsis portable --x64 --publish never
+        run: npx electron-builder --project . --win nsis portable --x64 --publish never
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
