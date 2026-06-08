@@ -1,8 +1,16 @@
 # About cubecloud-agentic-os
 
-> **DRAFT v0.3 — 2026-06-08.** Pending review by `JZKK720` (cubecloud.io).
-> Updated at v0.3: rewrote the file with the deeper cubecloud.io website research (homepage + demos + hardware + materials + manifest). The website is now the primary source; chat-input framings appear as clearly-tagged footnotes.
-> Every claim below is sourced. Citations use the form:
+> **REVIEWED 2026-06-08 by `JZKK720` (cubecloud.io).** This file is the
+> signed-off developer-facing description of the `cubecloud-agentic-os`
+> source tree. It went through three draft iterations during authoring
+> (v0.1, v0.2, v0.3); v0.3 was the version that was reviewed and is the
+> version on disk. The v0.3 draft trail is preserved in the conversation
+> history; only the final, signed-off version is in git.
+>
+> The file's primary source is the cubecloud.io website (homepage,
+> demos, hardware, materials, manifest, footer). Chat-input framings
+> appear as clearly-tagged footnotes with `[SRC: user, 2026-06-08]`.
+> Citations used throughout:
 > - `[SRC: homepage H1]` — verbatim from the cubecloud.io homepage hero
 > - `[SRC: homepage CTA strip]` — verbatim from the cubecloud.io homepage CTA strip
 > - `[SRC: homepage graph]` — from the "under the hood" component graph on the homepage
@@ -12,8 +20,6 @@
 > - `[SRC: manifest page]` — from cubecloud.io/manifest
 > - `[SRC: footer]` — verbatim from the cubecloud.io footer (every page)
 > - `[SRC: user, 2026-06-08]` — your framing in this conversation (not on the website)
->
-> Mark sections `<review>` after you sign off, or strike them and add a note.
 
 ---
 
@@ -172,7 +178,7 @@ Concretely, this repository contains:
 | **OpenCode** *(local coding assistant)* | `cubecloud-desktop/src/renderer/src/screens/OpenCode/`.  `[SRC: demos page, with repo audit]` |
 | **IronClaw** *(security, vault, TEE)* | The vault / TEE / egress-control surface in `cubecloud-desktop/src/main/ironclaw*`.  `[SRC: demos page, with repo audit]` |
 | **Warp ADE** *(multi-agent coding workspace)* | The agent control plane in `cubecloud-desktop/src/main/headroom*` and the renderer surface in `cubecloud-desktop/src/renderer/src/screens/Headroom/`. Warp ADE is the multi-agent workspace; the repo's Headroom screen is its desktop / individual-operator surface.  `[SRC: demos page, with SRC: user, 2026-06-08 for the surface-mapping]` |
-| **ADE** *(sibling surface to Warp ADE)* | Treated as a sibling runtime within the Headroom / agent control plane, pending clarification from the maintainers on the ADE vs. Warp ADE distinction.  `[SRC: homepage graph, with [SRC: user, 2026-06-08] flagged clarification needed]` |
+| **ADE** *(general category of agentic-development surfaces)* | ADE is the **general category** of agentic-development surfaces in Cubecloud OS. Warp ADE is the *current instance*; the category is swappable per the manifest's "surfaces can be added, removed, or swapped freely" principle, so future ADEs (other agentic-development surfaces) can replace Warp ADE without changing the underlying slot. The Headroom / agent control plane in this repository is the desktop / individual-operator surface for whatever ADE is currently bound.  `[SRC: homepage graph, with SRC: demos page for Warp ADE's description, SRC: manifest page for the swappable-surfaces principle, and SRC: user, 2026-06-08 for the ADE-as-category framing]` |
 | **Agents** runtime category | The agent control plane in `cubecloud-desktop/src/main/headroom*.ts`, the renderer surface in `cubecloud-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`, the headless agent control plane in `apps/desktop-shell/`.  `[SRC: homepage graph, with repo audit]` |
 | **Skills** runtime category | `.agents/skills/**/SKILL.md` and the desktop mirror at `cubecloud-desktop/.agents/skills/**/SKILL.md`.  `[SRC: homepage graph, with repo audit]` |
 | **Data** runtime category | Per-user JSON config in the user's `desktop.json` (paths resolved at runtime by the desktop shell).  `[SRC: homepage graph, with repo audit]` |
@@ -207,21 +213,3 @@ If you are **a developer evaluating cubecloud-agentic-os for use or contribution
 If you are **a customer evaluating cubecloud.io**, this repository is one component. The full product lineup, demos, hardware options, materials, and business plan are at `https://www.cubecloud.io`.
 
 ---
-
-<review>
-
-**Reviewer checklist** (the `<!-- reviewed -->` placeholder at the top of this file is set after you sign off on each section):
-
-- [ ] "What cubecloud.io is" section — wording acceptable? The four-commitment CTA strip is correctly lifted (data in-house, works offline, no cloud API fees, OEM ready). The "Cubecloud OS is the open-source operating layer" claim from the manifest is the bridge into the repo.
-- [ ] "The seven surfaces" section — each surface correctly cited to demos page or homepage graph? The "ADE" vs. "Warp ADE" distinction is flagged as needing clarification.
-- [ ] "The hardware lineup" section — four SKUs correctly lifted, MODT expanded correctly, AMD-Ryzen-AI framing is accurate (3 AMD-only, 1 AMD + NVIDIA dGPU laptop).
-- [ ] "The commercial phasing" section — three phases correctly cited to materials page. The growth metrics (150+ OEM, 21.7% CAGR) noted as scale indicators, not as Cubecloud-specific claims.
-- [ ] The internal-brand footnote — "Cubecloud Agent OS" + four items correctly attributed to your 2026-06-08 framing, with each item mapped to the corresponding cubecloud.io page. Not elevated to a primary structure.
-- [ ] "Where this repo fits" — desktop-vs-team scope split is correct. The Agents / Skills / Data mapping is right.
-- [ ] "What this repo is / is not" — clean. No v0.2 leftovers.
-- [ ] "How the desktop repo maps to the homepage graph" table — every row correctly cited. ADE/Warp ADE clarification flagged.
-- [ ] "Status and roadmap" — version references correct (V2.10.36 + V2.10.37). Commercial context cited.
-- [ ] "How to read this repository" — links all resolve.
-- [ ] Citations and `[SRC: ...]` tags — any you want removed for the public-facing version?
-
-</review>
