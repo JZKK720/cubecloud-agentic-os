@@ -1,0 +1,32 @@
+node_modules/
+dist/
+dist-check/  # V2.10.37: electron-builder / electron-vite build output. Source lives in cubecloud-desktop/build/ (build config), not here. ~1 GB of binary artifacts, must not be committed.
+out/
+release/  # V2.10.37: electron-builder release output dir. Binary installers, must not be committed unless intentionally versioning them (we don't, yet).
+*.tsbuildinfo
+coverage/
+.vite/
+*.log  # V2.10.37: log files from electron-vite, electron-builder, headroom runs.
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# V2.10: scratch-pad directories (cloned upstream repos used as design
+# reference during the V2.6 + V2.7 skills import). They are not part of
+# the build, are not referenced from any code, and bloat the working
+# tree by ~177 MB. Keep them locally for the team that wants them;
+# they MUST NOT be committed. Re-clone from upstream on demand.
+.review-extras/
+.review-codegraph/
+
+# Top-level repo files (the outer cubecloud-agentic-os/ monorepo).
+# .agents/, .github/, apps/, packages/, docs/, scripts/ are tracked.
+# The cubecloud-desktop/ subdir is the vendored mirror; its
+# governance docs (README, LICENSE, NOTICE, BRANDING, HANDBOOK,
+# docs/handbook/, docs/legal/) are Windows-native hardlinks and
+# junctions into the outer root, and are NOT tracked as links by
+# git \u2014 they are just regular files with the same content. On
+# non-Windows clones the sync-docs.ps1 script must re-create them.
+

@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  desktop-shell-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck platform-core
+        run: npm run typecheck --workspace @cubecloud/platform-core
+
+      - name: Typecheck desktop-shell
+        run: npm run typecheck --workspace @cubecloud/desktop-shell
+
+      - name: Run focused desktop-shell tests
+        run: npm run test --workspace @cubecloud/desktop-shell -- App.gateway.dom.test.tsx src/renderer/src/App.kanban.dom.test.tsx src/main/runtimeSessions.test.ts
+
+  desktop-shell-electron-smoke:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Electron UI smoke test
+        run: npm run test:electron-smoke --workspace @cubecloud/desktop-shell
+
+  desktop-shell-windows-packaging:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Windows package
+        run: npm run build:win --workspace @cubecloud/desktop-shell
+
+      - name: Verify packaged Windows app
+        run: npm run verify:win-package --workspace @cubecloud/desktop-shell

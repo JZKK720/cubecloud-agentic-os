@@ -1,0 +1,26 @@
+# cubecloud-agentic-os/.gitattributes
+#
+# Auto detect text files and perform LF normalization.
+* text=auto
+
+# Shell scripts must always be LF \u2014 CRLF breaks the shebang line on
+# Linux ("bad interpreter: /bin/bash\r: No such file or directory"),
+# which silently fails the .deb / .rpm postinst hook.
+*.sh text eol=lf
+
+# PowerShell scripts: LF is fine, but Windows contributors may default to
+# CRLF. Force LF so the script body is portable.
+*.ps1 text eol=lf
+
+# Markdown is sensitive to trailing-whitespace conventions. Force LF +
+# trim trailing whitespace on save. (The .editorconfig at the repo
+# root provides the editor-side enforcement.)
+*.md text eol=lf
+
+# The V2.9-A doc-sync uses Windows-native hardlinks (files) and
+# directory junctions (dirs) for the inner mirror at cubecloud-desktop/.
+# On non-Windows clones (macOS, Linux) the junctions don't exist; the
+# sync-docs.ps1 regen script must be re-run. The hardlink/junction
+# status is therefore a *runtime* artifact, not a *git* artifact, and
+# git tracks them as regular files. This stanza documents that intent.
+# (No special handling required; listed here for human reviewers.)

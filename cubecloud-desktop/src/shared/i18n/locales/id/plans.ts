@@ -1,0 +1,40 @@
+﻿export default {
+  "title": "Plans",
+  "subtitle": "Buat sketsa RFC dalam markdown. Tiap heading menjadi tugas Kanban saat dispatch.",
+  "savedPlans": "Plan tersimpan",
+  "empty": "Belum ada plan. Buat di sisi kanan.",
+  "composer": "Komposer",
+  "titlePlaceholder": "Judul plan",
+  "parse": "Parse",
+  "save": "Simpan plan",
+  "parsedSteps": "Step ter-parse",
+  "confirmDelete": "Hapus plan ini?",
+  "dispatched": "Dispatched",
+  "dispatchedAt": "Dispatch terakhir {{when}}",
+  "dispatch": "Dispatch ke Kanban",
+  "dispatchResult": "Hasil dispatch",
+  "dispatchResultSummary": "{{count}} step terkirim ke papan Kanban.",
+  "noTaskId": "(tidak ada task id)",
+  "emptyDetail": "Pilih plan di kiri, atau buat yang baru.",
+  "owner": "pemilik: {{name}}",
+  "dependsOn": "bergantung pada {{ids}}",
+  "stepSingular": "step",
+  "stepPlural": "step",
+  "remoteUnsupported": "Plan hanya lokal. Beralih ke mode lokal atau SSH-tunnel untuk memakai surface ini.",
+
+
+  // Autoplan briefs (V2 Step 15 鈥?gstack /autoplan)
+  "briefsTitle": "Ringkasan keputusan",
+  "briefsHint": "Langkah yang membawa skill plan-tune dipindai untuk pertanyaan inline. Isi untuk menyempurnakan rencana sebelum mengirim.",
+  "noBriefs": "Tidak ada ringkasan keputusan untuk rencana ini.",
+  "buildBriefs": "Pindai untuk ringkasan",
+  "applyAnswers": "Terapkan jawaban",
+  "answersApplied": "Jawaban dimasukkan ke dalam rencana.",
+  "briefRequired": "Wajib",
+
+  // Careful precheck (V2 Step 9 鈥?gstack /careful)
+  carefulWarning: "Rencana berisi perintah destruktif",
+  carefulVerdict: "Putusan: {{verdict}}",
+  carefulReason: "{{reason}}",
+  carefulReview: "Tinjau perintah",
+  carefulDismiss: "Abaikan",} as const;

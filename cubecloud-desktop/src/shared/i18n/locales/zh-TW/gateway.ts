@@ -1,0 +1,41 @@
+export default {
+  title: "網關",
+  messagingGateway: "訊息網關",
+  platforms: "平台",
+  status: "狀態",
+  running: "執行中",
+  stopped: "已停止",
+  gatewayHint: "將 Hermes 連線到 Telegram、Discord、Slack 等平台",
+  group: {
+    messaging: "即時通訊",
+    eastern: "東方平台",
+    async: "非同步管道",
+    home: "智慧家庭",
+  },
+  runtimes: {
+    title: "執行階段",
+    summary:
+      "與初始歡迎畫面一致的執行階段註冊表。每一列呈現執行階段在此機器上是否可用。",
+    registryLabel: "執行階段註冊表",
+    refreshAria: "重新掃描執行階段註冊表",
+    empty: "尚未安裝任何執行階段。歡迎畫面會預設安裝 Hermes。",
+    statusReady: "執行階段已就緒。",
+    statusUnavailable: "執行階段在此機器上尚不可用。",
+    detected: "已偵測",
+    responded: "已回應",
+    scanning: "掃描中…",
+    localProbesLabel: "本機網關探測",
+    localProbesRefreshAria: "探測本機網關通訊埠",
+    localProbesEmpty: "本機網關的所有通訊埠目前都沒有回應。",
+    discoveryHint: "此執行階段可從歡迎畫面呼叫的探索事件。",
+  },
+  container: {
+    title: "容器探索",
+    summary:
+      "掃描 Docker Desktop 以便發現配對執行階段（IronClaw、OpenClaw 以及任何以 Docker 網關宣傳的提供商）。",    sharedHint: "與歡迎畫面共用同一註冊表。啟動或停止容器後請在此重新掃描。",    statusLabel: "Docker 掃描狀態",
+    refreshAria: "重新掃描 Docker Desktop 執行階段",
+    rescan: "重新掃描",
+    empty: "未偵測到 Docker 執行階段。安裝 Docker Desktop 或啟動配對容器。",
+    scannedAt: "上次掃描 {{value}}",
+  },
+} as const;

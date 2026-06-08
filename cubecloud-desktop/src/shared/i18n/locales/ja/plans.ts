@@ -1,0 +1,40 @@
+﻿export default {
+  "title": "Plans",
+  "subtitle": "markdownでRFCの下書きをします。見出しがディスパッチ時にKanbanタスクになります。",
+  "savedPlans": "保存済みプラン",
+  "empty": "まだプランがありません。右側で作成してください。",
+  "composer": "コンポーザー",
+  "titlePlaceholder": "プラン名",
+  "parse": "パース",
+  "save": "プランを保存",
+  "parsedSteps": "パース済みステップ",
+  "confirmDelete": "このプランを削除しますか?",
+  "dispatched": "ディスパッチ済み",
+  "dispatchedAt": "最終ディスパッチ {{when}}",
+  "dispatch": "Kanbanへディスパッチ",
+  "dispatchResult": "ディスパッチ結果",
+  "dispatchResultSummary": "{{count}}件のステップをKanbanボードに送信しました。",
+  "noTaskId": "(タスクIDが返されませんでした)",
+  "emptyDetail": "左のプランを選ぶか、新規作成してください。",
+  "owner": "担当: {{name}}",
+  "dependsOn": "依存: {{ids}}",
+  "stepSingular": "ステップ",
+  "stepPlural": "ステップ",
+  "remoteUnsupported": "プランはローカル専用です。このサーフェスを使うにはローカルまたはSSHトンネルに切り替えてください。",
+
+
+  // Autoplan briefs (V2 Step 15 鈥?gstack /autoplan)
+  "briefsTitle": "判断ブリーフ",
+  "briefsHint": "plan-tuneスキルを持つステップがインライン質問のためにスキャンされました。ディスパッチ前にプランを絞り込むために回答してください。",
+  "noBriefs": "このプランには判断ブリーフがありません。",
+  "buildBriefs": "ブリーフをスキャン",
+  "applyAnswers": "回答を適用",
+  "answersApplied": "回答がプランに反映されました。",
+  "briefRequired": "必須",
+
+  // Careful precheck (V2 Step 9 鈥?gstack /careful)
+  carefulWarning: "プランに破壊的コマンドが含まれています",
+  carefulVerdict: "判定: {{verdict}}",
+  carefulReason: "{{reason}}",
+  carefulReview: "コマンドを確認",
+  carefulDismiss: "閉じる",} as const;

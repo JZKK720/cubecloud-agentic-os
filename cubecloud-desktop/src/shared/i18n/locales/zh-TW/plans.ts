@@ -1,0 +1,40 @@
+﻿export default {
+  "title": "Plans",
+  "subtitle": "用 markdown 起草 RFC。每個標題會在調度時變成 Kanban 工作。",
+  "savedPlans": "已儲存的計畫",
+  "empty": "還沒有計畫。請在右側撰寫。",
+  "composer": "編輯器",
+  "titlePlaceholder": "計畫標題",
+  "parse": "解析",
+  "save": "儲存計畫",
+  "parsedSteps": "已解析的步驟",
+  "confirmDelete": "刪除此計畫?",
+  "dispatched": "已調度",
+  "dispatchedAt": "最近調度 {{when}}",
+  "dispatch": "調度到 Kanban",
+  "dispatchResult": "調度結果",
+  "dispatchResultSummary": "{{count}} 個步驟已送到 Kanban 看板。",
+  "noTaskId": "(沒有回傳 task id)",
+  "emptyDetail": "請在左側選取計畫,或撰寫新計畫。",
+  "owner": "負責人: {{name}}",
+  "dependsOn": "相依於 {{ids}}",
+  "stepSingular": "步",
+  "stepPlural": "步",
+  "remoteUnsupported": "計畫僅在本機模式下可用。請切換到本機或 SSH-tunnel 模式。",
+
+
+  // Autoplan briefs (V2 Step 15 鈥?gstack /autoplan)
+  "briefsTitle": "決策簡報",
+  "briefsHint": "已掃描附帶 plan-tune 技能的步驟,尋找內嵌問題。請填寫以在分派前完善計畫。",
+  "noBriefs": "此計畫沒有決策簡報。",
+  "buildBriefs": "掃描簡報",
+  "applyAnswers": "套用答案",
+  "answersApplied": "答案已併入計畫。",
+  "briefRequired": "必填",
+
+  // Careful precheck (V2 Step 9 鈥?gstack /careful)
+  carefulWarning: "計畫包含破壞性指令",
+  carefulVerdict: "判定: {{verdict}}",
+  carefulReason: "{{reason}}",
+  carefulReview: "檢視指令",
+  carefulDismiss: "略過",} as const;

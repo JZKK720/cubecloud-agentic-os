@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f1e6" />
+      <stop offset="0.55" stop-color="#efe2cf" />
+      <stop offset="1" stop-color="#e5d5c4" />
+    </linearGradient>
+    <radialGradient id="teal-bloom" cx="20%" cy="20%" r="45%">
+      <stop offset="0" stop-color="#5fa19a" stop-opacity="0.38" />
+      <stop offset="1" stop-color="#5fa19a" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="ember-bloom" cx="75%" cy="70%" r="40%">
+      <stop offset="0" stop-color="#db7f58" stop-opacity="0.28" />
+      <stop offset="1" stop-color="#db7f58" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)" />
+  <circle cx="300" cy="180" r="340" fill="url(#teal-bloom)" />
+  <circle cx="1220" cy="680" r="320" fill="url(#ember-bloom)" />
+  <path d="M197 598c81-139 249-206 403-161 123 36 267 12 363-77 89-83 217-119 337-95 110 23 206 93 266 194v441H197V598Z" fill="#f3ecdf" opacity="0.88" />
+</svg>

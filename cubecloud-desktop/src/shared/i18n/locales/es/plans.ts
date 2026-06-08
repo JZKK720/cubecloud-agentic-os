@@ -1,0 +1,40 @@
+﻿export default {
+  "title": "Plans",
+  "subtitle": "Esboza un RFC en markdown. Cada encabezado se convierte en una tarea de Kanban al despachar.",
+  "savedPlans": "Plans guardados",
+  "empty": "Aún no hay plans. Compón uno a la derecha.",
+  "composer": "Compositor",
+  "titlePlaceholder": "Título del plan",
+  "parse": "Parsear",
+  "save": "Guardar plan",
+  "parsedSteps": "Pasos parseados",
+  "confirmDelete": "¿Borrar este plan?",
+  "dispatched": "Despachado",
+  "dispatchedAt": "Último despacho {{when}}",
+  "dispatch": "Despachar al Kanban",
+  "dispatchResult": "Resultado del despacho",
+  "dispatchResultSummary": "{{count}} paso(s) enviados al tablero Kanban.",
+  "noTaskId": "(no se devolvió task id)",
+  "emptyDetail": "Selecciona un plan a la izquierda o compone uno nuevo.",
+  "owner": "responsable: {{name}}",
+  "dependsOn": "depende de {{ids}}",
+  "stepSingular": "paso",
+  "stepPlural": "pasos",
+  "remoteUnsupported": "Los planes son solo locales. Cambia a modo local o SSH para usar esta superficie.",
+
+
+  // Autoplan briefs (V2 Step 15 鈥?gstack /autoplan)
+  "briefsTitle": "Resúmenes de decisión",
+  "briefsHint": "Los pasos que llevan la habilidad plan-tune fueron escaneados en busca de preguntas en línea. Respóndelas para refinar el plan antes de enviar.",
+  "noBriefs": "No hay resúmenes de decisión para este plan.",
+  "buildBriefs": "Buscar resúmenes",
+  "applyAnswers": "Aplicar respuestas",
+  "answersApplied": "Respuestas integradas en el plan.",
+  "briefRequired": "Obligatorio",
+
+  // Careful precheck (V2 Step 9 鈥?gstack /careful)
+  carefulWarning: "El plan contiene un comando destructivo",
+  carefulVerdict: "Veredicto: {{verdict}}",
+  carefulReason: "{{reason}}",
+  carefulReview: "Revisar comando",
+  carefulDismiss: "Descartar",} as const;

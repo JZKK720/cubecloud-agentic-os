@@ -1,0 +1,41 @@
+export default {
+  "title": "Plans",
+  "subtitle": "Sketch an RFC in markdown. Each heading becomes a Kanban task on dispatch.",
+  "savedPlans": "Saved plans",
+  "empty": "No plans yet. Compose one on the right.",
+  "composer": "Composer",
+  "titlePlaceholder": "Plan title",
+  "parse": "Parse",
+  "save": "Save plan",
+  "parsedSteps": "Parsed steps",
+  "confirmDelete": "Delete this plan?",
+  "dispatched": "Dispatched",
+  "dispatchedAt": "Last dispatched {{when}}",
+  "dispatch": "Dispatch to Kanban",
+  "dispatchResult": "Dispatch result",
+  "dispatchResultSummary": "{{count}} step(s) sent to the Kanban board.",
+  "noTaskId": "(no task id returned)",
+  "emptyDetail": "Select a plan on the left, or compose a new one.",
+  "owner": "owner: {{name}}",
+  "dependsOn": "depends on {{ids}}",
+  "stepSingular": "step",
+  "stepPlural": "steps",
+  remoteUnsupported: "Plans are local-only. Switch to a local or SSH-tunnel mode to use this surface.",
+
+  // Autoplan briefs (V2 Step 15 — gstack /autoplan)
+  briefsTitle: "Decision briefs",
+  briefsHint:
+    "Steps that carry the plan-tune skill were scanned for inline questions. Fill them in to refine the plan before dispatching.",
+  noBriefs: "No decision briefs for this plan.",
+  buildBriefs: "Scan for briefs",
+  applyAnswers: "Apply answers",
+  answersApplied: "Answers stitched into plan.",
+  briefRequired: "Required",
+
+  // Careful precheck (V2 Step 9 — gstack /careful)
+  carefulWarning: "Plan contains a destructive command",
+  carefulVerdict: "Verdict: {{verdict}}",
+  carefulReason: "{{reason}}",
+  carefulReview: "Review command",
+  carefulDismiss: "Dismiss",
+} as const;

@@ -1,0 +1,43 @@
+export default {
+  title: "网关",
+  messagingGateway: "消息网关",
+  platforms: "平台",
+  status: "状态",
+  running: "运行中",
+  stopped: "已停止",
+  gatewayHint: "将 Hermes 连接到 Telegram、Discord、Slack 等平台",
+  group: {
+    messaging: "即时通讯",
+    eastern: "东方平台",
+    async: "异步渠道",
+    home: "智能家居",
+  },
+  runtimes: {
+    title: "运行时",
+    summary:
+      "与初始欢迎界面所提供的一致的运行时注册表。每一行展示运行时是否在此机器上可用。",
+    registryLabel: "运行时注册表",
+    refreshAria: "重新扫描运行时注册表",
+    empty: "暂未安装任何运行时。欢迎流程将默认安装 Hermes。",
+    statusReady: "运行时已就绪，可以挂载网关。",
+    statusUnavailable: "运行时在此机器上尚不可用。",
+    detected: "已检测",
+    responded: "已响应",
+    scanning: "扫描中…",
+    localProbesLabel: "本机网关探测",
+    localProbesRefreshAria: "探测本机网关端口",
+    localProbesEmpty: "没有任何本机网关响应。返回欢迎界面安装或挂接。",
+    discoveryHint: "该运行时提供可以在欢迎界面调用的发现能力。",
+  },
+  container: {
+    title: "容器发现",
+    summary:
+      "扫描 Docker Desktop 中的可配对运行时（IronClaw、OpenClaw 以及所有公布 Docker 网关的提供方）。",
+    sharedHint: "与欢迎界面共用同一注册表。启动或停止容器后请在此重新扫描。",
+    statusLabel: "Docker 扫描状态",
+    refreshAria: "重新扫描 Docker Desktop 运行时",
+    rescan: "重新扫描",
+    empty: "未检测到 Docker 运行时。安装 Docker Desktop 或启动已配对的容器。",
+    scannedAt: "上次扫描 {{value}}",
+  },
+} as const;

@@ -1,0 +1,40 @@
+﻿export default {
+  "title": "Plans",
+  "subtitle": "用 markdown 起草 RFC。每个标题都会在调度时变成一个 Kanban 任务。",
+  "savedPlans": "已保存的计划",
+  "empty": "还没有计划。在右侧编写。",
+  "composer": "编辑器",
+  "titlePlaceholder": "计划标题",
+  "parse": "解析",
+  "save": "保存计划",
+  "parsedSteps": "已解析的步骤",
+  "confirmDelete": "删除此计划?",
+  "dispatched": "已调度",
+  "dispatchedAt": "最近调度 {{when}}",
+  "dispatch": "调度到 Kanban",
+  "dispatchResult": "调度结果",
+  "dispatchResultSummary": "{{count}} 个步骤已发到 Kanban 看板。",
+  "noTaskId": "(没有返回 task id)",
+  "emptyDetail": "在左侧选择计划,或编写新计划。",
+  "owner": "负责人: {{name}}",
+  "dependsOn": "依赖 {{ids}}",
+  "stepSingular": "步",
+  "stepPlural": "步",
+  "remoteUnsupported": "计划仅在本地模式下可用。请切换到本地或 SSH-tunnel 模式。",
+
+
+  // Autoplan briefs (V2 Step 15 鈥?gstack /autoplan)
+  "briefsTitle": "决策简报",
+  "briefsHint": "已扫描带有 plan-tune 技能的步骤,寻找内联问题。请填写以在分派前完善计划。",
+  "noBriefs": "此计划没有决策简报。",
+  "buildBriefs": "扫描简报",
+  "applyAnswers": "应用答案",
+  "answersApplied": "答案已合并到计划中。",
+  "briefRequired": "必填",
+
+  // Careful precheck (V2 Step 9 鈥?gstack /careful)
+  carefulWarning: "计划包含破坏性命令",
+  carefulVerdict: "判定: {{verdict}}",
+  carefulReason: "{{reason}}",
+  carefulReview: "查看命令",
+  carefulDismiss: "忽略",} as const;

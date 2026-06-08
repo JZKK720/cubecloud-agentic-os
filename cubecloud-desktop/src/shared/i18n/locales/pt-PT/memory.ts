@@ -1,0 +1,131 @@
+﻿export default {
+  title: "Mem贸ria",
+  subtitle: "O que o Hermes se lembra sobre si e o seu ambiente entre sess玫es.",
+  sessions: "Sess玫es",
+  messages: "Mensagens",
+  memories: "Mem贸rias",
+  providersTitle: "Fornecedores",
+  agentMemory: "Mem贸ria do Agente",
+  userProfile: "Perfil do Utilizador",
+  entries: "{{count}} entradas",
+  addMemory: "Adicionar Mem贸ria",
+  addFailed: "Falha ao adicionar entrada",
+  updateFailed: "Falha ao actualizar entrada",
+  saveFailed: "Falha ao guardar",
+  entriesPlaceholder:
+    "ex: O utilizador prefere TypeScript em vez de JavaScript. Use sempre o modo estrito.",
+  userProfilePlaceholder:
+    "ex: Nome: Alex. Programador s茅nior. Prefere respostas concisas. Usa macOS com zsh. Fuso hor谩rio: PST.",
+  noProvidersFound: "Nenhum fornecedor de mem贸ria encontrado nesta instala莽茫o.",
+  openProviderWebsite: "Abrir site do fornecedor",
+  noMemoriesYet:
+    "Ainda sem mem贸rias. O Hermes guardar谩 factos importantes 脿 medida que conversam.",
+  noMemoryEntries: "Ainda sem entradas de mem贸ria.",
+  noToolsetsFound: "Nenhum conjunto de ferramentas encontrado.",
+  addManuallyHint:
+    "Tamb茅m pode adicionar mem贸rias manualmente usando o bot茫o acima.",
+  userProfileHint:
+    "Fale ao Hermes sobre si 鈥?nome, cargo, prefer锚ncias, estilo de comunica莽茫o.",
+  providersHint:
+    "Fornecedores de mem贸ria modular d茫o ao Hermes uma mem贸ria de longo prazo avan莽ada. A mem贸ria integrada (acima) est谩 sempre activa em conjunto com o fornecedor seleccionado.",
+  providersHintActive: "Activo: <strong>{{provider}}</strong>",
+  providersHintInactive:
+    "Nenhum fornecedor externo activo 鈥?a usar apenas a integrada.",
+  enterEnvKey: "Introduza {{key}}",
+  chars: "{{count}} caracteres",
+  cancel: "Cancelar",
+  save: "Guardar",
+  edit: "Editar",
+  deleteConfirm: "Eliminar?",
+  yes: "Sim",
+  no: "N茫o",
+  saveProfile: "Guardar Perfil",
+  active: "Activo",
+  deactivate: "Desactivar",
+  activating: "A activar...",
+  activate: "Activar",  wikiTab: "Base de conhecimento",  learningsTab: "Aprendizagens",
+
+  providers: {
+    honcho:
+      "Modela莽茫o de utilizador entre sess玫es nativa de IA com Q&A dial茅ctico e pesquisa sem芒ntica",
+    hindsight:
+      "Memóriaria de longo prazo com grafo de conhecimento e recuperaçãoo multi-estratégiagia",
+    mem0: "Server-side LLM fact extraction with semantic search and auto-deduplication",
+    retaindb: "Cloud memory API with hybrid search and 7 memory types",
+    supermemory: "Semantic long-term memory with profile recall and entity extraction",
+    holographic: "Local SQLite fact store with FTS5 search and trust scoring (no API key needed)",
+    openviking: "Session-managed memory with tiered retrieval and knowledge browsing",
+        byterover: "Árvore de conhecimento persistente com recuperação em camadas via CLI brv",
+  },
+
+  // Learnings (V2 Step 10 — gstack /learn)
+  learnings: {
+    subtitle:
+      "Padrões, armadilhas e preferências duráveis observados entre sessões.",
+    empty: "Ainda não há aprendizagens. Serão adicionadas aqui à medida que ocorrerem.",
+    searchPlaceholder: "Procurar por chave, habilidade ou ideia…",
+    typeLabel: "Tipo",
+    sourceLabel: "Origem",
+    allTypes: "Todos os tipos",
+    allSources: "Todas as origens",
+    stats: {
+      total: "{{count}} no total",
+      unique: "{{count}} únicos",
+      avgConfidence: "confiança média {{value}}",
+      byType: "por tipo",
+      bySource: "por origem",
+      topKeys: "principais chaves",
+    },
+    add: "Adicionar aprendizagem",
+    addTitle: "Adicionar uma aprendizagem",
+    keyLabel: "Chave",
+    keyPlaceholder: "p. ex. careful.rm-recursive",
+    insightLabel: "Ideia",
+    insightPlaceholder: "O que aprendemos?",
+    skillLabel: "Habilidade (opcional)",
+    typeField: "Tipo",
+    sourceField: "Origem",
+    confidenceLabel: "Confiança (0-1)",
+    filesLabel: "Ficheiros (separados por vírgula, opcional)",
+    cancel: "Cancelar",
+    save: "Guardar",
+    export: "Exportar como Markdown",
+    copied: "Copiado para a área de transferência",
+    copy: "Copiar",
+    findStale: "Encontrar desatualizadas",
+    clear: "Limpar tudo",
+    clearConfirm:
+      "Apagar todas as aprendizagens deste perfil? Isto não pode ser desfeito.",
+    noFile: "Ainda não há learnings.jsonl.",
+    noSearchResults:
+      "Nenhuma aprendizagem corresponde aos filtros atuais.",
+    staleness: {
+      label: "desatualizado",
+      empty: "Nenhuma aprendizagem desatualizada.",
+    },
+  },
+
+  // Knowledge (V2 Step 14 — gbrain knowledge MCP)
+  knowledge: {
+    searchPlaceholder: "Procurar na base de conhecimento…",
+    search: "Procurar",
+    list: "Listar",
+    sources: "Fontes brutas",
+    synthesize: "Sintetizar tópico",
+    topicPlaceholder: "O que pretende saber?",
+    filterType: "Filtrar por tipo",
+    allTypes: "Todos os tipos",
+    open: "Abrir",
+    empty: "Ainda não há páginas de conhecimento.",
+    sourcesEmpty: "Nenhuma fonte bruta foi ingerida.",
+    result: "{{count}} resultado(s)",
+    synthesisTitle: "Síntese",
+    claimsTitle: "Alegações ({{count}})",
+    gapsTitle: "Lacunas ({{count}})",
+    sourcesTitle: "Fontes ({{count}})",
+    freshness: "Atualidade: {{when}}",
+    noSynthesis:
+      "Execute uma síntese para ver a resposta da camada-cérebro.",
+    citation: "cit.",
+  },
+} as const;

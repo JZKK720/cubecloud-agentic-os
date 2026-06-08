@@ -1,0 +1,285 @@
+# NOTICE — Third-party attributions
+
+This file is required by the REUSE specification (https://reuse.software/)
+and the MIT license's "permissive" attribution expectations. It
+catalogs every project whose code, assets, or designs are included
+in or adapted by `cubecloud-desktop`, and notes the license of
+each.
+
+The full license texts for adapted-code projects are kept under
+`licenses/` so that downstream redistributors can include them
+without having to fetch them from the network.
+
+---
+
+## Direct dependencies — Cubecloud-original work (2026)
+
+The Cubecloud-original work in this repository is **dual-licensed**
+under your choice of three licenses, with the inherited
+`hermes-desktop` framework code carved out as hard-MIT. See
+`LICENSE` for the full dual-license notice.
+
+| Component | Path | License | Notes |
+|-----------|------|---------|-------|
+| Cubecloud runtime wrapper | `src/main/codegraph-runtime.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original. Wraps `@colbymchenry/codegraph`. SPDX header in file. |
+| EverOS sidecar manager | `src/main/everos-sidecar.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original. Spawns `everos server start`. SPDX header in file. |
+| Hidden skills harness | `src/main/skills-harness.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original. Resolves skill manifests. SPDX header in file. |
+| Smoke runner scripts | `scripts/verify-everything.js`, `scripts/smoke-all.js`, `scripts/capture-codegraph-everos.js`, `scripts/verify-step3-4-ipc.js` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original. SPDX headers in files. |
+| Cubecloud architecture docs | `docs/CODEGRAPH-RUNTIME.md`, `docs/EVEROS-SIDECAR.md` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original. SPDX headers in files. |
+| Cubecloud brand assets | `build/branding/cubecloud-logo.svg`, `build/branding/cubecloud-mark.svg`, `src/renderer/src/assets/cubecloud-*.svg` | All rights reserved (Cubecloud) | Not MIT, not Apache-2.0, not AGPL-3.0. See `docs/legal/TRADEMARK_POLICY.md`. |
+| Cubecloud legal docs | `docs/legal/CUBECLOUD-EULA.md`, `docs/legal/PAID_SERVICES_TERMS.md`, `docs/legal/TRADEMARK_POLICY.md`, `docs/legal/CLEAN_ROOM_REPLACEMENT_PLAN.md`, `docs/legal/COMMERCIAL_LICENSE.md`, `SECURITY.md`, `THREAT_MODEL.md`, `BRANDING_AND_LICENSE.md`, `CONTRIBUTING.md` | All rights reserved (Cubecloud) | Legal/governance docs, not code. See respective files. |
+| Changelog | `changelogs/0.6.0.md` (V2.3 addendum and beyond) | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original prose; the underlying code is dual-licensed as above. |
+| Pre-launch bundle — Skills seed | `apps/desktop-shell/src/main/defaultSkills.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original V2.9. 3 user-visible skills (`cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`). SPDX header in file. |
+| Pre-launch bundle — Memory seed | `apps/desktop-shell/src/main/defaultMemories.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original V2.9. 6 memory seeds covering conventions, runtime topology, two-tier skills, license/brand, workspace conventions, security posture. SPDX header in file. |
+| Pre-launch bundle — Harness seed | `apps/desktop-shell/src/main/defaultHarnesses.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original V2.9. 3 disabled EverOS harnesses (`cubecloud-memory-distill`, `cubecloud-cost-watchdog`, `cubecloud-skill-audit`). SPDX header in file. |
+| Pre-launch bundle — Schedule seed | `apps/desktop-shell/src/main/defaultSchedules.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original V2.9. 1 disabled schedule (`cubecloud-daily-standup`). SPDX header in file. |
+| Pre-launch bundle — Kanban seed | `apps/desktop-shell/src/main/defaultKanban.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original V2.9. 1 starter board + 5 deletable example tasks. SPDX header in file. |
+| Pre-launch bundle — Seed tests | `apps/desktop-shell/src/main/prelaunchSeed.test.ts` | AGPL-3.0-or-later OR Apache-2.0 OR MIT | Cubecloud-original V2.9. Pins the idempotency contract for all 5 seeds. SPDX header in file. |
+
+The AGPL-3.0-or-later option is the **primary** license; Apache-2.0
+and MIT are offered as **compatibility** options for downstream
+consumers whose house license is one of those. The hermes-desktop
+framework code that hosts these Cubecloud-original modules remains
+hard-MIT (see "Inherited dependencies" below).
+
+## Inherited dependencies — MIT (permissive, redistributable)
+
+| Component | Path | License | Notes |
+|-----------|------|---------|-------|
+| The desktop source tree as a whole | `src/main/**`, `src/renderer/**`, `src/preload/**` (excluding the Cubecloud-original modules above) | MIT | Inherited from `hermes-desktop` (Nous Research / Hermes Agent lineage). Copyright © the original authors. |
+| The desktop test suite | `tests/**` (excluding the Cubecloud-original test files) | MIT | Inherited. |
+| Build pipeline | `electron.vite.config.ts`, `vitest.config.ts`, `tsconfig*.json`, `eslint.config.mjs` | MIT | Inherited. |
+
+## Adapted dependencies — MIT (permissive, redistributable)
+
+This section catalogs every project whose work has been
+**adapted into the desktop's source tree** (as opposed to
+inherited verbatim from `hermes-desktop` or vendored as a
+runtime npm dep). Two subsections follow:
+
+1. **Skills ecosystem** — six MIT-licensed upstream projects
+   whose `SKILL.md` content has been adapted into the
+   desktop's agent-runtime skills layer at
+   `.agents/skills/<name>/SKILL.md`. The 19 skills in this
+   group are *prose* adaptations (Cubecloud-original SKILL.md
+   bodies derived from the upstream skill descriptions and
+   content; no upstream prose is copied verbatim).
+2. **Reference-only** — four projects that were *studied*
+   during the V2.3 / V2.4 design work but **not** adapted
+   into the source tree. Retained from the prior revision of
+   this NOTICE for attribution continuity; the skill
+   ecosystem above does not promote any of these to a
+   "vendored" status.
+
+In addition, the `ar-autoresearch` skill ships a **functioning
+Python reference harness** at `ar-autoresearch/harness/`. That
+harness is the one place in the desktop repo where adapted
+upstream *code* (not just prose) is shipped, and it is
+catalogued separately under "Bundled functioning reference
+code" below. The harness is reference code the agent may
+run on a developer machine; it is not loaded by the desktop,
+not linked into the Electron app, and not required for any
+desktop feature to work.
+
+### Skills ecosystem (adapted from upstream MIT-licensed skills)
+
+| Project | License | Adapted as | Provenance |
+|---------|---------|------------|------------|
+| **[autoresearch](https://github.com/JZKK720/autoresearch)** | MIT — see `licenses/autoresearch-MIT.txt` | `ar-autoresearch` (1 skill) | Per-skill `metadata.source` in `ar-autoresearch/SKILL.md`. The skill's prose is Cubecloud-original; the Python harness under `ar-autoresearch/harness/` preserves Karpathy's code and is catalogued separately below. |
+| **[poskills](https://github.com/JZKK720/poskills)** | MIT — see `licenses/poskills-MIT.txt` | `po-caveman`, `po-diagnose`, `po-tdd`, `po-write-a-skill`, `po-grill-with-docs`, `po-improve-codebase-architecture`, `po-to-prd` (7 skills) | Per-skill `metadata.source` in each `po-*/SKILL.md`. The `po-` prefix is a provenance marker; the SKILL.md bodies are Cubecloud-original prose derived from the upstream skill catalog. |
+| **[andrej-karpathy-skills](https://github.com/JZKK720/andrej-karpathy-skills)** | MIT — see `licenses/andrej-karpathy-skills-MIT.txt` | `karpathy-guidelines` (1 skill) | Per-skill `metadata.source` in `karpathy-guidelines/SKILL.md`. The four principles are upstream Karpathy's; the cross-references into the `po-` and `gstack-` skills are Cubecloud-original. |
+| **[ECC](https://github.com/JZKK720/ECC)** | MIT — see `licenses/ECC-MIT.txt` | `ecc-skill-development-guide`, `ecc-skill-scout`, `ecc-coding-standards` (3 skills) | Per-skill `metadata.source` in each `ecc-*/SKILL.md`. The `ecc-skill-development-guide` is the most-curated upstream of the three and informs the authoring contract of all 20 skills. |
+| **[gbrain](https://github.com/JZKK720/gbrain)** | MIT — see `licenses/gbrain-MIT.txt` | `gbrain-skillify`, `gbrain-eiirp` (2 skills) | Per-skill `metadata.source` in each `gbrain-*/SKILL.md`. The `gbrain-skillify` 11-axis gate and the `gbrain-eiirp` 7-phase post-work organiser are the meta layer of the ecosystem. |
+| **[gstack](https://github.com/JZKK720/gstack)** | MIT — see `licenses/gstack-MIT.txt` | `gstack-plan-ceo-review`, `gstack-plan-eng-review`, `gstack-plan-design-review`, `gstack-retro`, `gstack-investigate`, `gstack-qa` (6 skills) | Per-skill `metadata.source` in each `gstack-*/SKILL.md`. The gstack plan-review triplet (CEO / Eng / Design) plus the retro / investigate / qa skills form the workflow half of the ecosystem. |
+| **[superpowers](https://github.com/JZKK720/superpowers)** | MIT — see `licenses/superpowers-MIT.txt` | `sp-skill-first`, `sp-tdd`, `sp-debug`, `sp-verify`, `sp-brainstorm`, `sp-plan`, `sp-execute`, `sp-subagents`, `sp-parallel`, `sp-request-review`, `sp-receive-review`, `sp-worktree`, `sp-finish-branch`, `sp-write-skill` (14 skills) | Per-skill `metadata.source` in each `sp-*/SKILL.md`. The `sp-` prefix is a Cubecloud-original disambiguator; the upstream `superpowers` repo uses bare skill names. The 14 are Cubecloud-original prose distilled from the upstream MIT-licensed source. Distinct from the V2.6 prose skills in that `sp-write-skill` enforces TDD-for-skills (red phase failure transcript required) and `sp-skill-first` enforces the session-start bootstrap that auto-injects the process skills. |
+
+The 34 skills above are the complete skills layer as of V2.7.
+A `SKILLS.md` index at `.agents/skills/README.md` maps each
+skill to its source repo, scope, and trigger phrases. The
+skills are also mirrored to the **user-global**
+`~/.agents/skills/` directory on developer machines so they
+auto-activate in every Copilot workspace on the same machine.
+The repo-local copies at `.agents/skills/<name>/SKILL.md` are
+the source of truth; the global mirror is regenerated whenever
+a new skill lands or an existing one is updated.
+
+### Bundled functioning reference code (the autoresearch Python harness)
+
+The `ar-autoresearch` skill is the only skill in the 20-skill
+ecosystem that ships a *functioning code* reference, not just
+prose. The harness lives at
+`.agents/skills/ar-autoresearch/harness/` and preserves
+Karpathy's upstream `prepare.py`, `train.py`, `pyproject.toml`,
+and `README.md` with the data download, BPE tokenizer, GPT
+model (rotary embeddings, value embeddings, softcap, ReLU²
+MLP), MuonAdamW optimizer, best-fit packing, training loop,
+eval, and summary print all intact.
+
+| Path | License | Notes |
+|------|---------|-------|
+| `ar-autoresearch/harness/prepare.py` | MIT — see `licenses/autoresearch-MIT.txt` | Data download + BPE tokenizer + eval harness. Cubecloud-original modifications: none. SPDX header carries the upstream MIT and a `SPDX-Origin: https://github.com/JZKK720/autoresearch` pointer. |
+| `ar-autoresearch/harness/train.py` | MIT — see `licenses/autoresearch-MIT.txt` | GPT model + MuonAdamW + training loop. Cubecloud-original modifications: none. SPDX header carries the upstream MIT and a `SPDX-Origin: https://github.com/JZKK720/autoresearch` pointer. |
+| `ar-autoresearch/harness/pyproject.toml` | MIT — see `licenses/autoresearch-MIT.txt` | uv-managed dependency manifest. Cubecloud-original modifications: none. |
+| `ar-autoresearch/harness/README.md` | MIT — see `licenses/autoresearch-MIT.txt` | Harness usage notes. Cubecloud-original modifications: documentation comment at the top naming the upstream source and noting the reference-only intent. |
+
+The harness is **not** loaded by the desktop at runtime, **not**
+linked into the Electron app, **not** bundled into the
+installer, and **not** required for any desktop feature to
+work. It exists so the `ar-autoresearch` skill has a working
+reference for the agent to experiment with on a developer
+machine. Removing the harness would not change the desktop's
+build, runtime, or trust surface. The other 19 skills in the
+ecosystem are pure-prose adaptations and ship no
+corresponding functioning code.
+
+### Reference-only (studied, not adapted)
+
+The following projects were *studied* during the V2.3 / V2.4
+design work and their rebrand and licensing posture was used
+as a model. **No source code from these projects is vendored
+or merged here.** These rows are retained from the prior
+revision of this NOTICE for attribution continuity; the V2.6
+skills ecosystem above does not promote any of them to a
+"vendored" status.
+
+| Project | License | Status as of this revision | Notes |
+|---------|---------|----------------------------|-------|
+| **[Odysseus](https://github.com/pewdiepie-archdaemon/odysseus)** | MIT — see `licenses/Odysseus-MIT.txt` | Reference only. Not vendored. | Studied as a model for trademark policy, security policy, threat model, and DCO contribution terms. See `docs/legal/TRADEMARK_POLICY.md`, `SECURITY.md`, `THREAT_MODEL.md`, `CONTRIBUTING.md`. |
+| **[opencode](https://github.com/anomalyco/opencode)** | MIT — see `licenses/opencode-MIT.txt` | Reference only. Not vendored. | Studied for agent-loop and tool-execution UI concepts. |
+| **[llmfit](https://github.com/AlexsJones/llmfit)** | MIT — see `licenses/llmfit-MIT.txt` | Reference only. Not vendored. | Studied for hardware-detection and quant-aware fit scoring patterns. |
+| **[Tongyi DeepResearch](https://github.com/Alibaba-NLP/DeepResearch)** | Apache-2.0 — see `licenses/DeepResearch-Apache-2.0.txt` | Reference only. Not vendored. | Studied for multi-step research synthesis. |
+
+The `licenses/` directory copies are retained as a courtesy and
+as a hedge: if any of these projects' code is later pulled in
+through a clean-room rewrite, the license text is already in
+the tree.
+
+## Bundled / composed services (Docker, not statically linked)
+
+This section is kept for REUSE catalog shape, but as of this
+revision **the desktop has no `docker-compose.yml` and does not
+bundle any containerized services**. The desktop connects to
+services the user runs on their own machine over loopback HTTP
+(see "Interoperated services" below). Nothing in this repository
+pulls a container image as a declared dep. If a future revision
+of `cubecloud-desktop` adds a `docker-compose.yml` or otherwise
+bundles a service, the row must be added back here with the
+exact image and pinned tag, and a per-service license pointer.
+
+| Service | Image | License | Notes |
+|---------|-------|---------|-------|
+| _None_ | _—_ | _—_ | No services are bundled or composed by this repository. The empty row is intentional and reflects the current source tree. |
+
+## Optional AGPL-3.0 dependencies (opt-in, network-clause applies only if installed)
+
+This section is intentionally empty as of this revision.
+
+- **PyMuPDF (fitz)** is **not** a dependency of this project
+  and is **not** vendored in the source tree. The earlier
+  draft of this NOTICE mentioned PyMuPDF as an "optional
+  AGPL" surface inherited from upstream research; that
+  reference is removed here because no PDF form-filling
+  feature exists in this repository and there is no path by
+  which PyMuPDF would be loaded at runtime. If a future
+  revision adds one, the AGPL-3.0 network clause would then
+  apply to that feature for that deployment, and the row
+  should be restored with a per-feature pointer.
+
+## Frontend libraries (runtime-loaded via npm in cubecloud-desktop's `dependencies`)
+
+| Package | License | Notes |
+|---------|---------|-------|
+| `better-sqlite3` | MIT | Embedded SQLite binding. |
+| `electron-updater` | MIT | Auto-update channel. |
+| `i18next` | MIT | i18n runtime. |
+| `react`, `react-dom` | MIT | UI framework. |
+| `react-i18next` | MIT | React i18n binding. |
+| `react-markdown`, `remark-gfm` | MIT | Markdown rendering. |
+| `react-syntax-highlighter` | MIT | Code block highlighting. |
+| `highlight.js` | BSD-3-Clause | Token highlighting. |
+| `lucide-react` | ISC | Icon set. |
+| `posthog-js` | MIT | Product analytics. |
+| `react-file-icon` | MIT | File-type icons. |
+| `vscode-material-icons` | MIT | Material icons. |
+| `@electron-toolkit/preload` | MIT | Electron preload helpers. |
+| `@electron-toolkit/utils` | MIT | Electron utility helpers. |
+| `@wesbos/code-icons` | MIT | Code icon set. |
+| `@colbymchenry/codegraph` | MIT | Optional CodeGraph SDK; loaded only when the CodeGraph screen is opened. |
+
+## Fonts and bundled assets
+
+| Asset | License | Author |
+|-------|---------|--------|
+| Fira Code | SIL Open Font License 1.1 | Nikita Prokopov & contributors |
+| Inter | SIL Open Font License 1.1 | Rasmus Andersson |
+
+Any other font shipped in this repository is licensed under
+SIL OFL 1.1 unless noted otherwise.
+
+## Interoperated services (user-installed, network-only, not bundled)
+
+The desktop is a chat client. It does not run a model server
+itself. To answer chat requests, the renderer expects the user
+to have a local model endpoint already running, or a remote
+provider reachable over HTTPS. The desktop does not bundle,
+ship, install, or manage any of these — it only speaks their
+HTTP protocols. The licenses below govern the user's own
+installation, not the desktop's source tree.
+
+| Service | License | Notes |
+|---------|---------|-------|
+| Ollama | MIT | User installs Ollama separately and exposes `http://127.0.0.1:11434`. The desktop only consumes the OpenAI-compatible `/v1/*` and native `/api/tags` endpoints. |
+| vLLM | Apache-2.0 | User installs vLLM separately and exposes an OpenAI-compatible server on the loopback. The desktop consumes `/v1/*` only. |
+| llama.cpp | MIT | User runs `llama-server` with `--api` separately. The desktop consumes `/v1/*` only. |
+
+The following are listed in some upstream `ACKNOWLEDGMENTS.md`
+files and have been **removed** from this NOTICE because they
+are not part of the desktop's product surface in this revision:
+
+- **Radicale (GPL-3.0)** — no CardDAV/CalDAV integration exists in
+  the desktop.
+- **OpenSSH** — the desktop does not use SSH to provision
+  remote model servers in this revision; remote model servers
+  are configured by the user with a base URL.
+- **tmux (ISC)** — referenced by upstream "Cookbook" patterns,
+  but the desktop has no Cookbook module in this revision.
+
+If a future revision adds any of the above, the rows should be
+restored here with a per-feature pointer and a fresh license
+text copy under `licenses/`.
+
+---
+
+## Why this file is required
+
+The Cubecloud-original work in this repository is dual-licensed
+under your choice of AGPL-3.0-or-later, Apache-2.0, or MIT (see
+`LICENSE`). All three licenses include an attribution-preservation
+clause: AGPL-3.0 §5(a), Apache-2.0 §4(a)/(c)/(d), MIT permission
+notice paragraph 2. The REUSE specification recommends a single
+`NOTICE` file cataloging third-party attribution as the canonical
+way to satisfy that requirement for a multi-upstream codebase.
+We adopt that convention. Downstream redistributors may either
+keep this file intact or re-catalog the same attributions in
+their own NOTICE.
+
+## How downstream consumers pick a license
+
+If you want to use Cubecloud-original work under any one of the
+three offered licenses, you do not need to declare your choice
+publicly. The license applies to your use as soon as you receive
+the work; you simply follow the obligations of that license for
+your deployment. The three licenses are alternatives, not
+additive — picking one does not require you to also follow the
+others.
+
+If you redistribute Cubecloud-original work as part of a larger
+work, the standard "give a copy of the License" clause applies
+for each license you offer the work under. Including a copy of
+this `NOTICE` plus the relevant `licenses/*.txt` file in your
+distribution satisfies that clause for all three at once.
+
+## Reporting missing or mis-attributed entries
+
+If you believe something here is mis-attributed or missing, open an
+issue and it will be corrected promptly.

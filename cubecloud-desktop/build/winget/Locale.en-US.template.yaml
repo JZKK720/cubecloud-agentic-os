@@ -1,0 +1,25 @@
+# Generated from this template by scripts/generate-winget-manifests.mjs.
+PackageIdentifier: Cubecloud.CubecloudDesktop
+PackageVersion: { { VERSION } }
+PackageLocale: en-US
+Publisher: Cubecloud
+PublisherUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os
+PublisherSupportUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues
+PackageName: Cubecloud Desktop
+PackageUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os
+License: MIT
+LicenseUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os/blob/main/LICENSE
+ShortDescription: Desktop control center for Cubecloud Agentic-OS
+Description: |-
+  Cubecloud Desktop is a native desktop shell for orchestrating Cubecloud
+  Agentic-OS runtimes, creative apps, and assistant workflows. Hermes Agent
+  remains supported as one runtime inside the platform.
+Tags:
+  - ai
+  - agent
+  - desktop
+  - electron
+  - llm
+ReleaseNotesUrl: { { RELEASE_NOTES_URL } }
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

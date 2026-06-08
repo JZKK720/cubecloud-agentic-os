@@ -1,0 +1,7 @@
+# Build / fetch artifacts
+_coach-src/
+_vsix/*.vsix
+
+# Allow the directory itself and the upstream references to be committed
+!taste-skill-ref/
+!andrej-karpathy-skills.CLAUDE.md
