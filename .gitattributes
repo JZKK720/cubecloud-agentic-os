@@ -17,6 +17,15 @@
 # root provides the editor-side enforcement.)
 *.md text eol=lf
 
+# GitHub Linguist: keep the repo language bar focused on the actual
+# Cubecloud product implementation. The bundled skill mirrors under
+# `.agents/` and the agent-skills-bundle helper scripts are important
+# repo content, but they are not the main application/runtime source and
+# should not skew the top-level language breakdown.
+.agents/** linguist-detectable=false
+agent-desktop/.agents/** linguist-detectable=false
+docs/agent-skills-bundle/** linguist-detectable=false
+
 # The V2.9-A doc-sync uses Windows-native hardlinks (files) and
 # directory junctions (dirs) for the inner mirror at agent-desktop/.
 # On non-Windows clones (macOS, Linux) the junctions don't exist; the
