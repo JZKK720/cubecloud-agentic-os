@@ -18,7 +18,7 @@
 *.md text eol=lf
 
 # The V2.9-A doc-sync uses Windows-native hardlinks (files) and
-# directory junctions (dirs) for the inner mirror at cubecloud-desktop/.
+# directory junctions (dirs) for the inner mirror at agent-desktop/.
 # On non-Windows clones (macOS, Linux) the junctions don't exist; the
 # sync-docs.ps1 regen script must be re-run. The hardlink/junction
 # status is therefore a *runtime* artifact, not a *git* artifact, and

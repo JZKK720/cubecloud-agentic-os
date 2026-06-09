@@ -17,7 +17,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
-const INNER = path.join(ROOT, 'cubecloud-desktop');
+const INNER = path.join(ROOT, 'agent-desktop');
 const EM = '\u2014';
 
 const PAIRS = [
@@ -89,7 +89,7 @@ docs/HANDBOOK.md \u00a71 (the master index).
 V2.10.8 closes that gap by:
 
 1. **Moving THREAT_MODEL.md** (6,249 bytes) from
-   \`cubecloud-desktop/THREAT_MODEL.md\` to \`./THREAT_MODEL.md\`.
+   \`agent-desktop/THREAT_MODEL.md\` to \`./THREAT_MODEL.md\`.
    The inner location is re-created as a Windows hardlink so
    the Electron build still finds the doc at the old path.
 2. **Moving SECURITY.md** (7,801 bytes) the same way.

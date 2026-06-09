@@ -14,12 +14,12 @@ metadata:
 
 Use this workflow when a request touches any of these surfaces:
 
-- `cubecloud-desktop/src/main/headroom.ts`
-- `cubecloud-desktop/src/main/headroom-sidecar.ts`
-- `cubecloud-desktop/src/main/headroom-bundle.ts`
-- `cubecloud-desktop/src/main/mcp/headroom-mcp-server.ts`
-- `cubecloud-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`
-- `cubecloud-desktop/src/main/codegraph.ts`
+- `agent-desktop/src/main/headroom.ts`
+- `agent-desktop/src/main/headroom-sidecar.ts`
+- `agent-desktop/src/main/headroom-bundle.ts`
+- `agent-desktop/src/main/mcp/headroom-mcp-server.ts`
+- `agent-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`
+- `agent-desktop/src/main/codegraph.ts`
 - repo/global Copilot instructions that should react to large context or Headroom-specific requests
 - global skill mirroring to `~/.agents/skills/`
 
@@ -31,7 +31,7 @@ Before proposing new runtime integration, verify the existing surfaces:
 - the desktop Headroom screen
 - the Python proxy sidecar lifecycle manager
 - the local MCP server wrapper
-- the CodeGraph â†’ Headroom compression path
+- the CodeGraph â†?Headroom compression path
 
 If the user asks "should we integrate Headroom?", the likely real gap is not the desktop runtime layer. The likely gap is the Copilot / VS Code workflow layer.
 
@@ -49,11 +49,11 @@ Use this plane when the request is about:
 
 Primary owning files:
 
-- `cubecloud-desktop/src/main/headroom.ts`
-- `cubecloud-desktop/src/main/headroom-sidecar.ts`
-- `cubecloud-desktop/src/main/mcp/headroom-mcp-server.ts`
-- `cubecloud-desktop/src/main/codegraph.ts`
-- `cubecloud-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`
+- `agent-desktop/src/main/headroom.ts`
+- `agent-desktop/src/main/headroom-sidecar.ts`
+- `agent-desktop/src/main/mcp/headroom-mcp-server.ts`
+- `agent-desktop/src/main/codegraph.ts`
+- `agent-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`
 
 ### 2. Repo-local Copilot plane
 
@@ -67,7 +67,7 @@ Use this plane when the request is about:
 Primary owning files:
 
 - `.github/copilot-instructions.md`
-- `cubecloud-desktop/AGENTS.md`
+- `agent-desktop/AGENTS.md`
 - `.github/skills/headroom-workflow/SKILL.md`
 
 ### 3. Non-repo / global Copilot plane
@@ -134,11 +134,11 @@ Skip or defer it when:
 
 ## Related files
 
-- `cubecloud-desktop/src/main/headroom.ts`
-- `cubecloud-desktop/src/main/headroom-sidecar.ts`
-- `cubecloud-desktop/src/main/mcp/headroom-mcp-server.ts`
-- `cubecloud-desktop/src/main/codegraph.ts`
-- `cubecloud-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`
+- `agent-desktop/src/main/headroom.ts`
+- `agent-desktop/src/main/headroom-sidecar.ts`
+- `agent-desktop/src/main/mcp/headroom-mcp-server.ts`
+- `agent-desktop/src/main/codegraph.ts`
+- `agent-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`
 - `docs/agent-skills-bundle/README.md`
 - `docs/agent-skills-bundle/HEADROOM.md`
 - `docs/GLOBAL-INSTALL-PLAN.md`

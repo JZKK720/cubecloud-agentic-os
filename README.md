@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="360" alt="Cubecloud Agentic-OS" src="cubecloud-desktop/build/branding/cubecloud-logo.svg" />
+  <img width="360" alt="Cubecloud Agentic-OS" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 Cubecloud Agentic-OS is the monorepo for the **Cubecloud Agent Desktop**
 and the operating model around it. The desktop binary lives in
-[`cubecloud-desktop/`](cubecloud-desktop/). The Cubecloud-original control
+[`agent-desktop/`](agent-desktop/). The Cubecloud-original control
 plane, prelaunch bundle, and developer-time skill ecosystem live in
 [`apps/desktop-shell/`](apps/desktop-shell/),
 [`packages/platform-core/`](packages/platform-core/), and
@@ -80,7 +80,7 @@ control plane, or a model vendor to own your runtime lifecycle for you.
 
 This monorepo is broader than the desktop binary alone.
 
-- [`cubecloud-desktop/`](cubecloud-desktop/) is the full Electron desktop that ships to end users.
+- [`agent-desktop/`](agent-desktop/) is the full Electron desktop that ships to end users.
 - [`apps/desktop-shell/`](apps/desktop-shell/) is the Cubecloud-original state and control-plane workspace.
 - [`packages/platform-core/`](packages/platform-core/) holds shared TypeScript contracts.
 - [`.agents/skills/`](.agents/skills/) contains 34 first-class open-source skills adapted from 7 upstream repos and mirrored to `~/.agents/skills/`.
@@ -140,7 +140,7 @@ The desktop experience is built from six cooperating surfaces:
 - **State layer** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) owns profiles, sessions, models, providers, skills, memory, schedules, and kanban state.
 - **Runtime orchestration** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) describes Hermes as the current lane and OpenClaw / IronClaw as the next lanes.
 - **Provider layer** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) keeps model-provider selection separate from runtime selection.
-- **Skills harness** - [`cubecloud-desktop/src/main/skills-harness.ts`](cubecloud-desktop/src/main/skills-harness.ts) applies the skill layer around outgoing requests.
+- **Skills harness** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) applies the skill layer around outgoing requests.
 - **CodeGraph surface** - [`docs/CODEGRAPH-RUNTIME.md`](docs/CODEGRAPH-RUNTIME.md) explains the optional semantic code-intelligence path.
 - **EverOS sidecar** - [`docs/EVEROS-SIDECAR.md`](docs/EVEROS-SIDECAR.md) explains the optional memory and harness sidecar lifecycle.
 
@@ -188,8 +188,8 @@ that guides a Copilot / VS Code session through the
 [`headroom-ai`](https://github.com/JZKK720/headroom) context-compression
 proxy when the local token pressure is high (large tool logs, long
 chat histories, big CodeGraph bundles). The full install path for
-non-repo Copilot sessions — including the `headroom proxy`,
-`headroom mcp install`, and `headroom wrap copilot` modes — lives at
+non-repo Copilot sessions �?including the `headroom proxy`,
+`headroom mcp install`, and `headroom wrap copilot` modes �?lives at
 [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md).
 A one-command helper for mirroring the workflow skill into the
 user-global Copilot skills directory is at
@@ -198,11 +198,11 @@ Headroom is **never required**: the desktop is fully functional
 without it.
 
 ## Where to start
-│   └── skills/
-│       └── headroom-workflow/    Copilot / VS Code workflow layer for the optional Headroom proxy
+�?  └── skills/
+�?      └── headroom-workflow/    Copilot / VS Code workflow layer for the optional Headroom proxy
 
 - **New contributor:** read [`docs/HANDBOOK.md`](docs/HANDBOOK.md) sections 1, 2, 3, and 5.
-- **Evaluator of the shipped desktop:** read [`cubecloud-desktop/README.md`](cubecloud-desktop/README.md), then [`docs/HANDBOOK.md`](docs/HANDBOOK.md) sections 1, 3, and 10.
+- **Evaluator of the shipped desktop:** read [`agent-desktop/README.md`](agent-desktop/README.md), then [`docs/HANDBOOK.md`](docs/HANDBOOK.md) sections 1, 3, and 10.
 - **Reviewer or release owner:** read [`docs/HANDBOOK.md`](docs/HANDBOOK.md) sections 1, 3, 4, 6, 9, 10, and 11 in that order.
 
 ## Repository layout
@@ -220,18 +220,18 @@ cubecloud-agentic-os/
 ├── .agents/                      34 open-source skills mirrored to ~/.agents/skills/
 ├── .github/                      agent instructions, workflow skills, and automation
 ├── apps/
-│   └── desktop-shell/            Cubecloud-original control plane workspace
+�?  └── desktop-shell/            Cubecloud-original control plane workspace
 ├── packages/
-│   └── platform-core/            shared TypeScript contracts
+�?  └── platform-core/            shared TypeScript contracts
 ├── docs/
-│   ├── HANDBOOK.md               master handbook
-│   ├── RETIRED_AND_LEGACY.md     live / mirror / scratch-pad map
-│   ├── handbook/                 long-form architecture, development, and operations docs
-│   └── legal/                    EULA, trademark, and commercial licensing policies
+�?  ├── HANDBOOK.md               master handbook
+�?  ├── RETIRED_AND_LEGACY.md     live / mirror / scratch-pad map
+�?  ├── handbook/                 long-form architecture, development, and operations docs
+�?  └── legal/                    EULA, trademark, and commercial licensing policies
 ├── scripts/
-│   ├── sync-docs.ps1             hardlink and junction regeneration
-│   └── v2.10.20-readme-combined-pdf.cjs
-└── cubecloud-desktop/            the shipped Electron desktop
+�?  ├── sync-docs.ps1             hardlink and junction regeneration
+�?  └── v2.10.20-readme-combined-pdf.cjs
+└── agent-desktop/            the shipped Electron desktop
 ```
 
 ## License
@@ -272,5 +272,5 @@ The translation inventory lives in [`README.i18n.md`](README.i18n.md).
 The combined English + Simplified Chinese README PDF lives at
 [`docs/Cubecloud-README-en-zh.pdf`](docs/Cubecloud-README-en-zh.pdf).
 
-Binary-facing translations still live under `cubecloud-desktop/`.
+Binary-facing translations still live under `agent-desktop/`.
 If you want to polish the current translations or extend the monorepo to additional languages, follow the workflow in [`README.i18n.md`](README.i18n.md).

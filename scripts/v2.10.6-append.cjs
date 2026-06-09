@@ -11,7 +11,7 @@ const { execSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const BRANDING = path.join(ROOT, 'BRANDING_AND_LICENSE.md');
-const BRANDING_INNER = path.join(ROOT, 'cubecloud-desktop', 'BRANDING_AND_LICENSE.md');
+const BRANDING_INNER = path.join(ROOT, 'agent-desktop', 'BRANDING_AND_LICENSE.md');
 const EM = '\u2014';
 
 const v2106 = `
@@ -25,7 +25,7 @@ file, CONTRIBUTING, ACKNOWLEDGMENTS, docs/HANDBOOK.md,
 docs/handbook/*). The README is the **one exception**: the outer
 \`README.md\` is the *agentic-OS monorepo README* (scope,
 principles, why-this-exists, what makes us different, repo layout)
-and the inner \`cubecloud-desktop/README.md\` is the *trimmed
+and the inner \`agent-desktop/README.md\` is the *trimmed
 install + features + providers doc* for the binary. They are
 deliberately **different files** with **different audiences**;
 \`scripts/sync-docs.ps1\` does NOT link them.

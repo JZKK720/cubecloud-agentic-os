@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const INNER_GITIGNORE = path.join(ROOT, 'cubecloud-desktop', '.gitignore');
+const INNER_GITIGNORE = path.join(ROOT, 'agent-desktop', '.gitignore');
 
 let gi = fs.readFileSync(INNER_GITIGNORE, 'utf8');
 

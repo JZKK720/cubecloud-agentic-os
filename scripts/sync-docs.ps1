@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 #
-# scripts/sync-docs.ps1 â€” Option A: move governance docs to the outer
-# cubecloud-agentic-os/ root, replace the inner cubecloud-desktop/ copies
+# scripts/sync-docs.ps1 â€?Option A: move governance docs to the outer
+# cubecloud-agentic-os/ root, replace the inner agent-desktop/ copies
 # with hardlinks (files) and junctions (directories). This script is
 # idempotent: re-running it re-creates any missing link.
 
@@ -13,7 +13,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $root = (Resolve-Path "$PSScriptRoot\..").Path
-$inner = Join-Path $root 'cubecloud-desktop'
+$inner = Join-Path $root 'agent-desktop'
 $outerDocs = Join-Path $root 'docs'
 
 # File map: source (relative to $inner) -> destination (relative to $root)
@@ -78,7 +78,7 @@ Write-Step "Phase 2: move top-level files"
 foreach ($k in $fileMap.Keys) {
     $rel = $k
     if ($rel -match '^docs/') {
-        # Some files live in inner docs/ â€” handle subfolder structure separately
+        # Some files live in inner docs/ â€?handle subfolder structure separately
         continue
     }
     $src = Join-Path $inner $rel

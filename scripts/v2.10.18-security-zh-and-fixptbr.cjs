@@ -152,10 +152,10 @@ console.log('  wrote ' + ZH_PATH + ' (' + Buffer.byteLength(ZH_CONTENT, 'utf8') 
 let i18n = fs.readFileSync(I18N, 'utf8');
 
 const oldTableTail =
-  '| CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (full translation of the outer CONTRIBUTING.md; covers the monorepo contributor policy -- separate from the inner `cubecloud-desktop/CONTRIBUTING.zh-CN.md` which covers the binary) | Cubecloud Contributors + Community |\n';
+  '| CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (full translation of the outer CONTRIBUTING.md; covers the monorepo contributor policy -- separate from the inner `agent-desktop/CONTRIBUTING.zh-CN.md` which covers the binary) | Cubecloud Contributors + Community |\n';
 
 const newTableTail =
-  '| CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (full translation of the outer CONTRIBUTING.md; covers the monorepo contributor policy -- separate from the inner `cubecloud-desktop/CONTRIBUTING.zh-CN.md` which covers the binary) | Cubecloud Contributors + Community |\n' +
+  '| CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (full translation of the outer CONTRIBUTING.md; covers the monorepo contributor policy -- separate from the inner `agent-desktop/CONTRIBUTING.zh-CN.md` which covers the binary) | Cubecloud Contributors + Community |\n' +
   '| SECURITY (monorepo) | English | `SECURITY.md` (outer root) | Live (hardlink to inner) | Cubecloud Contributors |\n' +
   '| SECURITY (monorepo) | Simplified Chinese (zh-CN) | `SECURITY.zh-CN.md` (outer root) | **Live, V2.10.18** (full translation of the outer SECURITY.md; supported versions + deployment guidance + fork publishing checklist + vulnerability reporting) | Cubecloud Contributors + Community |\n';
 
@@ -194,7 +194,7 @@ if (branding.includes('## V2.10.18')) {
     '2. Retired `fixptbr.cmd` (125 bytes) and `fixptbr.ps1`',
     '   (2,023 bytes) at the outer root. These were one-off',
     '   utilities for fixing a pt-PT mojibake issue in',
-    '   `cubecloud-desktop/src/shared/i18n/locales/pt-PT/memory.ts`.',
+    '   `agent-desktop/src/shared/i18n/locales/pt-PT/memory.ts`.',
     '   The target file is real UTF-8 now (verified byte-level),',
     '   so the scripts are dead code. The user asked to retire',
     '   legacy / overlay files; these are the only true "one-off',
@@ -234,7 +234,7 @@ if (branding.includes('## V2.10.18')) {
     '  free 228 MB but does not affect the committed repo.',
     '  Out of scope for V2.10.18; the user can do it manually',
     '  with `rm -rf .review-extras .review-codegraph`.',
-    '- `cubecloud-desktop/node_modules/` (1,007 MB),',
+    '- `agent-desktop/node_modules/` (1,007 MB),',
     '  `dist/` (2,360 MB), `out/` (24 MB): all already in the',
     '  inner `.gitignore`. Deleting would force a 5-10 min',
     '  `npm install` + 2-3 min `electron-vite build` on next',

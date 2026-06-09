@@ -2,7 +2,7 @@
 //
 // scripts/v2.10.7-i18n-2.cjs \u2014 V2.10.7 i18n cleanup (Node, UTF-8 safe).
 //
-// The 4 i18n files in cubecloud-desktop/ (README.ja-JP.md, README.zh-CN.md,
+// The 4 i18n files in agent-desktop/ (README.ja-JP.md, README.zh-CN.md,
 // CONTRIBUTING.ja-JP.md, CONTRIBUTING.zh-CN.md) currently:
 //   (1) live only at the inner location, with no outer-root counterparts;
 //   (2) still carry the V2-era "Rebrand transition in progress" / "construction in progress" disclaimer;
@@ -27,7 +27,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
-const INNER = path.join(ROOT, 'cubecloud-desktop');
+const INNER = path.join(ROOT, 'agent-desktop');
 const EM = '\u2014';
 
 // Per-language cross-link header (prepended to the inner file after the
@@ -156,7 +156,7 @@ const manifest = `# i18n policy (V2.10.7)
 
 > **Single source of truth for translations.** All Cubecloud Agentic-OS
 > translations live in the inner mirror at
-> \`cubecloud-desktop/<file>\`. The outer root does not duplicate the
+> \`agent-desktop/<file>\`. The outer root does not duplicate the
 > translated content; instead, this manifest points to each one and
 > states its status.
 
@@ -164,19 +164,19 @@ const manifest = `# i18n policy (V2.10.7)
 
 | File | Language | Path | Status | Maintainer |
 |---|---|---|---|---|
-| README (binary) | English | \`cubecloud-desktop/README.md\` | Live, V2.10.6 | Cubecloud Contributors |
-| README (binary) | \u65e5\u672c\u8a9e (ja-JP) | \`cubecloud-desktop/README.ja-JP.md\` | Live, V2.10.7 disclaimer trim | Community |
-| README (binary) | \u7b80\u4f53\u4e2d\u6587 (zh-CN) | \`cubecloud-desktop/README.zh-CN.md\` | Live, V2.10.7 disclaimer trim | Community |
-| CONTRIBUTING (binary) | English | \`cubecloud-desktop/CONTRIBUTING.md\` | Live, source of truth | Cubecloud Contributors |
-| CONTRIBUTING (binary) | \u65e5\u672c\u8a9e (ja-JP) | \`cubecloud-desktop/CONTRIBUTING.ja-JP.md\` | Live, V2.10.7 cross-link only | Community |
-| CONTRIBUTING (binary) | \u7b80\u4f53\u4e2d\u6587 (zh-CN) | \`cubecloud-desktop/CONTRIBUTING.zh-CN.md\` | Live, V2.10.7 cross-link only | Community |
+| README (binary) | English | \`agent-desktop/README.md\` | Live, V2.10.6 | Cubecloud Contributors |
+| README (binary) | \u65e5\u672c\u8a9e (ja-JP) | \`agent-desktop/README.ja-JP.md\` | Live, V2.10.7 disclaimer trim | Community |
+| README (binary) | \u7b80\u4f53\u4e2d\u6587 (zh-CN) | \`agent-desktop/README.zh-CN.md\` | Live, V2.10.7 disclaimer trim | Community |
+| CONTRIBUTING (binary) | English | \`agent-desktop/CONTRIBUTING.md\` | Live, source of truth | Cubecloud Contributors |
+| CONTRIBUTING (binary) | \u65e5\u672c\u8a9e (ja-JP) | \`agent-desktop/CONTRIBUTING.ja-JP.md\` | Live, V2.10.7 cross-link only | Community |
+| CONTRIBUTING (binary) | \u7b80\u4f53\u4e2d\u6587 (zh-CN) | \`agent-desktop/CONTRIBUTING.zh-CN.md\` | Live, V2.10.7 cross-link only | Community |
 
 ## Translation workflow
 
 1. The English file (either \`README.md\` or \`CONTRIBUTING.md\` at the
    outer root) is the **source of truth**.
 2. A translation PR opens at the inner location
-   (\`cubecloud-desktop/<file>.<lang>.md\`) with the matching language
+   (\`agent-desktop/<file>.<lang>.md\`) with the matching language
    code (ja-JP, zh-CN, or a new one).
 3. A native speaker in the target language reviews the diff; the PR
    cannot merge without their approval.
@@ -220,7 +220,7 @@ const v2107 = `
 
 ### V2.10.7 ${EM} i18n cleanup (README + CONTRIBUTING \u00d7 4 languages)
 
-The V2.10.6 transition left the 4 i18n files in \`cubecloud-desktop/\`
+The V2.10.6 transition left the 4 i18n files in \`agent-desktop/\`
 (\`README.ja-JP.md\`, \`README.zh-CN.md\`, \`CONTRIBUTING.ja-JP.md\`,
 \`CONTRIBUTING.zh-CN.md\`) without a counterpart at the outer root.
 The CJK files also still carried the V2-era "construction in progress"

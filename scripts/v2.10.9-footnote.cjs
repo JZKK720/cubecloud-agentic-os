@@ -18,8 +18,8 @@ const EM = '\u2014';
 
 let src = fs.readFileSync(BRANDING, 'utf8');
 
-const oldBullet = "- Inner \`cubecloud-desktop/\` lost its *primary* copies of 11 doc files\n  + 1 legal dir; the inner paths are now Windows-native hardlinks /\n  junctions pointing back to the outer root.";
-const newBullet = "- Inner \`cubecloud-desktop/\` lost its *primary* copies of **14 doc\n  files** (LICENSE, NOTICE, BRANDING_AND_LICENSE, CONTRIBUTING,\n  ACKNOWLEDGMENTS, THREAT_MODEL, SECURITY, README.i18n, plus\n  docs/HANDBOOK + 4 docs/handbook/*) + 1 legal dir; the inner paths\n  are now Windows-native hardlinks / junctions pointing back to the\n  outer root. README.md is the **intentional exception** (see\n  V2.10.6 below) and 4 i18n files (README.ja-JP/zh-CN +\n  CONTRIBUTING.ja-JP/zh-CN) live only at the inner location (see\n  V2.10.7 below). \`scripts/sync-docs.ps1\` is the idempotent regen\n  script; it has 14 hardlink entries + 1 outer-only + 4 inner-only\n  and runs through 8 phases.";
+const oldBullet = "- Inner \`agent-desktop/\` lost its *primary* copies of 11 doc files\n  + 1 legal dir; the inner paths are now Windows-native hardlinks /\n  junctions pointing back to the outer root.";
+const newBullet = "- Inner \`agent-desktop/\` lost its *primary* copies of **14 doc\n  files** (LICENSE, NOTICE, BRANDING_AND_LICENSE, CONTRIBUTING,\n  ACKNOWLEDGMENTS, THREAT_MODEL, SECURITY, README.i18n, plus\n  docs/HANDBOOK + 4 docs/handbook/*) + 1 legal dir; the inner paths\n  are now Windows-native hardlinks / junctions pointing back to the\n  outer root. README.md is the **intentional exception** (see\n  V2.10.6 below) and 4 i18n files (README.ja-JP/zh-CN +\n  CONTRIBUTING.ja-JP/zh-CN) live only at the inner location (see\n  V2.10.7 below). \`scripts/sync-docs.ps1\` is the idempotent regen\n  script; it has 14 hardlink entries + 1 outer-only + 4 inner-only\n  and runs through 8 phases.";
 
 if (!src.includes(oldBullet)) {
   console.error('old bullet not found verbatim; aborting');
@@ -31,7 +31,7 @@ const v2109Note = `
 ### V2.10.9 ${EM} V2.10.5 footnote fix (count + README/i18n exception)
 
 The V2.10.5 "Summary of the V2.10 diff" sub-section claimed
-\`cubecloud-desktop/\` lost its *primary* copies of "11 doc files + 1
+\`agent-desktop/\` lost its *primary* copies of "11 doc files + 1
 legal dir". That was true at V2.10.5; the count grew in V2.10.6
 (README became an intentional different-file, not a hardlink) +
 V2.10.7 (4 inner-only i18n files) + V2.10.8 (THREAT_MODEL + SECURITY
@@ -54,7 +54,7 @@ fs.writeFileSync(BRANDING, src);
 console.log('BRANDING now ' + fs.statSync(BRANDING).size + ' bytes');
 
 // Re-link inner BRANDING hardlink
-const BRANDING_INNER = path.join(ROOT, 'cubecloud-desktop', 'BRANDING_AND_LICENSE.md');
+const BRANDING_INNER = path.join(ROOT, 'agent-desktop', 'BRANDING_AND_LICENSE.md');
 try { fs.unlinkSync(BRANDING_INNER); } catch (e) { /* ignore */ }
 execSync(`powershell -NoProfile -Command "New-Item -ItemType HardLink -Path '${BRANDING_INNER}' -Target '${BRANDING}' | Out-Null"`);
 const same = execSync(`powershell -NoProfile -Command "(Get-FileHash '${BRANDING_INNER}' -Algorithm SHA256).Hash -eq (Get-FileHash '${BRANDING}' -Algorithm SHA256).Hash"`, { encoding: 'utf8' }).trim();

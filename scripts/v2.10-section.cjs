@@ -28,7 +28,7 @@ The Cubecloud Agent Desktop governance docs ${EM} \`README.md\`,
 \`docs/legal/*\` ${EM} are now **source-of-truth at the outer
 \`cubecloud-agentic-os/\` repo root** (or under outer \`docs/\`).
 They are no longer buried one level deep inside the vendored
-\`cubecloud-desktop/\` mirror.
+\`agent-desktop/\` mirror.
 
 The move is implemented by \`scripts/sync-docs.ps1\`:
 
@@ -85,7 +85,7 @@ is the live \`@cubecloud/desktop-shell\` workspace**, wired into
 the outer \`package.json\` for \`dev\`, \`build\`, and \`typecheck\`. It
 is the agentic-OS-original *state layer* (52 files, 981 KB)
 that rebuilds the desktop's control surface on top of the
-inherited \`cubecloud-desktop/\` framework.
+inherited \`agent-desktop/\` framework.
 
 The live surfaces are now documented in
 [\`docs/RETIRED_AND_LEGACY.md\`](docs/RETIRED_AND_LEGACY.md). A
@@ -111,7 +111,7 @@ log files). The cross-cutting patterns (node_modules, dist, out,
   \`apps/desktop-shell/.gitignore\`.
 - Outer \`.gitignore\` updated to exclude \`.review-extras/\` and
   \`.review-codegraph/\`.
-- Inner \`cubecloud-desktop/\` lost its *primary* copies of 11 doc files
+- Inner \`agent-desktop/\` lost its *primary* copies of 11 doc files
   + 1 legal dir; the inner paths are now Windows-native hardlinks /
   junctions pointing back to the outer root.
 - No source code changed. No SPDX headers changed. No test changed.

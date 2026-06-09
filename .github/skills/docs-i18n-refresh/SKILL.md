@@ -18,7 +18,7 @@ Use this workflow when a request touches any of these surfaces:
 - `docs/handbook/*.md`, `docs/handbook/*.zh-CN.md`
 - `docs/RETIRED_AND_LEGACY.md`
 - `docs/Cubecloud-README-en-zh.pdf`
-- `cubecloud-desktop/previews/`
+- `agent-desktop/previews/`
 - `scripts/sync-docs.ps1`
 - `scripts/v2.10.20-readme-combined-pdf.cjs`
 
@@ -27,8 +27,8 @@ Use this workflow when a request touches any of these surfaces:
 ### 1. Determine source of truth first
 
 - **Outer root + `docs/`** are the source of truth for monorepo docs.
-- **Inner `cubecloud-desktop/`** mirrors many of those files via Windows hardlinks and junctions.
-- **README is the intentional exception**: outer `README.md` and inner `cubecloud-desktop/README.md` are different by design.
+- **Inner `agent-desktop/`** mirrors many of those files via Windows hardlinks and junctions.
+- **README is the intentional exception**: outer `README.md` and inner `agent-desktop/README.md` are different by design.
 - Before changing a doc that exists both outer and inner, verify whether it is a hardlink (`fsutil hardlink list <path>` on Windows) or a separate file.
 
 ### 2. Translation inventory rules
@@ -41,9 +41,9 @@ Use this workflow when a request touches any of these surfaces:
   - `THREAT_MODEL.zh-CN.md`
   - `docs/HANDBOOK.zh-CN.md`
   - `docs/handbook/*.zh-CN.md`
-- **Binary translations** live in `cubecloud-desktop/`:
-  - `cubecloud-desktop/README.<lang>.md`
-  - `cubecloud-desktop/CONTRIBUTING.<lang>.md`
+- **Binary translations** live in `agent-desktop/`:
+  - `agent-desktop/README.<lang>.md`
+  - `agent-desktop/CONTRIBUTING.<lang>.md`
 - Every translation change must be reflected in the manifest row: path, status, maintainer, and any note such as `machine-translated starting point`.
 
 ### 3. Encoding / mojibake safety
@@ -71,7 +71,7 @@ node scripts/v2.10.20-readme-combined-pdf.cjs
 
 ### 5. Screenshot / preview sequencing
 
-- `cubecloud-desktop/previews/` is a legacy preview set kept on disk for inherited CJK references.
+- `agent-desktop/previews/` is a legacy preview set kept on disk for inherited CJK references.
 - Do **not** delete it until the replacement pass is complete.
 - The correct sequence is:
   1. regenerate the screenshots under Cubecloud branding,

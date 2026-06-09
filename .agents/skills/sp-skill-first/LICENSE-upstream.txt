@@ -1,25 +1,25 @@
 MIT License
 
-Copyright (c) 2024–2026 Jesse Vincent and the superpowers contributors
+Copyright (c) 2024�?026 Jesse Vincent and the superpowers contributors
 
 Forked by JZKK720 from https://github.com/obra/superpowers
 Retrieved: 2026-06-07 for the cubecloud-agentic-os V2.7 skills
-ecosystem import. See cubecloud-desktop/NOTICE and
-cubecloud-desktop/BRANDING_AND_LICENSE.md §"V2.7 transitions
+ecosystem import. See agent-desktop/NOTICE and
+agent-desktop/BRANDING_AND_LICENSE.md §"V2.7 transitions
 landed" for the per-skill provenance pointers.
 
 This vendored copy is the license of the *upstream* superpowers
 repo. The Cubecloud-original SKILL.md files derived from the
 upstream source are dual-licensed under your choice of
 AGPL-3.0-or-later, Apache-2.0, or MIT (see `LICENSE`), per
-the V2.5 cubecloud-desktop license posture. The vendored text
+the V2.5 agent-desktop license posture. The vendored text
 below governs the upstream source only.
 
 ---
 
 MIT License
 
-Copyright (c) 2024–2026 Jesse Vincent and the superpowers contributors
+Copyright (c) 2024�?026 Jesse Vincent and the superpowers contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

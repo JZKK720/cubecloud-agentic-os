@@ -139,6 +139,6 @@ The workflow skill is meant for requests involving:
 
 - `.github/skills/headroom-workflow/SKILL.md`
 - `.github/copilot-instructions.md`
-- `cubecloud-desktop/AGENTS.md`
+- `agent-desktop/AGENTS.md`
 - `docs/agent-skills-bundle/README.md`
 - `docs/GLOBAL-INSTALL-PLAN.md`

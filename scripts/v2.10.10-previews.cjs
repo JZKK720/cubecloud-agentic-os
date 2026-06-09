@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// scripts/v2.10.10-previews.cjs \u2014 V2.10.10: add cubecloud-desktop/previews/
+// scripts/v2.10.10-previews.cjs \u2014 V2.10.10: add agent-desktop/previews/
 // to the inner .gitignore. The 23 legacy preview PNGs / WebPs
 // (agents.png, chat.png, ..., welcome-remote.png) are still
 // referenced by the inherited CJK i18n READMEs (11 references in
@@ -17,7 +17,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
-const INNER = path.join(ROOT, 'cubecloud-desktop');
+const INNER = path.join(ROOT, 'agent-desktop');
 const EM = '\u2014';
 
 const INNER_GITIGNORE = path.join(INNER, '.gitignore');
@@ -59,7 +59,7 @@ const v21010 = `
 
 ### V2.10.10 ${EM} inner \`previews/\` \`.gitignore\` (legacy capture policy)
 
-The inner \`cubecloud-desktop/previews/\` directory has 23
+The inner \`agent-desktop/previews/\` directory has 23
 PNG / WebP files (\`agents.png\`, \`chat.png\`, \`codegraph.png\`,
 \`everos.png\`, \`gateway.png\`, \`headroom.png\`, \`mcp.png\`,
 \`memory.png\`, \`models.png\`, \`persona.png\`, \`plans.png\`,
@@ -78,7 +78,7 @@ galleries (V2.10.7 preserved the CJK content byte-for-byte);
 removing the PNGs would break the i18n galleries.
 
 V2.10.10 closes the loop by adding \`previews/\` to
-\`cubecloud-desktop/.gitignore\`. The 23 existing files stay
+\`agent-desktop/.gitignore\`. The 23 existing files stay
 on disk for the i18n galleries; new PNGs added in the future
 will not be committed by default. A future screenshot refresh
 pass (tracked in \`docs/RETIRED_AND_LEGACY.md\` as a candidate)
@@ -115,7 +115,7 @@ if (!retiredSrc.includes(anchor)) {
   console.error('anchor not found in RETIRED; aborting');
   process.exit(1);
 }
-const newRow = `| Legacy preview captures (binary) | \`cubecloud-desktop/previews/*.png\`, \`*.webp\` (23 files, 2.14 MB) | **Scratch-pad, .gitignore'd** (V2.10.10) | The 23 legacy PNG / WebP captures from the inherited hermes-desktop framework. Orphaned from the inner English README (V2.10.6 trimmed the gallery) but still referenced 11x in the inherited CJK i18n READMEs (V2.10.7 preserved the CJK content byte-for-byte). V2.10.10 adds \`previews/\` to \`cubecloud-desktop/.gitignore\`; the 23 files stay on disk for the i18n galleries. A future screenshot refresh pass (regenerate the captures under Cubecloud branding) is the next step. | \`.gitignore\`'d at the inner. Refresh pass is a future candidate. |
+const newRow = `| Legacy preview captures (binary) | \`agent-desktop/previews/*.png\`, \`*.webp\` (23 files, 2.14 MB) | **Scratch-pad, .gitignore'd** (V2.10.10) | The 23 legacy PNG / WebP captures from the inherited hermes-desktop framework. Orphaned from the inner English README (V2.10.6 trimmed the gallery) but still referenced 11x in the inherited CJK i18n READMEs (V2.10.7 preserved the CJK content byte-for-byte). V2.10.10 adds \`previews/\` to \`agent-desktop/.gitignore\`; the 23 files stay on disk for the i18n galleries. A future screenshot refresh pass (regenerate the captures under Cubecloud branding) is the next step. | \`.gitignore\`'d at the inner. Refresh pass is a future candidate. |
 `;
 const anchorIdx = retiredSrc.indexOf(anchor);
 const rowEnd = retiredSrc.indexOf('\n', anchorIdx);

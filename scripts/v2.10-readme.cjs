@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
 // scripts/v2.10-readme.cjs \u2014 V2.10 README split:
-// 1. Break the outer/cubecloud-desktop README hardlink.
+// 1. Break the outer/agent-desktop README hardlink.
 // 2. Write a new OUTER README that is the agentic-OS monorepo README.
-// 3. Write a new INNER README (cubecloud-desktop/) that is the
+// 3. Write a new INNER README (agent-desktop/) that is the
 //    trimmed install + features + providers doc for the Electron
 //    binary.
 // 4. Append a V2.10.6 sub-section to BRANDING_AND_LICENSE.md.
@@ -16,7 +16,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const OUTER_README = path.join(ROOT, 'README.md');
-const INNER_README = path.join(ROOT, 'cubecloud-desktop', 'README.md');
+const INNER_README = path.join(ROOT, 'agent-desktop', 'README.md');
 const BRANDING = path.join(ROOT, 'BRANDING_AND_LICENSE.md');
 const RETIRED = path.join(ROOT, 'docs', 'RETIRED_AND_LEGACY.md');
 const EM = '\u2014';
@@ -44,7 +44,7 @@ const outerReadme = `<p align="center">
 
 Cubecloud Agentic-OS is the monorepo for the **Cubecloud Agent Desktop** and
 the surrounding ecosystem. The desktop binary lives at
-[\`cubecloud-desktop/\`](cubecloud-desktop/) (the full Electron application
+[\`agent-desktop/\`](agent-desktop/) (the full Electron application
 that ships to end users); the agentic-OS-original state layer, the
 pre-launch seeds, and the developer-time skills ecosystem live at
 [\`apps/desktop-shell/\`](apps/desktop-shell/), [\`packages/platform-core/\`](packages/platform-core/),
@@ -77,7 +77,7 @@ Three commitments drove the design, in order:
 
 Three *consequences* fell out of those commitments:
 
-- A **wide IPC surface** (\`cubecloud-desktop/src/main/\`, \`cubecloud-desktop/src/preload/\`) that exposes the runtime, the model registry, the provider registry, the skill manifests, the memory plane, the schedule runner, and the gateway layer to the renderer. That surface is the integration boundary; it is also the largest part of the inherited framework code.
+- A **wide IPC surface** (\`agent-desktop/src/main/\`, \`agent-desktop/src/preload/\`) that exposes the runtime, the model registry, the provider registry, the skill manifests, the memory plane, the schedule runner, and the gateway layer to the renderer. That surface is the integration boundary; it is also the largest part of the inherited framework code.
 - A **multi-runtime orchestration plan** ([\`docs/RUNTIME_ORCHESTRATION_PLAN.md\`](docs/RUNTIME_ORCHESTRATION_PLAN.md)) that makes Hermes the day-1 lane and adds OpenClaw / IronClaw as additional lanes over the V2.6 ${EM} V2.7 window.
 - A **34-skill developer-time ecosystem** at [\`.agents/skills/\`](.agents/skills/) that the developer who *builds* the desktop benefits from, not just the user who *runs* it. The skills are also mirrored to the user-global \`~/.agents/skills/\` directory on developer machines so they auto-activate in *every* Copilot workspace on the same machine, not just \`cubecloud-agentic-os\`.
 
@@ -110,11 +110,11 @@ combines six distinct technical surfaces, and the user-visible agent
 experience benefits from each one. The shape:
 
 - **State layer** ([\`apps/desktop-shell/src/main/agentControlPlane.ts\`](apps/desktop-shell/src/main/agentControlPlane.ts)) ${EM} the Cubecloud-original SQLite + dispatch logic that owns the user's profiles, sessions, models, providers, skills, memory, schedules, and kanban. The renderer talks to this through IPC, not directly to a database.
-- **Runtime orchestration** ([\`cubecloud-desktop/src/main/hermes-runtime/\`](cubecloud-desktop/src/main/hermes-runtime/), \`.../openclaw/\`, \`.../ironclaw/\`) ${EM} the multi-runtime picker. Each runtime has a detection / install / configure / proxy flow; the user can pick from a runtime picker, not from a CLI flag.
+- **Runtime orchestration** ([\`agent-desktop/src/main/hermes-runtime/\`](agent-desktop/src/main/hermes-runtime/), \`.../openclaw/\`, \`.../ironclaw/\`) ${EM} the multi-runtime picker. Each runtime has a detection / install / configure / proxy flow; the user can pick from a runtime picker, not from a CLI flag.
 - **Provider layer** ([\`apps/desktop-shell/src/main/providerDiscovery.ts\`](apps/desktop-shell/src/main/providerDiscovery.ts)) ${EM} separate from the runtime layer. A runtime (Hermes) talks to a provider (Ollama, vLLM, llama.cpp, OpenAI-compatible remote, etc.). The user can save, name, and switch between models across providers.
-- **Skills harness** ([\`cubecloud-desktop/src/main/skills-harness.ts\`](cubecloud-desktop/src/main/skills-harness.ts)) ${EM} the agent-runtime skills layer, with HIDDEN_SKILLS[] for flavors (tone, cost, license) that wrap every outgoing request.
-- **CodeGraph surface** ([\`cubecloud-desktop/src/main/codegraph-runtime.ts\`](cubecloud-desktop/src/main/codegraph-runtime.ts)) ${EM} two backends for the CodeGraph screen: a CLI subprocess (inherited) and an embedded SDK wrapper (Cubecloud-original). See [\`docs/CODEGRAPH-RUNTIME.md\`](docs/CODEGRAPH-RUNTIME.md).
-- **EverOS sidecar** ([\`cubecloud-desktop/src/main/everos-sidecar.ts\`](cubecloud-desktop/src/main/everos-sidecar.ts)) ${EM} lifecycle manager for the optional \`everos server start\` Python sidecar. The 3 disabled harnesses in the pre-launch bundle (\`cubecloud-memory-distill\`, \`cubecloud-cost-watchdog\`, \`cubecloud-skill-audit\`) are the user-visible face of this. See [\`docs/EVEROS-SIDECAR.md\`](docs/EVEROS-SIDECAR.md).
+- **Skills harness** ([\`agent-desktop/src/main/skills-harness.ts\`](agent-desktop/src/main/skills-harness.ts)) ${EM} the agent-runtime skills layer, with HIDDEN_SKILLS[] for flavors (tone, cost, license) that wrap every outgoing request.
+- **CodeGraph surface** ([\`agent-desktop/src/main/codegraph-runtime.ts\`](agent-desktop/src/main/codegraph-runtime.ts)) ${EM} two backends for the CodeGraph screen: a CLI subprocess (inherited) and an embedded SDK wrapper (Cubecloud-original). See [\`docs/CODEGRAPH-RUNTIME.md\`](docs/CODEGRAPH-RUNTIME.md).
+- **EverOS sidecar** ([\`agent-desktop/src/main/everos-sidecar.ts\`](agent-desktop/src/main/everos-sidecar.ts)) ${EM} lifecycle manager for the optional \`everos server start\` Python sidecar. The 3 disabled harnesses in the pre-launch bundle (\`cubecloud-memory-distill\`, \`cubecloud-cost-watchdog\`, \`cubecloud-skill-audit\`) are the user-visible face of this. See [\`docs/EVEROS-SIDECAR.md\`](docs/EVEROS-SIDECAR.md).
 
 The **agent efficiencies** are what the developer-time skills ecosystem
 contributes, and the 14 \`sp-*\` skills from [\`superpowers\`](https://github.com/JZKK720/superpowers) are the spine:
@@ -141,7 +141,7 @@ adapted as \`sp-*\` with full MIT provenance.
 You have arrived at one of three places:
 
 - **You are a new contributor.** Read [\`docs/HANDBOOK.md\`](docs/HANDBOOK.md) \u00a71 \u2192 \u00a72 \u2192 \u00a73, then \u00a75 (\"Skills layer\") to find the work patterns. Skip \u00a74 on the first pass.
-- **You are a downstream user evaluating the desktop.** Read [\`docs/HANDBOOK.md\`](docs/HANDBOOK.md) \u00a71 \u2192 \u00a73.1, then \u00a710 (\"License / brand\") to understand what you can and cannot do with the binary. The install + features doc for the binary is at [\`cubecloud-desktop/README.md\`](cubecloud-desktop/README.md).
+- **You are a downstream user evaluating the desktop.** Read [\`docs/HANDBOOK.md\`](docs/HANDBOOK.md) \u00a71 \u2192 \u00a73.1, then \u00a710 (\"License / brand\") to understand what you can and cannot do with the binary. The install + features doc for the binary is at [\`agent-desktop/README.md\`](agent-desktop/README.md).
 - **You are doing a code review, a security review, or a release.** Read [\`docs/HANDBOOK.md\`](docs/HANDBOOK.md) \u00a71, \u00a73, \u00a74, \u00a76, \u00a79, \u00a710, \u00a711 in that order.
 
 ## Repository layout
@@ -175,7 +175,7 @@ cubecloud-agentic-os/                       ${EM} the monorepo
 \u2502   \u2514\u2500\u2500 *.md                    RUNTIME_ORCHESTRATION_PLAN, CODEGRAPH-RUNTIME, EVEROS-SIDECAR, etc.
 \u251c\u2500\u2500 scripts/
 \u2502   \u2514\u2500\u2500 sync-docs.ps1           idempotent doc-link regen (Windows hardlinks + junctions)
-\u251c\u2500\u2500 cubecloud-desktop/            the full Electron binary (408 files, 14.8 MB)
+\u251c\u2500\u2500 agent-desktop/            the full Electron binary (408 files, 14.8 MB)
 \u2502   \u251c\u2500\u2500 README.md              install + features + providers (the binary's user-facing doc)
 \u2502   \u251c\u2500\u2500 src/{main,preload,renderer,shared}/
 \u2502   \u2514\u2500\u2500 ...                    inherited hermes-desktop framework (MIT) + Cubecloud branding layer
@@ -379,19 +379,19 @@ const brandingV2106 = `
 ### V2.10.6 ${EM} README split (agentic-OS monorepo vs. Electron binary)
 
 The V2.10.5 transition left the outer \`README.md\` and the inner
-\`cubecloud-desktop/README.md\` as **the same hardlinked file**, which
+\`agent-desktop/README.md\` as **the same hardlinked file**, which
 was the right move for governance docs that need to be at the inner
 location for the Electron build, but the **wrong** move for a README,
 because the two audiences are not the same:
 
 - A reader who clones \`cubecloud-agentic-os\` (the agentic-OS monorepo) wants to know what the *monorepo* is, what its principles are, what makes it different from other agentic-OS projects, and where to look next.
-- A reader who downloads the desktop binary (or reads the \`cubecloud-desktop/\` source tree) wants to know how to *install* the binary, what *features* the binary has, and what *providers* it talks to.
+- A reader who downloads the desktop binary (or reads the \`agent-desktop/\` source tree) wants to know how to *install* the binary, what *features* the binary has, and what *providers* it talks to.
 
 V2.10.6 breaks the hardlink, writes a new outer \`README.md\` that is
 the **agentic-OS monorepo README** (scope, principles, why-this-exists,
 hybrid technical abilities, agent efficiencies, what makes us
 different, repository layout), and writes a new inner
-\`cubecloud-desktop/README.md\` that is the **trimmed install +
+\`agent-desktop/README.md\` that is the **trimmed install +
 features + providers doc** for the Electron binary. The two are
 deliberately **different files** with **different audiences**; the
 inner README cross-links to the outer README and the master handbook
@@ -410,19 +410,19 @@ const retiredAddendum = `
 | Surface | Path | Status | Why | Action |
 |---|---|---|---|---|
 | Outer agentic-OS monorepo README | \`README.md\` (outer root) | **Live** (V2.10.6) | The agentic-OS monorepo README. Scope, principles, why-this-exists, hybrid technical abilities, agent efficiencies, what makes us different, repository layout. Was previously a hardlink to the inner Electron app README; the V2.10.6 transition broke the hardlink and rewrote it for the agentic-OS monorepo audience. | Keep. The inner mirror still has its own install + features README. |
-| Inner Electron binary README | \`cubecloud-desktop/README.md\` | **Live** (V2.10.6) | The install + features + providers doc for the Electron binary. Was previously the same file as the outer README (via hardlink). | Keep. Cross-links to the outer README and the master handbook. |
+| Inner Electron binary README | \`agent-desktop/README.md\` | **Live** (V2.10.6) | The install + features + providers doc for the Electron binary. Was previously the same file as the outer README (via hardlink). | Keep. Cross-links to the outer README and the master handbook. |
 `;
 
 // --- Execute ---
 
 // Step 1: Save the current inner README to a backup, then break the hardlink.
 // The current outer/inner README is one file (hardlink). We want to:
-//   - Move the current content to the inner location (cubecloud-desktop/README.md) as a *real* file.
+//   - Move the current content to the inner location (agent-desktop/README.md) as a *real* file.
 //   - Replace the outer location with the new monorepo README.
 // Easiest: delete the inner hardlink, write the new inner content there.
 //          Then write the new outer content (replaces the hardlink with a regular file).
-console.log('Step 1: break the hardlink at cubecloud-desktop/README.md');
-const inner = path.join(ROOT, 'cubecloud-desktop', 'README.md');
+console.log('Step 1: break the hardlink at agent-desktop/README.md');
+const inner = path.join(ROOT, 'agent-desktop', 'README.md');
 const stat = fs.statSync(inner, { throwIfNoEntry: false });
 if (!stat) {
   console.error('Inner README not found:', inner);

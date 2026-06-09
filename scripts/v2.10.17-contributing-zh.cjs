@@ -9,7 +9,7 @@
 // The outer + inner CONTRIBUTING.md are the same Windows hardlink
 // (per the V2.10.13 audit), so a new file at the outer root does NOT
 // affect the inner. The inner already has its own binary-specific
-// zh-CN translation at cubecloud-desktop/CONTRIBUTING.zh-CN.md (which
+// zh-CN translation at agent-desktop/CONTRIBUTING.zh-CN.md (which
 // covers the binary's contributor policy). The new outer file
 // covers the monorepo (agentic-OS) contributor policy.
 
@@ -42,7 +42,7 @@ const ZH_LINES = [
   '- \u65e5\u6587\uff1a`CONTRIBUTING.ja-JP.md`\uff08\u5c1a\u672a\u7ffb\u8bd1\uff09',
   '',
   '> **\u8bf4\u660e\uff1a**\u672c\u6587\u4ef6\u662f Cubecloud Agentic-OS \u5355\u4ed3\u7684\u8d21\u732e\u8005\u653f\u7b56\u3002',
-  '> \u5b83\u4e0e\u5185\u7f6e\u4e8c\u8fdb\u5236\u6587\u4ef6\uff08`cubecloud-desktop/CONTRIBUTING.zh-CN.md`\uff09\u4e0d\u540c\uff0c',
+  '> \u5b83\u4e0e\u5185\u7f6e\u4e8c\u8fdb\u5236\u6587\u4ef6\uff08`agent-desktop/CONTRIBUTING.zh-CN.md`\uff09\u4e0d\u540c\uff0c',
   '> \u540e\u8005\u63cf\u8ff0\u4e8c\u8fdb\u5236\u6587\u4ef6\u5b89\u88c5\u5305\u7684\u8d21\u732e\u8005\u653f\u7b56\u3002\u4e24\u8005\u901a\u8fc7',
   '> \u5168\u5c40 Windows \u786c\u94fe\u63a5\u5171\u4eab\u82f1\u6587\u6587\u4ef6\u3002',
   '',
@@ -119,7 +119,7 @@ const ZH_LINES = [
   'Cubecloud Agentic-OS \u662f\u4e00\u4e2a\u5355\u4ed3\uff0c\u5305\u542b\u4ee5\u4e0b\u4e3b\u8981\u90e8\u5206\uff1a',
   '',
   '- `apps/desktop-shell/` \u2014 \u6d3b\u8dc3\u7684 `@cubecloud/desktop-shell` \u5de5\u4f5c\u533a\u3002',
-  '- `cubecloud-desktop/` \u2014 \u5b8c\u6574\u7684 Electron \u4e8c\u8fdb\u5236\u6587\u4ef6\uff08\u542b\u6c89\u7ee7\u7684 hermes-desktop \u6846\u67b6\uff09\u3002',
+  '- `agent-desktop/` \u2014 \u5b8c\u6574\u7684 Electron \u4e8c\u8fdb\u5236\u6587\u4ef6\uff08\u542b\u6c89\u7ee7\u7684 hermes-desktop \u6846\u67b6\uff09\u3002',
   '- `packages/platform-core/` \u2014 \u5355\u4ed3\u5168\u5c40\u5171\u4eab\u7684 TS \u7c7b\u578b\u3002',
   '- `docs/handbook/` \u2014 \u6309\u4e3b\u9898\u957f\u6587\uff1aARCHITECTURE / DEVELOPMENT / OPERATIONS / README\u3002',
   '- `docs/legal/` \u2014 TRADEMARK_POLICY\u3001EULA\u3001COMMERCIAL_LICENSE \u7b49\u6cd5\u5f8b\u6587\u4ef6\u3002',
@@ -133,7 +133,7 @@ const ZH_LINES = [
   '',
   '- TypeScript\uff1a\u4e25\u683c\u6a21\u5f0f\u3002\u907f\u514d `any`\uff0c\u9664\u975e\u6709\u660e\u786e\u7406\u7531\u3002',
   '- React 19 \u4e0e\u51fd\u6570\u7ec4\u4ef6\u3002\u4f18\u5148\u4f7f\u7528 hooks\uff0c\u800c\u975e class \u7ec4\u4ef6\u3002',
-  '- Electron IPC \u8c03\u7528\uff1a\u6240\u6709 IPC \u6e20\u9053\u5fc5\u987b\u663e\u5f0f\u5728 `cubecloud-desktop/src/main/ipc/` \u4e0b\u6ce8\u518c\u3002',
+  '- Electron IPC \u8c03\u7528\uff1a\u6240\u6709 IPC \u6e20\u9053\u5fc5\u987b\u663e\u5f0f\u5728 `agent-desktop/src/main/ipc/` \u4e0b\u6ce8\u518c\u3002',
   '- \u4f9d\u8d56\uff1a\u4f7f\u7528 `npm ci` \u4ee5\u4fdd\u8bc1\u4e0e\u9501\u5b9a\u6587\u4ef6\u4e00\u81f4\u3002\u4e0d\u8981\u8d70 `npm install <package>` \u800c\u4e0d\u540c\u6b65\u9501\u5b9a\u3002',
   '- Lint\uff1a\u63d0\u4ea4\u524d\u8fd0\u884c `npm run lint`\u3002',
   '- \u6d4b\u8bd5\uff1a\u4e3a bug \u4fee\u590d\u4e0e\u65b0\u529f\u80fd\u6dfb\u52a0\u5355\u5143\u6d4b\u8bd5\u3002',
@@ -192,15 +192,15 @@ let i18n = fs.readFileSync(I18N, 'utf8');
 
 const oldTableTail =
   '| README (monorepo) | Simplified Chinese (zh-CN) | `README.zh-CN.md` (outer root) | **Live, V2.10.16** (full translation of the outer README; machine-translated starting point, native speakers welcome to polish) | Cubecloud Contributors + Community |\n' +
-  '| README (monorepo) | Japanese (ja-JP) | -- | **Not yet translated, V2.10.16** (the inner has ja-JP at `cubecloud-desktop/README.ja-JP.md`; the outer is English-only) | Community -- fork + translate to claim |\n' +
+  '| README (monorepo) | Japanese (ja-JP) | -- | **Not yet translated, V2.10.16** (the inner has ja-JP at `agent-desktop/README.ja-JP.md`; the outer is English-only) | Community -- fork + translate to claim |\n' +
   '| README (monorepo) | Korean (ko-KR) | -- | **Not yet translated, V2.10.16** (the inner has no ko-KR) | Community -- fork + translate to claim |\n';
 
 const newTableTail =
   '| README (monorepo) | Simplified Chinese (zh-CN) | `README.zh-CN.md` (outer root) | **Live, V2.10.16** (full translation of the outer README; machine-translated starting point, native speakers welcome to polish) | Cubecloud Contributors + Community |\n' +
-  '| README (monorepo) | Japanese (ja-JP) | -- | **Not yet translated, V2.10.16** (the inner has ja-JP at `cubecloud-desktop/README.ja-JP.md`; the outer is English-only) | Community -- fork + translate to claim |\n' +
+  '| README (monorepo) | Japanese (ja-JP) | -- | **Not yet translated, V2.10.16** (the inner has ja-JP at `agent-desktop/README.ja-JP.md`; the outer is English-only) | Community -- fork + translate to claim |\n' +
   '| README (monorepo) | Korean (ko-KR) | -- | **Not yet translated, V2.10.16** (the inner has no ko-KR) | Community -- fork + translate to claim |\n' +
   '| CONTRIBUTING (monorepo) | English | `CONTRIBUTING.md` (outer root) | Live (hardlink to inner) | Cubecloud Contributors |\n' +
-  '| CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (full translation of the outer CONTRIBUTING.md; covers the monorepo contributor policy -- separate from the inner `cubecloud-desktop/CONTRIBUTING.zh-CN.md` which covers the binary) | Cubecloud Contributors + Community |\n';
+  '| CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (full translation of the outer CONTRIBUTING.md; covers the monorepo contributor policy -- separate from the inner `agent-desktop/CONTRIBUTING.zh-CN.md` which covers the binary) | Cubecloud Contributors + Community |\n';
 
 if (!i18n.includes(oldTableTail)) {
   console.error('  manifest table tail not found in expected form; aborting');

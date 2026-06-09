@@ -3,7 +3,7 @@
 > **Single source of truth for translation inventory.** Some
 > translations live at the outer root or under `docs/` (monorepo
 > docs), and some live in the inner mirror at
-> `cubecloud-desktop/` (binary docs). This manifest lists each file,
+> `agent-desktop/` (binary docs). This manifest lists each file,
 > its language, where it lives, its status, and its maintainer.
 
 ## Current translations
@@ -32,12 +32,12 @@
 | HANDBOOK operations (monorepo) | Simplified Chinese (zh-CN) | `docs/handbook/OPERATIONS.zh-CN.md` | **Live, V2.10.25** (machine-translated starting point for the operations guide; native speakers welcome to polish) | Cubecloud Contributors + Community |
 | RETIRED_AND_LEGACY (monorepo) | English | `docs/RETIRED_AND_LEGACY.md` | Live | Cubecloud Contributors |
 | RETIRED_AND_LEGACY (monorepo) | Simplified Chinese (zh-CN) | `docs/RETIRED_AND_LEGACY.zh-CN.md` | **Live, V2.10.28** (machine-translated starting point; native speakers welcome to review and polish) | Cubecloud Contributors + Community |
-| README (binary) | English | `cubecloud-desktop/README.md` | Live, V2.10.6 | Cubecloud Contributors |
-| README (binary) | 日本語 (ja-JP) | `cubecloud-desktop/README.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
-| README (binary) | 简体中文 (zh-CN) | `cubecloud-desktop/README.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
-| CONTRIBUTING (binary) | English | `cubecloud-desktop/CONTRIBUTING.md` | Live, source of truth | Cubecloud Contributors |
-| CONTRIBUTING (binary) | 日本語 (ja-JP) | `cubecloud-desktop/CONTRIBUTING.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
-| CONTRIBUTING (binary) | 简体中文 (zh-CN) | `cubecloud-desktop/CONTRIBUTING.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (binary) | English | `agent-desktop/README.md` | Live, V2.10.6 | Cubecloud Contributors |
+| README (binary) | 日本�?(ja-JP) | `agent-desktop/README.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (binary) | 简体中�?(zh-CN) | `agent-desktop/README.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| CONTRIBUTING (binary) | English | `agent-desktop/CONTRIBUTING.md` | Live, source of truth | Cubecloud Contributors |
+| CONTRIBUTING (binary) | 日本�?(ja-JP) | `agent-desktop/CONTRIBUTING.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| CONTRIBUTING (binary) | 简体中�?(zh-CN) | `agent-desktop/CONTRIBUTING.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
 
 ## Translation workflow
 
@@ -49,7 +49,7 @@
    `docs/HANDBOOK.zh-CN.md`, and the `docs/handbook/*.zh-CN.md`
    companions).
 3. **Binary doc translations** live at the inner location
-   (`cubecloud-desktop/<file>.<lang>.md`).
+   (`agent-desktop/<file>.<lang>.md`).
 4. A native speaker in the target language should review the diff
    before merge. Machine-translated starting points must be clearly
    labeled until they are polished.
@@ -75,7 +75,7 @@ Currently that means:
 - `docs/handbook/OPERATIONS.zh-CN.md` (Simplified Chinese)
 - `docs/RETIRED_AND_LEGACY.zh-CN.md` (Simplified Chinese)
 
-The inner `cubecloud-desktop/` tree continues to host **binary
+The inner `agent-desktop/` tree continues to host **binary
 translations** for the Electron app. The manifest distinguishes the
 two surfaces so readers do not confuse monorepo docs with binary
 docs.

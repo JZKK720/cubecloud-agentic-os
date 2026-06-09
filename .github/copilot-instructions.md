@@ -7,7 +7,7 @@ Distilled from:
 Apply to: every Copilot Chat request in this workspace.
 -->
 
-# Copilot Instructions â€” cubecloud-agentic-os
+# Copilot Instructions â€?cubecloud-agentic-os
 
 ## 1. Think Before Coding
 
@@ -30,7 +30,7 @@ Apply to: every Copilot Chat request in this workspace.
 - Do not "improve" adjacent code, comments, or formatting.
 - Do not refactor things that are not broken.
 - Match existing style, even if you would do it differently.
-- If you notice unrelated dead code, mention it â€” do not delete it.
+- If you notice unrelated dead code, mention it â€?do not delete it.
 - When your changes create orphans, remove imports / variables / functions that **your** changes made unused. Do not remove pre-existing dead code unless asked.
 
 ## 4. Goal-Driven Execution
@@ -62,30 +62,30 @@ Apply to: every Copilot Chat request in this workspace.
 
 ## 7. Tradeoff Note
 
-These rules bias toward caution. For trivial tasks (one-line typo, obvious rename, single-line import) use judgment â€” not every change needs the full rigor. The goal is reducing costly mistakes on non-trivial work, not slowing down simple tasks.
+These rules bias toward caution. For trivial tasks (one-line typo, obvious rename, single-line import) use judgment â€?not every change needs the full rigor. The goal is reducing costly mistakes on non-trivial work, not slowing down simple tasks.
 
 ## 8. Skills Bundle (this workspace)
 
 - Always-on rules: this file
 - Slash prompts: `.github/prompts/`
 - Optional stacks installed by `docs/agent-skills-bundle/install-optional-stack.cmd`:
-  - gstack (Claude Code) â€” workflow skills, separate runtime
-  - gbrain (MCP) â€” persistent memory, separate daemon
-  - taste-skill (Vercel `agent-skills`) â€” anti-slop design rules
-  - AI-Engineering-Coach (VS Code extension) â€” usage dashboard
+  - gstack (Claude Code) â€?workflow skills, separate runtime
+  - gbrain (MCP) â€?persistent memory, separate daemon
+  - taste-skill (Vercel `agent-skills`) â€?anti-slop design rules
+  - AI-Engineering-Coach (VS Code extension) â€?usage dashboard
   - See `docs/agent-skills-bundle/README.md` for the full map.
 
 ## 9. Docs & I18n Workflow
 
-- Outer root + `docs/` are the source of truth for monorepo docs; the inner `cubecloud-desktop/` tree mirrors many of them via Windows hardlinks and junctions. Treat `README.md` as the intentional exception: outer and inner README are different by design.
-- `README.i18n.md` is the single source of truth for translation inventory. Monorepo translations live next to the outer source path (for example `README.zh-CN.md`, `docs/HANDBOOK.zh-CN.md`, `docs/handbook/*.zh-CN.md`); binary translations live in `cubecloud-desktop/`.
+- Outer root + `docs/` are the source of truth for monorepo docs; the inner `agent-desktop/` tree mirrors many of them via Windows hardlinks and junctions. Treat `README.md` as the intentional exception: outer and inner README are different by design.
+- `README.i18n.md` is the single source of truth for translation inventory. Monorepo translations live next to the outer source path (for example `README.zh-CN.md`, `docs/HANDBOOK.zh-CN.md`, `docs/handbook/*.zh-CN.md`); binary translations live in `agent-desktop/`.
 - When a request involves doc sync, translation updates, screenshot / preview refresh, or the combined README PDF, prefer the dedicated repo workflow skill at `.github/skills/docs-i18n-refresh/SKILL.md`.
 - After editing `README.md` or `README.zh-CN.md`, re-render `docs/Cubecloud-README-en-zh.pdf` with `node scripts/v2.10.20-readme-combined-pdf.cjs`.
 - Be skeptical of PowerShell mojibake in console output. Verify bytes before declaring a file corrupted, and prefer UTF-8-safe Node edits for CJK-heavy docs.
 
 ## 10. Headroom Workflow
 
-- Headroom is already integrated on the desktop/runtime side in `cubecloud-desktop/src/main/headroom*.ts`, `cubecloud-desktop/src/main/mcp/headroom-mcp-server.ts`, and `cubecloud-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`; do not describe it as missing without checking those surfaces first.
+- Headroom is already integrated on the desktop/runtime side in `agent-desktop/src/main/headroom*.ts`, `agent-desktop/src/main/mcp/headroom-mcp-server.ts`, and `agent-desktop/src/renderer/src/screens/Headroom/Headroom.tsx`; do not describe it as missing without checking those surfaces first.
 - When a request mentions Headroom, context compression, token savings, large tool outputs, long logs, CodeGraph bundle compression, `headroom learn`, `headroom wrap copilot`, or Copilot-wide Headroom setup, prefer the dedicated workflow skill at `.github/skills/headroom-workflow/SKILL.md`.
 - For non-repo Copilot / VS Code sessions, treat the Headroom runtime install and the Copilot skill install as separate steps; the install/use guide lives at `docs/agent-skills-bundle/HEADROOM.md`.
 

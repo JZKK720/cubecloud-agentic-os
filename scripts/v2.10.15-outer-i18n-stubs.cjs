@@ -6,8 +6,8 @@
 // README.i18n.md manifest to track them.
 //
 // This is the outer-monorepo counterpart to the V2.10.7 inner-binary
-// i18n layer. The inner files (cubecloud-desktop/README.<lang>.md,
-// cubecloud-desktop/CONTRIBUTING.<lang>.md) cover the binary; the
+// i18n layer. The inner files (agent-desktop/README.<lang>.md,
+// agent-desktop/CONTRIBUTING.<lang>.md) cover the binary; the
 // outer files (README.<lang>.md at the outer root) cover the
 // monorepo. As of V2.10.7, the manifest distinguished
 // "monorepo translations (none yet)" from "binary translations
@@ -44,9 +44,9 @@ function buildStub(langName, langCode) {
     '> The source of truth for the monorepo documentation is the',
     '> English [`README.md`](README.md). The source of truth for the',
     '> binary (Electron app) is the English',
-    '> [`cubecloud-desktop/README.md`](cubecloud-desktop/README.md),',
+    '> [`agent-desktop/README.md`](agent-desktop/README.md),',
     '> which has community translations at',
-    '> `cubecloud-desktop/README.<lang>.md` (see',
+    '> `agent-desktop/README.<lang>.md` (see',
     '> [`README.i18n.md`](README.i18n.md) for the list).',
     '',
     '**If you would like to translate the monorepo README into**',
@@ -60,7 +60,7 @@ function buildStub(langName, langCode) {
     '',
     '**For the binary (' + langName + '),** check whether a',
     'community translation already exists at',
-    '`cubecloud-desktop/README.' + langCode + '.md`. The',
+    '`agent-desktop/README.' + langCode + '.md`. The',
     '[`README.i18n.md`](README.i18n.md) manifest lists the current',
     'status of every translation (Live, Needs refresh, Mojibake,',
     'etc.).',
@@ -104,7 +104,7 @@ if (i18n.includes('README.ko-KR.md') && i18n.includes('README.ja-JP.md') && i18n
   const oldMonorepoHeader =
     '| File | Language | Path | Status | Maintainer |\n' +
     '|---|---|---|---|---|\n' +
-    '| README (binary) | English | `cubecloud-desktop/README.md` | Live, V2.10.6 | Cubecloud Contributors |';
+    '| README (binary) | English | `agent-desktop/README.md` | Live, V2.10.6 | Cubecloud Contributors |';
   const newMonorepoHeader =
     '| File | Language | Path | Status | Maintainer |\n' +
     '|---|---|---|---|---|\n' +
@@ -112,7 +112,7 @@ if (i18n.includes('README.ko-KR.md') && i18n.includes('README.ja-JP.md') && i18n
     '| README (monorepo) | Japanese (' + 'ja-JP' + ') | `README.ja-JP.md` (outer root) | **Placeholder, V2.10.15** (not a translation) | Community -- fork + translate to claim |\n' +
     '| README (monorepo) | Simplified Chinese (' + 'zh-CN' + ') | `README.zh-CN.md` (outer root) | **Placeholder, V2.10.15** (not a translation) | Community -- fork + translate to claim |\n' +
     '| README (monorepo) | Korean (' + 'ko-KR' + ') | `README.ko-KR.md` (outer root) | **Placeholder, V2.10.15** (not a translation, no prior inner `ko-KR`) | Community -- fork + translate to claim |\n' +
-    '| README (binary) | English | `cubecloud-desktop/README.md` | Live, V2.10.6 | Cubecloud Contributors |';
+    '| README (binary) | English | `agent-desktop/README.md` | Live, V2.10.6 | Cubecloud Contributors |';
 
   if (!i18n.includes(oldMonorepoHeader)) {
     console.error('README.i18n.md table header not found in expected form; aborting');
@@ -144,7 +144,7 @@ if (branding.includes('## V2.10.15')) {
     '**Why this is the right next V2.10.x step:**',
     '',
     'The V2.10.7 transition created the inner-binary i18n layer',
-    '(4 CJK files at `cubecloud-desktop/README.<lang>.md` and',
+    '(4 CJK files at `agent-desktop/README.<lang>.md` and',
     '`CONTRIBUTING.<lang>.md`) and the manifest at',
     '`README.i18n.md`. The manifest\'s "Why not at the outer root?"',
     'section said:',
@@ -170,7 +170,7 @@ if (branding.includes('## V2.10.15')) {
     '   paragraph placeholder explaining:',
     '   - what the file is (placeholder, not a translation);',
     '   - where the source of truth is (English README.md for',
-    '     the monorepo, cubecloud-desktop/README.md for the',
+    '     the monorepo, agent-desktop/README.md for the',
     '     binary);',
     '   - the workflow for a native speaker to translate the',
     '     actual content (`README.i18n.md` ' + SECTION_SIGN,

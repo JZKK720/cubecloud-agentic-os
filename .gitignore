@@ -1,6 +1,6 @@
 node_modules/
 dist/
-**/dist-check/  # V2.10.37: electron-builder / electron-vite build output. Source lives in cubecloud-desktop/build/ (build config), not here. ~1 GB of binary artifacts, must not be committed. V2.10.43: **/ matches nested paths (cubecloud-desktop/dist-check/).
+**/dist-check/  # V2.10.37: electron-builder / electron-vite build output. Source lives in agent-desktop/build/ (build config), not here. ~1 GB of binary artifacts, must not be committed. V2.10.43: **/ matches nested paths (agent-desktop/dist-check/).
 out/
 **/release/  # V2.10.37: electron-builder release output dir. Binary installers, must not be committed unless intentionally versioning them (we don't, yet).
 *.tsbuildinfo
@@ -23,7 +23,7 @@ coverage/
 
 # Top-level repo files (the outer cubecloud-agentic-os/ monorepo).
 # .agents/, .github/, apps/, packages/, docs/, scripts/ are tracked.
-# The cubecloud-desktop/ subdir is the vendored mirror; its
+# The agent-desktop/ subdir is the vendored mirror; its
 # governance docs (README, LICENSE, NOTICE, BRANDING, HANDBOOK,
 # docs/handbook/, docs/legal/) are Windows-native hardlinks and
 # junctions into the outer root, and are NOT tracked as links by

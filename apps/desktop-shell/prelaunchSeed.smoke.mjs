@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// V2.9 pre-launch bundle — smoke test for the 5 seed functions
+// V2.9 pre-launch bundle �?smoke test for the 5 seed functions
 // and the readJsonFileWithSeed helper. This is a pure-Node smoke
 // check (not a vitest run) so it works even when node_modules is
-// not installed. It pins the seed CONTRACT — the production
+// not installed. It pins the seed CONTRACT �?the production
 // vitest test file (prelaunchSeed.test.ts) is the authoritative
 // coverage; this is a fast verifier that the seed functions
 // behave as documented.
@@ -21,7 +21,7 @@ async function main() {
 
   // Stub @cubecloud/platform-core so the .ts files can be loaded.
   // The seed functions in this V2.9 release are written to NOT
-  // import the core types at runtime — they only use them for
+  // import the core types at runtime �?they only use them for
   // type narrowing in TS. We need to confirm that by trying to
   // import them.
   console.log(`-- workdir: ${tmp}`);
@@ -56,7 +56,7 @@ async function main() {
   }
 
   // 3) Try to dynamically import each default*.ts (will fail under Node
-  //    native loader; that's expected — TS requires a transpiler). The
+  //    native loader; that's expected �?TS requires a transpiler). The
   //    value is: the file exists, has SPDX, and exports the expected
   //    symbols per grep.
   const expected = {
@@ -72,10 +72,13 @@ async function main() {
   }
 
   // 4) Check that the seed contract is documented in BRANDING + HANDBOOK + NOTICE.
-  const cubecloudDesktop = join(process.cwd(), "..", "..", "cubecloud-desktop");
-  const branding = readFileSync(join(cubecloudDesktop, "BRANDING_AND_LICENSE.md"), "utf8");
-  const handbook = readFileSync(join(cubecloudDesktop, "docs", "HANDBOOK.md"), "utf8");
-  const notice = readFileSync(join(cubecloudDesktop, "NOTICE"), "utf8");
+  // V2.10.43c: the inner app was renamed from `cubecloud-desktop/` to
+  // `agent-desktop/`. The productName stayed `cubecloud-agent-desktop`,
+  // so the local variable is named after the brand, not the directory.
+  const agentDesktop = join(process.cwd(), "..", "..", "agent-desktop");
+  const branding = readFileSync(join(agentDesktop, "BRANDING_AND_LICENSE.md"), "utf8");
+  const handbook = readFileSync(join(agentDesktop, "docs", "HANDBOOK.md"), "utf8");
+  const notice = readFileSync(join(agentDesktop, "NOTICE"), "utf8");
   check("BRANDING has V2.9 section", branding.includes("V2.9") || branding.includes("v2.9"));
   check("HANDBOOK has §5.6 pre-launch bundle", handbook.includes("### 5.6 The pre-launch bundle"));
   check("NOTICE has 5 new pre-launch rows",
@@ -87,7 +90,7 @@ async function main() {
 
   // 5) Check that the 3 hidden flavors are in skills-harness.ts.
   const harness = readFileSync(
-    join(cubecloudDesktop, "src", "main", "skills-harness.ts"),
+    join(agentDesktop, "src", "main", "skills-harness.ts"),
     "utf8"
   );
   check("hidden flavor: cubecloud-tone", harness.includes("cubecloud-tone"));

@@ -3,8 +3,8 @@
 > **Scope:** install-once-at-user-scope packs that travel with the user
 > across every project they open, in every AI tool they use. This is
 > separate from the project-scope skills in
-> [`cubecloud-desktop/.agents/skills/`](../cubecloud-desktop/.agents/skills/),
-> which are loaded by cubecloud-desktop's internal agent runtime.
+> [`agent-desktop/.agents/skills/`](../agent-desktop/.agents/skills/),
+> which are loaded by agent-desktop's internal agent runtime.
 
 ## When to use this guide
 
@@ -12,9 +12,9 @@ If you (the human user) want to upgrade the **everyday** experience of
 your AI tools  -  Claude Code, GitHub Copilot, Cursor, Codex, Hermes, and
 friends  -  with cross-project workflow skills, this is the plan.
 
-If you want to upgrade **cubecloud-desktop's internal agent**, the
+If you want to upgrade **agent-desktop's internal agent**, the
 project-scope skills in
-`cubecloud-desktop/.agents/skills/` are the right place; see the
+`agent-desktop/.agents/skills/` are the right place; see the
 SKILL.md files there for what is already loaded.
 
 ## Tier 1  -  install these (high value, designed for global install)
@@ -45,7 +45,7 @@ curl -o ~/.cursor/rules/karpathy-guidelines.mdc \
 
 **What it activates**: 4 principles auto-injected into every AI tool
 session. The `karpathy-guidelines` skill in
-`cubecloud-desktop/.agents/skills/` is the project-scope mirror.
+`agent-desktop/.agents/skills/` is the project-scope mirror.
 
 **Verify**: start a fresh Claude Code session and ask *"list the
 guidelines you're operating under"*; the 4 principles should be
@@ -184,7 +184,7 @@ pages), self-wiring knowledge graph, and 3 named schema packs.
 
 **Best for**: power users who want their AI tools to do
 brain-first-retrieval before any external search. Overlaps conceptually
-with cubecloud-desktop's `wiki/` + `learnings/` modules  -  pick one or
+with agent-desktop's `wiki/` + `learnings/` modules  -  pick one or
 the other, not both.
 
 **Install**:
@@ -257,9 +257,9 @@ headroom wrap copilot --subscription -- --model gpt-4o
 ### 6. EverOS (long-term memory framework)
 
 Python framework (markdown + SQLite + LanceDB) for "conversations,
-agent trajectories, and files â†’ structured, retrievable, evolving
+agent trajectories, and files â†?structured, retrievable, evolving
 long-term memory". Architecture: DDD 5 layers, dual-track memory
-(user-track + agent-track), cascade file-watcher â†’ sub-second sync.
+(user-track + agent-track), cascade file-watcher â†?sub-second sync.
 
 **Skip the engine.** It's a Python service, not a Copilot-skill-shaped
 artifact. Installing it for "global Copilot" requires a long-lived
@@ -270,7 +270,7 @@ storage location.
 - The *memory taxonomy* (`user.md` + `episodes/` + `.atomic_facts/` +
   `.foresights/` + `agent.md` + `.cases/` + `skills/`) is a really
   good shape for personal-knowledge management.
-- The *cascade file-watcher â†’ diff â†’ sync* idea is what makes gbrain
+- The *cascade file-watcher â†?diff â†?sync* idea is what makes gbrain
   feel instant. If you build your own memory layer, copy that.
 
 ### 7. ECC (everything-claude-code by affaan-m)
@@ -282,11 +282,11 @@ storage location.
 `npx ecc-install --profile full --target claude` (or the GitHub
 marketplace path: `/plugin marketplace add affaan-m/ECC` then
 `/plugin install ecc@ecc`). The user runs the install command in 30
-seconds. We don't ship ECC into cubecloud-desktop; the user installs
+seconds. We don't ship ECC into agent-desktop; the user installs
 ECC into Claude Code if they want it.
 
 **Cherry-pick 5-10 specific skills** from ECC's catalog into the
-project-scope `cubecloud-desktop/.agents/skills/` if you find gaps.
+project-scope `agent-desktop/.agents/skills/` if you find gaps.
 Candidates worth considering: `tdd-workflow`, `verification-loop`,
 `strategic-compact`, `continuous-learning-v2`, `api-design`,
 `database-migrations`, `docker-patterns`, `e2e-testing`. None of
@@ -296,8 +296,8 @@ these are blocking for V2.2.
 
 ## What this plan does NOT do
 
-1. **It does not modify cubecloud-desktop's project-scope skills.**
-   `cubecloud-desktop/.agents/skills/` is for the internal agent
+1. **It does not modify agent-desktop's project-scope skills.**
+   `agent-desktop/.agents/skills/` is for the internal agent
    runtime, which is project-bound. The Tier 1 installs above
    augment the *user's* AI tools; the project-scope skills are
    independent of those.
@@ -340,8 +340,8 @@ commands in each section are portable.
 
 ## See also
 
-- [`cubecloud-desktop/.agents/skills/karpathy-guidelines/SKILL.md`](../cubecloud-desktop/.agents/skills/karpathy-guidelines/SKILL.md)  -  project-scope mirror of the Karpathy guidelines, synced to upstream's `CLAUDE.md`
-- [`cubecloud-desktop/.agents/skills/design-taste-frontend/SKILL.md`](../cubecloud-desktop/.agents/skills/design-taste-frontend/SKILL.md)  -  project-scope mirror of taste-skill v2, adapted for the cubecloud-desktop renderer
+- [`agent-desktop/.agents/skills/karpathy-guidelines/SKILL.md`](../agent-desktop/.agents/skills/karpathy-guidelines/SKILL.md)  -  project-scope mirror of the Karpathy guidelines, synced to upstream's `CLAUDE.md`
+- [`agent-desktop/.agents/skills/design-taste-frontend/SKILL.md`](../agent-desktop/.agents/skills/design-taste-frontend/SKILL.md)  -  project-scope mirror of taste-skill v2, adapted for the agent-desktop renderer
 - [`docs/agent-skills-bundle/HEADROOM.md`](agent-skills-bundle/HEADROOM.md)  -  non-repo Copilot / VS Code install path for Headroom proxy, MCP, and global workflow skill mirroring
-- [`cubecloud-desktop/.agents/skills/`](cubecloud-desktop/.agents/skills/)  -  the full 24-skill project-scope collection
+- [`agent-desktop/.agents/skills/`](agent-desktop/.agents/skills/)  -  the full 24-skill project-scope collection
 - [`changelogs/0.6.0.md`](changelogs/0.6.0.md)  -  V2 harvest + V2.2 addendum (the work that produced the in-repo skill set)

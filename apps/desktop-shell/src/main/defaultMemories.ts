@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// Cubecloud-original pre-launch defaults — Memory tab.
+// Cubecloud-original pre-launch defaults �?Memory tab.
 //
 // Six memory entries shipped pre-installed to every Cubecloud
 // Agent Desktop install. The user can edit or delete any of
@@ -8,14 +8,14 @@
 // a memory with the same `id`, the seed does not re-add it.
 //
 // The pre-launch bundle is documented in:
-//   cubecloud-desktop/BRANDING_AND_LICENSE.md §"V2.9 transitions landed"
-//   cubecloud-desktop/docs/HANDBOOK.md §"5.3 Adding a pre-installed memory"
+//   agent-desktop/BRANDING_AND_LICENSE.md §"V2.9 transitions landed"
+//   agent-desktop/docs/HANDBOOK.md §"5.3 Adding a pre-installed memory"
 //   .agents/skills/README.md (the developer-time skill index)
 
 import type { AgentMemoryEntry } from "@cubecloud/platform-core";
 
 /**
- * Pre-installed memory entries. These are *seeds* — not
+ * Pre-installed memory entries. These are *seeds* �?not
  * user-private memories. They encode the conventions,
  * runtime topology, and license posture the agent would
  * otherwise have to re-derive on every session.

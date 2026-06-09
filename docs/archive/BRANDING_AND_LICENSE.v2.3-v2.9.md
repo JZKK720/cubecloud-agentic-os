@@ -5,11 +5,11 @@
 
 ## V2.3 transitions landed
 
-The V2.3 (Steps 1é—‚?) rollout shipped alongside the following
+The V2.3 (Steps 1é—?) rollout shipped alongside the following
 branding and license hygiene work:
 
 - **`LICENSE` attribution fixed.** The prior `Copyright (c) 2026
-  github.com/fathah` line was incorrect é—‚?`fathah` is a personal
+  github.com/fathah` line was incorrect é—?`fathah` is a personal
   handle that was never the upstream rightsholder. The file now
   attributes to "The hermes-desktop authors and contributors" with
   a clear Portions-clause that names the Cubecloud-original
@@ -22,7 +22,7 @@ branding and license hygiene work:
   infer a non-Cubecloud origin.
 - **Legacy brand assets removed.** `src/renderer/src/assets/`
   previously held inherited `hermes.png`, `hermesbg.webp`,
-  `splash.png`, `splashtext.png`, and `splashtext-w.webp` é—‚?
+  `splash.png`, `splashtext.png`, and `splashtext-w.webp` é—?
   none were referenced by any source file, and the Cubecloud
   replacements (`cubecloud-mark.svg`, `cubecloud-wordmark.svg`,
   `cubecloud-splash-bg.svg`) are already in place. The
@@ -61,10 +61,10 @@ branding and license hygiene work:
 
 - Cubecloud Agent Desktop is built on the `hermes-desktop`
   framework, which is hard-MIT. The Cubecloud-original work
-  on top of that framework é—‚?the renderer rebuilds, the state
+  on top of that framework é—?the renderer rebuilds, the state
   layer, the V2.3 modules, the SQLite schema, the
   provider-discovery logic, the hidden skills harness, the
-  smoke / capture scripts, and the architecture docs é—‚?is
+  smoke / capture scripts, and the architecture docs é—?is
   **dual-licensed** under your choice of AGPL-3.0-or-later,
   Apache-2.0, or MIT (see `LICENSE`). The AGPL-3.0-or-later
   option is primary; Apache-2.0 and MIT are offered as
@@ -98,7 +98,7 @@ branding and license hygiene work:
 
 ## Working documents
 
-## V2.6 transitions landed é—‚?skills ecosystem import
+## V2.6 transitions landed é—?skills ecosystem import
 
 The V2.5 pass settled the dual-license posture for
 Cubecloud-original code but left the **skills layer**
@@ -168,7 +168,7 @@ any installer path.
   retrieval date, matching the style of the existing
   `Odysseus-MIT.txt`, `opencode-MIT.txt`,
   `llmfit-MIT.txt`, and `DeepResearch-Apache-2.0.txt`.
-- **`NOTICE` é—‚?Adapted dependencies" rewritten.** The
+- **`NOTICE` é—?Adapted dependencies" rewritten.** The
   prior "no third-party code outside the inherited
   hermes-desktop tree has been adapted" disclaimer is
   removed and replaced with the V2.6 truth: a 6-row
@@ -178,7 +178,7 @@ any installer path.
   4-row "Reference-only" table (preserved from V2.4).
   The REUSE catalog is now consistent with the source
   tree.
-- **`ACKNOWLEDGMENTS.md` é—‚?Skills adapted from
+- **`ACKNOWLEDGMENTS.md` é—?Skills adapted from
   third-party repos" added.** The human-readable
   thank-you section, modeled on the existing
   "Projects studied as design reference" section,
@@ -279,7 +279,7 @@ coherent as a system, not 20 independent imports.
 The one exception is the `ar-autoresearch` Python harness.
 That harness is the one place in the desktop repo where
 upstream *code* is shipped, and it is shipped *as a
-reference* é—‚?it is the original Karpathy harness preserved
+reference* é—?it is the original Karpathy harness preserved
 with no Cubecloud-original modifications, so a developer
 who wants to run the autoresearch loop on their own
 machine can `cd ar-autoresearch/harness && uv run train.py`
@@ -308,7 +308,7 @@ explicit.
   future skill additions)
 
 These documents define the Cubecloud boundary. As of V2.7, the
-top-level LICENSE is a dual-license notice é—‚?AGPL-3.0-or-later
+top-level LICENSE is a dual-license notice é—?AGPL-3.0-or-later
 (primary) with Apache-2.0 and MIT as compatibility options for
 Cubecloud-original work, and hard-MIT for the inherited
 `hermes-desktop` framework code. The legal docs above govern
@@ -317,7 +317,7 @@ commercial relicensing). The full V2.7 diff is in the
 "V2.7 transitions landed" section above. The V2.6 diff
 preceded it; the V2.5 / V2.4 history remains in place below.
 
-## V2.7 transitions landed é—‚?superpowers process methodology
+## V2.7 transitions landed é—?superpowers process methodology
 
 The V2.6 import added the 20-skill developer-time ecosystem
 (prose + 1 functioning Python harness) under `.agents/skills/`.
@@ -339,35 +339,35 @@ license of any existing file.**
 - **14 new `sp-` skills added to `.agents/skills/`.** One
   source repo (superpowers, MIT), 14 Cubecloud-original
   skills. The full list:
-  - `sp-skill-first` (from `using-superpowers`) é—‚?the
+  - `sp-skill-first` (from `using-superpowers`) é—?the
     bootstrap: before any response, check for skills.
-  - `sp-tdd` (from `test-driven-development`) é—‚?
+  - `sp-tdd` (from `test-driven-development`) é—?
     RED-GREEN-REFACTOR with anti-patterns.
-  - `sp-debug` (from `systematic-debugging`) é—‚?4-phase
+  - `sp-debug` (from `systematic-debugging`) é—?4-phase
     root-cause process. Heavier than `po-diagnose`.
-  - `sp-verify` (from `verification-before-completion`) é—‚?
+  - `sp-verify` (from `verification-before-completion`) é—?
     evidence over claims. The 5 verification questions.
-  - `sp-brainstorm` (from `brainstorming`) é—‚?Socratic
+  - `sp-brainstorm` (from `brainstorming`) é—?Socratic
     design refinement. Activates before any implementation.
-  - `sp-plan` (from `writing-plans`) é—‚?bite-sized tasks
-    (2é—‚? min) with exact file paths, complete code,
+  - `sp-plan` (from `writing-plans`) é—?bite-sized tasks
+    (2é—? min) with exact file paths, complete code,
     verification steps.
-  - `sp-execute` (from `executing-plans`) é—‚?run the plan
+  - `sp-execute` (from `executing-plans`) é—?run the plan
     task-by-task with 2-stage review.
-  - `sp-subagents` (from `subagent-driven-development`) é—‚?
+  - `sp-subagents` (from `subagent-driven-development`) é—?
     parallel subagent dispatch with 2-stage review.
-  - `sp-parallel` (from `dispatching-parallel-agents`) é—‚?
+  - `sp-parallel` (from `dispatching-parallel-agents`) é—?
     one-off parallel queries for research.
-  - `sp-request-review` (from `requesting-code-review`) é—‚?
+  - `sp-request-review` (from `requesting-code-review`) é—?
     pre-review checklist; severity-ordered findings.
-  - `sp-receive-review` (from `receiving-code-review`) é—‚?
+  - `sp-receive-review` (from `receiving-code-review`) é—?
     triage, fix, defend, push back.
-  - `sp-worktree` (from `using-git-worktrees`) é—‚?isolated
+  - `sp-worktree` (from `using-git-worktrees`) é—?isolated
     worktree, clean baseline, implement, verify.
   - `sp-finish-branch` (from
-    `finishing-a-development-branch`) é—‚?verify, present
+    `finishing-a-development-branch`) é—?verify, present
     4 options, clean up.
-  - `sp-write-skill` (from `writing-skills`) é—‚?
+  - `sp-write-skill` (from `writing-skills`) é—?
     TDD-for-skills: red phase, green phase, refactor. The
     Description Trap and CSO contract.
 
@@ -378,7 +378,7 @@ license of any existing file.**
   directory, mirrored to `~/.agents/skills/`.
 
 - **1 new `licenses/<repo>-MIT.txt` file vendored.**
-  `licenses/superpowers-MIT.txt` é—‚?the upstream MIT text
+  `licenses/superpowers-MIT.txt` é—?the upstream MIT text
   with a one-line comment at the top noting the source URL
   and retrieval date, matching the style of the existing
   `Odysseus-MIT.txt`, `autoresearch-MIT.txt`, etc.
@@ -387,21 +387,21 @@ license of any existing file.**
   index.** Adds the `sp-` row to the provenance table,
   adds the 14-skill Superpowers section, expands the
   decision tree with the new lifecycle skills
-  (`sp-brainstorm` é—‚?`sp-plan` é—‚?`sp-execute` /
-  `sp-subagents` é—‚?`sp-finish-branch`), and updates the
+  (`sp-brainstorm` é—?`sp-plan` é—?`sp-execute` /
+  `sp-subagents` é—?`sp-finish-branch`), and updates the
   "How to add a new skill" workflow to recommend
   `sp-write-a-skill` (TDD-for-skills) as the heavier
   authoring path and `po-write-a-skill` as the lighter
   path.
 
-- **`NOTICE` é—‚?Adapted dependencies" é—‚?Skills ecosystem"
+- **`NOTICE` é—?Adapted dependencies" é—?Skills ecosystem"
   extended.** Adds the 14 `sp-` skills as a new row in
   the existing table. The 20 V2.6 skill rows are unchanged.
   The line "The 20 skills above are the complete skills
   layer as of V2.6" is updated to "The 34 skills above
   are the complete skills layer as of V2.7".
 
-- **`ACKNOWLEDGMENTS.md` é—‚?Skills adapted from third-party
+- **`ACKNOWLEDGMENTS.md` é—?Skills adapted from third-party
   repos (V2.6 import)" extended.** Adds a 7th bullet for
   superpowers. The existing 6 bullets (autoresearch,
   poskills, karpathy, ECC, gbrain, gstack) are unchanged.
@@ -440,14 +440,14 @@ license of any existing file.**
   skills are read-only markdown; the existing threat
   model (local user is the trust boundary) is unchanged.
 
-### The V2.8 description-trim audit (DONE é—‚?see é—‚?V2.8 transitions landed" above)
+### The V2.8 description-trim audit (DONE é—?see é—?V2.8 transitions landed" above)
 
 The `sp-write-skill` skill surfaces a contract change that the
 V2.6 import did not implement: **the description field must be
 trigger-only.** If the description contains a process summary,
 the agent follows the description (which is a summary) and
 skips the body. This is the *Description Trap* documented in
-`sp-write-skill` é—‚?The Description Trap".
+`sp-write-skill` é—?The Description Trap".
 
 Of the 20 V2.6 skills, **19 had this defect** (their
 `description` field contained both a *what* and a *when*; the
@@ -466,7 +466,7 @@ audit (the next pass below):
 V2.8 was a *correctness* change, not a stylistic one. The V2.6
 skills now auto-activate on the canonical trigger phrases
 without the agent following a stale process summary. The full
-V2.8 diff is in the é—‚?V2.8 transitions landed" section above.
+V2.8 diff is in the é—?V2.8 transitions landed" section above.
 
 ### Why a separate pass instead of one big one
 
@@ -501,7 +501,7 @@ the V2.8 diff would obscure the V2.7 work if bundled.
   future skill additions)
 
 These documents define the Cubecloud boundary. As of V2.7, the
-top-level LICENSE is a dual-license notice é—‚?AGPL-3.0-or-later
+top-level LICENSE is a dual-license notice é—?AGPL-3.0-or-later
 (primary) with Apache-2.0 and MIT as compatibility options for
 Cubecloud-original work, and hard-MIT for the inherited
 `hermes-desktop` framework code. The legal docs above govern
@@ -509,13 +509,13 @@ the **non-code** surfaces (brand, hosted tiers, paid features,
 commercial relicensing). The full V2.7 diff is in the
 "V2.7 transitions landed" section above.
 
-## V2.4 transitions landed é—‚?license + brand tightening
+## V2.4 transitions landed é—?license + brand tightening
 
 The desktop is a Cubecloud-branded successor of `hermes-desktop`
 (Nous Research / Hermes Agent lineage). The V2.3 rollout studied
-a few adjacent open-source projects during design é—‚?most
+a few adjacent open-source projects during design é—?most
 notably [Odysseus](https://github.com/pewdiepie-archdaemon/odysseus)
-é—‚?and **borrowed their rebrand and licensing posture as a model**
+é—?and **borrowed their rebrand and licensing posture as a model**
 (trademark policy, security policy, threat model, DCO
 contribution terms). It did **not** merge code from those
 projects. With that scope clarified, the license + brand
@@ -528,7 +528,7 @@ documented here; the prior `docs/legal/TRADEMARK_POLICY.md`
 - **`LICENSE` copyright line is now `Copyright (c) 2026 Cubecloud
   Contributors`.** This mirrors the
   `Copyright (c) 2025 Odysseus Contributors` form that we
-  saw on the Odysseus project é—‚?a contributors collective,
+  saw on the Odysseus project é—?a contributors collective,
   not a personal name or a single org. The MIT license is
   preserved; the new top-of-file preamble explicitly carves
   out Cubecloud trademarks and separately-licensed service
@@ -626,7 +626,7 @@ services) enforceable, which is the part the prior rebrand
 plan had as a "working draft" with a "counsel review" note.
 The V2.4 pass promotes those drafts to active policy.
 
-## V2.5 transitions landed é—‚?switching to a dual-license posture
+## V2.5 transitions landed é—?switching to a dual-license posture
 
 The V2.4 pass made the brand and non-code surfaces enforceable
 but stopped short of changing the code license itself. V2.5
@@ -639,7 +639,7 @@ modules, the renderer rebuilds, the SQLite schema, the
 provider-discovery logic, and the rest of the new code).
 
 That distinction matters. The inherited `hermes-desktop`
-framework code is, and remains, hard-MIT é—‚?we cannot
+framework code is, and remains, hard-MIT é—?we cannot
 retroactively restrict it, and we have no plan to try. But the
 Cubecloud-original rebuilds and rewrites are exactly that:
 Cubecloud-original. They were not in `hermes-desktop` and they
@@ -711,7 +711,7 @@ truth.
 - **`docs/legal/COMMERCIAL_LICENSE.md` added.** This new
   document describes the commercial-relicensing path for
   organizations that want to run a Cubecloud-derivative
-  service without the AGPL-3.0 é—‚?3 network-source
+  service without the AGPL-3.0 é—?3 network-source
   obligation. It is a stub in this revision; the full
   commercial-license SKU and pricing tiers are still
   TBD by Cubecloud leadership.
@@ -738,8 +738,8 @@ truth.
 The Cubecloud Agent Desktop is a chat client that connects to
 local model servers (Ollama, vLLM, llama.cpp) and remote
 providers. Most of the time, that is a private, single-user
-deployment and AGPL-3.0 é—‚?3 does not trigger. The AGPL-3.0
-clause that matters is é—‚?3 é—‚?the "remote network interaction"
+deployment and AGPL-3.0 é—?3 does not trigger. The AGPL-3.0
+clause that matters is é—?3 é—?the "remote network interaction"
 requirement that modified versions running on a network
 server must offer the Corresponding Source to the server's
 users.
@@ -760,7 +760,7 @@ dual-license structure lets each downstream consumer pick:
   rebrand and want the most permissive terms.
 
 The "supporting" Apache-2.0 and MIT options are not
-"free alternatives" to AGPL-3.0 é—‚?they are alternative
+"free alternatives" to AGPL-3.0 é—?they are alternative
 licenses that drop specific obligations (the network-source
 clause for AGPL-3.0) and add different ones (the patent
 retaliation clause for Apache-2.0). The choice has legal
@@ -775,7 +775,7 @@ consequences and is the consumer's to make.
 - Commercial-relicensing terms: `docs/legal/COMMERCIAL_LICENSE.md`
 - Provenance tracker: `docs/legal/PROVENANCE_TRACKER.md`
 
-## V2.8 transitions landed é—‚?description-trim audit (TDD-for-skills compliance)
+## V2.8 transitions landed é—?description-trim audit (TDD-for-skills compliance)
 
 The V2.7 import landed 14 sp- skills adapted from the upstream
 superpowers repo. The sp-write-skill skill surfaced a contract
@@ -783,7 +783,7 @@ change that the V2.6 import did not implement: **the description
 field must be trigger-only.** If the description contains a
 process summary, the agent follows the description (which is a
 summary) and skips the body. This is the *Description Trap* (see
-sp-write-skill é—‚?The Description Trap").
+sp-write-skill é—?The Description Trap").
 
 V2.8 is the audit pass that fixes this. It is a *correctness*
 change, not a stylistic one. The V2.6 skills are now functional
@@ -795,7 +795,7 @@ renders, but it does the wrong thing. V2.8 fixes the action.
 - **20 V2.6 skill descriptions trimmed.** Each description
   field in the 20 r- / po- / karpathy- / ecc- /
   gbrain- / gstack- skills is now **trigger-only**:
-  starts with Use whené—‚?(or Use at the endé—‚?for
+  starts with Use whené—?(or Use at the endé—?for
   end-of-session skills), lists the canonical trigger
   phrases as a comma-separated tail, and removes the
   leading process-summary sentence. The removed content
@@ -805,8 +805,8 @@ renders, but it does the wrong thing. V2.8 fixes the action.
   had the same defect (the 
 ame: field was
   cubecloud-<name> instead of sp-<name>, and one
-  description started with Use afteré—‚?instead of
-  Use whené—‚?. Both classes of defect are fixed. The
+  description started with Use afteré—?instead of
+  Use whené—?. Both classes of defect are fixed. The
   
 ame: field is now sp-* to match the directory
   name, per upstream's v3.1.0 contract ("All skill
@@ -857,7 +857,7 @@ ame: matches the directory name, and
 > **If the description contains a process summary, the
 > agent follows the description and skips the body.**
 
-Per sp-write-skill é—‚?The Description Trap" (and per upstream
+Per sp-write-skill é—?The Description Trap" (and per upstream
 superpowers v4.0.0's release notes documenting "The
 Description Trap"):
 
@@ -894,7 +894,7 @@ separate, per the upstream contract.
   future skill additions)
 
 These documents define the Cubecloud boundary. As of V2.8, the
-top-level LICENSE is a dual-license notice é—‚?AGPL-3.0-or-later
+top-level LICENSE is a dual-license notice é—?AGPL-3.0-or-later
 (primary) with Apache-2.0 and MIT as compatibility options for
 Cubecloud-original work, and hard-MIT for the inherited
 hermes-desktop framework code. The legal docs above govern
@@ -905,7 +905,7 @@ superpowers import preceded it; the V2.6 skills ecosystem,
 V2.5 dual-license, V2.4 brand tightening, and the rest of
 the history remain in place below.
 
-## V2.9 transitions landed é—‚?pre-launch bundle (Skills / Memory / Harness / Schedule / Kanban seeds)
+## V2.9 transitions landed é—?pre-launch bundle (Skills / Memory / Harness / Schedule / Kanban seeds)
 
 The V2.6 / V2.7 / V2.8 work built the 34-skill developer-time
 ecosystem. The skills are *available* to the agent runtime that
@@ -926,18 +926,18 @@ threat model, the DCO, and the EULA scope are all unchanged.
 
 - **5 new Cubecloud-original files in
   apps/desktop-shell/src/main/**:
-  - defaultSkills.ts é—‚?3 user-visible skills
+  - defaultSkills.ts é—?3 user-visible skills
     (cubecloud-persona, cubecloud-onboarding,
     cubegraph-code-intel), all in the Skills tab.
-  - defaultMemories.ts é—‚?6 memory seeds covering
+  - defaultMemories.ts é—?6 memory seeds covering
     conventions, runtime topology, two-tier skills, license
     / brand, workspace conventions, security posture.
-  - defaultHarnesses.ts é—‚?3 disabled EverOS harnesses
+  - defaultHarnesses.ts é—?3 disabled EverOS harnesses
     (cubecloud-memory-distill, cubecloud-cost-watchdog,
     cubecloud-skill-audit).
-  - defaultSchedules.ts é—‚?1 disabled schedule
+  - defaultSchedules.ts é—?1 disabled schedule
     (cubecloud-daily-standup).
-  - defaultKanban.ts é—‚?1 starter board ("Onboarding é—‚?    delete me") with 5 deletable example tasks.
+  - defaultKanban.ts é—?1 starter board ("Onboarding é—?    delete me") with 5 deletable example tasks.
 
   Each file carries a Cubecloud-original SPDX header and
   exports the DEFAULT_* constant plus an idempotent
@@ -960,15 +960,15 @@ eadJsonFileWithSeed + the
   on disk.
 
 - **3 new hidden-flavor skills in
-  cubecloud-desktop/src/main/skills-harness.ts.** All
+  agent-desktop/src/main/skills-harness.ts.** All
   three are pre-installed; all three are body=label-only
   (no body markdown) so the chat prompt stays small.
-  - cubecloud-tone (intentTags: empty) é—‚?operator-tone
+  - cubecloud-tone (intentTags: empty) é—?operator-tone
     flavor that auto-injects on every message.
   - cubecloud-economist (intentTags: cost, budget,
-    model selection) é—‚?cost-aware model/tool selection.
+    model selection) é—?cost-aware model/tool selection.
   - cubecloud-licensor (intentTags: license,
-    commercial, distribution) é—‚?license-aware responses.
+    commercial, distribution) é—?license-aware responses.
 
   The 14 sp- V2.7 skills are unchanged. The 5 existing
   V2.3 hidden skills (ecc, gbrian, gstack, karpathy,
@@ -982,7 +982,7 @@ eadJsonFileWithSeed + the
   items are preserved; every DEFAULT_* entry has the
   expected shape).
 
-- **5 new entries in NOTICE é—‚?Direct dependencies é—‚?  Cubecloud-original work (2026)"**. The 5 new files in
+- **5 new entries in NOTICE é—?Direct dependencies é—?  Cubecloud-original work (2026)"**. The 5 new files in
   apps/desktop-shell/src/main/ join the existing
   V2.3 / V2.5 / V2.6 / V2.7 / V2.8 Cubecloud-original
   table, dual-licensed as the rest of Cubecloud-original
@@ -1025,11 +1025,11 @@ delete each entry from the desktop UI. The seed is
 re-run on every first read per session, but only
 *adds* entries that are not already present. If the
 user has deleted all entries, the next session will
-re-add the defaults. The Settings é—‚?Advanced é—‚?"Reset to defaults" button (V2.10) will use this
+re-add the defaults. The Settings é—?Advanced é—?"Reset to defaults" button (V2.10) will use this
 behaviour to re-seed.
 
 A future V2.10 will add a settings toggle to disable
-the seed entirely (Settings é—‚?Advanced é—‚?"Pre-launch
+the seed entirely (Settings é—?Advanced é—?"Pre-launch
 bundle" = on/off). The toggle is *not* in V2.9 to keep
 the surface area small; the per-surface idempotency
 is the soft opt-out for now.
@@ -1059,7 +1059,7 @@ is the soft opt-out for now.
   dedup principles for future skill additions)
 
 These documents define the Cubecloud boundary. As of V2.9, the
-top-level LICENSE is a dual-license notice é—‚?AGPL-3.0-or-later
+top-level LICENSE is a dual-license notice é—?AGPL-3.0-or-later
 (primary) with Apache-2.0 and MIT as compatibility options for
 Cubecloud-original work, and hard-MIT for the inherited
 hermes-desktop framework code. The legal docs above govern

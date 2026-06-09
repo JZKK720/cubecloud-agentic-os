@@ -102,7 +102,7 @@ if (branding.includes('## V2.10.14')) {
     '',
     '**Scope:** 4 outer-handbook files (`docs/handbook/ARCHITECTURE.md`,',
     '`DEVELOPMENT.md`, `OPERATIONS.md`, `README.md`). All 4 are Windows',
-    'hardlinks to the inner `cubecloud-desktop/docs/handbook/` mirrors;',
+    'hardlinks to the inner `agent-desktop/docs/handbook/` mirrors;',
     'this transition preserves the hardlink layer (no split, unlike the',
     'V2.10.6 README split which had a genuine outer-vs-inner audience',
     'distinction).',
