@@ -1,3 +1,31 @@
+<p align="center">
+  <img width="360" alt="Cubecloud 智方云" src="agent-desktop/build/branding/cubecloud-zhifangyun.svg" />
+</p>
+
+<p align="center"><sub><b>Cubecloud · 智方云</b> &nbsp;·&nbsp; <i>중문 브랜드 智方云 는 Cubecloud Limited Company 가 보유한 등록 상표이며, <code>cubecloud</code> 와 동일한 제품 패밀리를 가리킵니다</i></sub></p>
+
+## 미리보기
+
+아래의 모든 이미지는 현재 데스크톱 빌드의 전체 페이지 캡처입니다.
+온보딩, 런타임 감지, 사이드바에서 노출되는 모든 주요 운영자 화면을 다루는 22장짜리 전체 갤러리는
+[`agent-desktop/README.md`](agent-desktop/README.md#preview) 에 있습니다.
+아래의 6장 큐레이션은 처음 읽는 분이 아키텍처 섹션을 읽기 전에 살펴봐야 할 핵심 화면을 다룹니다.
+
+<table>
+<tr>
+<td width="50%" align="center"><b>환영 &amp; 첫 실행</b><br/><img width="100%" alt="환영" src="agent-desktop/previews/welcome.png" /></td>
+<td width="50%" align="center"><b>런타임 감지</b><br/><img width="100%" alt="런타임 감지" src="agent-desktop/previews/runtime-detection.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>채팅</b><br/><img width="100%" alt="채팅" src="agent-desktop/previews/chat.png" /></td>
+<td width="50%" align="center"><b>프로필 &amp; 에이전트</b><br/><img width="100%" alt="에이전트" src="agent-desktop/previews/agents.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>게이트웨이 (16개 플랫폼)</b><br/><img width="100%" alt="게이트웨이" src="agent-desktop/previews/gateway.png" /></td>
+<td width="50%" align="center"><b>설정 &amp; 제어</b><br/><img width="100%" alt="설정" src="agent-desktop/previews/settings.png" /></td>
+</tr>
+</table>
+
 # Cubecloud Agentic-OS 한국어 문서（ko-KR）
 
 > **이식성, 감사 가능성, 더 낮은 AI 운영 비용을 원하는 팀을 위한 로컬-퍼스트 에이전트 데스크톱 및 운영 모델.**

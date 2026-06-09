@@ -10,10 +10,10 @@
 
 | File | Language | Path | Status | Maintainer |
 |---|---|---|---|---|
-| README (monorepo) | English | `README.md` (outer root) | **Live, V2.10.26 full rewrite** (business-forward reorder, local-first framing, market-position refresh) | Cubecloud Contributors |
-| README (monorepo) | Simplified Chinese (zh-CN) | `README.zh-CN.md` (outer root) | **Live, V2.10.28 further editorial polish** (improved wording, but native-speaker review is still welcome) | Cubecloud Contributors + Community |
-| README (monorepo) | Japanese (ja-JP) | `README.ja-JP.md` (outer root) | **Live, V2.10.28** (machine-translated starting point; native speakers welcome to review and polish) | Cubecloud Contributors + Community |
-| README (monorepo) | Korean (ko-KR) | `README.ko-KR.md` (outer root) | **Live, V2.10.28** (machine-translated starting point; native speakers welcome to review and polish) | Cubecloud Contributors + Community |
+| README (monorepo) | English | `README.md` (outer root) | **Live, V2.10.51 bilingual brand + 6-image curated gallery** (top wordmark swapped to the bilingual `cubecloud-zhifangyun.svg`; a curated subset of 6 desktop surfaces —welcome, runtime detection, chat, agents, gateway, settings —added as a `## Preview` section; full 22-image gallery still at `agent-desktop/README.md#preview`) | Cubecloud Contributors |
+| README (monorepo) | Simplified Chinese (zh-CN) | `README.zh-CN.md` (outer root) | **Live, V2.10.51 bilingual brand + 6-image curated gallery** (top wordmark swapped to the bilingual `cubecloud-zhifangyun.svg`; curated 6-surface `## 预览` section; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (monorepo) | Japanese (ja-JP) | `README.ja-JP.md` (outer root) | **Live, V2.10.51 bilingual brand + 6-image curated gallery** (top wordmark swapped to the bilingual `cubecloud-zhifangyun.svg`; curated 6-surface `## プレビュー` section; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (monorepo) | Korean (ko-KR) | `README.ko-KR.md` (outer root) | **Live, V2.10.51 bilingual brand + 6-image curated gallery** (top wordmark swapped to the bilingual `cubecloud-zhifangyun.svg`; curated 6-surface `## 미리보기` section; native-speaker review still welcome) | Cubecloud Contributors + Community |
 | CONTRIBUTING (monorepo) | English | `CONTRIBUTING.md` (outer root) | Live (hardlink to inner) | Cubecloud Contributors |
 | CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (machine-translated starting point for the outer contributor policy; native speakers welcome to polish) | Cubecloud Contributors + Community |
 | SECURITY (monorepo) | English | `SECURITY.md` (outer root) | Live (hardlink to inner) | Cubecloud Contributors |
@@ -61,6 +61,9 @@
 ## What lives where?
 
 The outer root and `docs/` now host **monorepo translations**.
+
+- Brand assets (V2.10.51) — `agent-desktop/build/branding/cubecloud-logo.svg` (Latin wordmark, legacy), `agent-desktop/build/branding/cubecloud-mark.svg` (icon mark), `agent-desktop/build/branding/cubecloud-zhifangyun.svg` (bilingual cubecloud + 智方云 wordmark with `本地优先的智能体操作系统` tagline; referenced from all four root READMEs).
+
 Currently that means:
 
 - `README.zh-CN.md` (Simplified Chinese)

@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="360" alt="Cubecloud Agentic-OS" src="agent-desktop/build/branding/cubecloud-logo.svg" />
+  <img width="360" alt="Cubecloud 智方云" src="agent-desktop/build/branding/cubecloud-zhifangyun.svg" />
 </p>
 
 <p align="center">
@@ -9,6 +9,32 @@
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing-DCO%201.1-lightgrey?style=for-the-badge" alt="Contributing: DCO 1.1" /></a>
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
+
+<p align="center"><sub><b>Cubecloud · 智方云</b> &nbsp;·&nbsp; <i>the Chinese brand 智方云 is owned by Cubecloud Limited Company and refers to the same product family as <code>cubecloud</code></i></sub></p>
+
+## Preview
+
+Every image below is a full-page capture from the current desktop
+build. The full 22-image gallery (onboarding, runtime discovery, and
+every major operator surface exposed in the sidebar) lives at
+[`agent-desktop/README.md`](agent-desktop/README.md#preview).
+The curated subset below covers the six surfaces a first-time reader
+should see before reading the architecture sections.
+
+<table>
+<tr>
+<td width="50%" align="center"><b>Welcome &amp; first-run</b><br/><img width="100%" alt="Welcome" src="agent-desktop/previews/welcome.png" /></td>
+<td width="50%" align="center"><b>Runtime detection</b><br/><img width="100%" alt="Runtime detection" src="agent-desktop/previews/runtime-detection.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Chat</b><br/><img width="100%" alt="Chat" src="agent-desktop/previews/chat.png" /></td>
+<td width="50%" align="center"><b>Profiles &amp; agents</b><br/><img width="100%" alt="Agents" src="agent-desktop/previews/agents.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Gateway (16 platforms)</b><br/><img width="100%" alt="Gateway" src="agent-desktop/previews/gateway.png" /></td>
+<td width="50%" align="center"><b>Settings &amp; control</b><br/><img width="100%" alt="Settings" src="agent-desktop/previews/settings.png" /></td>
+</tr>
+</table>
 
 # Cubecloud Agentic-OS
 

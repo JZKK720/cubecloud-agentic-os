@@ -1,3 +1,31 @@
+<p align="center">
+  <img width="360" alt="Cubecloud 智方云" src="agent-desktop/build/branding/cubecloud-zhifangyun.svg" />
+</p>
+
+<p align="center"><sub><b>Cubecloud · 智方云</b> &nbsp;·&nbsp; <i>中国語ブランド 智方雲 は Cubecloud Limited Company が所有する登録商標であり、<code>cubecloud</code> と同じ製品ファミリーを指します</i></sub></p>
+
+## プレビュー
+
+以下の各画像は、現在のデスクトップビルドの全ページキャプチャです。
+オンボーディング、ランタイム検出、サイドバーで公開されているすべての主要オペレーター面を網羅した 22 枚のフルギャラリーは
+[`agent-desktop/README.md`](agent-desktop/README.md#preview) にあります。
+以下の 6 枚の厳選版は、初めて読む方がアーキテクチャ章を読む前に確認すべき主要画面をカバーしています。
+
+<table>
+<tr>
+<td width="50%" align="center"><b>ようこそ &amp; 初回起動</b><br/><img width="100%" alt="ようこそ" src="agent-desktop/previews/welcome.png" /></td>
+<td width="50%" align="center"><b>ランタイム検出</b><br/><img width="100%" alt="ランタイム検出" src="agent-desktop/previews/runtime-detection.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>チャット</b><br/><img width="100%" alt="チャット" src="agent-desktop/previews/chat.png" /></td>
+<td width="50%" align="center"><b>プロフィール &amp; エージェント</b><br/><img width="100%" alt="エージェント" src="agent-desktop/previews/agents.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>ゲートウェイ（16 プラットフォーム）</b><br/><img width="100%" alt="ゲートウェイ" src="agent-desktop/previews/gateway.png" /></td>
+<td width="50%" align="center"><b>設定 &amp; 制御</b><br/><img width="100%" alt="設定" src="agent-desktop/previews/settings.png" /></td>
+</tr>
+</table>
+
 # Cubecloud Agentic-OS 日本語ドキュメント（ja-JP）
 
 > **移植性、監査可能性、そしてより低いAI運用コストを求めるチームのための、ローカルファーストのエージェントデスクトップと運用モデル。**
