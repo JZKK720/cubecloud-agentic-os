@@ -1,5 +1,23 @@
+<img width="100%" alt="Cubecloud Agent Desktop" src="previews/header.webp" />
+
+<br/>
 <p align="center">
-  <img width="360" alt="Cubecloud Desktop" src="build/branding/cubecloud-logo.svg" />
+  <a href="../docs/HANDBOOK.md"><img src="https://img.shields.io/badge/Docs-HANDBOOK-FFD700?style=for-the-badge" alt="Docs"></a>
+  <a href="https://t.me/hermes_agent_desktop"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0%20%7C%20Apache--2.0%20%7C%20MIT-blue?style=for-the-badge" alt="License"></a>
+  <a href="docs/legal/TRADEMARK_POLICY.md"><img src="https://img.shields.io/badge/Trademark-policy-lightgrey?style=for-the-badge" alt="Trademark policy"></a>
+  <a href="SECURITY.md"><img src="https://img.shields.io/badge/Security-policy-lightgrey?style=for-the-badge" alt="Security policy"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing-DCO%201.1-lightgrey?style=for-the-badge" alt="Contributing"></a>
+  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/"><img src="https://img.shields.io/badge/Download-Releases-FF6600?style=for-the-badge" alt="Releases"></a>
+  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/stargazers"><img src="https://img.shields.io/github/stars/cubecloud-contributors/cubecloud-agentic-os?style=for-the-badge&color=FFD700&label=Stars" alt="Stars"></a>
+  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/"><img src="https://img.shields.io/github/downloads/cubecloud-contributors/cubecloud-agentic-os/total?style=for-the-badge&color=00B496&label=Total%20Downloads" alt="Downloads"></a>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ja-JP.md">日本語</a> ·
+  <a href="README.ko-KR.md">한국어</a>
 </p>
 
 # Cubecloud Agent Desktop — the binary
@@ -39,6 +57,12 @@ by hand.
 
 ## Install
 
+<p align="center">
+  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/">
+    <img width="380" alt="Download Cubecloud Agent Desktop" src="previews/download.webp" />
+  </a>
+</p>
+
 The install + first-run flow is documented in detail in
 [`../docs/handbook/OPERATIONS.md`](../docs/handbook/OPERATIONS.md). The
 short version:
@@ -61,14 +85,56 @@ sudo dnf install ./cubecloud-desktop-<version>.rpm
 
 ## Preview
 
-The current Cubecloud-branded preview subset is:
+Every image below is a full-page capture from the current desktop build.
+The gallery covers onboarding, runtime discovery, and every major
+operator surface exposed in the sidebar.
 
-- [`previews/welcome.png`](previews/welcome.png) — onboarding and gateway setup
-- [`previews/chat.png`](previews/chat.png) — the primary chat workspace
-- [`previews/gateway.png`](previews/gateway.png) — the gateway control plane
-- [`previews/runtime-detection.png`](previews/runtime-detection.png) — detected local/container runtime cards
-
-The older inherited preview set has been retired from the binary README surfaces.
+<table>
+<tr>
+<td width="50%" align="center"><b>Welcome</b><br/><img width="100%" alt="Welcome" src="previews/welcome.png" /></td>
+<td width="50%" align="center"><b>Remote gateway</b><br/><img width="100%" alt="Remote gateway" src="previews/welcome-remote.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>SSH handoff</b><br/><img width="100%" alt="SSH handoff" src="previews/welcome-ssh.png" /></td>
+<td width="50%" align="center"><b>Runtime detection</b><br/><img width="100%" alt="Runtime detection" src="previews/runtime-detection.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Chat</b><br/><img width="100%" alt="Chat" src="previews/chat.png" /></td>
+<td width="50%" align="center"><b>Sessions</b><br/><img width="100%" alt="Sessions" src="previews/sessions.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Profiles</b><br/><img width="100%" alt="Profiles" src="previews/agents.png" /></td>
+<td width="50%" align="center"><b>Persona</b><br/><img width="100%" alt="Persona" src="previews/persona.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Plans</b><br/><img width="100%" alt="Plans" src="previews/plans.png" /></td>
+<td width="50%" align="center"><b>CodeGraph</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>EverOS</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
+<td width="50%" align="center"><b>Headroom</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Models</b><br/><img width="100%" alt="Models" src="previews/models.png" /></td>
+<td width="50%" align="center"><b>Providers</b><br/><img width="100%" alt="Providers" src="previews/providers.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Skills</b><br/><img width="100%" alt="Skills" src="previews/skills.png" /></td>
+<td width="50%" align="center"><b>Memory</b><br/><img width="100%" alt="Memory" src="previews/memory.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Tools</b><br/><img width="100%" alt="Tools" src="previews/tools.png" /></td>
+<td width="50%" align="center"><b>Workspace</b><br/><img width="100%" alt="Workspace" src="previews/workspace.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Schedules</b><br/><img width="100%" alt="Schedules" src="previews/schedules.png" /></td>
+<td width="50%" align="center"><b>Gateway</b><br/><img width="100%" alt="Gateway" src="previews/gateway.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>MCP</b><br/><img width="100%" alt="MCP" src="previews/mcp.png" /></td>
+<td width="50%" align="center"><b>Settings</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
+</tr>
+</table>
 
 ## How it works
 

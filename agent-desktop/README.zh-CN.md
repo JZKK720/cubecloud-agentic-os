@@ -4,11 +4,11 @@
 > 许可证、品牌与贡献政策详见 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)。
 
 
-<img width="100%" alt="CUBECLOUD DESKTOP" src="previews/welcome.png" />
+<img width="100%" alt="CUBECLOUD AGENT DESKTOP" src="previews/header.webp" />
 
 <br/>
 <p align="center">
-  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-hermes--agent.nousresearch.com-FFD700?style=for-the-badge" alt="文档"></a>
+  <a href="../docs/HANDBOOK.md"><img src="https://img.shields.io/badge/Docs-HANDBOOK-FFD700?style=for-the-badge" alt="文档"></a>
   <a href="https://t.me/hermes_agent_desktop"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0%20%7C%20Apache--2.0%20%7C%20MIT-blue?style=for-the-badge" alt="许可证: AGPL-3.0 OR Apache-2.0 OR MIT (Cubecloud-original)；MIT (继承的框架)" /></a>
   <a href="docs/legal/TRADEMARK_POLICY.md"><img src="https://img.shields.io/badge/Trademark-policy-lightgrey?style=for-the-badge" alt="商标政策"></a>
@@ -23,6 +23,13 @@
 </a>
 </p>
 
+<p align="center">
+  <a href="README.md">English</a> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ja-JP.md">日本語</a> ·
+  <a href="README.ko-KR.md">한국어</a>
+</p>
+
 > **本项目处于活跃开发阶段。** 功能可能会发生变化，某些功能也可能会失效。如果您遇到问题或有好的想法，请 [提交 Issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)。欢迎贡献代码！
 
 ## 语言
@@ -30,12 +37,19 @@
 - English: `README.md`
 - 简体中文: `README.zh-CN.md`
 - 日本語: `README.ja-JP.md`
+- 한국어: `README.ko-KR.md`
 
 Cubecloud Desktop 是一款原生桌面控制中心，用于安装、配置并与 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 进行聊天，同时作为 Cubecloud Agentic-OS 的运营入口。
 
 无需手动管理命令行界面 (CLI)，该应用可在一个统一界面中引导您完成安装、提供商设置以及日常使用。它使用官方的 Hermes 安装脚本，将 Hermes 存储在 `~/.hermes` 目录下，并为您提供涵盖聊天、会话、配置、记忆、技能、工具、计划任务、消息网关等功能的图形界面。
 
 ## 安装
+
+<p align="center">
+  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/">
+    <img width="380" alt="下载 Cubecloud Agent Desktop" src="previews/download.webp" />
+  </a>
+</p>
 
 下载入口：请从 [Releases 页面](https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/) 获取安装包。
 
@@ -63,14 +77,52 @@ sudo dnf install ./cubecloud-desktop-<version>.rpm
 
 ## 预览
 
+以下图片均来自当前桌面构建的整页截图，覆盖首次引导、运行时发现，以及侧边栏中的主要工作界面。
+
 <table>
 <tr>
-<td width="50%" align="center"><b>初始设置</b><br/><img width="100%" alt="Setup" src="previews/welcome.png" /></td>
-<td width="50%" align="center"><b>聊天</b><br/><img width="100%" alt="Chat" src="previews/chat.png" /></td>
+<td width="50%" align="center"><b>欢迎页</b><br/><img width="100%" alt="Welcome" src="previews/welcome.png" /></td>
+<td width="50%" align="center"><b>远程网关</b><br/><img width="100%" alt="Remote gateway" src="previews/welcome-remote.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>网关</b><br/><img width="100%" alt="Gateway" src="previews/gateway.png" /></td>
+<td width="50%" align="center"><b>SSH 接入</b><br/><img width="100%" alt="SSH handoff" src="previews/welcome-ssh.png" /></td>
 <td width="50%" align="center"><b>运行时发现</b><br/><img width="100%" alt="Runtime detection" src="previews/runtime-detection.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>聊天</b><br/><img width="100%" alt="Chat" src="previews/chat.png" /></td>
+<td width="50%" align="center"><b>会话</b><br/><img width="100%" alt="Sessions" src="previews/sessions.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>配置</b><br/><img width="100%" alt="Profiles" src="previews/agents.png" /></td>
+<td width="50%" align="center"><b>人格</b><br/><img width="100%" alt="Persona" src="previews/persona.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>计划</b><br/><img width="100%" alt="Plans" src="previews/plans.png" /></td>
+<td width="50%" align="center"><b>CodeGraph</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>EverOS</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
+<td width="50%" align="center"><b>Headroom</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>模型</b><br/><img width="100%" alt="Models" src="previews/models.png" /></td>
+<td width="50%" align="center"><b>提供商</b><br/><img width="100%" alt="Providers" src="previews/providers.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>技能</b><br/><img width="100%" alt="Skills" src="previews/skills.png" /></td>
+<td width="50%" align="center"><b>记忆</b><br/><img width="100%" alt="Memory" src="previews/memory.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>工具</b><br/><img width="100%" alt="Tools" src="previews/tools.png" /></td>
+<td width="50%" align="center"><b>工作区</b><br/><img width="100%" alt="Workspace" src="previews/workspace.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>计划任务</b><br/><img width="100%" alt="Schedules" src="previews/schedules.png" /></td>
+<td width="50%" align="center"><b>网关</b><br/><img width="100%" alt="Gateway" src="previews/gateway.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>MCP</b><br/><img width="100%" alt="MCP" src="previews/mcp.png" /></td>
+<td width="50%" align="center"><b>设置</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
 </tr>
 </table>
 
