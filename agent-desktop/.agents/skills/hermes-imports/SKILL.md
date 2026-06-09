@@ -12,9 +12,9 @@ metadata:
 
 The desktop is one of three surfaces on top of the Hermes agent runtime:
 
-- `hermes-agent` (Python package) â€?the runtime itself.
-- `hermes-cli` (Python CLI) â€?the user-facing terminal entry point.
-- `agent-desktop` (this repo) â€?the Electron UI.
+- `hermes-agent` (Python package) â€”the runtime itself.
+- `hermes-cli` (Python CLI) â€”the user-facing terminal entry point.
+- `agent-desktop` (this repo) â€”the Electron UI.
 
 The three share a contract: the desktop talks to the runtime over a local HTTP gateway, and the runtime reads `<profile>/.env` + `<profile>/config.yaml`. When the contract changes, the desktop's `installer.ts` and `hermes.ts` modules need to be updated in lockstep.
 
@@ -41,7 +41,7 @@ If a future upstream change uses 4-space indent or different list syntax, **fork
 
 ### 2. Profile-aware state, not global state
 
-The runtime introduced per-profile state in 2026 â€?`<profile>/.env`, `<profile>/config.yaml`, `<profile>/state.db`. The desktop's helpers (`profileHome`, `profilePaths`, `activeStateDbPath` in `utils.ts`) all encode this layout. **Never** add a new feature that reads or writes to the global `~/.hermes/` root.
+The runtime introduced per-profile state in 2026 â€”`<profile>/.env`, `<profile>/config.yaml`, `<profile>/state.db`. The desktop's helpers (`profileHome`, `profilePaths`, `activeStateDbPath` in `utils.ts`) all encode this layout. **Never** add a new feature that reads or writes to the global `~/.hermes/` root.
 
 If the runtime introduces a new per-profile file (e.g. `<profile>/auth-prod.json`), the desktop gets a corresponding helper in `utils.ts` and a preload method on `hermesAPI`.
 
@@ -61,7 +61,7 @@ The desktop is in a sibling repo to `hermes-agent` and `hermes-cli`, not a fork.
 
 ## Reference
 
-- `src/main/installer.ts` â€?`getHermesHome`, `inspectInstallTarget`, `setHermesHomeOverride`. The shape of "where is the runtime installed".
-- `src/main/config.ts` â€?`readEnv`, `setEnvValue`, `getConfigValue`, `setConfigValue`. The shape of "profile-scoped reads/writes".
-- `src/main/utils.ts` â€?`profileHome`, `profilePaths`, `activeStateDbPath`. The shape of "where is profile state".
-- `src/main/hermes.ts` â€?the gateway lifecycle (start, stop, health, restart on credential change). When the runtime changes how the gateway boots, this is the file to touch.
+- `src/main/installer.ts` â€”`getHermesHome`, `inspectInstallTarget`, `setHermesHomeOverride`. The shape of "where is the runtime installed".
+- `src/main/config.ts` â€”`readEnv`, `setEnvValue`, `getConfigValue`, `setConfigValue`. The shape of "profile-scoped reads/writes".
+- `src/main/utils.ts` â€”`profileHome`, `profilePaths`, `activeStateDbPath`. The shape of "where is profile state".
+- `src/main/hermes.ts` â€”the gateway lifecycle (start, stop, health, restart on credential change). When the runtime changes how the gateway boots, this is the file to touch.

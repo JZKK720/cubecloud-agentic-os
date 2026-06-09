@@ -9,11 +9,11 @@ metadata:
   related_skills: [freeze, guard, investigate, plan-eng-review]
 ---
 
-# /careful â€?Destructive Command Guardrails
+# /careful â€”Destructive Command Guardrails
 
 When the user says "be careful", "safety mode", "prod mode", or "careful mode", or when a destructive command is about to run, warn BEFORE executing. The user can override each warning.
 
-**HARD GATE:** Always confirm before running any command in the protected list. The user can always override â€?`careful` is a guardrail, not a block.
+**HARD GATE:** Always confirm before running any command in the protected list. The user can always override â€”`careful` is a guardrail, not a block.
 
 ---
 
@@ -65,12 +65,12 @@ When a destructive command is detected, surface a warning:
 <one-sentence why-this-is-dangerous>
 
 Options:
-  A) Cancel â€?don't run
-  B) Override â€?run anyway (the user can always escape)
-  C) Soften â€?suggest a safer alternative
+  A) Cancel â€”don't run
+  B) Override â€”run anyway (the user can always escape)
+  C) Soften â€”suggest a safer alternative
 ```
 
-**Default to (B) override** if the user has said "be careful" or "we're in prod" â€?the user invoked the skill; they want the friction, not a block.
+**Default to (B) override** if the user has said "be careful" or "we're in prod" â€”the user invoked the skill; they want the friction, not a block.
 
 ---
 
@@ -100,7 +100,7 @@ For V1 the check is **advisory** (the UI shows a confirm dialog), not blocking. 
 |---|---|
 | `safe` | No dialog, run the command. |
 | `warn` | Show a non-blocking confirm dialog with the matched pattern + reason. The user must type the verb (Cancel / Override / Soften) explicitly. |
-| `block` | (Reserved for future use â€?not used in V1.) |
+| `block` | (Reserved for future use â€”not used in V1.) |
 
 ---
 
@@ -111,9 +111,9 @@ When the user says "be careful", ask one question to scope the session:
 > How aggressive should the guardrails be for the rest of this session?
 
 Options:
-- A) **Advisory** â€?warn on destructive commands, but allow override
-- B) **Strict** â€?same as Advisory, but also warn on ambiguous commands (any pattern that *could* be destructive in the wrong context)
-- C) **Off** â€?disable the guardrail entirely
+- A) **Advisory** â€”warn on destructive commands, but allow override
+- B) **Strict** â€”same as Advisory, but also warn on ambiguous commands (any pattern that *could* be destructive in the wrong context)
+- C) **Off** â€”disable the guardrail entirely
 
 Default: **Advisory**.
 
@@ -126,6 +126,6 @@ Default: **Advisory**.
 - **Log the override.** When the user overrides a warning, log it (locally, in `~/.cubecloud/safety.log`) so it's auditable. Don't gate on the log; just record it.
 - **Safe exceptions are non-negotiable.** Never warn on `rm -rf node_modules`. That would be unusable.
 - **Completion status:**
-  - DONE â€?checked command, returned verdict, user proceeded
-  - DONE_WITH_CONCERNS â€?user overrode a warning on a `warn` verdict
-  - BLOCKED â€?user said "cancel" (rare; the whole point is to surface risk, not to block)
+  - DONE â€”checked command, returned verdict, user proceeded
+  - DONE_WITH_CONCERNS â€”user overrode a warning on a `warn` verdict
+  - BLOCKED â€”user said "cancel" (rare; the whole point is to surface risk, not to block)

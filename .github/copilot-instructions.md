@@ -7,7 +7,7 @@ Distilled from:
 Apply to: every Copilot Chat request in this workspace.
 -->
 
-# Copilot Instructions â€?cubecloud-agentic-os
+# Copilot Instructions â€”cubecloud-agentic-os
 
 ## 1. Think Before Coding
 
@@ -30,7 +30,7 @@ Apply to: every Copilot Chat request in this workspace.
 - Do not "improve" adjacent code, comments, or formatting.
 - Do not refactor things that are not broken.
 - Match existing style, even if you would do it differently.
-- If you notice unrelated dead code, mention it â€?do not delete it.
+- If you notice unrelated dead code, mention it â€”do not delete it.
 - When your changes create orphans, remove imports / variables / functions that **your** changes made unused. Do not remove pre-existing dead code unless asked.
 
 ## 4. Goal-Driven Execution
@@ -62,17 +62,17 @@ Apply to: every Copilot Chat request in this workspace.
 
 ## 7. Tradeoff Note
 
-These rules bias toward caution. For trivial tasks (one-line typo, obvious rename, single-line import) use judgment â€?not every change needs the full rigor. The goal is reducing costly mistakes on non-trivial work, not slowing down simple tasks.
+These rules bias toward caution. For trivial tasks (one-line typo, obvious rename, single-line import) use judgment â€”not every change needs the full rigor. The goal is reducing costly mistakes on non-trivial work, not slowing down simple tasks.
 
 ## 8. Skills Bundle (this workspace)
 
 - Always-on rules: this file
 - Slash prompts: `.github/prompts/`
 - Optional stacks installed by `docs/agent-skills-bundle/install-optional-stack.cmd`:
-  - gstack (Claude Code) â€?workflow skills, separate runtime
-  - gbrain (MCP) â€?persistent memory, separate daemon
-  - taste-skill (Vercel `agent-skills`) â€?anti-slop design rules
-  - AI-Engineering-Coach (VS Code extension) â€?usage dashboard
+  - gstack (Claude Code) â€”workflow skills, separate runtime
+  - gbrain (MCP) â€”persistent memory, separate daemon
+  - taste-skill (Vercel `agent-skills`) â€”anti-slop design rules
+  - AI-Engineering-Coach (VS Code extension) â€”usage dashboard
   - See `docs/agent-skills-bundle/README.md` for the full map.
 
 ## 9. Docs & I18n Workflow

@@ -225,7 +225,7 @@ to that list.
 modal-with-state pattern in this codebase. When you build a new modal,
 copy the structure:
 
-- State machine: `loading â†?editing â†?saving â†?done/closed`
+- State machine: `loading â†’editing â†’saving â†’done/closed`
 - Conflict detection (mtime, version, etc.) on save
 - Undo history (capped, in-memory)
 - Cmd/Ctrl-S to save, Esc to close
@@ -234,7 +234,7 @@ copy the structure:
 ### 6.2 The KnowledgePane Pattern (reference)
 
 `src/renderer/src/screens/Memory/Wiki.tsx` is the canonical
-viewer-with-actions pattern. The "open page â†?see it â†?click Edit"
+viewer-with-actions pattern. The "open page â†’see it â†’click Edit"
 loop is well-modeled. New viewers should follow the same shape.
 
 ### 6.3 The Plan Brief Pattern (reference)

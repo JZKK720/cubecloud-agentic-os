@@ -1,4 +1,4 @@
-# Cubecloud Desktop Brand and License Transition
+﻿# Cubecloud Desktop Brand and License Transition
 
 ## Current status
 
@@ -28,47 +28,47 @@
 Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
 The full V2.3 transitions landed narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
 
-## V2.6 transitions landed �?skills ecosystem import
+## V2.6 transitions landed —skills ecosystem import
 
 Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
-The full V2.6 transitions landed �?skills ecosystem import narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
+The full V2.6 transitions landed —skills ecosystem import narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
 
-## V2.7 transitions landed �?superpowers process methodology
-
-Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
-The full V2.7 transitions landed �?superpowers process methodology narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
-
-## V2.4 transitions landed �?license + brand tightening
+## V2.7 transitions landed —superpowers process methodology
 
 Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
-The full V2.4 transitions landed �?license + brand tightening narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
+The full V2.7 transitions landed —superpowers process methodology narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
 
-## V2.5 transitions landed �?switching to a dual-license posture
-
-Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
-The full V2.5 transitions landed �?switching to a dual-license posture narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
-
-## V2.8 transitions landed �?description-trim audit (TDD-for-skills compliance)
+## V2.4 transitions landed —license + brand tightening
 
 Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
-The full V2.8 transitions landed �?description-trim audit (TDD-for-skills compliance) narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
+The full V2.4 transitions landed —license + brand tightening narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
 
-## V2.9 transitions landed �?pre-launch bundle (Skills / Memory / Harness / Schedule / Kanban seeds)
+## V2.5 transitions landed —switching to a dual-license posture
 
 Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
-The full V2.9 transitions landed �?pre-launch bundle (Skills / Memory / Harness / Schedule / Kanban seeds) narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
-## V2.10 transitions landed �?outer-repo doc move + scratch-pad .gitignore
+The full V2.5 transitions landed —switching to a dual-license posture narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
+
+## V2.8 transitions landed —description-trim audit (TDD-for-skills compliance)
+
+Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
+The full V2.8 transitions landed —description-trim audit (TDD-for-skills compliance) narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
+
+## V2.9 transitions landed —pre-launch bundle (Skills / Memory / Harness / Schedule / Kanban seeds)
+
+Archived to [docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md](docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md) during V2.10.30.
+The full V2.9 transitions landed —pre-launch bundle (Skills / Memory / Harness / Schedule / Kanban seeds) narrative is preserved in the archive file; the main provenance log now stays focused on V2.10+ transitions and current release-facing state.
+## V2.10 transitions landed —outer-repo doc move + scratch-pad .gitignore
 
 The V2.10 wave (June 2026) closed two long-standing structural
 issues that made the agentic-OS repo harder to read than it
 needed to be:
 
-### V2.10.1 �?Outer-repo doc move (Option A, scripts/sync-docs.ps1)
+### V2.10.1 —Outer-repo doc move (Option A, scripts/sync-docs.ps1)
 
-The Cubecloud Agent Desktop governance docs �?`README.md`,
+The Cubecloud Agent Desktop governance docs —`README.md`,
 `LICENSE`, `NOTICE`, `BRANDING_AND_LICENSE.md`, `CONTRIBUTING.md`,
 `ACKNOWLEDGMENTS.md`, `docs/HANDBOOK.md`, `docs/handbook/*`, and
-`docs/legal/*` �?are now **source-of-truth at the outer
+`docs/legal/*` —are now **source-of-truth at the outer
 `cubecloud-agentic-os/` repo root** (or under outer `docs/`).
 They are no longer buried one level deep inside the vendored
 `agent-desktop/` mirror.
@@ -88,7 +88,7 @@ The move is implemented by `scripts/sync-docs.ps1`:
   every read at the old path still resolves, but editing either
   side edits the same data.
 
-The script is **idempotent** �?re-running it re-creates only the
+The script is **idempotent** —re-running it re-creates only the
 missing links. On non-Windows clones, the script falls back to
 real symbolic links via `fs.symlinkSync` (the script will be
 extended to use `bash`/`sh` on macOS/Linux in a follow-up; for
@@ -97,10 +97,10 @@ behavior is documented in `.gitattributes`).
 
 The V2.10.1 transition is the first place where we can say, with
 confidence, that a PR reviewer looking at the outer repo *sees*
-the agentic-OS identity at the root �?the same identity the
+the agentic-OS identity at the root —the same identity the
 inner mirror presents to the installer.
 
-### V2.10.2 �?Scratch-pad `.gitignore` (`.review-extras/`, `.review-codegraph/`)
+### V2.10.2 —Scratch-pad `.gitignore` (`.review-extras/`, `.review-codegraph/`)
 
 `.review-extras/` (3,909 files, 155.7 MB) and `.review-codegraph/`
 (1,078 files, 21.7 MB) are **scratch-pad clones** of upstream
@@ -115,11 +115,11 @@ commit the team was studying; the per-source URL is in
 `ACKNOWLEDGMENTS.md` and the per-skill `metadata.source` in each
 `SKILL.md`.
 
-The transition is **non-destructive** �?the local clones are
+The transition is **non-destructive** —the local clones are
 preserved on developer machines for anyone who wants to re-study
 the upstream; only the *git* presence is removed.
 
-### V2.10.3 �?Affirmation: `apps/desktop-shell/` is live, not retired
+### V2.10.3 —Affirmation: `apps/desktop-shell/` is live, not retired
 
 There was a brief moment in the conversation history where the
 phrase "we retired apps/desktop-shell" was used. To set the
@@ -139,7 +139,7 @@ README, HANDBOOK, or the retired-and-legacy doc. A surface is
 surface is **mirror** if it is a hardlink/junction/build-output
 of a live surface.
 
-### V2.10.4 �?Per-file SPDX header in `apps/desktop-shell/.gitignore`
+### V2.10.4 —Per-file SPDX header in `apps/desktop-shell/.gitignore`
 
 The `@cubecloud/desktop-shell` workspace did not have a
 workspace-level `.gitignore`. V2.10.4 adds one for the things
@@ -147,7 +147,7 @@ that are workspace-specific (vitest coverage, vite cache, local
 log files). The cross-cutting patterns (node_modules, dist, out,
 *.tsbuildinfo) remain in the outer `.gitignore`.
 
-### V2.10.5 �?Summary of the V2.10 diff
+### V2.10.5 —Summary of the V2.10 diff
 
 - Outer repo gained: `.gitattributes`, `docs/RETIRED_AND_LEGACY.md`,
   `scripts/sync-docs.ps1` (idempotent move + hardlink/junction regen),
@@ -170,7 +170,7 @@ log files). The cross-cutting patterns (node_modules, dist, out,
   test still passes.
 
 
-### V2.10.6 �?README split (agentic-OS monorepo vs. Electron binary)
+### V2.10.6 —README split (agentic-OS monorepo vs. Electron binary)
 
 The V2.10.5 transition left the outer `README.md` and the inner
 `agent-desktop/README.md` as **the same hardlinked file**, which
@@ -199,7 +199,7 @@ identity* (install + features + providers + i18n). Both are at
 the right place, for the right reader.
 
 
-### V2.10.7 �?i18n cleanup (README + CONTRIBUTING × 4 languages)
+### V2.10.7 —i18n cleanup (README + CONTRIBUTING × 4 languages)
 
 The V2.10.6 transition left the 4 i18n files in `agent-desktop/`
 (`README.ja-JP.md`, `README.zh-CN.md`, `CONTRIBUTING.ja-JP.md`,
@@ -230,7 +230,7 @@ are the only changes). Re-translation is documented in
 `README.i18n.md` §"Out of scope for V2.10.7" as a follow-up.
 
 
-### V2.10.8 �?THREAT_MODEL.md + SECURITY.md move to outer root
+### V2.10.8 —THREAT_MODEL.md + SECURITY.md move to outer root
 
 The V2.10.1 + V2.10.5 doc-link layer covered the governance docs
 that must be at the inner location for the Electron build
@@ -260,7 +260,7 @@ V2.10.8 closes that gap by:
 3. **Adding two rows to docs/RETIRED_AND_LEGACY.md** to
    document the placement + link layer.
 4. **Appending a V2.10.8 sub-section** to this file (BRANDING
-   + LICENSE �?V2.4 addendum already named both files; the
+   + LICENSE —V2.4 addendum already named both files; the
    V2.10.8 entry is the first place that the *placement*
    transition is logged).
 
@@ -274,7 +274,7 @@ the 4 README/CONTRIBUTING i18n files added in V2.10.7) via
 the Option-A pattern.
 
 
-### V2.10.9 �?V2.10.5 footnote fix (count + README/i18n exception)
+### V2.10.9 —V2.10.5 footnote fix (count + README/i18n exception)
 
 The V2.10.5 "Summary of the V2.10 diff" sub-section claimed
 `agent-desktop/` lost its *primary* copies of "11 doc files + 1
@@ -291,7 +291,7 @@ SPDX headers, no `package.json`, no `scripts/sync-docs.ps1`
 changes. The `scripts/sync-docs.ps1` regen is unaffected.
 
 
-### V2.10.10 �?inner `previews/` `.gitignore` (legacy capture policy)
+### V2.10.10 —inner `previews/` `.gitignore` (legacy capture policy)
 
 The inner `agent-desktop/previews/` directory has 23
 PNG / WebP files (`agents.png`, `chat.png`, `codegraph.png`,
@@ -326,7 +326,7 @@ No source code, no `package.json`, no
 `scripts/sync-docs.ps1` changes.
 
 
-## V2.10.11 �?PROVENANCE_TRACKER aligns with V2.10.6/V2.10.7/V2.10.8/V2.10.10 + cross-link to TRADEMARK_POLICY
+## V2.10.11 —PROVENANCE_TRACKER aligns with V2.10.6/V2.10.7/V2.10.8/V2.10.10 + cross-link to TRADEMARK_POLICY
 
 **Scope:** legal-doc layer only. `docs/legal/PROVENANCE_TRACKER.md`
 (the engineering path-family ledger) was authored before the
@@ -345,7 +345,7 @@ since V2.5.
    `TRADEMARK_POLICY.md § 1` (fork-and-rebrand must remove
    or replace Cubecloud marks) and § 4 (prohibited uses).
 3. The `previews/**` row still says "Regenerate screenshots
-   and package visuals from Cubecloud-owned assets" �?the
+   and package visuals from Cubecloud-owned assets" —the
    V2.10.10 `previews/` `.gitignore` policy (legacy captures
    excluded from future commits, kept on disk for the inherited
    CJK i18n README galleries until a screenshot-refresh pass
@@ -376,7 +376,7 @@ purely textual cross-link update that the engineering
 executor can land safely without a counsel or design review.
 
 
-## V2.10.12 �?Outer README `## Translations` pointer to README.i18n.md
+## V2.10.12 —Outer README `## Translations` pointer to README.i18n.md
 
 **Scope:** outer monorepo `README.md` only.
 
@@ -488,7 +488,7 @@ infrastructure (pre-CodeGraph, pre-EverOS, pre-ACP) is the
 natural next step.
 
 
-## V2.10.15 �?Outer monorepo README i18n stubs (ja-JP, zh-CN, ko-KR)
+## V2.10.15 —Outer monorepo README i18n stubs (ja-JP, zh-CN, ko-KR)
 
 **Scope:** outer monorepo root. 3 new files: `README.ja-JP.md`,
 `README.zh-CN.md`, `README.ko-KR.md`. Plus an update to the
@@ -568,7 +568,7 @@ no longer contains the "Placeholder" sentinel.
   change the dependency.
 
 
-## V2.10.14 �?`docs/handbook/` refresh (additive, no rewrite)
+## V2.10.14 —`docs/handbook/` refresh (additive, no rewrite)
 
 **Scope:** 4 outer-handbook files (`docs/handbook/ARCHITECTURE.md`,
 `DEVELOPMENT.md`, `OPERATIONS.md`, `README.md`). All 4 are Windows
@@ -582,8 +582,8 @@ distinction).
 A `grep` across the 4 files for V2-era markers:
 
 - V2.3 / V2.4 / V2.5 mentions are all **intentional historical**
-  context (e.g., "CodeGraph (V2.3)", "V2.3 �? V2.4 �? V2.5 work was the brand
-  transition", "the structure is modelled on the V2.4 �? V2.5 �? V2.6
+  context (e.g., "CodeGraph (V2.3)", "V2.3 — V2.4 — V2.5 work was the brand
+  transition", "the structure is modelled on the V2.4 — V2.5 — V2.6
   brand-license history"). Not stale.
 - V2.6 is referenced in all 4 files (current).
 - V2.7 / V2.8 / V2.9 / V2.10 mentions: **0 in ARCHITECTURE, 0 in
@@ -592,7 +592,7 @@ A `grep` across the 4 files for V2-era markers:
 
 **Changes:**
 
-1. Added a "**Recent updates (V2.6 �?V2.10).**" tail paragraph to each
+1. Added a "**Recent updates (V2.6 —V2.10).**" tail paragraph to each
    of the 4 files, pointing at BRANDING_AND_LICENSE.md and
    RETIRED_AND_LEGACY.md. The paragraph is 1 block in
    ARCHITECTURE.md, DEVELOPMENT.md, OPERATIONS.md, and
@@ -625,7 +625,7 @@ option among the 3 remaining candidates):**
   translation by a native Japanese speaker.
 
 
-## V2.10.16 �?i18n cleanup: retire the V2.10.15 placeholders + ship real zh-CN
+## V2.10.16 —i18n cleanup: retire the V2.10.15 placeholders + ship real zh-CN
 
 **Scope:** outer monorepo root. 3 placeholder files deleted; 1 new
 real translation file created; manifest updated.
@@ -701,7 +701,7 @@ as "Live, V2.10.7 disclaimer trim" (not mojibake).
   on native speakers.
 
 
-## V2.10.17 �?Outer monorepo CONTRIBUTING.zh-CN.md (V2.10.16 README.zh-CN.md sibling)
+## V2.10.17 —Outer monorepo CONTRIBUTING.zh-CN.md (V2.10.16 README.zh-CN.md sibling)
 
 **Scope:** outer monorepo root. 1 new file:
 `CONTRIBUTING.zh-CN.md` (Simplified Chinese translation of the
@@ -711,7 +711,7 @@ outer `CONTRIBUTING.md`). Plus a manifest update.
 
 1. Created `CONTRIBUTING.zh-CN.md` at the outer root. It is
    a Simplified Chinese translation of the outer
-   `CONTRIBUTING.md` (8,935 bytes), covering: 贡献者指南�?   语言、从这里开始、进行修改、提�?PR、报�?bug�?   提出功能请求、项目结构、代码风格、社区�?   许可、DCO 、报告漏洞、致谢�?2. Updated `README.i18n.md` to add 2 new rows:
+   `CONTRIBUTING.md` (8,935 bytes), covering: 贡献者指南—   语言、从这里开始、进行修改、提—PR、报—bug—   提出功能请求、项目结构、代码风格、社区—   许可、DCO 、报告漏洞、致谢—2. Updated `README.i18n.md` to add 2 new rows:
    English monorepo CONTRIBUTING (live via the V2.10.13
    hardlink) + Simplified Chinese monorepo CONTRIBUTING
    (Live, V2.10.17).
@@ -752,7 +752,7 @@ contributor landing on the outer root needs.
   translations.** Open invitation via the manifest.
 
 
-## V2.10.18 �?Outer monorepo SECURITY.zh-CN.md + retire fixptbr one-off utility
+## V2.10.18 —Outer monorepo SECURITY.zh-CN.md + retire fixptbr one-off utility
 
 **Scope:** outer monorepo root. 1 new file (`SECURITY.zh-CN.md`),
 2 retired files (`fixptbr.cmd` + `fixptbr.ps1`), 1 manifest update.
@@ -761,7 +761,7 @@ contributor landing on the outer root needs.
 
 1. Created `SECURITY.zh-CN.md` at the outer root. It is
    a Simplified Chinese translation of the outer
-   `SECURITY.md` (7,801 bytes), covering: 受支持的版本�?   部署指南、发�?fork、报告漏洞、安全更新政策�?   合作披露、证明�?2. Retired `fixptbr.cmd` (125 bytes) and `fixptbr.ps1`
+   `SECURITY.md` (7,801 bytes), covering: 受支持的版本—   部署指南、发—fork、报告漏洞、安全更新政策—   合作披露、证明—2. Retired `fixptbr.cmd` (125 bytes) and `fixptbr.ps1`
    (2,023 bytes) at the outer root. These were one-off
    utilities for fixing a pt-PT mojibake issue in
    `agent-desktop/src/shared/i18n/locales/pt-PT/memory.ts`.
@@ -824,7 +824,7 @@ broader "clean caches and unused files" ask):**
 - Native-speaker polish of V2.10.16/17/18 translations.
 
 
-## V2.10.19 �?Outer monorepo THREAT_MODEL.zh-CN.md (core 4 complete)
+## V2.10.19 —Outer monorepo THREAT_MODEL.zh-CN.md (core 4 complete)
 
 **Scope:** outer monorepo root. 1 new file:
 `THREAT_MODEL.zh-CN.md`. Plus a manifest update.
@@ -833,7 +833,7 @@ broader "clean caches and unused files" ask):**
 
 1. Created `THREAT_MODEL.zh-CN.md` at the outer root. It
    is a Simplified Chinese translation of the outer
-   `THREAT_MODEL.md` (6,249 bytes), covering: 信任边界�?   保护的资产、防御的对手、不防御的对手�?   辅助进程边界、剩余风险、未处理的具体威胁�?   更新本文件、与其他文件的关系�?2. Updated `README.i18n.md` to add 2 new rows:
+   `THREAT_MODEL.md` (6,249 bytes), covering: 信任边界—   保护的资产、防御的对手、不防御的对手—   辅助进程边界、剩余风险、未处理的具体威胁—   更新本文件、与其他文件的关系—2. Updated `README.i18n.md` to add 2 new rows:
    English monorepo THREAT_MODEL (live via the V2.10.8
    hardlink) + Simplified Chinese monorepo THREAT_MODEL
    (Live, V2.10.19).
@@ -864,7 +864,7 @@ follow-up V2.10.x turns.
 - Native-speaker polish of V2.10.16/17/18/19 translations.
 
 
-## V2.10.20 �?Combined README PDF (English + Simplified Chinese)
+## V2.10.20 —Combined README PDF (English + Simplified Chinese)
 
 **Scope:** outer monorepo. 1 new file (`docs/Cubecloud-README-
 en-zh.pdf`, 1.3 MB, 18 pages) + 1 new script
@@ -880,13 +880,13 @@ en-zh.pdf`, 1.3 MB, 18 pages) + 1 new script
    install required; Chrome is at the standard Windows path.
 2. The PDF opens with the English section (19,270 bytes of
    source, 7 headings, 1 table, 1 fenced code block for the
-   repository-layout tree), then a `English �? Simplified
+   repository-layout tree), then a `English — Simplified
    Chinese` divider page (CSS `page-break-before: always`),
    then the Simplified Chinese section (10,903 bytes of
    source, 8 headings, 1 table, 1 fenced code block).
 3. New script `scripts/v2.10.20-readme-combined-pdf.cjs`
    handles the conversion. It includes a small built-in
-   Markdown �? HTML converter (no `marked` or `markdown-it`
+   Markdown — HTML converter (no `marked` or `markdown-it`
    dependency), GitHub-flavored styling (max-width 900px,
    monospace code blocks, table borders, blockquote rule),
    and the same divider-page CSS as the inner styling. The
@@ -920,7 +920,7 @@ V2.10.19):**
 - (Re-render this PDF after native-speaker polish.)
 
 
-## V2.10.21 �?Translation correction pass + combined PDF re-render
+## V2.10.21 —Translation correction pass + combined PDF re-render
 
 **Scope:** `README.md`, `README.zh-CN.md`, `README.i18n.md`, and
 the already-tracked PDF artifact at
@@ -945,11 +945,11 @@ the already-tracked PDF artifact at
 3. Corrected obvious machine-translation artifacts in
   `README.zh-CN.md` without rewriting the whole document. Examples:
   `沉编自` -> `改编自`, `技能湇表` -> `技能清单`,
-  `双许�?a0定位` -> `双许可定位`, `中文中文中文翻译` ->
+  `双许—a0定位` -> `双许可定位`, `中文中文中文翻译` ->
   `简体中文翻译`, `湇表` -> `清单`, `译他语言` ->
   `翻译成其他语言`, `凑书` -> `凭据`, `文档链接重生` ->
   `文档链接重建`, `画板` -> `审阅暂存区`, and the broken
-  `，—�?桌面端是一切的入口。` -> `，而桌面端是一切的入口。`
+  `，——桌面端是一切的入口。` -> `，而桌面端是一切的入口。`
 4. Re-rendered `docs/Cubecloud-README-en-zh.pdf` with
   `node scripts/v2.10.20-readme-combined-pdf.cjs` so the release
   artifact matches the corrected English + zh-CN source docs. The
@@ -975,7 +975,7 @@ contradicting the actual repo state.
 - Native-speaker polish of the zh-CN translations.
 
 
-## V2.10.22 �?README value framing refresh (deterministic knowledge, technical leverage, efficiency, financial value)
+## V2.10.22 —README value framing refresh (deterministic knowledge, technical leverage, efficiency, financial value)
 
 **Scope:** `README.md`, `README.zh-CN.md`, and the already-tracked
 PDF artifact at `docs/Cubecloud-README-en-zh.pdf`.
@@ -1033,14 +1033,14 @@ language.
 - Native-speaker polish of the zh-CN translations.
 
 
-## V2.10.23 �?PDF renderer cleanup (uniform margins, fonts, and alignment)
+## V2.10.23 —PDF renderer cleanup (uniform margins, fonts, and alignment)
 
 **Scope:** `scripts/v2.10.20-readme-combined-pdf.cjs` and the
 already-tracked PDF artifact at `docs/Cubecloud-README-en-zh.pdf`.
 
 **What changed (V2.10.23):**
 
-1. Rewrote the built-in Markdown �? HTML conversion logic in
+1. Rewrote the built-in Markdown — HTML conversion logic in
    `scripts/v2.10.20-readme-combined-pdf.cjs`.
    The original converter was structurally wrong in ways that caused
    uneven margins and visibly broken alignment in the PDF:
@@ -1086,7 +1086,7 @@ already-tracked PDF artifact at `docs/Cubecloud-README-en-zh.pdf`.
 
 The user explicitly called out that the margins, fonts, and overall
 render style of the README-to-PDF conversion did not look uniform or
-aligned. The root cause was not just CSS �?it was invalid HTML emitted
+aligned. The root cause was not just CSS —it was invalid HTML emitted
 by the custom converter. V2.10.23 fixes the problem at the source:
 clean HTML first, then clean print styling.
 
@@ -1101,7 +1101,7 @@ clean HTML first, then clean print styling.
 - Native-speaker polish of the zh-CN translations.
 
 
-## V2.10.24 �?Master handbook repair + HANDBOOK.zh-CN.md
+## V2.10.24 —Master handbook repair + HANDBOOK.zh-CN.md
 
 **Scope:** `docs/HANDBOOK.md`, `docs/HANDBOOK.zh-CN.md`, `README.md`, and `README.i18n.md`.
 
@@ -1109,7 +1109,7 @@ clean HTML first, then clean print styling.
 
 1. Repaired actual mojibake in `docs/HANDBOOK.md`. Unlike the earlier
    PowerShell-only display corruption seen in some files, the master
-   handbook itself contained real broken tokens: `�?`, `搂`, `�?`,
+   handbook itself contained real broken tokens: `—`, `搂`, `—`,
    `虏`, `绠€浣撲腑鏂?`, and `鏃ユ湰瑾?`. These were restored to
    `—`, `§`, `→`, `²`, `简体中文`, and `日本語` respectively.
 2. Restored the misplaced `### 5.4 Adding a new skill` block to the
@@ -1139,7 +1139,7 @@ translation wave.
 - Native-speaker polish of all zh-CN translations.
 
 
-## V2.10.25 �?`docs/handbook/*.zh-CN.md` wave (leaf-doc layer)
+## V2.10.25 —`docs/handbook/*.zh-CN.md` wave (leaf-doc layer)
 
 **Scope:** `docs/handbook/README.zh-CN.md`,
 `docs/handbook/ARCHITECTURE.zh-CN.md`,
@@ -1338,7 +1338,7 @@ speaker review is still needed.
 
 **What changed (V2.10.30):**
 
-1. Archived the bulky V2.3 �?V2.9 provenance narrative into `docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md` and collapsed the main `BRANDING_AND_LICENSE.md` entries for those early passes into short archive pointers.
+1. Archived the bulky V2.3 —V2.9 provenance narrative into `docs/archive/BRANDING_AND_LICENSE.v2.3-v2.9.md` and collapsed the main `BRANDING_AND_LICENSE.md` entries for those early passes into short archive pointers.
 2. Refreshed the binary README preview surfaces to a smaller current Cubecloud-branded subset (`welcome.png`, `chat.png`, `gateway.png`, `runtime-detection.png`) and removed the dependency on the old header/download images in the CJK binary READMEs.
 3. Narrowed the preview policy in `agent-desktop/.gitignore` so only the refreshed preview subset remains in scope for the binary README surfaces.
 4. Updated the lifecycle docs so scratch clones are explicitly safe to purge locally and the preview row now reflects the refreshed active subset instead of the legacy 23-file gallery.
@@ -1424,9 +1424,9 @@ The Headroom workflow layer already existed in the repo and the user-global mirr
 
 **What changed (V2.10.35):**
 
-1. Added a new "**Conceptual model: object + action**" sub-section to the outer `README.md` and the matching `概念模型：对�?+ 动作` sub-section to `README.zh-CN.md`. The new sub-section makes the noun/verb split in the local surfaces explicit: objects are profiles, sessions, models, providers, skills, memories, tools, schedules, kanban tasks; actions are dispatch, schedule, commit-learn, apply-query, revert. It also names the Palantir Foundry ontology as the closest public reference frame and is honest about the scale difference (a digital twin of one desk, not of an org).
-2. Added a `### 4.3 Conceptual model: object + action (V2.10.35)` sub-section to `docs/HANDBOOK.md` and the matching `### 4.3 概念模型：对�?+ 动作（V2.10.35）` sub-section to `docs/HANDBOOK.zh-CN.md`. The HANDBOOK sub-section is the long-form version: it names the actual TypeScript interfaces that are the nouns (`AgentSkill`, `AgentMemoryEntry`, `AgentTool`, `AgentSchedule`, etc.) and the verbs (`ControlPlaneDispatchRuntimeRequest` / `Result` / `Executor`, `AgentSchedule.cron`, `CodeGraphQueryTemplate.mode`, `headroom learn --apply`). It also calls out the `headroom learn --apply` review flow as the one place in the repo where the **branch-and-review** gate is fully implemented, which prevents AI from writing to the ontology without an explicit human action.
-3. Pointed contributors at two public reference materials: Satoshi Yamauchi's open-source book [`palantir-ontology-strategy`](https://github.com/Leading-AI-IO/palantir-ontology-strategy) and the 51CTO article *"Palantir �?本体�?（Ontology）究竟是什么？"* �?both recommended reading, neither required pre-reading.
+1. Added a new "**Conceptual model: object + action**" sub-section to the outer `README.md` and the matching `概念模型：对—+ 动作` sub-section to `README.zh-CN.md`. The new sub-section makes the noun/verb split in the local surfaces explicit: objects are profiles, sessions, models, providers, skills, memories, tools, schedules, kanban tasks; actions are dispatch, schedule, commit-learn, apply-query, revert. It also names the Palantir Foundry ontology as the closest public reference frame and is honest about the scale difference (a digital twin of one desk, not of an org).
+2. Added a `### 4.3 Conceptual model: object + action (V2.10.35)` sub-section to `docs/HANDBOOK.md` and the matching `### 4.3 概念模型：对—+ 动作（V2.10.35）` sub-section to `docs/HANDBOOK.zh-CN.md`. The HANDBOOK sub-section is the long-form version: it names the actual TypeScript interfaces that are the nouns (`AgentSkill`, `AgentMemoryEntry`, `AgentTool`, `AgentSchedule`, etc.) and the verbs (`ControlPlaneDispatchRuntimeRequest` / `Result` / `Executor`, `AgentSchedule.cron`, `CodeGraphQueryTemplate.mode`, `headroom learn --apply`). It also calls out the `headroom learn --apply` review flow as the one place in the repo where the **branch-and-review** gate is fully implemented, which prevents AI from writing to the ontology without an explicit human action.
+3. Pointed contributors at two public reference materials: Satoshi Yamauchi's open-source book [`palantir-ontology-strategy`](https://github.com/Leading-AI-IO/palantir-ontology-strategy) and the 51CTO article *"Palantir —本体—（Ontology）究竟是什么？"* —both recommended reading, neither required pre-reading.
 4. Bumped `README.i18n.md`'s policy header from V2.10.28 to V2.10.35 and recorded this pass in the V2.10.28+ "Out of scope" list.
 
 **Why this is the right V2.10.35 step:**
@@ -1469,6 +1469,243 @@ A pre-retirement audit (Python word-boundary scan over 804 source / doc / config
 **Out of scope (what remains after V2.10.36):**
 
 - The `agent-desktop/docs/` tree still contains the binary-runtime docs (`CODEGRAPH-RUNTIME.md`, `EVEROS-SIDECAR.md`, `RUNTIME_ORCHESTRATION_PLAN.md`, `SSH-TUNNEL-VPS.md`) which the outer README marketplace section and the binary `agent-desktop/README.md` actively link to. Those stay.
-- The 3 changelog files (`0.4.5.md`, `0.5.0.md`, `0.6.0.md`) are legitimate per-version release notes and stay.
+- The 4 changelog files (`0.4.5.md`, `0.5.0.md`, `0.6.0.md`, `0.6.1.md`) are legitimate per-version release notes and stay. `0.6.1.md` was added in V2.10.45 to document the asar-bundling fix release.
 - The 22 `.agents/skills/**/SKILL.md` files and the `.claude/skills/hermes-agent/SKILL.md` mirror are local runtime assets and stay.
 - The `agent-desktop/changelogs/0.6.0.md` line 349 rewrite preserves the historical fact that the V2 commit plan existed; it just no longer links to a file that no longer exists. The original commit plan is recoverable from the `BRANDING_AND_LICENSE.md` V2.3-V2.4-V2.5 transition history.
+
+---
+
+## V2.10.43 鈥?v0.6.1 asar-bundling fix release
+
+**Scope:** `agent-desktop/package.json`, `agent-desktop/dev-app-update.yml`, the inner `release.yml` workflow, the V2.10.36-HANDOFF closeout, the V2.10.43a regression test, and the first ever ship of the v0.6.1 binary to the GitHub release.
+
+**What changed (V2.10.43a, commit 3490df0):**
+
+1. **asar source-path fix in `electron-builder.yml`** - the
+   `working-directory` and `--project` flag combination was set so
+   `electron-builder` no longer walks up the directory tree looking
+   for `package.json`. The v0.6.0 release had a broken asar (24,794
+   entries; the renderer's `index.html` was actually a stray
+   `highlight.js` LICENSE file; the main entry was license boilerplate)
+   because `electron-builder` ran from the monorepo root and bundled
+   the wrong tree.
+2. **Regression test** at `tests/release-bundle.test.ts` that
+   asserts a built `app.asar` has the right structure (the
+   `index.html` is the real one, the main entry is the real
+   `index.ts`, the size is sane, the i18n / Headroom / CodeGraph
+   surfaces are present).
+
+**What changed (V2.10.43b, commit 7d21aa6):**
+
+1. **npm package name** `cubecloud-agent-desktop` (was
+   `agent-desktop`).
+2. **executableName** `cubecloud-agent-desktop` (was `agent-desktop`).
+3. **updater cache** `cubecloud-agent-desktop-updater` (was
+   `agent-desktop-updater`).
+4. **One-shot config migration** for existing v0.6.0 installs: the
+   updater reads the new feed; the `latest.yml` directory name
+   matches the new `productName`; no manual `electron-updater` cache
+   clear required.
+5. **GitHub release tag** `v0.6.1` (after the V2.10.43d version bump).
+
+**What changed (V2.10.43d, commit a7e117d):**
+
+1. **Version bump** in `agent-desktop/package.json` from `0.6.0` to
+   `0.6.1`. The auto-updater offers the v0.6.1 upgrade to existing
+   v0.6.0 installs because the v0.6.1 `latest.yml` has a higher
+   version + the SHA-256 of the new `cubecloud-agent-desktop-0.6.1-setup.exe`
+   matches.
+2. **Build and publish** of v0.6.1 to the GitHub release at
+   https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v0.6.1.
+   4 assets: setup.exe (415 MB), portable.exe (415 MB), the blockmap,
+   and `latest.yml` (224 bytes). v0.6.0 marked as pre-release
+   (superseded).
+
+**What changed (V2.10.43e, commit 6f99fd4):**
+
+- Handoff doc update: V2.10.43c (directory rename) explicitly
+  **deferred** to a future session, with the full scope noted
+  (200+ path references, hardlink layer, inner workflow file,
+  1 GB of build-state cleanup). The V2.10.43c addendum I appended
+  to the handoff in V2.10.43 documents when the rename was actually
+  executed (later, on commit 3d2d511).
+
+**What changed (V2.10.43f, commit aa10cb1):**
+
+- Handoff doc update: documented the V2.10.43a-d build verification
+  (asar integrity, launch test), the `npmRebuild: false` audit
+  (safe optimization, not a bug), and the v0.6.1 release feed
+  (upgrade path from v0.6.0 is live).
+
+**What changed (V2.10.43c, commit 3d2d511):**
+
+- The V2.10.43c directory rename `cubecloud-desktop/` →
+  `agent-desktop/` is the source-tree rename. Product name
+  (`cubecloud-agent-desktop`), appId (`io.cubecloud.desktop`),
+  and updater feed stay unchanged. The rename is **purely a
+  source-tree change with zero user impact**: the v0.6.1
+  binary was already built before the rename and still installs
+  on the user's machine. The next published build (v0.6.2 or
+  later) will be built from the renamed tree, but the user
+  experience is unchanged.
+- See `V2.10.36-HANDOFF.md` §V2.10.43c for the full scope, the
+  91 files rewritten, the 642 tracked files moved, the
+  validation results, and the decisions about what was
+  deliberately NOT renamed (UA string, storage key, GitHub
+  release filename pattern, README install-command examples,
+  winget test fixtures, two natural-English phrases in
+  SKILL.md files).
+
+**Out of scope (deliberate):**
+
+- **macOS / Linux installers** - the v0.6.1 binary is Windows-only.
+  The release workflow has 6 jobs; only `release_windows` and
+  `publish` are Windows-runnable. Mac and Linux users on v0.6.0
+  cannot get the fix yet.
+- **v0.6.2** - the next published build, but the V2.10.43c
+  rename + the V2.10.45 changelog/BRANDING update are bundled
+  with whatever else is ready when v0.6.2 is cut.
+
+**Why this is the right V2.10.43 wave:**
+
+V0.6.0 was a broken release (blank window, no main process,
+wrong tree). The asar-bundling bug was a **build configuration**
+problem (V2.10.43a), not an application problem. The fix was
+3 commits, all build-infra / version-bump only: 43a fixes the
+config, 43b aligns the npm package + executable + updater cache,
+43d bumps the version and publishes. The regression test
+(V2.10.43a) catches the bug at build time, not at install time.
+The V2.10.43e/f handoff updates document the build verification.
+The V2.10.43c directory rename was deferred here and finally
+executed later in commit 3d2d511.
+
+---
+
+## V2.10.44 鈥?localize 30+ hardcoded English strings across 8 screens
+
+**Scope:** `Welcome.tsx`, `Workspace.tsx`, `Schedules.tsx`, `Settings.tsx`, `Setup.tsx`, `Headroom.tsx`, `Memory/Learnings.tsx`, `Memory/Wiki.tsx`, `Chat/WorktreePanel.tsx`, plus the corresponding `en/*.ts` and `zh-CN/*.ts` locale trees.
+
+**What changed:**
+
+1. **Welcome.tsx** - the Connect-via-SSH and Connect-to-remote-gateway
+   panels in the onboarding Welcome screen were still hardcoded
+   English, so zh-CN / ja-JP / es users saw the install copy in
+   their language and the SSH form in English. Fixed: routed every
+   visible string in Welcome.tsx through `t("...")`, and shipped
+   matching en + zh-CN keys (30+ new keys: connectRemotePanelTitle,
+   connectRemoteSubtitleHermes, sshHost, sshPort, sshUsername,
+   errorLocalInstallHeader, etc.).
+2. **Workspace.tsx, Schedules.tsx, Settings.tsx, Setup.tsx,
+   Headroom.tsx, Memory/Learnings.tsx, Memory/Wiki.tsx,
+   Chat/WorktreePanel.tsx** - the i18n audit found 63 hardcoded
+   English strings across these 7 screens. Fixed: 33 of them
+   converted to `t("...")` calls; the remaining 30 are in
+   categories intentionally left alone (test fixtures, brand
+   names, aria-labels).
+3. **Welcome.test.tsx mock** updated to resolve keys against the
+   actual en/welcome.ts + en/common.ts locale files (with
+   `{{interpolation}}` support). The 4 red tests are now green.
+4. **en/welcome.ts + zh-CN/welcome.ts** gained the 30+ new keys.
+5. **en + zh-CN** locale trees for `common`, `headroom`,
+   `schedules`, `settings`, `setup`, `memory`, `chat` updated
+   with the new keys used by the converted screens.
+6. **The `INSTALL_LANES` module-scope const** in Welcome.tsx still
+   has hardcoded "WSL / macOS / Linux" / "Windows PowerShell"
+   labels because `t` is only available inside the Welcome
+   function. The matching locale keys (installLaneUnixShell /
+   installLaneWindowsShell) are still added so future i18n
+   work has a target.
+
+**Test result delta:**
+
+- Before: 18 pre-existing baseline failures + 4 new V2.10.44
+  failures (Welcome test mock).
+- After: 14 pre-existing baseline failures (same as V2.10.43e
+  baseline). 4 tests fixed.
+
+**No version bump:** v0.6.1 is still the published installer.
+The localized strings ship in the next build (v0.6.2 or later).
+
+**Why this is the right V2.10.44 step:**
+
+The user flagged the Connect-via-SSH / Connect-to-remote-gateway
+panel as a cosmetic bug. The audit grew from there into a full
+i18n audit. The converted strings are mostly the SSH tunnel form
+labels (port, username, key path, runtime lane), the Welcome
+error headers, the Workspace context-bundle copy, the Schedules
+cron job error messages, and the Settings OpenClaw import error.
+The conversion is mechanical: a key per hardcoded string, the
+key added to both en and zh-CN, the string replaced with
+`t("...")`. The Welcome test mock needed an upgrade because
+the old `(key) => key` made the test bodies look for English
+text but the new `t("...")` calls would return raw keys.
+
+**Out of scope:**
+
+- Re-translation of the 4 inner CJK README / CONTRIBUTING files
+  (still on the V2.10.31 list, needs native speakers).
+- Native-speaker polish of the new outer zh-CN docs added in
+  V2.10.16-19 (also on the V2.10.31 list).
+- macOS / Linux installer rebuilds (carried over from V2.10.43).
+
+---
+
+## V2.10.45 鈥?version-sync + v0.6.1 changelog + BRANDING 43x entries
+
+**Scope:** `agent-desktop/changelogs/0.6.1.md` (new), `BRANDING_AND_LICENSE.md` (V2.10.43 + V2.10.44 entries appended), `V2.10.36-HANDOFF.md` already has the V2.10.43c addendum.
+
+**Why this is the right V2.10.45 step:**
+
+After the V2.10.43c directory rename was merged to main
+(commit 3d2d511), the user asked an audit question:
+"are our documents, topology, GitHub descriptions, and versions
+all synced?" The audit found 2 minor gaps:
+
+1. **`agent-desktop/changelogs/0.6.1.md` was missing.** The
+   `agent-desktop/changelogs/` directory had 0.4.5.md, 0.5.0.md,
+   and 0.6.0.md but no 0.6.1.md. v0.6.1 was the live installer
+   since 2026-06-08 but had no in-tree release notes.
+2. **BRANDING_AND_LICENSE.md had no V2.10.43 / V2.10.44 entry.**
+   The V2.10.36 + V2.10.43f handoff closeouts documented the
+   transitions, but the main provenance log jumped from
+   V2.10.36 → V2.10.44 with no record of the 4 V2.10.43
+   commits (asar fix, package rename, version bump, handoff
+   update) or the V2.10.44 i18n pass.
+
+Both gaps are documentation-only: no source code change, no
+build output change, no test change. v0.6.1 was and still is
+the published installer. The V2.10.45 commit closes both gaps
+and bumps the `## Out of scope (what remains after V2.10.36)`
+section of BRANDING_AND_LICENSE.md to "4 changelog files"
+(was "3 changelog files") to match the new state.
+
+**Files touched:**
+
+- `agent-desktop/changelogs/0.6.1.md` (new, ~3 KB): documents
+  the v0.6.0 → v0.6.1 transition, the asar-bundling bug, the
+  3-commit fix (V2.10.43a/b/d), the upgrade path for v0.6.0
+  users, and the verification table.
+- `BRANDING_AND_LICENSE.md`: appended a `## V2.10.43 - v0.6.1
+  asar-bundling fix release` section, a `## V2.10.44 - localize
+  30+ hardcoded English strings` section, and a `## V2.10.45
+  - version-sync + v0.6.1 changelog + BRANDING 43x entries`
+  section. The "3 changelog files" line in the V2.10.36
+  out-of-scope section is bumped to "4 changelog files" with
+  a one-line note pointing at this transition.
+
+**No source code change. No version bump. No build output.**
+
+**Out of scope (unchanged from V2.10.44):**
+
+- The outer `package.json` still says `version: 0.1.0` (the
+  monorepo root). This is intentional: the monorepo itself is
+  not a published package. The published app is at
+  `agent-desktop/package.json` `version: 0.6.1`, which matches
+  the v0.6.1 GitHub tag and the live installer.
+- The 7 deliberate non-rewrites from the V2.10.43c handoff
+  (UA string, localStorage key, README install examples,
+  GitHub release filename pattern, winget test fixtures, 2
+  natural-English SKILL.md phrases) are still deliberate.
+- macOS / Linux installer rebuilds (carried over since
+  V2.10.43d).
+- Native-speaker review of any of the zh-CN docs.

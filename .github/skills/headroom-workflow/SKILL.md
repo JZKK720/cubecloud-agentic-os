@@ -31,7 +31,7 @@ Before proposing new runtime integration, verify the existing surfaces:
 - the desktop Headroom screen
 - the Python proxy sidecar lifecycle manager
 - the local MCP server wrapper
-- the CodeGraph â†?Headroom compression path
+- the CodeGraph â†’Headroom compression path
 
 If the user asks "should we integrate Headroom?", the likely real gap is not the desktop runtime layer. The likely gap is the Copilot / VS Code workflow layer.
 

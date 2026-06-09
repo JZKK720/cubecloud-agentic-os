@@ -12,7 +12,7 @@
  *   `skills-lock.json` describes the user-visible skills that the
  *   Skills screen surfaces (install / uninstall / view). The user
  *   has additional knowledge surfaces that should *not* appear in
- *   any UI list â€?ECC, gbrian, gstack, andrej-karpathy-skills,
+ *   any UI list â€”ECC, gbrian, gstack, andrej-karpathy-skills,
  *   taste-skill, and friends. They survive as a hidden harness
  *   that injects itself into the chat system prompt when the user
  *   message matches the skill's intent tags.
@@ -45,7 +45,7 @@ import { join, resolve } from "path";
 export interface HiddenSkill {
   /** Stable id used in logs and dispatch telemetry. */
   readonly id: string;
-  /** Short human label â€?only used internally (logs, debugging). */
+  /** Short human label â€”only used internally (logs, debugging). */
   readonly label: string;
   /**
    * Intent tags used by the lightweight matcher. The dispatcher
@@ -73,7 +73,7 @@ export interface HiddenSkill {
   readonly includeBody?: boolean;
   /**
    * Hard cap on the body length in characters. Bodies longer than
-   * this are truncated with a `â€¦` marker. Defaults to 4000 â€?enough
+   * this are truncated with a `â€¦` marker. Defaults to 4000 â€”enough
    * for a focused procedure, small enough to keep the prompt
    * predictable. Set higher for skills that genuinely need more.
    */
@@ -98,7 +98,7 @@ export interface HiddenSkill {
 const HIDDEN_SKILLS: readonly HiddenSkill[] = [
   {
     id: "ecc",
-    label: "ECC harness â€?error-correction & continuity",
+    label: "ECC harness â€”error-correction & continuity",
     intentTags: [
       "ecc",
       "error correction",
@@ -116,7 +116,7 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
   },
   {
     id: "gbrian",
-    label: "gbrian â€?global brand & research aid",
+    label: "gbrian â€”global brand & research aid",
     intentTags: [
       "gbrian",
       "brand",
@@ -128,7 +128,7 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
   },
   {
     id: "gstack",
-    label: "gstack â€?Godot / game-stack helper",
+    label: "gstack â€”Godot / game-stack helper",
     intentTags: [
       "gstack",
       "godot",
@@ -153,7 +153,7 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
       "spellbook",
       "nano-gpt",
     ],
-    // The Karpathy skill ships a public GitHub source â€?the desktop
+    // The Karpathy skill ships a public GitHub source â€”the desktop
     // bundle already loads it as a user-visible skill from
     // `skills-lock.json` (id: "karpathy-guidelines"). The hidden
     // copy here exists so the harness can also auto-inject the
@@ -163,7 +163,7 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
   },
   {
     id: "taste-skill",
-    label: "Frontend taste â€?design heuristics for shipping UI",
+    label: "Frontend taste â€”design heuristics for shipping UI",
     intentTags: [
       "taste",
       "frontend",
@@ -177,19 +177,19 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
     includeBody: false,
   },
   {
-    // V2.9 pre-launch bundle â€?operator tone flavor.
+    // V2.9 pre-launch bundle â€”operator tone flavor.
     // Injected on every message; body is empty so the prompt stays
     // small. The flavor is the *label* only.
     id: "cubecloud-tone",
-    label: "Cubecloud operator tone â€?concise, action-shaped, honest about limits",
+    label: "Cubecloud operator tone â€”concise, action-shaped, honest about limits",
     intentTags: [],
     includeBody: false,
   },
   {
-    // V2.9 pre-launch bundle â€?cost-aware flavor.
+    // V2.9 pre-launch bundle â€”cost-aware flavor.
     // Injects when the user mentions cost, budget, or model selection.
     id: "cubecloud-economist",
-    label: "Cost-aware model and tool selection â€?pick the smallest model that can do the job",
+    label: "Cost-aware model and tool selection â€”pick the smallest model that can do the job",
     intentTags: [
       "cost",
       "budget",
@@ -202,11 +202,11 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
     includeBody: false,
   },
   {
-    // V2.9 pre-launch bundle â€?license-aware flavor.
+    // V2.9 pre-launch bundle â€”license-aware flavor.
     // Injects when the user mentions license, commercial use, or
-    // distribution â€?references the Cubecloud dual-license posture.
+    // distribution â€”references the Cubecloud dual-license posture.
     id: "cubecloud-licensor",
-    label: "License-aware â€?Cubecloud-original is dual-licensed; respect the inherited-MIT framework carve-out",
+    label: "License-aware â€”Cubecloud-original is dual-licensed; respect the inherited-MIT framework carve-out",
     intentTags: [
       "license",
       "licence",
@@ -225,7 +225,7 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
 /**
  * Read a hidden skill's body markdown. Returns the empty string when
  * the skill is `includeBody: false`, when the file is missing, or
- * when the file is unreadable. Hard-fails silently â€?the harness
+ * when the file is unreadable. Hard-fails silently â€”the harness
  * should never throw because of a missing skill file.
  */
 function readHiddenSkillBody(skill: HiddenSkill): string {
@@ -246,7 +246,7 @@ function readHiddenSkillBody(skill: HiddenSkill): string {
       if (existsSync(path) && statSync(path).isFile()) {
         const raw = readFileSync(path, "utf-8");
         if (raw.length > max) {
-          return raw.slice(0, max) + "\nâ€?truncated)";
+          return raw.slice(0, max) + "\nâ€”truncated)";
         }
         return raw;
       }
@@ -255,7 +255,7 @@ function readHiddenSkillBody(skill: HiddenSkill): string {
     }
   }
 
-  // No file found â€?the skill either has no SKILL.md (e.g. ECC is
+  // No file found â€”the skill either has no SKILL.md (e.g. ECC is
   // currently empty) or its path was wrong. Either way: silent
   // fallback to a label-only fragment.
   return "";
@@ -292,7 +292,7 @@ function scoreSkillAgainstMessage(
 /**
  * Top-K skills for a given user message, sorted by descending
  * score, ties broken by stable id order. K is small (default 3) so
- * the system prompt stays focused â€?three concurrent hidden
+ * the system prompt stays focused â€”three concurrent hidden
  * skills is the realistic maximum before the prompt becomes
  * noise.
  */

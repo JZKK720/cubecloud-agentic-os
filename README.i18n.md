@@ -33,11 +33,11 @@
 | RETIRED_AND_LEGACY (monorepo) | English | `docs/RETIRED_AND_LEGACY.md` | Live | Cubecloud Contributors |
 | RETIRED_AND_LEGACY (monorepo) | Simplified Chinese (zh-CN) | `docs/RETIRED_AND_LEGACY.zh-CN.md` | **Live, V2.10.28** (machine-translated starting point; native speakers welcome to review and polish) | Cubecloud Contributors + Community |
 | README (binary) | English | `agent-desktop/README.md` | Live, V2.10.6 | Cubecloud Contributors |
-| README (binary) | 日本�?(ja-JP) | `agent-desktop/README.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
-| README (binary) | 简体中�?(zh-CN) | `agent-desktop/README.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (binary) | 日本語(ja-JP) | `agent-desktop/README.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (binary) | 简体中文(zh-CN) | `agent-desktop/README.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (header / install / preview copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
 | CONTRIBUTING (binary) | English | `agent-desktop/CONTRIBUTING.md` | Live, source of truth | Cubecloud Contributors |
-| CONTRIBUTING (binary) | 日本�?(ja-JP) | `agent-desktop/CONTRIBUTING.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
-| CONTRIBUTING (binary) | 简体中�?(zh-CN) | `agent-desktop/CONTRIBUTING.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| CONTRIBUTING (binary) | 日本語(ja-JP) | `agent-desktop/CONTRIBUTING.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| CONTRIBUTING (binary) | 简体中文(zh-CN) | `agent-desktop/CONTRIBUTING.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
 
 ## Translation workflow
 

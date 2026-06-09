@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// Cubecloud-original pre-launch defaults â€?Skills tab.
+// Cubecloud-original pre-launch defaults â€”Skills tab.
 //
 // Three user-visible skills shipped pre-installed to every
 // Cubecloud Agent Desktop install. User can edit / disable /
@@ -38,7 +38,7 @@ export const DEFAULT_SKILLS: AgentSkill[] = [
     category: "domain-knowledge",
     description:
       "Use when the user asks about the agent's tone, persona, soul, " +
-      "or behaviour â€?invokes the default Cubecloud operator persona " +
+      "or behaviour â€”invokes the default Cubecloud operator persona " +
       "with action-shaped, honest-about-limits, concise replies.",
     path: ".agents/skills/cubecloud-persona/SKILL.md",
   },
@@ -46,7 +46,7 @@ export const DEFAULT_SKILLS: AgentSkill[] = [
     name: "cubecloud-onboarding",
     category: "workflow",
     description:
-      "Use when the user is in their first 5 minutes with the desktop â€?" +
+      "Use when the user is in their first 5 minutes with the desktop â€”" +
       "walks them through installing a runtime, configuring a provider, " +
       "running a first chat, and disabling any default pre-installed item.",
     path: ".agents/skills/cubecloud-onboarding/SKILL.md",
@@ -56,7 +56,7 @@ export const DEFAULT_SKILLS: AgentSkill[] = [
     category: "tool-integration",
     description:
       "Use when the user asks where something is defined, who calls a " +
-      "function, or what the impact of a change is â€?wraps the existing " +
+      "function, or what the impact of a change is â€”wraps the existing " +
       "CodeGraph IPC channels as a user-invocable skill.",
     path: ".agents/skills/cubegraph-code-intel/SKILL.md",
   },

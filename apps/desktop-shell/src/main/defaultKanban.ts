@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// Cubecloud-original pre-launch defaults â€?Workspace â†?Kanban tab.
+// Cubecloud-original pre-launch defaults â€”Workspace â†’Kanban tab.
 //
 // One starter board with 5 deletable example tasks. The user
 // can delete the board, delete the tasks, or convert them

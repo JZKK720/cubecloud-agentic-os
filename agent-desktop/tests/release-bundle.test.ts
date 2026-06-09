@@ -15,7 +15,7 @@
 // critical files have real content.
 //
 // The test is skipped if no asar is present, so it's safe to leave
-// enabled in CI â€?the slow part is the build, not the verification.
+// enabled in CI â€”the slow part is the build, not the verification.
 //
 // To run after a build:
 //   npm run build:unpack && npm run verify:bundle
@@ -55,7 +55,7 @@ describe.skipIf(skipReason !== null)("release bundle integrity (V2.10.43a regres
     expect(() => JSON.parse(raw)).not.toThrow();
     const pkg = JSON.parse(raw);
     // Inner package.json has main: ./out/main/index.js. The monorepo
-    // root's package.json does NOT have this field â€?it has a workspaces
+    // root's package.json does NOT have this field â€”it has a workspaces
     // declaration instead. This is the load-bearing difference.
     expect(pkg.main).toBe("./out/main/index.js");
     expect(pkg.name).toBeTruthy();
@@ -96,17 +96,17 @@ describe.skipIf(skipReason !== null)("release bundle integrity (V2.10.43a regres
     expect(/^<!doctype/i.test(html)).toBe(true);
     expect(html).toContain('id="root"');
     expect(html).toContain("<script");
-    // Spot-check that there's a CSP â€?the real index.html has one.
+    // Spot-check that there's a CSP â€”the real index.html has one.
     expect(html.toLowerCase()).toContain("content-security-policy");
   });
 
-  it("asar is reasonably sized (under 2 GB â€?sanity bound)", () => {
+  it("asar is reasonably sized (under 2 GB â€”sanity bound)", () => {
     const size = statSync(ASAR_PATH).size;
     expect(size).toBeGreaterThan(100_000_000); // at least 100 MB
     expect(size).toBeLessThan(2_000_000_000); // less than 2 GB
   });
 
-  it("asar top-level is bounded (under 50 entries â€?sanity bound)", () => {
+  it("asar top-level is bounded (under 50 entries â€”sanity bound)", () => {
     // The V2.10.42 broken asar had 28 top-level entries including
     // .agents/, .claude/, docs/, etc. that are real inner copies, so
     // 28 is a reasonable upper bound for the clean asar too. But the

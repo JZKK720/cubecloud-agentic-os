@@ -164,7 +164,7 @@ describe("generateWingetManifests", () => {
   });
 
   it("throws a clear error when the templates directory is missing", () => {
-    // Do NOT call setupTemplates â€?the templates directory should not exist.
+    // Do NOT call setupTemplates â€”the templates directory should not exist.
     const distDir = join(TEST_DIR, "dist");
     mkdirSync(distDir, { recursive: true });
     writeFileSync(

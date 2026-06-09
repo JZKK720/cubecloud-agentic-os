@@ -73,28 +73,28 @@ npm run package:mac     # macOS DMG
 ```
 agent-desktop/
 ├── .agents/skills/              # The skills layer (20 skills + autoresearch harness)
-�?  ├── README.md                # Top-level skills index + decision tree
-�?  ├── ar-autoresearch/         # The one skill with a functioning code harness
-�?  ├── po-*/                    # poskills adaptations
-�?  ├── ecc-*/                   # ECC adaptations
-�?  ├── gbrain-*/                # gbrain adaptations
-�?  ├── gstack-*/                # gstack adaptations
-�?  └── karpathy-guidelines/     # the four principles
+│   ├── README.md                # Top-level skills index + decision tree
+│   ├── ar-autoresearch/         # The one skill with a functioning code harness
+│   ├── po-*/                    # poskills adaptations
+│   ├── ecc-*/                   # ECC adaptations
+│   ├── gbrain-*/                # gbrain adaptations
+│   ├── gstack-*/                # gstack adaptations
+│   └── karpathy-guidelines/     # the four principles
 ├── apps/
-�?  └── desktop-shell/           # Cubecloud-original state layer (SQLite + dispatch)
+│   └── desktop-shell/           # Cubecloud-original state layer (SQLite + dispatch)
 ├── build/
-�?  ├── branding/                # Cubecloud brand assets (logos, marks)
-�?  ├── entitlements.mac.plist   # macOS entitlements
-�?  ├── afterPack.js             # post-package hook
-�?  └── icon.*                   # Binary app icons (pending Cubecloud source art)
+│   ├── branding/                # Cubecloud brand assets (logos, marks)
+│   ├── entitlements.mac.plist   # macOS entitlements
+│   ├── afterPack.js             # post-package hook
+│   └── icon.*                   # Binary app icons (pending Cubecloud source art)
 ├── changelogs/                  # Per-release changelogs
 ├── dist/                        # Build output (gitignored)
 ├── docs/                        # Architecture + legal + specs
-�?  ├── HANDBOOK.md              # Master index (you are here in the repo)
-�?  ├── handbook/                # Long-form companions
-�?  ├── legal/                   # Cubecloud legal docs (EULA, trademark, etc.)
-�?  ├── superpowers/specs/       # Design specs for the V2.x waves
-�?  └── *.md                     # Architecture docs (CodeGraph, EverOS, runtime plan)
+│   ├── HANDBOOK.md              # Master index (you are here in the repo)
+│   ├── handbook/                # Long-form companions
+│   ├── legal/                   # Cubecloud legal docs (EULA, trademark, etc.)
+│   ├── superpowers/specs/       # Design specs for the V2.x waves
+│   └── *.md                     # Architecture docs (CodeGraph, EverOS, runtime plan)
 ├── electron.vite.config.ts      # electron-vite build config
 ├── licenses/                    # Vendored upstream license texts
 ├── out/                         # Build output (gitignored)
@@ -102,19 +102,19 @@ agent-desktop/
 ├── resources/                   # Static assets shipped with the binary
 ├── scripts/                     # CDP-driven smoke + capture scripts
 ├── src/
-�?  ├── main/                    # Main process (Node 20 target)
-�?  �?  ├── index.ts             # Entry point; IPC channel registration
-�?  �?  ├── codegraph.ts         # CodeGraph CLI subprocess
-�?  �?  ├── codegraph-runtime.ts # CodeGraph embedded SDK (Cubecloud-original)
-�?  �?  ├── everos-sidecar.ts    # EverOS lifecycle (Cubecloud-original)
-�?  �?  ├── hermes-runtime/      # Hermes orchestration
-�?  �?  ├── openclaw/            # OpenClaw orchestration (V2.6+)
-�?  �?  ├── ironclaw/            # IronClaw orchestration (V2.6+)
-�?  �?  └── skills-harness.ts    # Skills resolver (Cubecloud-original)
-�?  ├── preload/                 # Preload process (contextBridge surface)
-�?  �?  └── index.ts             # The narrow IPC bridge
-�?  └── renderer/                # Renderer (React 19 + i18next)
-�?      └── src/                 # All screens
+│   ├── main/                    # Main process (Node 20 target)
+│   │   ├── index.ts             # Entry point; IPC channel registration
+│   │   ├── codegraph.ts         # CodeGraph CLI subprocess
+│   │   ├── codegraph-runtime.ts # CodeGraph embedded SDK (Cubecloud-original)
+│   │   ├── everos-sidecar.ts    # EverOS lifecycle (Cubecloud-original)
+│   │   ├── hermes-runtime/      # Hermes orchestration
+│   │   ├── openclaw/            # OpenClaw orchestration (V2.6+)
+│   │   ├── ironclaw/            # IronClaw orchestration (V2.6+)
+│   │   └── skills-harness.ts    # Skills resolver (Cubecloud-original)
+│   ├── preload/                 # Preload process (contextBridge surface)
+│   │   └── index.ts             # The narrow IPC bridge
+│   └── renderer/                # Renderer (React 19 + i18next)
+│       └── src/                 # All screens
 ├── tests/                       # Vitest tests
 ├── ACKNOWLEDGMENTS.md           # Human-readable upstream credits
 ├── BRANDING_AND_LICENSE.md      # License + brand history
@@ -122,8 +122,8 @@ agent-desktop/
 ├── LICENSE                      # Dual-license notice
 ├── NOTICE                       # REUSE-compliant attribution catalog
 ├── README.md                    # The README (English)
-├── README.zh-CN.md              # The README (简体中�?
-├── README.ja-JP.md              # The README (日本�?
+├── README.zh-CN.md              # The README (简体中文)
+├── README.ja-JP.md              # The README (日本語)
 ├── SECURITY.md                  # Security policy
 └── THREAT_MODEL.md              # Working threat model
 ```
@@ -132,19 +132,19 @@ agent-desktop/
 
 The full set is in the universal coding standards skill at [`.agents/skills/ecc-coding-standards/SKILL.md`](../../.agents/skills/ecc-coding-standards/SKILL.md). The desktop-specific headlines:
 
-- **TypeScript strict** �?`strict: true` in `tsconfig.json` and the two derived tsconfigs. No `any` at API boundaries; use `unknown` and narrow.
-- **React 19 function components** �?no class components, hooks-only.
-- **i18n-first** �?every user-visible string goes through `i18next`. No hard-coded English in JSX.
-- **SPDX headers** �?every Cubecloud-original file carries `SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)`. Inherited framework files are MIT and don't need a header.
-- **No drive-by refactoring** �?a change is focused on the user-asked-for thing. Format-only changes belong in a separate commit.
-- **No drive-by reformatting** of unrelated code �?match the existing style, even if you would do it differently.
+- **TypeScript strict** —`strict: true` in `tsconfig.json` and the two derived tsconfigs. No `any` at API boundaries; use `unknown` and narrow.
+- **React 19 function components** —no class components, hooks-only.
+- **i18n-first** —every user-visible string goes through `i18next`. No hard-coded English in JSX.
+- **SPDX headers** —every Cubecloud-original file carries `SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)`. Inherited framework files are MIT and don't need a header.
+- **No drive-by refactoring** —a change is focused on the user-asked-for thing. Format-only changes belong in a separate commit.
+- **No drive-by reformatting** of unrelated code —match the existing style, even if you would do it differently.
 
 ## Where the boundaries are (re-stated from the handbook)
 
-- **Trust boundary** �?the local user. The agent runtime runs in the user's context; the renderer is sandboxed by Electron's standard isolation; IPC channels are explicit and unguessable.
-- **License boundary** �?inherited framework code (MIT, can't be retroactively restricted) vs Cubecloud-original work (dual-license, AGPL-3.0-or-later primary). The `BRANDING_AND_LICENSE.md` and `LICENSE` are the binding documents.
-- **Brand boundary** �?Cubecloud marks are All-rights-reserved. `docs/legal/TRADEMARK_POLICY.md` is the binding document.
-- **Process boundary** �?main process, preload, renderer, and (optionally) the EverOS sidecar process.
+- **Trust boundary** —the local user. The agent runtime runs in the user's context; the renderer is sandboxed by Electron's standard isolation; IPC channels are explicit and unguessable.
+- **License boundary** —inherited framework code (MIT, can't be retroactively restricted) vs Cubecloud-original work (dual-license, AGPL-3.0-or-later primary). The `BRANDING_AND_LICENSE.md` and `LICENSE` are the binding documents.
+- **Brand boundary** —Cubecloud marks are All-rights-reserved. `docs/legal/TRADEMARK_POLICY.md` is the binding document.
+- **Process boundary** —main process, preload, renderer, and (optionally) the EverOS sidecar process.
 
 ## Per-task workflows
 
@@ -173,13 +173,13 @@ The full set is in the universal coding standards skill at [`.agents/skills/ecc-
    // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
    ```
 2. If the file is a TypeScript / TSX / JavaScript / Python source, add a short comment naming the upstream basis (e.g. "Cubecloud-original work (2026); no upstream basis") so the next maintainer can re-derive the chain.
-3. Add the file to the right section of `NOTICE` §"Direct dependencies �?Cubecloud-original work".
+3. Add the file to the right section of `NOTICE` §"Direct dependencies —Cubecloud-original work".
 4. If the file adds a new brand surface (logo, wordmark, splash), add it to `docs/legal/TRADEMARK_POLICY.md`.
 
 ### Adding a new skill
 
-1. Run [`gbrain-skillify`](../../.agents/skills/gbrain-skillify/SKILL.md) �?the 11-axis gate. Most ideas fail.
-2. Run [`ecc-skill-scout`](../../.agents/skills/ecc-skill-scout/SKILL.md) �?search-before-write.
+1. Run [`gbrain-skillify`](../../.agents/skills/gbrain-skillify/SKILL.md) —the 11-axis gate. Most ideas fail.
+2. Run [`ecc-skill-scout`](../../.agents/skills/ecc-skill-scout/SKILL.md) —search-before-write.
 3. Read [`po-write-a-skill`](../../.agents/skills/po-write-a-skill/SKILL.md) for the authoring contract.
 4. Write the SKILL.md (500 line cap).
 5. Add a row to [`.agents/skills/README.md`](../../.agents/skills/README.md).
@@ -198,26 +198,26 @@ The full set is in the universal coding standards skill at [`.agents/skills/ecc-
 
 ## Debugging
 
-- **Main process logs** �?`~/.hermes/logs/gateway.log` and the per-runtime log file. The desktop also tails these to the in-app "Console" screen.
-- **Renderer logs** �?DevTools console (Ctrl+Shift+I in dev mode).
-- **Preload logs** �?Node 20 console in the DevTools "Console" tab.
-- **CDP attach** �?start the desktop with `npm run dev:cdp`, then open `chrome://inspect` in Chrome and attach to `127.0.0.1:9229`.
-- **Vitest** �?`npm run test` for the unit tests; `npm run test:watch` for watch mode.
-- **TypeScript** �?`npm run typecheck` for a one-shot check; the editor's Pylance/TS Language Server for in-line errors.
+- **Main process logs** —`~/.hermes/logs/gateway.log` and the per-runtime log file. The desktop also tails these to the in-app "Console" screen.
+- **Renderer logs** —DevTools console (Ctrl+Shift+I in dev mode).
+- **Preload logs** —Node 20 console in the DevTools "Console" tab.
+- **CDP attach** —start the desktop with `npm run dev:cdp`, then open `chrome://inspect` in Chrome and attach to `127.0.0.1:9229`.
+- **Vitest** —`npm run test` for the unit tests; `npm run test:watch` for watch mode.
+- **TypeScript** —`npm run typecheck` for a one-shot check; the editor's Pylance/TS Language Server for in-line errors.
 
 ## Common pitfalls
 
-- **"I added an IPC channel but the renderer can't see it"** �?the preload bridge (`src/preload/index.ts`) is the only surface the renderer can see. Adding a handler in the main is not enough; you must also expose it through the preload.
-- **"The build works but the binary doesn't start"** �?check the entitlements (`build/entitlements.mac.plist` on macOS) and the auto-updater channel. The desktop uses `electron-updater` for stable releases; if the channel is misconfigured, the auto-update can block startup.
-- **"The skills don't auto-activate"** �?check the frontmatter. The `description` field is the only thing the agent runtime sees when deciding whether to load a skill. If it's vague, the skill is loaded at the wrong times (or never).
-- **"The TypeScript build complains about a missing type"** �?the desktop pins types to the lockfile. Run `npm ci` to restore the lockfile-accurate types; do not run `npm install <package>` without updating the lockfile.
+- **"I added an IPC channel but the renderer can't see it"** —the preload bridge (`src/preload/index.ts`) is the only surface the renderer can see. Adding a handler in the main is not enough; you must also expose it through the preload.
+- **"The build works but the binary doesn't start"** —check the entitlements (`build/entitlements.mac.plist` on macOS) and the auto-updater channel. The desktop uses `electron-updater` for stable releases; if the channel is misconfigured, the auto-update can block startup.
+- **"The skills don't auto-activate"** —check the frontmatter. The `description` field is the only thing the agent runtime sees when deciding whether to load a skill. If it's vague, the skill is loaded at the wrong times (or never).
+- **"The TypeScript build complains about a missing type"** —the desktop pins types to the lockfile. Run `npm ci` to restore the lockfile-accurate types; do not run `npm install <package>` without updating the lockfile.
 
 ---
 
 **Where to look next.** [`docs/HANDBOOK.md`](../HANDBOOK.md) for the master index, [`.agents/skills/po-diagnose/`](../../.agents/skills/po-diagnose/SKILL.md) for the diagnosis loop when something is broken, [`.agents/skills/po-tdd/`](../../.agents/skills/po-tdd/SKILL.md) for the test-first workflow, [`.agents/skills/gstack-qa/`](../../.agents/skills/gstack-qa/SKILL.md) for the pre-ship gate.
 
-**Recent updates (V2.6 �?V2.10).** This file was last
-substantively edited during the V2.4 �?V2.6 brand-license
+**Recent updates (V2.6 —V2.10).** This file was last
+substantively edited during the V2.4 —V2.6 brand-license
 wave. The V2.7 (superpowers skills), V2.8 (description-trim audit),
 V2.9 (pre-launch bundle, 40/40 smoke), and V2.10 (doc-move, README
 split, i18n cleanup, previews cleanup, provenance cross-link,

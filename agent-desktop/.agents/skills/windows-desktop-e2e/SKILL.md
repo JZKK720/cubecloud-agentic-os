@@ -17,7 +17,7 @@ The primary development and shipping target is **Windows 10/11**. This skill cap
 Use this skill when:
 
 - A test passes on macOS/Linux CI but fails on Windows.
-- A file edit doesn't show up at runtime â€?usually CRLF vs LF.
+- A file edit doesn't show up at runtime â€”usually CRLF vs LF.
 - A subprocess call (e.g. `hermes-agent`, `codegraph`) returns "not found" even though the binary exists.
 - The Electron build is slow or the signed binary upload fails.
 
@@ -46,13 +46,13 @@ Em-dashes (`â€”`) typed into a prompt can survive a `create_file` round-trip as 
 00000010   3F 3F 6F 76 65 72 6C 61 79  ??overlay
 ```
 
-`3F 3F` is `??` â€?the em-dash got swallowed. Replace with a hyphen `-` or `â€”` (after re-typing the file).
+`3F 3F` is `??` â€”the em-dash got swallowed. Replace with a hyphen `-` or `â€”` (after re-typing the file).
 
 ## PowerShell quirks
 
 ### Stash references
 
-`git stash pop 'stash@{0}'` â€?always quote the stash ref. The `@{}` may be parsed as a hashtable otherwise.
+`git stash pop 'stash@{0}'` â€”always quote the stash ref. The `@{}` may be parsed as a hashtable otherwise.
 
 ### Assignment in one-liners
 
@@ -102,6 +102,6 @@ On Windows, every `child_process.spawn` opens a console window for a few ms unle
 
 ## Reference
 
-- `docs/append-design-dials-css.cjs` â€?pattern for adding content to a file with a known anchor.
-- `docs/refactor-ua-status.cjs` â€?pattern for refactoring main-process files with `\r\n` anchors.
-- `docs/add-skills-source-i18n.cjs` â€?pattern for batch-adding i18n keys to all 8 locales.
+- `docs/append-design-dials-css.cjs` â€”pattern for adding content to a file with a known anchor.
+- `docs/refactor-ua-status.cjs` â€”pattern for refactoring main-process files with `\r\n` anchors.
+- `docs/add-skills-source-i18n.cjs` â€”pattern for batch-adding i18n keys to all 8 locales.

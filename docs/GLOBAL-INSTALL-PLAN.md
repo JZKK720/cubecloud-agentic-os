@@ -257,9 +257,9 @@ headroom wrap copilot --subscription -- --model gpt-4o
 ### 6. EverOS (long-term memory framework)
 
 Python framework (markdown + SQLite + LanceDB) for "conversations,
-agent trajectories, and files â†?structured, retrievable, evolving
+agent trajectories, and files â†’structured, retrievable, evolving
 long-term memory". Architecture: DDD 5 layers, dual-track memory
-(user-track + agent-track), cascade file-watcher â†?sub-second sync.
+(user-track + agent-track), cascade file-watcher â†’sub-second sync.
 
 **Skip the engine.** It's a Python service, not a Copilot-skill-shaped
 artifact. Installing it for "global Copilot" requires a long-lived
@@ -270,7 +270,7 @@ storage location.
 - The *memory taxonomy* (`user.md` + `episodes/` + `.atomic_facts/` +
   `.foresights/` + `agent.md` + `.cases/` + `skills/`) is a really
   good shape for personal-knowledge management.
-- The *cascade file-watcher â†?diff â†?sync* idea is what makes gbrain
+- The *cascade file-watcher â†’diff â†’sync* idea is what makes gbrain
   feel instant. If you build your own memory layer, copy that.
 
 ### 7. ECC (everything-claude-code by affaan-m)

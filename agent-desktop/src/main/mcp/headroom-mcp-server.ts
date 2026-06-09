@@ -1,11 +1,11 @@
 /**
- * Headroom MCP server â€?implements the [Model Context Protocol
+ * Headroom MCP server â€”implements the [Model Context Protocol
  * Streamable HTTP transport](https://modelcontextprotocol.io) and
  * exposes three tools that wrap the existing Headroom IPC:
  *
- *   - `headroom_compress`  â†?IPC `headroom-compress`
- *   - `headroom_retrieve`  â†?IPC `headroom-retrieve`
- *   - `headroom_stats`     â†?IPC `headroom-stats`
+ *   - `headroom_compress`  â†’IPC `headroom-compress`
+ *   - `headroom_retrieve`  â†’IPC `headroom-retrieve`
+ *   - `headroom_stats`     â†’IPC `headroom-stats`
  *
  * Why a local HTTP MCP server instead of stdio?
  *
@@ -40,16 +40,16 @@
  *
  * Wire format (Streamable HTTP transport, JSON-only):
  *
- *   - `POST /mcp`        â€?JSON-RPC request body
- *   - `GET  /mcp`        â€?405 (we don't support SSE streaming)
- *   - `DELETE /mcp`      â€?200 (no active sessions to close)
- *   - `GET  /health`     â€?`{ok: true, version, name, tools}`
+ *   - `POST /mcp`        â€”JSON-RPC request body
+ *   - `GET  /mcp`        â€”405 (we don't support SSE streaming)
+ *   - `DELETE /mcp`      â€”200 (no active sessions to close)
+ *   - `GET  /health`     â€”`{ok: true, version, name, tools}`
  *
  * The server validates JSON-RPC envelopes itself; tool calls are
  * routed by `method === "tools/call"` + `params.name`. The
  * response is always a single JSON object with
  * `{ content: [{ type: "text", text: <stringified JSON> }] }`
- * â€?text content is the universal MCP fallback that every
+ * â€”text content is the universal MCP fallback that every
  * client knows how to render.
  */
 
@@ -144,7 +144,7 @@ interface Runtime {
   port: number;
   host: string;
   /** Per-instance IPC dispatch (set by `setHeadroomMcpDispatcher`
-   *  from the Electron main process â€?the server lives in this
+   *  from the Electron main process â€”the server lives in this
    *  same process for now, but routing through a single
    *  dispatcher keeps the surface mockable for tests). */
   dispatcher: HeadroomMcpDispatcher;
@@ -215,7 +215,7 @@ function defaultDispatcher(): HeadroomMcpDispatcher {
   };
 }
 
-/** Install the real IPC dispatcher. Idempotent â€?calling more
+/** Install the real IPC dispatcher. Idempotent â€”calling more
  *  than once just swaps the implementation. */
 export function setHeadroomMcpDispatcher(
   dispatcher: HeadroomMcpDispatcher,
@@ -331,7 +331,7 @@ export async function startHeadroomMcpServer(
     appendLog(`[mcp-server] ready at ${runtime.status.baseUrl}`);
   } else {
     appendLog("[mcp-server] health probe timed out; child still alive");
-    // We don't kill the child here â€?it may still bind
+    // We don't kill the child here â€”it may still bind
     // successfully and the renderer can re-probe. The supervisor
     // will tear it down on stop() or on the next crash.
     runtime.status.state = "starting";
@@ -471,7 +471,7 @@ function resolveServerScriptPath(override: string | undefined): string | null {
   if (existsSync(here)) return here;
   // Fallback: maybe we're in a bundled context where __filename
   // doesn't exist on disk (e.g. esbuild virtual fs). Look for
-  // a sibling .js â€?the test harness writes the bundled output
+  // a sibling .js â€”the test harness writes the bundled output
   // next to the .ts.
   const jsSibling = here.replace(/\.ts$/, ".js");
   if (existsSync(jsSibling)) return jsSibling;
@@ -483,7 +483,7 @@ function resolveServerScriptPath(override: string | undefined): string | null {
 /** Public entry point used by the HTTP layer in this same
  *  process. The Electron main process calls this directly via
  *  `handleMcpRequest` rather than going over the loopback HTTP
- *  socket â€?same code, no extra round trip. */
+ *  socket â€”same code, no extra round trip. */
 export async function handleMcpRequest(
   body: unknown,
 ): Promise<Record<string, unknown>> {
@@ -746,7 +746,7 @@ async function handleHttpRequest(
   }
   if (req.method === "GET") {
     // The Streamable-HTTP transport allows SSE streaming GETs,
-    // but we only support request/response â€?return 405 with
+    // but we only support request/response â€”return 405 with
     // an explanatory body so misbehaving clients fail loudly.
     sendJson(res, 405, {
       error: "use POST for JSON-RPC; GET /mcp is not supported",
@@ -761,7 +761,7 @@ async function handleHttpRequest(
     sendJson(res, 405, { error: "method not allowed" });
     return;
   }
-  // Parse the body. Cap at 16 MB â€?compression payloads can be
+  // Parse the body. Cap at 16 MB â€”compression payloads can be
   // large but the user can also accidentally paste a giant
   // file; either way we want to reject before OOMing.
   const MAX_BODY = 16 * 1024 * 1024;
@@ -822,7 +822,7 @@ export function __getLogBufferForTests(): string[] {
 }
 
 /** Reset the runtime between tests. Not exported in `package.json`
- *  builds â€?purely an internal seam. */
+ *  builds â€”purely an internal seam. */
 export function __resetForTests(): void {
   clearRestartTimer();
   if (runtime.child) {

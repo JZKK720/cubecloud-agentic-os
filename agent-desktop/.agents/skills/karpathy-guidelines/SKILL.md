@@ -71,15 +71,15 @@ The test: every changed line should trace directly to the user's request.
 **Define success criteria. Loop until verified.**
 
 Transform imperative tasks into verifiable goals:
-- "Add validation" â†?"Write tests for invalid inputs, then make them pass"
-- "Fix the bug" â†?"Write a test that reproduces it, then make it pass"
-- "Refactor X" â†?"Ensure tests pass before and after"
+- "Add validation" â†’"Write tests for invalid inputs, then make them pass"
+- "Fix the bug" â†’"Write a test that reproduces it, then make it pass"
+- "Refactor X" â†’"Ensure tests pass before and after"
 
 For multi-step tasks, state a brief plan:
 ```
-1. [Step] â†?verify: [check]
-2. [Step] â†?verify: [check]
-3. [Step] â†?verify: [check]
+1. [Step] â†’verify: [check]
+2. [Step] â†’verify: [check]
+3. [Step] â†’verify: [check]
 ```
 
 Strong success criteria let the agent loop independently. Weak criteria

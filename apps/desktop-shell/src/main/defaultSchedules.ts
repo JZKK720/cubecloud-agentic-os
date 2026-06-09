@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// Cubecloud-original pre-launch defaults â€?Workspace â†?Schedules tab.
+// Cubecloud-original pre-launch defaults â€”Workspace â†’Schedules tab.
 //
 // One disabled schedule shipped pre-installed. The user
 // enables it after they have configured a profile (the
@@ -20,13 +20,13 @@ import type { AgentSchedule } from "@cubecloud/platform-core";
  * against that profile.
  *
  * Design rules:
- *   - `enabled: false` â€?user enables explicitly.
- *   - `profile: "default"` â€?uses the user's default
+ *   - `enabled: false` â€”user enables explicitly.
+ *   - `profile: "default"` â€”uses the user's default
  *     profile; user can change.
  *   - `cron` is a 5-field standard cron expression.
  *   - `prompt` is the prompt the schedule sends to the
  *     agent runtime when the schedule fires.
- *   - `kanbanBoardSlug: null` â€?no kanban board wired
+ *   - `kanbanBoardSlug: null` â€”no kanban board wired
  *     initially; user can wire after enabling.
  */
 export const DEFAULT_SCHEDULES: AgentSchedule[] = [

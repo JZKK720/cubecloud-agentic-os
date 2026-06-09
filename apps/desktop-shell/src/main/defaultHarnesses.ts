@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// Cubecloud-original pre-launch defaults â€?Workspace â†?EverOS tab.
+// Cubecloud-original pre-launch defaults â€”Workspace â†’EverOS tab.
 //
 // Three disabled EverOS harnesses shipped pre-installed. The
 // user enables each one only after they have installed
@@ -22,11 +22,11 @@ import type { EverOsHarness } from "@cubecloud/platform-core";
  * separately).
  *
  * Design rules:
- *   - `enabled: false` â€?user enables after installing
+ *   - `enabled: false` â€”user enables after installing
  *     `everos` and validating the sidecar is reachable.
- *   - `profile: "default"` â€?uses the user's default
+ *   - `profile: "default"` â€”uses the user's default
  *     profile; user can change.
- *   - `scheduleId: null` â€?manual run; user can wire to
+ *   - `scheduleId: null` â€”manual run; user can wire to
  *     a schedule after enabling.
  *   - `loopPrompt` is the prompt the harness sends to
  *     the agent runtime when the harness runs.

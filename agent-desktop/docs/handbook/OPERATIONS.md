@@ -12,7 +12,7 @@
 #  the brand transition is finalised)
 Invoke-WebRequest -Uri https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/cubecloud-desktop-setup.msi -OutFile cubecloud-setup.msi
 
-# Run the installer (SmartScreen will warn â€?click "More info" â†?"Run anyway")
+# Run the installer (SmartScreen will warn â€”click "More info" â†’"Run anyway")
 msiexec /i cubecloud-setup.msi
 ```
 
@@ -36,31 +36,31 @@ open cubecloud.dmg
 
 On first launch, the desktop walks the user through:
 
-1. **Runtime choice** â€?local install of Hermes (default), or attach to a remote / Docker-published / SSH-tunneled gateway.
-2. **Provider setup** â€?pick a local model endpoint (Ollama, vLLM, llama.cpp) or a remote provider (any OpenAI-compatible API).
-3. **API key** â€?only for remote providers. Stored in the user's home dir under the runtime's config dir; never in the desktop's own DB.
-4. **Test chat** â€?the wizard sends a one-shot test message to confirm the runtime + provider wiring.
+1. **Runtime choice** â€”local install of Hermes (default), or attach to a remote / Docker-published / SSH-tunneled gateway.
+2. **Provider setup** â€”pick a local model endpoint (Ollama, vLLM, llama.cpp) or a remote provider (any OpenAI-compatible API).
+3. **API key** â€”only for remote providers. Stored in the user's home dir under the runtime's config dir; never in the desktop's own DB.
+4. **Test chat** â€”the wizard sends a one-shot test message to confirm the runtime + provider wiring.
 
 ## Day-2 operations
 
 ### Where the data lives
 
-- **Desktop state** (profiles, sessions, models, providers, skills, memory, tools, schedules, kanban) â€?in the desktop's SQLite database under the user's app-data dir.
+- **Desktop state** (profiles, sessions, models, providers, skills, memory, tools, schedules, kanban) â€”in the desktop's SQLite database under the user's app-data dir.
   - Windows: `%APPDATA%\agent-desktop\state.db`
   - macOS: `~/Library/Application Support/agent-desktop/state.db`
   - Linux: `~/.config/agent-desktop/state.db`
-- **Runtime state** (Hermes / OpenClaw / IronClaw) â€?in the runtime's own home dir.
+- **Runtime state** (Hermes / OpenClaw / IronClaw) â€”in the runtime's own home dir.
   - Hermes: `~/.hermes/`
   - OpenClaw: `~/.openclaw/`
   - IronClaw: configured at install time
-- **Logs** â€?in the runtime's log dir; the desktop tails them to the in-app "Console" screen.
-- **Backups** â€?produced by the desktop's Settings â†?Backup, or by `tar -czf cubecloud-backup.tar.gz <state-db-path> <runtime-home>`.
+- **Logs** â€”in the runtime's log dir; the desktop tails them to the in-app "Console" screen.
+- **Backups** â€”produced by the desktop's Settings â†’Backup, or by `tar -czf cubecloud-backup.tar.gz <state-db-path> <runtime-home>`.
 
 ### Common operational tasks
 
 #### Restart a stuck runtime
 
-The desktop's Settings â†?Runtime â†?"Restart" button is the safe path. If the runtime is wedged and the desktop's button does not work, the operator can SIGTERM the runtime process from the OS:
+The desktop's Settings â†’Runtime â†’"Restart" button is the safe path. If the runtime is wedged and the desktop's button does not work, the operator can SIGTERM the runtime process from the OS:
 
 ```bash
 # Find the runtime pid
@@ -78,19 +78,19 @@ kill -9 <pid>
 
 #### Inspect a failing chat
 
-1. Open Settings â†?Console.
+1. Open Settings â†’Console.
 2. Find the chat session ID in the chat screen.
 3. Search the gateway log for the session ID.
 4. Most chat failures are one of:
-   - **Provider unreachable** â€?the user's local model server crashed, or the remote API key is invalid. Fix the provider, restart the chat.
-   - **Runtime gateway stuck** â€?the runtime's HTTP server is up but not responding. Restart the runtime.
-   - **Skill activation loop** â€?a skill is being auto-activated and recursively activating itself. Disable the skill in Settings â†?Skills.
+   - **Provider unreachable** â€”the user's local model server crashed, or the remote API key is invalid. Fix the provider, restart the chat.
+   - **Runtime gateway stuck** â€”the runtime's HTTP server is up but not responding. Restart the runtime.
+   - **Skill activation loop** â€”a skill is being auto-activated and recursively activating itself. Disable the skill in Settings â†’Skills.
 
 #### Roll back a release
 
 The desktop stores the previous version's installer payload under the user's app-data dir. To roll back:
 
-1. Settings â†?Updates â†?"Show update history".
+1. Settings â†’Updates â†’"Show update history".
 2. Click "Roll back to <version>".
 3. The desktop will uninstall the current version and install the previous one.
 
@@ -98,11 +98,11 @@ For emergency rollbacks (the auto-update itself is broken), the operator can:
 
 1. Download the previous MSI/RPM/DMG from the GitHub release page.
 2. Run the installer over the current install.
-3. The desktop's `electron-updater` is configured to roll forward on next launch; disable auto-update in Settings â†?Updates first.
+3. The desktop's `electron-updater` is configured to roll forward on next launch; disable auto-update in Settings â†’Updates first.
 
 #### Backup and restore
 
-The desktop's Settings â†?Backup produces a tar.gz containing:
+The desktop's Settings â†’Backup produces a tar.gz containing:
 
 - The state SQLite database.
 - The runtime home dir (Hermes / OpenClaw / IronClaw, whichever is configured).
@@ -111,7 +111,7 @@ The desktop's Settings â†?Backup produces a tar.gz containing:
 
 To restore:
 
-1. Settings â†?Backup â†?Restore.
+1. Settings â†’Backup â†’Restore.
 2. Pick the tar.gz.
 3. The desktop verifies the SHA-256, stops the current runtime, restores the state, and restarts the runtime.
 
@@ -126,7 +126,7 @@ rm -rf ~/Library/Application\ Support/agent-desktop
 rm -rf ~/Library/Logs/agent-desktop
 
 # Windows
-# Use "Apps & Features" â†?Cubecloud Desktop â†?Uninstall.
+# Use "Apps & Features" â†’Cubecloud Desktop â†’Uninstall.
 # Then remove %APPDATA%\agent-desktop and %LOCALAPPDATA%\agent-desktop.
 
 # Linux
@@ -141,45 +141,45 @@ The runtime homes (`~/.hermes/`, etc.) are *not* removed by the desktop's uninst
 
 ### Release checklist
 
-The binding checklist is in `docs/HANDBOOK.md` Â§9. The full diff narrative for the V2.4 â†?V2.5 â†?V2.6 wave is in `BRANDING_AND_LICENSE.md` Â§"V2.4 / V2.5 / V2.6 transitions landed". The release spec is in `docs/superpowers/specs/2026-04-30-windows-winget-fedora-rpm-release-design.md`.
+The binding checklist is in `docs/HANDBOOK.md` Â§9. The full diff narrative for the V2.4 â†’V2.5 â†’V2.6 wave is in `BRANDING_AND_LICENSE.md` Â§"V2.4 / V2.5 / V2.6 transitions landed". The release spec is in `docs/superpowers/specs/2026-04-30-windows-winget-fedora-rpm-release-design.md`.
 
 ### Monitoring
 
-- **In-app Console** â€?Settings â†?Console tails the runtime's log.
-- **Per-screen smoke runs** â€?`scripts/verify-*.js` (CDP-driven). Run before each release.
-- **Aggregator smoke run** â€?`scripts/smoke-all.js` runs every `verify-*.js` in sequence.
-- **Preview captures** â€?`scripts/capture-*.js` produces the per-screen PNGs that ship with the release notes.
+- **In-app Console** â€”Settings â†’Console tails the runtime's log.
+- **Per-screen smoke runs** â€”`scripts/verify-*.js` (CDP-driven). Run before each release.
+- **Aggregator smoke run** â€”`scripts/smoke-all.js` runs every `verify-*.js` in sequence.
+- **Preview captures** â€”`scripts/capture-*.js` produces the per-screen PNGs that ship with the release notes.
 
 ### Incident response
 
 The binding doc is `SECURITY.md`. The headlines:
 
-- **Security reports** â€?see `SECURITY.md` for the private reporting channels. Do not file a public issue for a security problem.
-- **Vulnerability disclosure timeline** â€?90 days from private report to public disclosure, with a 14-day grace extension if the reporter asks.
-- **Supported versions** â€?the latest minor of the latest major (N), and the previous minor (N-1). Older versions are not patched.
+- **Security reports** â€”see `SECURITY.md` for the private reporting channels. Do not file a public issue for a security problem.
+- **Vulnerability disclosure timeline** â€”90 days from private report to public disclosure, with a 14-day grace extension if the reporter asks.
+- **Supported versions** â€”the latest minor of the latest major (N), and the previous minor (N-1). Older versions are not patched.
 
 ### Observability (current state)
 
-- **Logs** â€?local-file only. The desktop does not ship a remote log shipper.
-- **Metrics** â€?none. There is no Prometheus / OpenTelemetry integration.
-- **Traces** â€?none. There is no distributed-tracing integration.
-- **Alerts** â€?none. There is no alerting integration.
+- **Logs** â€”local-file only. The desktop does not ship a remote log shipper.
+- **Metrics** â€”none. There is no Prometheus / OpenTelemetry integration.
+- **Traces** â€”none. There is no distributed-tracing integration.
+- **Alerts** â€”none. There is no alerting integration.
 
 This is a deliberate V2.5 decision: the desktop's threat model is local-user-first, and shipping remote telemetry would expand the trust surface. Operators who want observability can tail the in-app Console, the runtime's log dir, or the auto-update channel's CDN logs.
 
 ## Compliance & governance
 
-- **License** â€?`LICENSE` (dual-license: AGPL-3.0-or-later primary + Apache-2.0 + MIT compatibility). Inherited framework code is hard-MIT.
-- **Trademark** â€?`docs/legal/TRADEMARK_POLICY.md`. Cubecloud marks are All-rights-reserved; nominative use is allowed; confusingly-similar names are not.
-- **Privacy** â€?there is no telemetry, no analytics, no remote attestation. The desktop does not phone home.
-- **SBOM** â€?the per-release `package-lock.json` is the authoritative JS-dep SBOM. The Python SBOM (for the autoresearch harness) is `ar-autoresearch/harness/uv.lock` (generated by `uv lock`).
-- **DCO** â€?every commit must carry a `Signed-off-by:` line. See `CONTRIBUTING.md`.
+- **License** â€”`LICENSE` (dual-license: AGPL-3.0-or-later primary + Apache-2.0 + MIT compatibility). Inherited framework code is hard-MIT.
+- **Trademark** â€”`docs/legal/TRADEMARK_POLICY.md`. Cubecloud marks are All-rights-reserved; nominative use is allowed; confusingly-similar names are not.
+- **Privacy** â€”there is no telemetry, no analytics, no remote attestation. The desktop does not phone home.
+- **SBOM** â€”the per-release `package-lock.json` is the authoritative JS-dep SBOM. The Python SBOM (for the autoresearch harness) is `ar-autoresearch/harness/uv.lock` (generated by `uv lock`).
+- **DCO** â€”every commit must carry a `Signed-off-by:` line. See `CONTRIBUTING.md`.
 
 ## Migration paths
 
 ### From upstream `hermes-desktop` to `agent-desktop`
 
-The V2.3 â†?V2.4 â†?V2.5 work was the brand transition; the underlying framework is still `hermes-desktop` (MIT). Migration is:
+The V2.3 â†’V2.4 â†’V2.5 work was the brand transition; the underlying framework is still `hermes-desktop` (MIT). Migration is:
 
 1. Back up the upstream install: `cp -r ~/.hermes ~/.hermes.bak`.
 2. Install `agent-desktop` over the upstream install.
@@ -188,10 +188,10 @@ The V2.3 â†?V2.4 â†?V2.5 work was the brand transition; the underlying framework
 
 ### From a single-runtime to multi-runtime
 
-The V2.6 â†?V2.7 wave adds OpenClaw and IronClaw as additional lanes. To add a second runtime:
+The V2.6 â†’V2.7 wave adds OpenClaw and IronClaw as additional lanes. To add a second runtime:
 
 1. Install the runtime per its own docs (e.g. `pip install openclaw`).
-2. Open Settings â†?Runtime â†?"Add runtime".
+2. Open Settings â†’Runtime â†’"Add runtime".
 3. Pick the runtime type, supply the install path / port.
 4. The desktop's runtime picker will now offer both runtimes; the user picks per-session which one to chat with.
 
@@ -203,8 +203,8 @@ The V2.6 â†?V2.7 wave adds OpenClaw and IronClaw as additional lanes. To add a s
 
 **Where to look next.** [`docs/HANDBOOK.md`](../HANDBOOK.md) for the master index, [`SECURITY.md`](../../SECURITY.md) for the security policy, [`THREAT_MODEL.md`](../../THREAT_MODEL.md) for the working threat model, [`CONTRIBUTING.md`](../../CONTRIBUTING.md) for DCO, [`docs/superpowers/specs/2026-04-30-windows-winget-fedora-rpm-release-design.md`](../superpowers/specs/2026-04-30-windows-winget-fedora-rpm-release-design.md) for the release design.
 
-**Recent updates (V2.6 â€?V2.10).** This file was last
-substantively edited during the V2.4 â€?V2.6 brand-license
+**Recent updates (V2.6 â€”V2.10).** This file was last
+substantively edited during the V2.4 â€”V2.6 brand-license
 wave. The V2.7 (superpowers skills), V2.8 (description-trim audit),
 V2.9 (pre-launch bundle, 40/40 smoke), and V2.10 (doc-move, README
 split, i18n cleanup, previews cleanup, provenance cross-link,

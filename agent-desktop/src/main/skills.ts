@@ -381,7 +381,7 @@ export interface SkillCliResult {
  * "Resolving '...'" progress line) as `error` so the renderer can display
  * it; otherwise treat the operation as successful.
  *
- * Pure â€?no I/O, no globals â€?so it is cheap to unit-test exhaustively.
+ * Pure â€”no I/O, no globals â€”so it is cheap to unit-test exhaustively.
  */
 export function classifySkillCliOutput(
   stdout: string,
@@ -395,7 +395,7 @@ export function classifySkillCliOutput(
 }
 
 function extractSkillCliMessage(output: string): string {
-  // Strip the leading "Resolving '<name>'..." progress line â€?pure noise
+  // Strip the leading "Resolving '<name>'..." progress line â€”pure noise
   // for the user. Keep the rest verbatim so suggestions like
   // "Did you mean concept-diagrams" reach the renderer.
   const lines = output
@@ -427,7 +427,7 @@ export function installSkill(
       timeout: 60000,
       ...HIDDEN_SUBPROCESS_OPTIONS,
     });
-    // Exit 0 alone is not proof of success â€?the CLI exits 0 on resolution
+    // Exit 0 alone is not proof of success â€”the CLI exits 0 on resolution
     // failure too. Inspect the captured stdout for known failure markers
     // (issue #310).
     return classifySkillCliOutput(stdout?.toString() ?? "");
@@ -460,7 +460,7 @@ export function uninstallSkill(name: string, profile?: string): SkillCliResult {
       timeout: 30000,
       ...HIDDEN_SUBPROCESS_OPTIONS,
     });
-    // Same exit-0-on-failure shape as install (#310) â€?classify the
+    // Same exit-0-on-failure shape as install (#310) â€”classify the
     // captured output before claiming success.
     return classifySkillCliOutput(stdout?.toString() ?? "");
   } catch (err) {

@@ -188,8 +188,8 @@ that guides a Copilot / VS Code session through the
 [`headroom-ai`](https://github.com/JZKK720/headroom) context-compression
 proxy when the local token pressure is high (large tool logs, long
 chat histories, big CodeGraph bundles). The full install path for
-non-repo Copilot sessions �?including the `headroom proxy`,
-`headroom mcp install`, and `headroom wrap copilot` modes �?lives at
+non-repo Copilot sessions —including the `headroom proxy`,
+`headroom mcp install`, and `headroom wrap copilot` modes —lives at
 [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md).
 A one-command helper for mirroring the workflow skill into the
 user-global Copilot skills directory is at
@@ -198,8 +198,6 @@ Headroom is **never required**: the desktop is fully functional
 without it.
 
 ## Where to start
-�?  └── skills/
-�?      └── headroom-workflow/    Copilot / VS Code workflow layer for the optional Headroom proxy
 
 - **New contributor:** read [`docs/HANDBOOK.md`](docs/HANDBOOK.md) sections 1, 2, 3, and 5.
 - **Evaluator of the shipped desktop:** read [`agent-desktop/README.md`](agent-desktop/README.md), then [`docs/HANDBOOK.md`](docs/HANDBOOK.md) sections 1, 3, and 10.
@@ -220,17 +218,17 @@ cubecloud-agentic-os/
 ├── .agents/                      34 open-source skills mirrored to ~/.agents/skills/
 ├── .github/                      agent instructions, workflow skills, and automation
 ├── apps/
-�?  └── desktop-shell/            Cubecloud-original control plane workspace
+│   └── desktop-shell/            Cubecloud-original control plane workspace
 ├── packages/
-�?  └── platform-core/            shared TypeScript contracts
+│   └── platform-core/            shared TypeScript contracts
 ├── docs/
-�?  ├── HANDBOOK.md               master handbook
-�?  ├── RETIRED_AND_LEGACY.md     live / mirror / scratch-pad map
-�?  ├── handbook/                 long-form architecture, development, and operations docs
-�?  └── legal/                    EULA, trademark, and commercial licensing policies
+│   ├── HANDBOOK.md               master handbook
+│   ├── RETIRED_AND_LEGACY.md     live / mirror / scratch-pad map
+│   ├── handbook/                 long-form architecture, development, and operations docs
+│   └── legal/                    EULA, trademark, and commercial licensing policies
 ├── scripts/
-�?  ├── sync-docs.ps1             hardlink and junction regeneration
-�?  └── v2.10.20-readme-combined-pdf.cjs
+│   ├── sync-docs.ps1             hardlink and junction regeneration
+│   └── v2.10.20-readme-combined-pdf.cjs
 └── agent-desktop/            the shipped Electron desktop
 ```
 
