@@ -4,7 +4,7 @@
 > 许可证、品牌与贡献政策详见 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)。
 
 
-<img width="100%" alt="CUBECLOUD AGENT DESKTOP" src="previews/header.webp" />
+<img width="100%" alt="CUBECLOUD DESKTOP" src="previews/welcome.png" />
 
 <br/>
 <p align="center">
@@ -23,13 +23,6 @@
 </a>
 </p>
 
-<p align="center">
-  <a href="README.md">English</a> ·
-  <a href="README.zh-CN.md">简体中文</a> ·
-  <a href="README.ja-JP.md">日本語</a> ·
-  <a href="README.ko-KR.md">한국어</a>
-</p>
-
 > **本项目处于活跃开发阶段。** 功能可能会发生变化，某些功能也可能会失效。如果您遇到问题或有好的想法，请 [提交 Issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)。欢迎贡献代码！
 
 ## 语言
@@ -43,41 +36,9 @@ Cubecloud Desktop 是一款原生桌面控制中心，用于安装、配置并�
 
 无需手动管理命令行界面 (CLI)，该应用可在一个统一界面中引导您完成安装、提供商设置以及日常使用。它使用官方的 Hermes 安装脚本，将 Hermes 存储在 `~/.hermes` 目录下，并为您提供涵盖聊天、会话、配置、记忆、技能、工具、计划任务、消息网关等功能的图形界面。
 
-## 安装
-
-<p align="center">
-  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/">
-    <img width="380" alt="下载 Cubecloud Agent Desktop" src="previews/download.webp" />
-  </a>
-</p>
-
-下载入口：请从 [Releases 页面](https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/) 获取安装包。
-
-### Windows
-
-> **Windows 用户注意：** 安装程序未进行代码签名。首次启动时 Windows SmartScreen 会弹出警告——请点击“更多信息” → “仍要运行”。
-
-> **WSL 用户注意：** 如果安装程序停滞在 `Switching to root user to install dependencies...`，这说明 Playwright 正在等待输入 sudo 密码，但在没有 TTY 的情况下无法读取。请在安装期间授予无密码的 sudo 权限，完成后再恢复：
->
-> ```bash
-> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hermes-install
-> # …重新运行安装程序；完成后执行：
-> sudo rm /etc/sudoers.d/hermes-install
-> ```
->
-> 这个已知的安装器问题在 Cubecloud 迁移期间仍在持续处理。
-
-### Fedora (RPM)
-
-```bash
-sudo dnf install ./cubecloud-desktop-<version>.rpm
-```
-
-> **Fedora 用户注意：** `.rpm` 包没有 GPG 签名。如果您的系统强制检查签名，请在安装命令后添加 `--nogpgcheck`。`.rpm` 构建不支持自动更新（这是 `electron-updater` 的限制）；若要更新，请重新安装新的 `.rpm` 包。
-
 ## 预览
 
-以下图片均来自当前桌面构建的整页截图，覆盖首次引导、运行时发现，以及侧边栏中的主要工作界面。
+以下图片均来自当前桌面构建的整页截图，放在安装说明之前，方便先快速浏览产品表面，再决定如何部署。
 
 <table>
 <tr>
@@ -125,6 +86,32 @@ sudo dnf install ./cubecloud-desktop-<version>.rpm
 <td width="50%" align="center"><b>设置</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
 </tr>
 </table>
+
+## 安装
+
+下载入口：请从 [Releases 页面](https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/) 获取安装包。
+
+### Windows
+
+> **Windows 用户注意：** 安装程序未进行代码签名。首次启动时 Windows SmartScreen 会弹出警告——请点击“更多信息” → “仍要运行”。
+
+> **WSL 用户注意：** 如果安装程序停滞在 `Switching to root user to install dependencies...`，这说明 Playwright 正在等待输入 sudo 密码，但在没有 TTY 的情况下无法读取。请在安装期间授予无密码的 sudo 权限，完成后再恢复：
+>
+> ```bash
+> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hermes-install
+> # …重新运行安装程序；完成后执行：
+> sudo rm /etc/sudoers.d/hermes-install
+> ```
+>
+> 这个已知的安装器问题在 Cubecloud 迁移期间仍在持续处理。
+
+### Fedora (RPM)
+
+```bash
+sudo dnf install ./cubecloud-desktop-<version>.rpm
+```
+
+> **Fedora 用户注意：** `.rpm` 包没有 GPG 签名。如果您的系统强制检查签名，请在安装命令后添加 `--nogpgcheck`。`.rpm` 构建不支持自动更新（这是 `electron-updater` 的限制）；若要更新，请重新安装新的 `.rpm` 包。
 
 ## 功能特性
 

@@ -3,7 +3,7 @@
 > 마스터 인덱스는 [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)에 있습니다.
 > 라이선스, 브랜드, 기여 정책은 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)를 참고하세요.
 
-<img width="100%" alt="CUBECLOUD AGENT DESKTOP" src="previews/header.webp" />
+<img width="100%" alt="CUBECLOUD DESKTOP" src="previews/welcome.png" />
 
 <br/>
 <p align="center">
@@ -18,14 +18,14 @@
   <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/"><img src="https://img.shields.io/github/downloads/cubecloud-contributors/cubecloud-agentic-os/total?style=for-the-badge&color=00B496&label=Total%20Downloads" alt="다운로드 수"></a>
 </p>
 
-<p align="center">
-  <a href="README.md">English</a> ·
-  <a href="README.zh-CN.md">简体中文</a> ·
-  <a href="README.ja-JP.md">日本語</a> ·
-  <a href="README.ko-KR.md">한국어</a>
-</p>
+> **이 프로젝트는 현재 활발히 개발 중입니다.** 기능은 바뀔 수 있고 일부 동작은 깨질 수 있습니다. 문제를 발견했거나 아이디어가 있다면 [Issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)를 열어 주세요. 기여도 환영합니다.
 
-# Cubecloud Agent Desktop — 바이너리 배포본
+## 언어
+
+- English: `README.md`
+- 简体中文: `README.zh-CN.md`
+- 日本語: `README.ja-JP.md`
+- 한국어: `README.ko-KR.md`
 
 Cubecloud Agent Desktop 는 Cubecloud Agentic-OS 모노레포를 위한 네이티브 데스크톱 제어 센터입니다. 로컬 또는 원격 에이전트 런타임을 하나의 GUI 안에 감싸서 사용자가 CLI 를 직접 관리하지 않아도 되도록 만듭니다.
 
@@ -51,31 +51,9 @@ Cubecloud Agent Desktop 는 Cubecloud Agentic-OS 모노레포를 위한 네이�
 - **i18n 준비 완료** — 전체 화면을 덮는 영어 로케일과 커뮤니티 번역을 위한 국제화 프레임워크
 - **테스트 스위트** — Vitest 기반 SSE 파서, IPC 핸들러, preload API, 설치 유틸리티, 상수 검증
 
-## 설치
-
-<p align="center">
-  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/">
-    <img width="380" alt="Download Cubecloud Agent Desktop" src="previews/download.webp" />
-  </a>
-</p>
-
-자세한 설치 및 첫 실행 흐름은 [`../docs/handbook/OPERATIONS.md`](../docs/handbook/OPERATIONS.md)에 정리되어 있습니다. 요약하면 다음과 같습니다.
-
-### Windows
-
-> **Windows 사용자:** 설치 프로그램은 코드 서명되어 있지 않습니다. 첫 실행 시 Windows SmartScreen 경고가 표시되면 "추가 정보" → "실행"을 선택하세요.
-
-### Fedora (RPM)
-
-```bash
-sudo dnf install ./cubecloud-desktop-<version>.rpm
-```
-
-> **Fedora 사용자:** `.rpm` 파일은 GPG 서명되어 있지 않습니다. 시스템이 서명 검증을 강제하면 `--nogpgcheck` 를 덧붙이세요. `.rpm` 빌드는 `electron-updater` 제약 때문에 자동 업데이트를 지원하지 않으므로 새 `.rpm` 을 다시 설치해야 합니다.
-
 ## 미리보기
 
-아래 이미지는 현재 데스크톱 빌드에서 캡처한 전체 페이지 스크린샷입니다. 첫 실행 흐름, 런타임 감지, 그리고 사이드바의 주요 작업 화면을 모두 포함합니다.
+아래 이미지는 현재 데스크톱 빌드에서 캡처한 전체 페이지 스크린샷입니다. 설치 설명으로 넘어가기 전에 제품 표면을 먼저 훑어볼 수 있도록 이 위치에 배치했습니다.
 
 <table>
 <tr>
@@ -123,6 +101,22 @@ sudo dnf install ./cubecloud-desktop-<version>.rpm
 <td width="50%" align="center"><b>Settings</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
 </tr>
 </table>
+
+## 설치
+
+자세한 설치 및 첫 실행 흐름은 [`../docs/handbook/OPERATIONS.md`](../docs/handbook/OPERATIONS.md)에 정리되어 있습니다. 요약하면 다음과 같습니다.
+
+### Windows
+
+> **Windows 사용자:** 설치 프로그램은 코드 서명되어 있지 않습니다. 첫 실행 시 Windows SmartScreen 경고가 표시되면 "추가 정보" → "실행"을 선택하세요.
+
+### Fedora (RPM)
+
+```bash
+sudo dnf install ./cubecloud-desktop-<version>.rpm
+```
+
+> **Fedora 사용자:** `.rpm` 파일은 GPG 서명되어 있지 않습니다. 시스템이 서명 검증을 강제하면 `--nogpgcheck` 를 덧붙이세요. `.rpm` 빌드는 `electron-updater` 제약 때문에 자동 업데이트를 지원하지 않으므로 새 `.rpm` 을 다시 설치해야 합니다.
 
 ## 작동 방식
 

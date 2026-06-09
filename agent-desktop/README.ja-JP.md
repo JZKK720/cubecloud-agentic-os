@@ -4,7 +4,7 @@
 > ライセンス / ブランド / コントリビューションポリシーは [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) をご覧ください。
 
 
-<img width="100%" alt="CUBECLOUD AGENT DESKTOP" src="previews/header.webp" />
+<img width="100%" alt="CUBECLOUD DESKTOP" src="previews/welcome.png" />
 
 <br/>
 <p align="center">
@@ -23,13 +23,6 @@
 </a>
 </p>
 
-<p align="center">
-  <a href="README.md">English</a> ·
-  <a href="README.zh-CN.md">简体中文</a> ·
-  <a href="README.ja-JP.md">日本語</a> ·
-  <a href="README.ko-KR.md">한국어</a>
-</p>
-
 > **本プロジェクトは現在も活発に開発中です。** 機能は変更される可能性があり、一部が動作しなくなることもあります。問題に遭遇した場合や、アイデアがある場合は[Issue を作成してください](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)。コントリビューションも歓迎しています！
 
 ## 言語
@@ -43,41 +36,9 @@ Cubecloud Desktop は、[Hermes Agent](https://github.com/NousResearch/hermes-ag
 
 CLI を手作業で管理する代わりに、本アプリではインストール、プロバイダのセットアップ、日常的な利用までを一箇所でガイドします。公式の Hermes インストールスクリプトを使用し、Hermes を `~/.hermes` に保存し、チャット、セッション、プロファイル、メモリ、スキル、ツール、スケジューリング、メッセージングゲートウェイなどを GUI で操作できます。
 
-## インストール
-
-<p align="center">
-  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/">
-    <img width="380" alt="Download Cubecloud Agent Desktop" src="previews/download.webp" />
-  </a>
-</p>
-
-ダウンロード: [Releases ページ](https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/) から取得してください。
-
-### Windows
-
-> **Windows ユーザーへ:** インストーラはコード署名されていません。初回起動時に Windows SmartScreen の警告が表示されます。「詳細情報」→「実行」をクリックしてください。
-
-> **WSL ユーザーへ:** インストーラが `Switching to root user to install dependencies...` で停止する場合、Playwright が sudo パスワードを待っていますが、読み取るための TTY がありません。インストール中だけパスワードなしの sudo を許可し、完了後に元へ戻してください。
->
-> ```bash
-> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hermes-install
-> # …インストーラを再実行し、完了したら:
-> sudo rm /etc/sudoers.d/hermes-install
-> ```
->
-> この既知のインストーラ問題は、Cubecloud への移行中も引き続き調整中です。
-
-### Fedora (RPM)
-
-```bash
-sudo dnf install ./cubecloud-desktop-<version>.rpm
-```
-
-> **Fedora ユーザーへ:** `.rpm` は GPG 署名されていません。署名検証を強制する設定の場合は、インストールコマンドに `--nogpgcheck` を追加してください。`.rpm` ビルドは自動アップデートに対応していません（`electron-updater` の制約）。アップデートする場合は新しい `.rpm` を再インストールしてください。
-
 ## プレビュー
 
-以下は現在のデスクトップビルドから取得したフルページキャプチャです。初回導線、ランタイム検出、そして主要なオペレーター画面をまとめています。
+以下は現在のデスクトップビルドから取得したフルページキャプチャです。導入前にプロダクトの表面を把握できるよう、インストール手順より先に配置しています。
 
 <table>
 <tr>
@@ -125,6 +86,32 @@ sudo dnf install ./cubecloud-desktop-<version>.rpm
 <td width="50%" align="center"><b>Settings</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
 </tr>
 </table>
+
+## インストール
+
+ダウンロード: [Releases ページ](https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/) から取得してください。
+
+### Windows
+
+> **Windows ユーザーへ:** インストーラはコード署名されていません。初回起動時に Windows SmartScreen の警告が表示されます。「詳細情報」→「実行」をクリックしてください。
+
+> **WSL ユーザーへ:** インストーラが `Switching to root user to install dependencies...` で停止する場合、Playwright が sudo パスワードを待っていますが、読み取るための TTY がありません。インストール中だけパスワードなしの sudo を許可し、完了後に元へ戻してください。
+>
+> ```bash
+> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hermes-install
+> # …インストーラを再実行し、完了したら:
+> sudo rm /etc/sudoers.d/hermes-install
+> ```
+>
+> この既知のインストーラ問題は、Cubecloud への移行中も引き続き調整中です。
+
+### Fedora (RPM)
+
+```bash
+sudo dnf install ./cubecloud-desktop-<version>.rpm
+```
+
+> **Fedora ユーザーへ:** `.rpm` は GPG 署名されていません。署名検証を強制する設定の場合は、インストールコマンドに `--nogpgcheck` を追加してください。`.rpm` ビルドは自動アップデートに対応していません（`electron-updater` の制約）。アップデートする場合は新しい `.rpm` を再インストールしてください。
 
 ## 機能
 
