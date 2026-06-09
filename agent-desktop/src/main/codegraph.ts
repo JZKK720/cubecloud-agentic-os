@@ -650,7 +650,7 @@ export interface UaGraph {
 
 /**
  * Walk a project root and emit a UA-style knowledge graph. This is a
- * thin deterministic pass that does not depend on the codegraph CLI �?
+ * thin deterministic pass that does not depend on the codegraph CLI —
  * it produces a *summary* graph (files + module buckets) suitable
  * for the Understand-Anything `understand-explain` skill.
  *
@@ -717,7 +717,7 @@ export async function exportUnderstandAnythingGraph(
       changedNodeIds = raw.changedNodeIds ?? [];
       affectedNodeIds = raw.affectedNodeIds ?? [];
     } catch {
-      // ignore �?overlay is optional
+      // ignore —overlay is optional
     }
   }
 

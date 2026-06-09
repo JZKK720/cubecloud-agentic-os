@@ -7,7 +7,7 @@
  *   - returns the original when the sidecar isn't running
  *   - returns the original when compressMessages fails
  *   - returns the compressed text when all gates pass
- *   - never throws �?always degrades gracefully
+ *   - never throws —always degrades gracefully
  *
  * We mock compressMessages and getHeadroomSidecarStatus to
  * exercise every branch without needing a real proxy.

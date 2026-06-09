@@ -10041,7 +10041,7 @@ body {
   font-size: 13px;
 }
 /* ========================================================================
-   /plan-tune �� Decision-Brief renderer (Step 11 of the V2 rollout)
+   /plan-tune — Decision-Brief renderer (Step 11 of the V2 rollout)
    Structured AskUserQuestion brief. Reused by office-hours,
    plan-ceo-review, plan-eng-review, design-taste-frontend, and
    any other host skill that surfaces a multi-option question.
@@ -10301,7 +10301,7 @@ body {
 }
 
 /* ========================================================================
-   V2 �� LEARNINGS (Step 10)
+   V2 — LEARNINGS (Step 10)
    ======================================================================== */
 .learnings-root {
   display: flex;
@@ -10658,7 +10658,7 @@ body {
 }
 
 /* ========================================================================
-   V2 �� KNOWLEDGE PANE (Step 14)
+   V2 — KNOWLEDGE PANE (Step 14)
    ======================================================================== */
 .knowledge-pane {
   margin-top: 16px;
@@ -10770,7 +10770,7 @@ body {
 }
 
 /* ========================================================================
-   V2 �� SCHEMAS SECTION (Step 13)
+   V2 — SCHEMAS SECTION (Step 13)
    ======================================================================== */
 .schemas-pack-list {
   display: flex;
@@ -10978,7 +10978,7 @@ body {
 }
 
 /* ========================================================================
-   V2 �� PLANS (Step 9 + 15: brief + careful)
+   V2 — PLANS (Step 9 + 15: brief + careful)
    ======================================================================== */
 .plans-briefs-scan {
   background: var(--bg-secondary);
@@ -11159,7 +11159,7 @@ body {
 }
 
 /* ========================================================================
-   V2 �� CAREFUL TESTER (Step 9)
+   V2 — CAREFUL TESTER (Step 9)
    ======================================================================== */
 .careful-tester {
   display: flex;

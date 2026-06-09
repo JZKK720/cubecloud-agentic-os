@@ -13,7 +13,7 @@ import type {
 
 /**
  * Mirror of the renderer-side `CredentialPoolEntry` ambient type
- * (src/preload/index.d.ts) �?preload is type-checked under
+ * (src/preload/index.d.ts) —preload is type-checked under
  * tsconfig.node.json which doesn't include the .d.ts. See #367.
  */
 interface CredentialPoolEntry {
@@ -482,7 +482,7 @@ const hermesAPI = {
   copyToClipboard: (text: string): Promise<void> =>
     ipcRenderer.invoke("copy-to-clipboard", text),
 
-  // Media (agent-generated images / files �?issue #299)
+  // Media (agent-generated images / files —issue #299)
   readMediaFile: (filePath: string): Promise<string | null> =>
     ipcRenderer.invoke("read-media-file", filePath),
   saveMediaFile: (src: string, name: string): Promise<boolean> =>
@@ -499,7 +499,7 @@ const hermesAPI = {
 
   // Resolve the absolute filesystem path for a File coming from drag-drop
   // or the file picker.  Returns "" for blobs that have no origin path
-  // (e.g. clipboard paste) �?caller should stageAttachment for those.
+  // (e.g. clipboard paste) —caller should stageAttachment for those.
   getPathForFile: (file: File): string => {
     try {
       return webUtils.getPathForFile(file) || "";
@@ -528,7 +528,7 @@ const hermesAPI = {
     status: "ok" | "no-key" | "unsupported" | "unknown-host";
     cached: boolean;
     /** Subset of `models` flagged as free per the provider catalog
-     *  (Nous Portal today). Optional �?providers without pricing
+     *  (Nous Portal today). Optional —providers without pricing
      *  metadata return undefined. Issue #367. */
     freeModels?: string[];
   }> =>
@@ -547,7 +547,7 @@ const hermesAPI = {
     return () => ipcRenderer.removeListener("chat-chunk", handler);
   },
 
-  /** Streaming reasoning / thinking tokens �?separate from `onChatChunk`
+  /** Streaming reasoning / thinking tokens —separate from `onChatChunk`
    *  so the renderer can render a "thinking" bubble that grows
    *  independently of the assistant's content (#352). */
   onChatReasoningChunk: (callback: (chunk: string) => void): (() => void) => {
@@ -967,7 +967,7 @@ const hermesAPI = {
   // Credential Pool (profile-aware: reads/writes the named profile's
   // auth.json; defaults to the currently active profile when omitted)
   //
-  // Pool entries follow the upstream engine schema (issue #367) �?
+  // Pool entries follow the upstream engine schema (issue #367) —
   // `access_token` for the secret, `auth_type` to distinguish OAuth
   // from API key, plus `id`/`priority`/`source` for rotation.
   getCredentialPool: (

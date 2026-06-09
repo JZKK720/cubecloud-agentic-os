@@ -428,7 +428,7 @@ function createWindow(): void {
     height: 850,
     title: "Agent Desktop",
     minWidth: 900,
-    // Lowered from 820 to fit on 768p / 720p displays �?Linux WMs
+    // Lowered from 820 to fit on 768p / 720p displays —Linux WMs
     // enforce minHeight strictly, clipping content (chat input, bottom
     // nav items) below the screen edge on 1366×768 laptops. Issue #393.
     // Companion CSS change makes .sidebar-nav scrollable when content
@@ -514,8 +514,8 @@ function createWindow(): void {
   );
 
   // Right-click context menu (issue #298): native Cut/Copy/Paste/Select All
-  // via Electron roles �?they act on the focused field / selection and work
-  // across the whole app �?plus two items to copy the whole conversation.
+  // via Electron roles —they act on the focused field / selection and work
+  // across the whole app —plus two items to copy the whole conversation.
   mainWindow.webContents.on("context-menu", (_event, params) => {
     const { editFlags, isEditable } = params;
     const template: Electron.MenuItemConstructorOptions[] = [];
@@ -533,7 +533,7 @@ function createWindow(): void {
         { role: "copy", enabled: editFlags.canCopy },
         { type: "separator" },
         // The selectAll role would select the entire window for non-editable
-        // content �?scope it to the message bubble under the cursor instead.
+        // content —scope it to the message bubble under the cursor instead.
         {
           label: "Select All",
           click: () =>
@@ -594,7 +594,7 @@ function setupIPC(): void {
   ipcMain.handle("adopt-hermes-home", (_event, dir: string) => {
     if (!validateHermesHome(dir)) return false;
     // Persist the choice only. HERMES_HOME is resolved once at module
-    // load, so the override takes effect on the next launch �?the renderer
+    // load, so the override takes effect on the next launch —the renderer
     // asks the user to restart. (An app-driven relaunch is unreliable
     // under the dev server, which is torn down with the process.)
     setHermesHomeOverride(dir);
@@ -659,7 +659,7 @@ function setupIPC(): void {
     }
   });
 
-  // OAuth provider sign-in �?spawns `hermes auth add <provider> --type
+  // OAuth provider sign-in —spawns `hermes auth add <provider> --type
   // oauth`, streaming the CLI's output to the renderer's sign-in modal.
   ipcMain.handle("oauth-login", (event, provider: string, profile?: string) => {
     // Codex uses a device-code flow: it prints a URL + code instead
@@ -683,7 +683,7 @@ function setupIPC(): void {
           clipboard.writeText(device.code);
           event.sender.send(
             "oauth-login-progress",
-            `\n�?Code ${device.code} copied to clipboard �?opening browser...\n`,
+            `\n—Code ${device.code} copied to clipboard —opening browser...\n`,
           );
         }
       },
@@ -714,9 +714,9 @@ function setupIPC(): void {
       }
       setEnvValue(key, value, profile);
       // Restart gateway so it picks up the new API key.
-      // The earlier condition had a precedence bug �?
+      // The earlier condition had a precedence bug —
       //   `(isGatewayRunning() && _API_KEY) || _TOKEN || HF_TOKEN`
-      // �?that triggered a restart for `_TOKEN`/`HF_TOKEN` writes even
+      // —that triggered a restart for `_TOKEN`/`HF_TOKEN` writes even
       // when no local gateway was running, which in remote mode hit the
       // `startGateway` path with no local install (issue #266).
       // restartGateway() now also self-gates on isRemoteMode(), so this
@@ -807,7 +807,7 @@ function setupIPC(): void {
     },
   );
 
-  // API_SERVER_KEY management �?lets the renderer detect a missing key and
+  // API_SERVER_KEY management —lets the renderer detect a missing key and
   // generate one with a button click (local mode) or show instructions (remote/SSH).
   ipcMain.handle("get-api-server-key-status", (_event, profile?: string) => {
     const key = getApiServerKey(profile);
@@ -999,7 +999,7 @@ function setupIPC(): void {
     return true;
   });
 
-  // Chat �?lazy-start gateway on first message
+  // Chat —lazy-start gateway on first message
   ipcMain.handle(
     "send-message",
     async (
@@ -1068,7 +1068,7 @@ function setupIPC(): void {
       // destroyed" if the renderer WebContents goes away mid-response
       // (window closed, reloaded, navigated away). Guard every send so a
       // dead sender doesn't crash the IPC handler, and abort the in-flight
-      // chat the first time we see one �?there's nobody listening anymore.
+      // chat the first time we see one —there's nobody listening anymore.
       const safeSend = (channel: string, payload: unknown): boolean => {
         if (event.sender.isDestroyed()) return false;
         try {
@@ -1085,7 +1085,7 @@ function setupIPC(): void {
           onChunk: (chunk) => {
             fullResponse += chunk;
             if (!safeSend("chat-chunk", chunk) && currentChatAbort) {
-              // Renderer is gone �?stop generating and resolve with what we
+              // Renderer is gone —stop generating and resolve with what we
               // have so the awaiting promise doesn't leak.
               currentChatAbort();
             }
@@ -1126,7 +1126,7 @@ function setupIPC(): void {
             // Notify on error too if window not focused
             if (mainWindow && !mainWindow.isFocused()) {
               new Notification({
-                title: "Agent Desktop �?Error",
+                title: "Agent Desktop —Error",
                 body: error.slice(0, 100),
               }).show();
             }
@@ -1157,14 +1157,14 @@ function setupIPC(): void {
     }
   });
 
-  // Renderer-driven clipboard write (issue #298 �?"Copy entire chat").
+  // Renderer-driven clipboard write (issue #298 —"Copy entire chat").
   // Routed through the main process so it doesn't depend on the renderer's
   // document being focused, which the navigator.clipboard API requires.
   ipcMain.handle("copy-to-clipboard", (_event, text: string) => {
     clipboard.writeText(typeof text === "string" ? text : "");
   });
 
-  // Media �?render agent-generated images and save them to disk (#299).
+  // Media —render agent-generated images and save them to disk (#299).
   ipcMain.handle("read-media-file", (_event, filePath: string) =>
     readMediaAsDataUrl(filePath),
   );
@@ -1177,7 +1177,7 @@ function setupIPC(): void {
 
   // Native right-click menu for a rendered media element (#299): "Open"
   // hands the file to the OS default handler (or a web URL to the browser),
-  // "Save as�? writes a copy elsewhere. Labels are passed in from the
+  // "Save as— writes a copy elsewhere. Labels are passed in from the
   // renderer so the menu honours the active UI locale.
   ipcMain.on(
     "show-media-menu",
@@ -1192,7 +1192,7 @@ function setupIPC(): void {
       const isUrl = /^https?:\/\//i.test(src);
       const isData = src.startsWith("data:");
       const template: Electron.MenuItemConstructorOptions[] = [];
-      // "Open" needs a real target �?a local file or a web URL. A data:
+      // "Open" needs a real target —a local file or a web URL. A data:
       // URL is inline bytes with nothing to hand to the OS, so it is
       // save-only.
       if (!isData) {
@@ -1219,7 +1219,7 @@ function setupIPC(): void {
     },
   );
 
-  // Attachment staging �?for pasted blobs that have no filesystem origin.
+  // Attachment staging —for pasted blobs that have no filesystem origin.
   ipcMain.handle(
     "stage-attachment",
     (_event, sessionId: string, filename: string, base64Bytes: string) => {
@@ -1230,7 +1230,7 @@ function setupIPC(): void {
     clearStagedAttachments(sessionId);
   });
 
-  // Model discovery �?fetch the provider's /v1/models for autocomplete.
+  // Model discovery —fetch the provider's /v1/models for autocomplete.
   ipcMain.handle(
     "discover-provider-models",
     (
@@ -1857,7 +1857,7 @@ function setupIPC(): void {
     return searchSessions(query, limit);
   });
 
-  // Credential Pool �?profile-aware. When `profile` is omitted, the
+  // Credential Pool —profile-aware. When `profile` is omitted, the
   // credential pool helpers default to the currently active profile's
   // auth.json (see config.ts:authFilePath), so the renderer can pass an
   // explicit profile or rely on the active-profile fallback.
@@ -1880,7 +1880,7 @@ function setupIPC(): void {
   // Append a user-typed key as a properly-shaped credential pool
   // entry. Constructs the full upstream schema (id, label, auth_type,
   // priority, source, access_token, base_url, request_count) so the
-  // engine's resolver can read it �?issue #367 Bug 3.
+  // engine's resolver can read it —issue #367 Bug 3.
   ipcMain.handle(
     "add-credential-pool-entry",
     (
@@ -2444,7 +2444,7 @@ function setupIPC(): void {
       kanbanDispatchOnce(dryRun, profile),
   );
 
-  // EverOS �?long-term memory harnesses backed by a self-hosted
+  // EverOS —long-term memory harnesses backed by a self-hosted
   // EverCore / EverOS server (https://github.com/JZKK720/EverOS).
   // The desktop can call the API even before the local runtime is
   // installed; we only need the user to point us at a reachable
@@ -2455,7 +2455,7 @@ function setupIPC(): void {
   );
   ipcMain.handle("everos-ping", async (_event, patch?: Partial<EverOsConfig>) => {
     if (patch && Object.keys(patch).length > 0) {
-      // Caller is asking "would this config be reachable?" �?merge
+      // Caller is asking "would this config be reachable?" —merge
       // with the on-disk config so a partial edit still pings.
       const merged = { ...DEFAULT_EVEROS_CONFIG, ...patch };
       return pingEverOs(merged);
@@ -2930,7 +2930,7 @@ function setupUpdater(): void {
     // Bracket the suspect call: if the log shows this line but the app
     // never relaunches, the failure is in quitAndInstall / the installer.
     updaterLogger.info(
-      "Restart requested by user �?calling quitAndInstall(isSilent=false, isForceRunAfter=true)",
+      "Restart requested by user —calling quitAndInstall(isSilent=false, isForceRunAfter=true)",
     );
     autoUpdater.quitAndInstall(false, true);
   });
@@ -2944,7 +2944,7 @@ function setupUpdater(): void {
 // ENABLE_CDP=1 (with optional CDP_PORT, default 9222) before launching
 // `npm run dev` to expose the renderer for Playwright (or any CDP
 // client) to attach and drive the UI without going through
-// screenshots / OCR. Off by default �?no effect on normal dev or
+// screenshots / OCR. Off by default —no effect on normal dev or
 // production builds. See `scripts/README.md` for the harness workflow.
 if (process.env.ENABLE_CDP === "1") {
   app.commandLine.appendSwitch(

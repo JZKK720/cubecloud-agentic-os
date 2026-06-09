@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 //
-// V2.9 pre-launch bundle �?smoke test for the 5 seed functions
+// V2.9 pre-launch bundle —smoke test for the 5 seed functions
 // and the readJsonFileWithSeed helper. This is a pure-Node smoke
 // check (not a vitest run) so it works even when node_modules is
-// not installed. It pins the seed CONTRACT �?the production
+// not installed. It pins the seed CONTRACT —the production
 // vitest test file (prelaunchSeed.test.ts) is the authoritative
 // coverage; this is a fast verifier that the seed functions
 // behave as documented.
@@ -21,7 +21,7 @@ async function main() {
 
   // Stub @cubecloud/platform-core so the .ts files can be loaded.
   // The seed functions in this V2.9 release are written to NOT
-  // import the core types at runtime �?they only use them for
+  // import the core types at runtime —they only use them for
   // type narrowing in TS. We need to confirm that by trying to
   // import them.
   console.log(`-- workdir: ${tmp}`);
@@ -56,7 +56,7 @@ async function main() {
   }
 
   // 3) Try to dynamically import each default*.ts (will fail under Node
-  //    native loader; that's expected �?TS requires a transpiler). The
+  //    native loader; that's expected —TS requires a transpiler). The
   //    value is: the file exists, has SPDX, and exports the expected
   //    symbols per grep.
   const expected = {
