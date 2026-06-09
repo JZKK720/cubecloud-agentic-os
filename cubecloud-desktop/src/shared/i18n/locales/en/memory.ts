@@ -1,4 +1,11 @@
 export default {
+  // V2.10.44
+  errorKeyAndInsightRequired: "Key and insight are required.",
+  wiki: {
+    setUpYourKnowledgeBase: "Set up your knowledge base",
+    editThisPage: "Edit this page",
+    allTypes: "All types",
+  },
   title: "Memory",
   subtitle:
     "What Hermes remembers about you and your environment across sessions.",

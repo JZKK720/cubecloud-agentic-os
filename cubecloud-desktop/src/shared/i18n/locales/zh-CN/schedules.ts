@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorCreateCronJob: "创建任务失败",
+  errorRemoveCronJob: "删除任务失败",
+  errorUpdateCronJob: "更新任务失败",
+  errorTriggerCronJob: "触发任务失败",
   title: "计划任务",
   subtitle: "通过定时运行代理来自动完成任务",
   newTask: "新建任务",

@@ -164,10 +164,10 @@ function Schedules({ profile }: SchedulesProps): React.JSX.Element {
         closeCreateModal();
         await loadJobs();
       } else {
-        setError(result.error || "Failed to create job");
+        setError(result.error || t("schedules.errorCreateCronJob"));
       }
     } catch {
-      setError("Failed to create job");
+      setError(t("schedules.errorCreateCronJob"));
     } finally {
       setActionInProgress(null);
     }
@@ -182,10 +182,10 @@ function Schedules({ profile }: SchedulesProps): React.JSX.Element {
       if (result.success) {
         await loadJobs();
       } else {
-        setError(result.error || "Failed to remove job");
+        setError(result.error || t("schedules.errorRemoveCronJob"));
       }
     } catch {
-      setError("Failed to remove job");
+      setError(t("schedules.errorRemoveCronJob"));
     } finally {
       setActionInProgress(null);
     }
@@ -202,10 +202,10 @@ function Schedules({ profile }: SchedulesProps): React.JSX.Element {
       if (result.success) {
         await loadJobs();
       } else {
-        setError(result.error || "Failed to update job");
+        setError(result.error || t("schedules.errorUpdateCronJob"));
       }
     } catch {
-      setError("Failed to update job");
+      setError(t("schedules.errorUpdateCronJob"));
     } finally {
       setActionInProgress(null);
     }
@@ -219,10 +219,10 @@ function Schedules({ profile }: SchedulesProps): React.JSX.Element {
       if (result.success) {
         await loadJobs();
       } else {
-        setError(result.error || "Failed to trigger job");
+        setError(result.error || t("schedules.errorTriggerCronJob"));
       }
     } catch {
-      setError("Failed to trigger job");
+      setError(t("schedules.errorTriggerCronJob"));
     } finally {
       setActionInProgress(null);
     }

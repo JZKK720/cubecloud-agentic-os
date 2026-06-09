@@ -14,9 +14,63 @@ export default {
     "这些是直接网关通道。{{ironclaw}} 是容器运行时而非直接网关，请使用下方的 Docker Desktop 切换来挂接。",
   copyInstallCommand: "复制安装命令",
   dividerOr: "或",
+  // V2.10.44 — install-lane shell labels. These are OS/shell
+  // brand names conventionally kept untranslated in Chinese
+  // documentation. We use the localized "shell" word for the
+  // chip + bash chip stays as-is.
+  installLaneWindowsShell: "Windows PowerShell",
+  installLaneUnixShell: "WSL / macOS / Linux",
   connectRemote: "连接远程运行时",
   connectRemoteTitle: "连接远程运行时",
   connectRemoteSubtitle: "输入正在运行的 Cubecloud 兼容 API 服务器 URL。",
+  // V2.10.44 — connect-remote-gateway 和 connect-ssh 面板的中文翻译
+  connectRemotePanelTitle: "连接远程网关",
+  connectRemoteSubtitleHermes:
+    "当 Agent Desktop 需要挂接到正在运行的 {{runtime}} 网关而非本地安装时，使用已有的运行时 URL。",
+  connectRemoteSubtitleOpenclaw:
+    "挂接到正在运行的 {{runtime}} 兼容端点，而非本地安装。Agent Desktop 需要启用 OpenClaw 的 HTTP 兼容层。",
+  connectSshPanelTitle: "通过 SSH 隧道接入远程网关",
+  connectSshSubtitleHermes:
+    "当 {{runtime}} 网关需要保持私有、仅通过 Agent Desktop 的隧道可达时，使用 SSH。",
+  connectSshSubtitleOpenclaw:
+    "当 {{runtime}} 兼容网关需要保持私有、仅通过 Agent Desktop 的隧道可达时，使用 SSH。",
+  runtimeLane: "运行时通道",
+  sshHost: "SSH 主机",
+  sshHostPlaceholder: "192.168.1.100 或 myserver.local",
+  sshPort: "SSH 端口",
+  sshPortPlaceholder: "22",
+  sshUsername: "用户名",
+  sshUsernamePlaceholder: "user",
+  sshKeyPath: "私钥路径",
+  sshKeyPathPlaceholder: "~/.ssh/id_rsa",
+  sshKeyPathNote: "（可选 — 默认为 ~/.ssh/id_rsa）",
+  sshRemotePort: "远程运行时端口",
+  sshRemotePortNote: "（默认 {{port}}）",
+  sshRuntimeOpenclawNote:
+    "{{runtime}} 通常监听 {{port}} 端口，并需要启用 HTTP 兼容层后 Agent Desktop 才能挂接。",
+  sshRuntimeHermesNote: "{{runtime}} SSH 接入通常监听 {{port}} 端口。",
+  sshSecretOpenclawNote: "（启用 OpenClaw 鉴权时必填）",
+  sshSecretHermesNote: "（除非远程 Hermes 网关强制鉴权，否则可选）",
+  testingSshConnection: "正在测试 SSH 连接…",
+  connectViaSsh: "通过 SSH 连接",
+  sshSystemHint:
+    "使用系统 SSH。请确保您已能在不输入密码的情况下运行 ssh {{user}}@{{host}}。",
+  // 错误路径标题与按钮（Welcome 屏）
+  errorLocalInstallHeader: "本地安装需要处理",
+  errorSshHeader: "到 {{runtime}} 的 SSH 隧道需要处理",
+  errorRemoteHeader: "到 {{runtime}} 的远程连接需要处理",
+  retryLocalInstall: "重试本地安装",
+  retrySshConnection: "重试 SSH 连接",
+  retryRemoteConnection: "重试远程连接",
+  reviewSshSettings: "查看 SSH 设置",
+  reviewRemoteSettings: "查看远程设置",
+  connectViaSshShort: "通过 SSH 连接",
+  connectToRemoteGatewayShort: "连接远程网关",
+  // 表单校验错误
+  errorPleaseEnterUrl: "请输入 URL。",
+  errorConnectionTestFailed: "连接测试失败。",
+  errorHostAndUsernameRequired: "请填写主机和用户名。",
+  errorHostAndUsernameRequiredNoPeriod: "请填写主机和用户名",
   remoteServerUrl: "服务器 URL",
   remoteApiKey: "API 密钥（可选）",
   remoteApiKeyPlaceholder: "Bearer token (API_SERVER_KEY)",

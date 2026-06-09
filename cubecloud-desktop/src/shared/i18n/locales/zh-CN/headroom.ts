@@ -4,6 +4,10 @@
 // suite. Other locales fall back to this file when keys are missing.
 
 export default {
+  // V2.10.44
+  errorChooseProjectFolder: "请先选择项目目录。",
+  errorPickOneProposal: "请至少选择一条建议以提交。",
+  errorHeadroomLearnFailed: "headroom learn 失败。",
   quickStart: {
     title: "快速开始",
     body: "先用 audit（审计）模式运行一次压缩测试，确认节省效果后再切换到 optimize（优化）模式，让代理真正改写请求。",

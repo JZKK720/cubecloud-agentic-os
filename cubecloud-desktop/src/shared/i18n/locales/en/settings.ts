@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw import is not available yet.",
+  errorHostAndUsernameRequired: "Host and username are required",
+  errorPleaseEnterUrl: "Please enter a URL",
+  quickLanguageSwitch: "Quick language switch",
   title: "Settings",
   sections: {
     hermesAgent: "Local Runtime",
@@ -179,5 +184,8 @@ export default {
     blockTitle: "Blocked command",
     blockReason:
       "This command is on the block list and cannot be dispatched.",
+    // V2.10.44 — CarefulTester ad-hoc panel
+    noDestructiveCommands: "No destructive commands in body.",
+    singleCommand: "Single command",
   },
 } as const;

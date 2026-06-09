@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, memo } from "react";
 import { Folder, ChevronRight, ChevronDown } from "lucide-react";
 import { getIconForFile, getSVGStringFromFileType } from "@wesbos/code-icons";
 import { FileViewer } from "./FileViewer";
+import { useI18n } from "../../components/useI18n";
 
 interface FileEntry {
   name: string;
@@ -140,6 +141,7 @@ function TreeItem({
 export const WorktreePanel = memo(function WorktreePanel({
   folderPath,
 }: WorktreePanelProps): React.JSX.Element {
+  const { t } = useI18n();
   const [entries, setEntries] = useState<FileEntry[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -154,7 +156,7 @@ export const WorktreePanel = memo(function WorktreePanel({
       const result = await window.hermesAPI.readDirectory(folderPath);
       if (cancelled) return;
       if (result === null) {
-        setError("Failed to load folder contents");
+        setError(t("chat.worktree.errorLoading"));
       } else {
         // Sort: directories first, then files, both alphabetically
         const sorted = result.sort((a, b) => {

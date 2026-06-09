@@ -1,4 +1,6 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw import is not available yet.",
   title: "Set Up Your AI Provider",
   subtitle: "Choose a provider and configure it to get started",
   stepIndicator: "Step {{step}} of {{total}}",

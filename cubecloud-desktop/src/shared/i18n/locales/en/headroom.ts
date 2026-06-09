@@ -4,6 +4,13 @@
 // leaving operators with empty UI.
 
 export default {
+  // V2.10.44 — form-validation and runtime errors raised
+  // in the Headroom screen. Prior versions hardcoded these
+  // strings in Headroom.tsx, so the Chinese locale saw
+  // English toast messages.
+  errorChooseProjectFolder: "Choose a project folder first.",
+  errorPickOneProposal: "Pick at least one proposal to commit.",
+  errorHeadroomLearnFailed: "headroom learn failed.",
   quickStart: {
     title: "Quick start",
     body:

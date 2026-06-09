@@ -149,7 +149,7 @@ function Learnings({ profile }: LearningsProps): React.JSX.Element {
 
   async function handleAdd(): Promise<void> {
     if (!draft.key.trim() || !draft.insight.trim()) {
-      setError("Key and insight are required.");
+      setError(t("memory.errorKeyAndInsightRequired"));
       return;
     }
     setBusy(true);

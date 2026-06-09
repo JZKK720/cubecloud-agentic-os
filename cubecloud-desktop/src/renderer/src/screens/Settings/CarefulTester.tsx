@@ -73,7 +73,7 @@ export function CarefulTester({}: CarefulTesterProps): React.JSX.Element {
     <div className="careful-tester">
       <div className="careful-tester-row">
         <label>
-          <span>Single command</span>
+          <span>{_t("settings.careful.singleCommand")}</span>
           <div className="careful-tester-input">
             <input
               type="text"
@@ -128,7 +128,7 @@ export function CarefulTester({}: CarefulTesterProps): React.JSX.Element {
               <code>{bodyHit}</code>
             </>
           ) : (
-            <em>No destructive commands in body.</em>
+            <em>{_t("settings.careful.noDestructiveCommands")}</em>
           )}
         </div>
       )}

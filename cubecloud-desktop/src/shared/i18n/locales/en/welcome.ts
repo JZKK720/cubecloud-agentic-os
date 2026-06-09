@@ -29,10 +29,69 @@ export default {
   switchToLocal: "Switch to local mode",
   copyInstallCommand: "Copy install command",
   dividerOr: "or",
+  // V2.10.44 — install-lane shell labels. Kept as brand-style
+  // English even in zh-CN locale because the OS / shell names
+  // are conventionally untranslated ("PowerShell" stays
+  // "PowerShell" in Chinese documentation).
+  installLaneWindowsShell: "Windows PowerShell",
+  installLaneUnixShell: "WSL / macOS / Linux",
   connectRemote: "Connect to Remote Runtime",
   connectRemoteTitle: "Connect to Remote Runtime",
   connectRemoteSubtitle:
     "Enter the URL of a running Cubecloud-compatible API server.",
+  // V2.10.44 — used by the connect-remote-gateway and connect-ssh
+  // panels in Welcome.tsx. The dynamic interpolation inserts the
+  // localized runtime display name (e.g. "Hermes Agent" / "OpenClaw").
+  connectRemotePanelTitle: "Connect to remote gateway",
+  connectRemoteSubtitleHermes:
+    "Use an existing runtime URL when Agent Desktop should attach to a running {{runtime}} gateway instead of installing locally.",
+  connectRemoteSubtitleOpenclaw:
+    "Attach to a running {{runtime}} compatibility endpoint instead of installing locally. Agent Desktop expects the OpenClaw HTTP compatibility surface to be enabled.",
+  connectSshPanelTitle: "Tunnel into a remote gateway",
+  connectSshSubtitleHermes:
+    "Use SSH when the {{runtime}} gateway should stay private and reachable only through a tunnel from Agent Desktop.",
+  connectSshSubtitleOpenclaw:
+    "Use SSH when the {{runtime}} compatibility gateway should stay private and reachable only through a tunnel from Agent Desktop.",
+  runtimeLane: "Runtime lane",
+  sshHost: "SSH Host",
+  sshHostPlaceholder: "192.168.1.100 or myserver.local",
+  sshPort: "SSH Port",
+  sshPortPlaceholder: "22",
+  sshUsername: "Username",
+  sshUsernamePlaceholder: "user",
+  sshKeyPath: "Private Key Path",
+  sshKeyPathPlaceholder: "~/.ssh/id_rsa",
+  sshKeyPathNote: "(optional — defaults to ~/.ssh/id_rsa)",
+  sshRemotePort: "Remote Runtime Port",
+  sshRemotePortNote: "(default {{port}})",
+  sshRuntimeOpenclawNote:
+    "{{runtime}} usually listens on {{port}} and requires its HTTP compatibility surface to be enabled before Agent Desktop can attach.",
+  sshRuntimeHermesNote:
+    "{{runtime}} usually listens on {{port}} for SSH attach.",
+  sshSecretOpenclawNote: "(required when OpenClaw auth is enabled)",
+  sshSecretHermesNote: "(optional unless the remote Hermes gateway enforces auth)",
+  testingSshConnection: "Testing SSH connection…",
+  connectViaSsh: "Connect via SSH",
+  sshSystemHint:
+    "Uses your system SSH. Make sure you can already run ssh {{user}}@{{host}} without a password prompt.",
+  // Error-path headers + buttons on the Welcome screen
+  errorLocalInstallHeader: "Local install needs attention",
+  errorSshHeader: "SSH tunnel to {{runtime}} needs attention",
+  errorRemoteHeader: "Remote {{runtime}} connection needs attention",
+  retryLocalInstall: "Retry local install",
+  retrySshConnection: "Retry SSH connection",
+  retryRemoteConnection: "Retry remote connection",
+  reviewSshSettings: "Review SSH settings",
+  reviewRemoteSettings: "Review remote settings",
+  connectViaSshShort: "Connect via SSH",
+  connectToRemoteGatewayShort: "Connect to remote gateway",
+  // Form validation errors raised by the connect handlers
+  errorPleaseEnterUrl: "Please enter a URL.",
+  errorConnectionTestFailed: "Connection test failed.",
+  errorHostAndUsernameRequired: "Host and username are required.",
+  // Original "Please enter a URL." had a trailing period; this is the
+  // SSH variant used by Settings.tsx.
+  errorHostAndUsernameRequiredNoPeriod: "Host and username are required",
   remoteServerUrl: "Server URL",
   remoteApiKey: "API Key (optional)",
   remoteApiKeyPlaceholder: "Bearer token (API_SERVER_KEY)",

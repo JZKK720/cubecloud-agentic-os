@@ -1,4 +1,19 @@
 export default {
+  // V2.10.44
+  workspace: {
+    statusRefreshed: "工作区状态已刷新。",
+    indexInitialized: "索引已初始化并就绪。",
+    cliInstalled: "CodeGraph CLI 已安装。下一步：配置 Hermes。",
+    configureHermesSuccess:
+      "Hermes MCP 配置已更新。开启新的 Hermes 会话以加载 CodeGraph 工具。",
+    contextBundleGenerated: "已生成上下文包。",
+    contextBundleMovedToChat: "上下文包已作为附件草稿移入 Chat。",
+    failedToReadWorkspaceStatus: "读取工作区状态失败。",
+    installCodeGraphLocally: "本地安装 CodeGraph",
+    openCodeGraphDocs: "打开 CodeGraph 文档",
+    contextBundle: "上下文包",
+    contextBundlePlaceholder: "描述你需要上下文的架构或代码路径。",
+  },
   appName: "Cubecloud Agent Desktop",
   continue: "继续",
   cancel: "取消",

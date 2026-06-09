@@ -80,5 +80,8 @@ export default {
     empty: "文件夹为空",
     emptyFolder: "空文件夹",
     errorLoading: "加载文件夹内容失败",
+    closeFile: "关闭",
+    open: "打开",
+    openInEditor: "使用默认编辑器打开",
   },
 } as const;

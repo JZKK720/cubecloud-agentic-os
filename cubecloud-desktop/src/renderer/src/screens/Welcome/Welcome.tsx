@@ -55,6 +55,11 @@ type RuntimeProviderSnapshot = Awaited<
 // shows both at once instead of branching on the running
 // platform — the user should always be able to copy whichever
 // command matches their actual environment.
+// V2.10.44 — keep install-lane labels as literals because the
+// INSTALL_LANES const lives at module scope and `t` is only
+// available inside the Welcome function. The locale strings
+// are still added in welcome.ts (installLaneUnixShell /
+// installLaneWindowsShell) so future i18n work has a target.
 const INSTALL_LANES = [
   {
     id: "wsl",
@@ -212,7 +217,7 @@ function Welcome({
     const url = remoteUrl.trim();
     const key = remoteApiKey.trim();
     if (!url) {
-      setRemoteError("Please enter a URL.");
+      setRemoteError(t("welcome.errorPleaseEnterUrl"));
       return;
     }
     setRemoteTesting(true);
@@ -244,7 +249,7 @@ function Welcome({
         );
       }
     } catch {
-      setRemoteError("Connection test failed.");
+      setRemoteError(t("welcome.errorConnectionTestFailed"));
     } finally {
       setRemoteTesting(false);
     }
@@ -254,7 +259,7 @@ function Welcome({
     const host = sshHost.trim();
     const user = sshUser.trim();
     if (!host || !user) {
-      setSshError("Host and username are required.");
+      setSshError(t("welcome.errorHostAndUsernameRequired"));
       return;
     }
     const port = parseInt(sshPort, 10) || 22;
@@ -356,15 +361,19 @@ function Welcome({
       <div className="screen welcome-screen">
         {renderLocaleSwitch()}
         {renderBrandHeader(
-          "Connect to remote gateway",
+          t("welcome.connectRemotePanelTitle"),
           gatewayRuntimePreset === "openclaw"
-            ? `Attach to a running ${openclawRuntimeName} compatibility endpoint instead of installing locally. Agent Desktop expects the OpenClaw HTTP compatibility surface to be enabled.`
-            : `Use an existing runtime URL when Agent Desktop should attach to a running ${hermesRuntimeName} gateway instead of installing locally.`,
+            ? t("welcome.connectRemoteSubtitleOpenclaw", {
+                runtime: openclawRuntimeName,
+              })
+            : t("welcome.connectRemoteSubtitleHermes", {
+                runtime: hermesRuntimeName,
+              }),
           true,
         )}
 
         <div className="welcome-remote-card">
-          <label className="welcome-remote-label">Runtime lane</label>
+          <label className="welcome-remote-label">{t("welcome.runtimeLane")}</label>
           <div className="welcome-remote-row">
             <button
               className={`btn ${gatewayRuntimePreset === "hermes" ? "btn-primary" : "btn-secondary"}`}
@@ -455,15 +464,19 @@ function Welcome({
       <div className="screen welcome-screen">
         {renderLocaleSwitch()}
         {renderBrandHeader(
-          "Tunnel into a remote gateway",
+          t("welcome.connectSshPanelTitle"),
           gatewayRuntimePreset === "openclaw"
-            ? `Use SSH when the ${openclawRuntimeName} compatibility gateway should stay private and reachable only through a tunnel from Agent Desktop.`
-            : `Use SSH when the ${hermesRuntimeName} gateway should stay private and reachable only through a tunnel from Agent Desktop.`,
+            ? t("welcome.connectSshSubtitleOpenclaw", {
+                runtime: openclawRuntimeName,
+              })
+            : t("welcome.connectSshSubtitleHermes", {
+                runtime: hermesRuntimeName,
+              }),
           true,
         )}
 
         <div className="welcome-remote-card">
-          <label className="welcome-remote-label">Runtime lane</label>
+          <label className="welcome-remote-label">{t("welcome.runtimeLane")}</label>
           <div className="welcome-remote-row">
             <button
               className={`btn ${gatewayRuntimePreset === "hermes" ? "btn-primary" : "btn-secondary"}`}
@@ -488,22 +501,22 @@ function Welcome({
 
           <div className="welcome-ssh-grid">
             <div className="welcome-ssh-grid-main">
-              <label className="welcome-remote-label">SSH Host</label>
+              <label className="welcome-remote-label">{t("welcome.sshHost")}</label>
               <input
                 type="text"
                 className="welcome-remote-input"
-                placeholder="192.168.1.100 or myserver.local"
+                placeholder={t("welcome.sshHostPlaceholder")}
                 value={sshHost}
                 onChange={(e) => setSshHost(e.target.value)}
                 autoFocus
               />
             </div>
             <div className="welcome-ssh-grid-side">
-              <label className="welcome-remote-label">SSH Port</label>
+              <label className="welcome-remote-label">{t("welcome.sshPort")}</label>
               <input
                 type="number"
                 className="welcome-remote-input"
-                placeholder="22"
+                placeholder={t("welcome.sshPortPlaceholder")}
                 value={sshPort}
                 onChange={(e) => setSshPort(e.target.value)}
               />
@@ -511,34 +524,36 @@ function Welcome({
           </div>
 
           <label className="welcome-remote-label welcome-remote-label--spaced">
-            Username
+            {t("welcome.sshUsername")}
           </label>
           <input
             type="text"
             className="welcome-remote-input"
-            placeholder="user"
+            placeholder={t("welcome.sshUsernamePlaceholder")}
             value={sshUser}
             onChange={(e) => setSshUser(e.target.value)}
           />
 
           <label className="welcome-remote-label welcome-remote-label--spaced">
-            Private Key Path{" "}
+            {t("welcome.sshKeyPath")}{" "}
             <span className="welcome-field-note">
-              (optional — defaults to ~/.ssh/id_rsa)
+              {t("welcome.sshKeyPathNote")}
             </span>
           </label>
           <input
             type="text"
             className="welcome-remote-input"
-            placeholder="~/.ssh/id_rsa"
+            placeholder={t("welcome.sshKeyPathPlaceholder")}
             value={sshKeyPath}
             onChange={(e) => setSshKeyPath(e.target.value)}
           />
 
           <label className="welcome-remote-label welcome-remote-label--spaced">
-            Remote Runtime Port{" "}
+            {t("welcome.sshRemotePort")}{" "}
             <span className="welcome-field-note">
-              (default {selectedGatewayRuntime.sshRemotePort})
+              {t("welcome.sshRemotePortNote", {
+                port: selectedGatewayRuntime.sshRemotePort,
+              })}
             </span>
           </label>
           <input
@@ -550,16 +565,22 @@ function Welcome({
           />
           <p className="welcome-remote-hint">
             {gatewayRuntimePreset === "openclaw"
-              ? `${openclawRuntimeName} usually listens on ${OPENCLAW_LOCAL_GATEWAY_PORT} and requires its HTTP compatibility surface to be enabled before Agent Desktop can attach.`
-              : `${hermesRuntimeName} usually listens on ${DEFAULT_SSH_REMOTE_PORT} for SSH attach.`}
+              ? t("welcome.sshRuntimeOpenclawNote", {
+                  runtime: openclawRuntimeName,
+                  port: OPENCLAW_LOCAL_GATEWAY_PORT,
+                })
+              : t("welcome.sshRuntimeHermesNote", {
+                  runtime: hermesRuntimeName,
+                  port: DEFAULT_SSH_REMOTE_PORT,
+                })}
           </p>
 
           <label className="welcome-remote-label welcome-remote-label--spaced">
             {selectedGatewayRuntime.sshSecretLabel}
             <span className="welcome-field-note">
               {gatewayRuntimePreset === "openclaw"
-                ? "(required when OpenClaw auth is enabled)"
-                : "(optional unless the remote Hermes gateway enforces auth)"}
+                ? t("welcome.sshSecretOpenclawNote")
+                : t("welcome.sshSecretHermesNote")}
             </span>
           </label>
           <input
@@ -578,12 +599,12 @@ function Welcome({
             >
               {sshTesting ? (
                 <>
-                  Testing SSH connection…
+                  {t("welcome.testingSshConnection")}
                   <Spinner size={14} className="animate-spin" />
                 </>
               ) : (
                 <>
-                  Connect via SSH
+                  {t("welcome.connectViaSsh")}
                   <ArrowRight size={16} />
                 </>
               )}
@@ -597,11 +618,11 @@ function Welcome({
           )}
 
           <p className="welcome-remote-hint">
-            Uses your system SSH. Make sure you can already run{" "}
-            <code className="welcome-inline-code">
-              ssh {sshUser || "user"}@{sshHost || "host"}
-            </code>{" "}
-            without a password prompt. {selectedGatewayRuntime.sshSecretHint}
+            {t("welcome.sshSystemHint", {
+              user: sshUser || "user",
+              host: sshHost || "host",
+            })}{" "}
+            {selectedGatewayRuntime.sshSecretHint}
           </p>
         </div>
 
@@ -622,10 +643,14 @@ function Welcome({
         <>
           {renderBrandHeader(
             connectionMode === "local"
-              ? "Local install needs attention"
+              ? t("welcome.errorLocalInstallHeader")
               : connectionMode === "ssh"
-                ? `SSH tunnel to ${runtimeDisplayNameFor(gatewayRuntimePreset)} needs attention`
-                : `Remote ${runtimeDisplayNameFor(gatewayRuntimePreset)} connection needs attention`,
+                ? t("welcome.errorSshHeader", {
+                    runtime: runtimeDisplayNameFor(gatewayRuntimePreset),
+                  })
+                : t("welcome.errorRemoteHeader", {
+                    runtime: runtimeDisplayNameFor(gatewayRuntimePreset),
+                  }),
             error,
           )}
           {connectionMode === "local" ? (
@@ -635,7 +660,7 @@ function Welcome({
                   className="btn btn-primary welcome-button"
                   onClick={onStart}
                 >
-                  Retry local install
+                  {t("welcome.retryLocalInstall")}
                   <Refresh size={16} />
                 </button>
                 <div className="welcome-divider">
@@ -671,21 +696,21 @@ function Welcome({
                   {t("welcome.recheck")}
                 </button>
                 <div className="welcome-divider">
-                  <span>or</span>
+                  <span>{t("welcome.dividerOr")}</span>
                 </div>
                 <button
                   className="btn btn-secondary welcome-recheck-btn"
                   onClick={() => setPanel("ssh")}
                 >
                   <KeyRound size={16} />
-                  Connect via SSH
+                  {t("welcome.connectViaSshShort")}
                 </button>
                 <button
                   className="btn btn-secondary welcome-recheck-btn"
                   onClick={() => setPanel("remote")}
                 >
                   <Globe size={16} />
-                  Connect to remote gateway
+                  {t("welcome.connectToRemoteGatewayShort")}
                 </button>
               </div>
             </>
@@ -696,8 +721,8 @@ function Welcome({
                 onClick={onRecheck}
               >
                 {connectionMode === "ssh"
-                  ? "Retry SSH connection"
-                  : "Retry remote connection"}
+                  ? t("welcome.retrySshConnection")
+                  : t("welcome.retryRemoteConnection")}
                 <Refresh size={16} />
               </button>
               <button
@@ -705,8 +730,8 @@ function Welcome({
                 onClick={() => setPanel(connectionMode === "ssh" ? "ssh" : "remote")}
               >
                 {connectionMode === "ssh"
-                  ? "Review SSH settings"
-                  : "Review remote settings"}
+                  ? t("welcome.reviewSshSettings")
+                  : t("welcome.reviewRemoteSettings")}
               </button>
               <button
                 className="btn btn-secondary welcome-recheck-btn"
@@ -811,7 +836,7 @@ function Welcome({
             onClick={() => setPanel("ssh")}
           >
             <KeyRound size={16} />
-            Connect via SSH
+            {t("welcome.connectViaSshShort")}
           </button>
 
           <button
@@ -819,7 +844,7 @@ function Welcome({
             onClick={() => setPanel("remote")}
           >
             <Globe size={16} />
-            Connect to remote gateway
+            {t("welcome.connectToRemoteGatewayShort")}
           </button>
         </>
       )}

@@ -411,7 +411,7 @@ function Headroom({ visible: _visible }: HeadroomProps = {}): React.JSX.Element 
   // let the user cancel via the same handler.
   const handleRunLearn = useCallback(async () => {
     if (!learnProjectPath.trim()) {
-      setLearnError("Choose a project folder first.");
+      setLearnError(t("headroom.errorChooseProjectFolder"));
       return;
     }
     setLearnRunning(true);
@@ -435,7 +435,7 @@ function Headroom({ visible: _visible }: HeadroomProps = {}): React.JSX.Element 
           new Set(result.report.proposals.map((_, idx) => idx)),
         );
       } else {
-        setLearnError(result.error ?? "headroom learn failed.");
+        setLearnError(result.error ?? t("headroom.errorHeadroomLearnFailed"));
         setLearnSkipReason(result.skipReason ?? null);
       }
     } catch (err) {
@@ -456,7 +456,7 @@ function Headroom({ visible: _visible }: HeadroomProps = {}): React.JSX.Element 
       learnSelected.has(idx),
     );
     if (selectedProposals.length === 0) {
-      setLearnCommitMessage("Pick at least one proposal to commit.");
+      setLearnCommitMessage(t("headroom.errorPickOneProposal"));
       return;
     }
     setLearnCommitting(true);
@@ -488,7 +488,7 @@ function Headroom({ visible: _visible }: HeadroomProps = {}): React.JSX.Element 
   // overcorrected.
   const handleApplyLearn = useCallback(async () => {
     if (!learnProjectPath.trim()) {
-      setLearnApplyMessage("Choose a project folder first.");
+      setLearnApplyMessage(t("headroom.errorChooseProjectFolder"));
       return;
     }
     setLearnApplying(true);

@@ -1,4 +1,9 @@
 ﻿export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw 导入功能尚不可用。",
+  errorHostAndUsernameRequired: "请填写主机和用户名",
+  errorPleaseEnterUrl: "请输入 URL",
+  quickLanguageSwitch: "快速语言切换",
   title: "设置",
   sections: {
     hermesAgent: "本地运行时",
@@ -170,4 +175,7 @@
   cancel: "取消分派",
   blockTitle: "已阻止的命令",
   blockReason: "此命令在阻止列表中,无法分派。",
+  // V2.10.44
+  noDestructiveCommands: "正文中未发现破坏性命令。",
+  singleCommand: "单条命令",
   },} as const;

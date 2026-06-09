@@ -424,7 +424,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
 
   async function handleMigrate(): Promise<void> {
     if (!openclawImportAction) {
-      setMigrationResult("OpenClaw import is not available yet.");
+      setMigrationResult(t("settings.errorOpenClawImportUnavailable"));
       setMigrationResultType("error");
       return;
     }
@@ -589,7 +589,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   async function handleTestConnection(): Promise<void> {
     if (connMode === "ssh") {
       if (!sshHost.trim() || !sshUser.trim()) {
-        setConnStatus("Host and username are required");
+        setConnStatus(t("settings.errorHostAndUsernameRequired"));
         return;
       }
       setConnTesting(true);
@@ -626,7 +626,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     } else {
       const url = connRemoteUrl.trim();
       if (!url) {
-        setConnStatus("Please enter a URL");
+        setConnStatus(t("settings.errorPleaseEnterUrl"));
         return;
       }
       setConnTesting(true);

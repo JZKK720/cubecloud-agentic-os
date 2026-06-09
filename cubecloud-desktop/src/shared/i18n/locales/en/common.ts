@@ -1,4 +1,24 @@
 export default {
+  // V2.10.44 — workspace status toasts. These are shown to
+  // the user after each background action. Other locales
+  // fall back to these English strings until they are
+  // reviewed and translated.
+  workspace: {
+    statusRefreshed: "Workspace status refreshed.",
+    indexInitialized: "Index initialized and ready.",
+    cliInstalled: "CodeGraph CLI installed. Configure Hermes next.",
+    configureHermesSuccess:
+      "Hermes MCP configuration updated. Start a new Hermes session to load CodeGraph tools.",
+    contextBundleGenerated: "Context bundle generated.",
+    contextBundleMovedToChat:
+      "Context bundle moved into Chat as an attachment draft.",
+    failedToReadWorkspaceStatus: "Failed to read workspace status.",
+    installCodeGraphLocally: "Install CodeGraph locally",
+    openCodeGraphDocs: "Open CodeGraph docs",
+    contextBundle: "Context bundle",
+    contextBundlePlaceholder:
+      "Describe the architecture or code path you need context for.",
+  },
   appName: "Cubecloud Agent Desktop",
   continue: "Continue",
   cancel: "Cancel",

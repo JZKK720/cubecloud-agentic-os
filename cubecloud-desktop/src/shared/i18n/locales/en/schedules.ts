@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorCreateCronJob: "Failed to create job",
+  errorRemoveCronJob: "Failed to remove job",
+  errorUpdateCronJob: "Failed to update job",
+  errorTriggerCronJob: "Failed to trigger job",
   title: "Schedules",
   subtitle: "Automate tasks with scheduled agent runs",
   newTask: "New Task",

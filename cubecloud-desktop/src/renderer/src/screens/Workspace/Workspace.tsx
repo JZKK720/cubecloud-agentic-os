@@ -145,7 +145,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
 
     setProjectStatus(null);
     setContextOutput("");
-    setError(result.error || "Failed to read workspace status.");
+    setError(result.error || t("common.workspace.failedToReadWorkspaceStatus"));
     setLoadingStatus(false);
   }, []);
 
@@ -187,7 +187,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
       } else {
         setProjectStatus(null);
         setContextOutput("");
-        setError(result.error || "Failed to read workspace status.");
+        setError(result.error || t("common.workspace.failedToReadWorkspaceStatus"));
       }
       setLoadingStatus(false);
     })();
@@ -213,7 +213,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
       await refreshProject(projectPath);
     }
     setLoadingStatus(false);
-    setMessage("Workspace status refreshed.");
+    setMessage(t("common.workspace.statusRefreshed"));
   }
 
   async function handleInit(): Promise<void> {
@@ -225,9 +225,9 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
       const result = await window.hermesAPI.codegraphInitProject(projectPath);
       if (result.success && result.status) {
         setProjectStatus(result.status);
-        setMessage("Index initialized and ready.");
+        setMessage(t("common.workspace.indexInitialized"));
       } else {
-        setError(result.error || "CodeGraph initialization failed.");
+        setError(result.error || t("common.workspace.failedToReadWorkspaceStatus"));
       }
     } finally {
       setInitializing(false);
@@ -241,7 +241,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
     try {
       const result = await window.hermesAPI.codegraphInstallCli();
       if (!result.success) {
-        setError(result.error || "CodeGraph installation failed.");
+        setError(result.error || t("common.workspace.failedToReadWorkspaceStatus"));
         return;
       }
 
@@ -250,7 +250,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
       } else {
         await refreshCli();
       }
-      setMessage("CodeGraph CLI installed. Configure Hermes next.");
+      setMessage(t("common.workspace.cliInstalled"));
     } finally {
       setInstallingCli(false);
     }
@@ -263,12 +263,12 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
     try {
       const result = await window.hermesAPI.codegraphSetupHermes();
       if (!result.success) {
-        setError(result.error || "Failed to configure Hermes for CodeGraph.");
+        setError(result.error || t("common.workspace.failedToReadWorkspaceStatus"));
         return;
       }
 
       setMessage(
-        "Hermes MCP configuration updated. Start a new Hermes session to load CodeGraph tools.",
+        t("common.workspace.configureHermesSuccess"),
       );
     } finally {
       setConfiguringHermes(false);
@@ -295,11 +295,11 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
             compressedSize: result.headroomCompressedSize ?? 0,
           });
           setMessage(
-            `Context bundle generated and compressed by Headroom: −${result.headroomSavingsPercent ?? 0}% (${result.headroomOriginalSize ?? 0} → ${result.headroomCompressedSize ?? 0} bytes).`,
+            `${t("common.workspace.contextBundleGenerated")} −${result.headroomSavingsPercent ?? 0}% (${result.headroomOriginalSize ?? 0} → ${result.headroomCompressedSize ?? 0} bytes).`,
           );
         } else {
           setContextHeadroom(null);
-          setMessage("Context bundle generated.");
+          setMessage(t("common.workspace.contextBundleGenerated"));
         }
       } else {
         setError(result.error || "CodeGraph context request failed.");
@@ -315,7 +315,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
       text: "",
       attachments: [createContextAttachment(projectPath, contextOutput)],
     });
-    setMessage("Context bundle moved into Chat as an attachment draft.");
+    setMessage(t("common.workspace.contextBundleMovedToChat"));
   }
 
   const installCommand =
@@ -382,7 +382,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
             <div className="workspace-callout">
               <div className="workspace-callout-title">
                 <Download size={14} />
-                <span>Install CodeGraph locally</span>
+                <span>{t("common.workspace.installCodeGraphLocally")}</span>
               </div>
               <p>
                 Agent Desktop can only drive this surface once the `codegraph`
@@ -427,7 +427,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
               onClick={() => void window.hermesAPI.openExternal(cliStatus?.docsUrl || "https://colbymchenry.github.io/codegraph/")}
             >
               <ExternalLink size={14} />
-              <span>Open CodeGraph docs</span>
+              <span>{t("common.workspace.openCodeGraphDocs")}</span>
             </button>
           </div>
         </div>
@@ -537,7 +537,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
 
       <section className="workspace-card workspace-context-card">
         <div className="workspace-card-header">
-          <h2>Context bundle</h2>
+          <h2>{t("common.workspace.contextBundle")}</h2>
           <span className="workspace-subtle">
             Query the indexed graph for Hermes-ready context
           </span>
@@ -551,7 +551,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
           className="input workspace-textarea"
           value={contextPrompt}
           onChange={(event) => setContextPrompt(event.target.value)}
-          placeholder="Describe the architecture or code path you need context for."
+          placeholder={t("common.workspace.contextBundlePlaceholder")}
         />
 
         <div className="workspace-actions workspace-actions-tight">

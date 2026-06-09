@@ -198,7 +198,7 @@ export function Wiki({ profile }: WikiProps): React.JSX.Element {
 
       {wikiNotSetUp ? (
         <div className="wiki-empty-state">
-          <h4>Set up your knowledge base</h4>
+          <h4>{_t("memory.wiki.setUpYourKnowledgeBase")}</h4>
           <p>
             Bootstrap creates the directory tree, an empty
             <code> index.md</code>, a <code>log.md</code>, and a
@@ -258,7 +258,7 @@ export function Wiki({ profile }: WikiProps): React.JSX.Element {
                   <button
                     className="btn btn-secondary btn-sm"
                     onClick={handleEditOpen}
-                    title="Edit this page"
+                    title={_t("memory.wiki.editThisPage")}
                   >
                     <Edit3 size={13} />
                     Edit
@@ -621,7 +621,7 @@ function KnowledgePane({ profile }: { profile?: string }): React.JSX.Element {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
-          <option value="">All types</option>
+          <option value="">{_t("memory.wiki.allTypes")}</option>
           {types.map((ty) => (
             <option key={ty} value={ty}>
               {ty}

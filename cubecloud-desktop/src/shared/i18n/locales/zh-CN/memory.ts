@@ -1,4 +1,11 @@
 ﻿export default {
+  // V2.10.44
+  errorKeyAndInsightRequired: "请填写 Key 和洞察。",
+  wiki: {
+    setUpYourKnowledgeBase: "设置你的知识库",
+    editThisPage: "编辑此页",
+    allTypes: "全部类型",
+  },
   title: "璁板繂",
   subtitle: "Hermes 鍦ㄤ笉鍚屼細璇濅箣闂磋浣忕殑鍏充簬浣犲拰鐜鐨勪俊鎭€?",
   sessions: "浼氳瘽",

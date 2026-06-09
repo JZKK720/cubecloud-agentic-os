@@ -1,4 +1,6 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw 导入功能尚不可用。",
   title: "设置你的 AI 提供商",
   subtitle: "选择提供商并完成配置即可开始使用",
   providerCards: {

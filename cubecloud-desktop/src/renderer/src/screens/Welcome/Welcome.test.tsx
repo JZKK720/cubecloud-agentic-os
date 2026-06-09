@@ -1,9 +1,61 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+// V2.10.44 — the i18n mock used to return the raw key, but the
+// Welcome screen now wraps almost every visible string in
+// t("welcome.*") / t("common.*") / t("welcome.designDials.*").
+// To keep the assertions below readable (and to keep them honest
+// about the literal English copy that ships in the renderer),
+// resolve keys against the en locale files the same way the
+// production i18n bootstrap does.
+import enCommon from "../../../../shared/i18n/locales/en/common";
+import enWelcome from "../../../../shared/i18n/locales/en/welcome";
+
+type LocaleTree = Record<string, unknown>;
+
+function resolveKey(tree: LocaleTree, key: string): string {
+  const segments = key.split(".");
+  let cursor: unknown = tree;
+  for (const segment of segments) {
+    if (cursor && typeof cursor === "object" && segment in (cursor as LocaleTree)) {
+      cursor = (cursor as LocaleTree)[segment];
+    } else {
+      return key;
+    }
+  }
+  return typeof cursor === "string" ? cursor : key;
+}
+
+function interpolate(template: string, options?: Record<string, unknown>): string {
+  if (!options) return template;
+  return template.replace(/\{\{(\w+)\}\}/g, (_match, name) => {
+    const value = options[name];
+    return value == null ? `{{${name}}}` : String(value);
+  });
+}
+
+const enBundles: Record<string, LocaleTree> = {
+  common: enCommon as unknown as LocaleTree,
+  welcome: enWelcome as unknown as LocaleTree,
+};
+
+function translate(key: string, options?: Record<string, unknown>): string {
+  const [namespace, ...rest] = key.split(".");
+  const bundle = enBundles[namespace];
+  if (!bundle || rest.length === 0) {
+    // Either the key was a flat non-namespaced key (rare) or the
+    // test referenced a namespace the mock doesn't ship. In both
+    // cases, fall back to the raw key so the test surfaces a clear
+    // miss instead of a silently-empty string.
+    return key;
+  }
+  const subKey = rest.join(".");
+  return interpolate(resolveKey(bundle, subKey), options);
+}
+
 vi.mock("../../components/useI18n", () => ({
   useI18n: () => ({
-    t: (key: string) => key,
+    t: (key: string, options?: Record<string, unknown>) => translate(key, options),
     locale: "en",
     setLocale: () => {},
   }),
@@ -157,17 +209,16 @@ describe("Welcome handoffs", () => {
     // gateways, so listRuntimeProviders is not awaited as a mount
     // side-effect. Wait for the dual-OS install lanes to render
     // (signals the screen has finished its first paint) before
-    // exercising the CTA. The test's i18n mock returns the raw
-    // key, so we query against that.
+    // exercising the CTA. The i18n mock resolves the key against
+    // the en locale, so we query against the localized text.
+    const ctaName = translate("welcome.installLocalRuntime");
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: "welcome.installLocalRuntime" }),
+        screen.getByRole("button", { name: ctaName }),
       ).toBeInTheDocument();
     });
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "welcome.installLocalRuntime" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: ctaName }));
 
     expect(onStart).toHaveBeenCalledTimes(1);
     // The mount-time `refreshRuntimeProviders` call still runs (it

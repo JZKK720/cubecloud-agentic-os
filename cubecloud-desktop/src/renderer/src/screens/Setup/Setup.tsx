@@ -205,7 +205,7 @@ function Setup({
 
   async function handleOpenClawMigration(): Promise<void> {
     if (!openclawImportAction) {
-      setOpenclawStatus("OpenClaw import is not available yet.");
+      setOpenclawStatus(t("setup.errorOpenClawImportUnavailable"));
       return;
     }
 
