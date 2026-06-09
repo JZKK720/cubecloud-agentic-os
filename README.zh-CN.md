@@ -1,29 +1,6 @@
 <p align="center">
-  <img width="360" alt="Cubecloud 智方云" src="agent-desktop/build/branding/cubecloud-zhifangyun.svg" />
+  <img width="540" alt="Cubecloud 智方云" src="agent-desktop/build/branding/cubecloud-zhifangyun.svg" />
 </p>
-
-<p align="center"><sub><b>Cubecloud · 智方云</b> &nbsp;·&nbsp; <i>智方云 为 Cubecloud Limited Company 持有的中文注册商标，与 <code>cubecloud</code> 指代同一产品家族</i></sub></p>
-
-## 预览
-
-下面每张图都来自当前桌面构建的全页截图。完整的 22 张图廊（覆盖引导、运行时发现、以及侧边栏中所有主要操作面）位于
-[`agent-desktop/README.zh-CN.md`](agent-desktop/README.zh-CN.md#预览)。
-下面精选的 6 张图覆盖了首次阅读者应在阅读架构章节前看到的关键表面。
-
-<table>
-<tr>
-<td width="50%" align="center"><b>欢迎 &amp; 首次启动</b><br/><img width="100%" alt="欢迎" src="agent-desktop/previews/welcome.png" /></td>
-<td width="50%" align="center"><b>运行时发现</b><br/><img width="100%" alt="运行时发现" src="agent-desktop/previews/runtime-detection.png" /></td>
-</tr>
-<tr>
-<td width="50%" align="center"><b>对话</b><br/><img width="100%" alt="对话" src="agent-desktop/previews/chat.png" /></td>
-<td width="50%" align="center"><b>档案与代理</b><br/><img width="100%" alt="代理" src="agent-desktop/previews/agents.png" /></td>
-</tr>
-<tr>
-<td width="50%" align="center"><b>消息网关（16 个平台）</b><br/><img width="100%" alt="消息网关" src="agent-desktop/previews/gateway.png" /></td>
-<td width="50%" align="center"><b>设置与控制</b><br/><img width="100%" alt="设置" src="agent-desktop/previews/settings.png" /></td>
-</tr>
-</table>
 
 # Cubecloud Agentic-OS 中文文档（zh-CN）
 
@@ -44,6 +21,28 @@ Cubecloud 原创的控制平面、预启动上下文与开发期技能生态位�
 - 高频迭代尽量留在本地，付费远程推理只留给真正高价值的回合。
 - 切换运行时和提供者，不需要重写整套操作模型。
 - 一个桌面控制面，取代分散的 CLI、浏览器标签页与厂商后台。
+
+## 预览
+
+下面是桌面关键表面的精选图集——首次阅读者在阅读架构章节前应该看到的内容。
+每一张都是当前桌面构建的全页截图。完整的 22 张图廊（覆盖引导、运行时发现、
+以及侧边栏中所有主要操作面）位于
+[`agent-desktop/README.zh-CN.md`](agent-desktop/README.zh-CN.md#预览)。
+
+<table>
+<tr>
+<td width="50%" align="center"><b>欢迎 &amp; 首次启动</b><br/><img width="100%" alt="欢迎" src="agent-desktop/previews/welcome.png" /></td>
+<td width="50%" align="center"><b>运行时发现</b><br/><img width="100%" alt="运行时发现" src="agent-desktop/previews/runtime-detection.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>对话</b><br/><img width="100%" alt="对话" src="agent-desktop/previews/chat.png" /></td>
+<td width="50%" align="center"><b>档案与代理</b><br/><img width="100%" alt="代理" src="agent-desktop/previews/agents.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>消息网关（16 个平台）</b><br/><img width="100%" alt="消息网关" src="agent-desktop/previews/gateway.png" /></td>
+<td width="50%" align="center"><b>设置与控制</b><br/><img width="100%" alt="设置" src="agent-desktop/previews/settings.png" /></td>
+</tr>
+</table>
 
 ## 为什么团队会采用 Cubecloud
 
