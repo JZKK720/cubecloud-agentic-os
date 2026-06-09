@@ -1,15 +1,15 @@
 # Windows (winget) and Fedora (RPM) release automation
 
-**Status:** Approved (brainstorming) â€?pending implementation plan
+**Status:** Approved (brainstorming) â€” pending implementation plan
 **Date:** 2026-04-30
-**Branch target:** `cubecloud/agent-desktop:feat/winget-rpm-release` â†?PR `cubecloud/agent-desktop:main`
+**Branch target:** `cubecloud/cubecloud-desktop:feat/winget-rpm-release` â†’ PR `cubecloud/cubecloud-desktop:main`
 
 ## Goal
 
 Extend the existing release pipeline so it produces:
 
-1. **Windows artifacts** â€?an NSIS installer (`.exe`) published in each GitHub Release, plus winget manifests (`Installer.yaml`, `Locale.en-US.yaml`, `Version.yaml`) generated as a CI artifact for manual submission to `microsoft/winget-pkgs`.
-2. **Fedora artifacts** â€?an unsigned `.rpm` published in each GitHub Release, alongside the existing `.AppImage` and `.deb`.
+1. **Windows artifacts** â€” an NSIS installer (`.exe`) published in each GitHub Release, plus winget manifests (`Installer.yaml`, `Locale.en-US.yaml`, `Version.yaml`) generated as a CI artifact for manual submission to `microsoft/winget-pkgs`.
+2. **Fedora artifacts** â€” an unsigned `.rpm` published in each GitHub Release, alongside the existing `.AppImage` and `.deb`.
 
 No changes to macOS. The existing `.AppImage` / `.deb` artifacts are rebuilt by the same job that now also produces `.rpm`; the only adjacent change touching them is shared `linux.*` metadata (`synopsis`, `description`, `vendor`) which improves their packaging metadata too. No code-signing introduced (none available). No COPR repository, no auto-submission to `microsoft/winget-pkgs`.
 
@@ -39,18 +39,18 @@ release.yml (extended)
 
 ### Triggers
 
-- `push` to branch `release` â€?unchanged. Behaves as a real release: builds run, publish runs.
-- `workflow_dispatch` â€?adds `inputs.dry_run` (boolean, default `true`). When `dry_run=true`, all build jobs run; `publish` is skipped.
+- `push` to branch `release` â€” unchanged. Behaves as a real release: builds run, publish runs.
+- `workflow_dispatch` â€” adds `inputs.dry_run` (boolean, default `true`). When `dry_run=true`, all build jobs run; `publish` is skipped.
 
 The default-true on dispatch is a safety net: a stray click in the Actions UI cannot trigger a real release.
 
 ### Identifiers and naming
 
 - **Winget `PackageIdentifier`:** `NousResearch.HermesDesktop` (stable, never renamed)
-- **Winget `Publisher`:** `Nous Research` (free-text; binaries hosted under `cubecloud/agent-desktop`, which the moderation review will verify against the `InstallerUrl`)
+- **Winget `Publisher`:** `Nous Research` (free-text; binaries hosted under `cubecloud/cubecloud-desktop`, which the moderation review will verify against the `InstallerUrl`)
 - **Winget `PackageName`:** `Hermes Agent` (matches `productName` in `electron-builder.yml`)
-- **NSIS scope:** `oneClick: true`, `perMachine: false` â€?installs into `%LOCALAPPDATA%`, no UAC prompt, aligns with `winget install` default user scope and with the app's existing `~/.hermes` user-state model.
-- **RPM artifact name:** `hermes-desktop-<version>.rpm` (no spaces, no arch suffix â€?consistent with the existing `.deb` and `.AppImage` naming. The default `${productName}` would produce `Hermes Agent-...rpm` which breaks `dnf install ./file.rpm`. We explicitly only build `x86_64`, so the missing arch suffix is unambiguous in practice.).
+- **NSIS scope:** `oneClick: true`, `perMachine: false` â€” installs into `%LOCALAPPDATA%`, no UAC prompt, aligns with `winget install` default user scope and with the app's existing `~/.hermes` user-state model.
+- **RPM artifact name:** `hermes-desktop-<version>.rpm` (no spaces, no arch suffix â€” consistent with the existing `.deb` and `.AppImage` naming. The default `${productName}` would produce `Hermes Agent-...rpm` which breaks `dnf install ./file.rpm`. We explicitly only build `x86_64`, so the missing arch suffix is unambiguous in practice.).
 
 ## File changes
 
@@ -95,11 +95,11 @@ Concurrency block (`group: release`, `cancel-in-progress: true`) remains unchang
 
 #### `build/winget/Installer.template.yaml`
 
-YAML manifest with placeholders: `{{VERSION}}`, `{{INSTALLER_URL}}`, `{{INSTALLER_SHA256}}`, `{{RELEASE_DATE}}`. Format follows winget v1.6 schema, `InstallerType: nullsoft`, `Scope: user`, `MinimumOSVersion: 10.0.17763.0` (Windows 10 1809 â€?minimum supported by Electron 39).
+YAML manifest with placeholders: `{{VERSION}}`, `{{INSTALLER_URL}}`, `{{INSTALLER_SHA256}}`, `{{RELEASE_DATE}}`. Format follows winget v1.6 schema, `InstallerType: nullsoft`, `Scope: user`, `MinimumOSVersion: 10.0.17763.0` (Windows 10 1809 â€” minimum supported by Electron 39).
 
 #### `build/winget/Locale.en-US.template.yaml`
 
-Locale manifest with placeholders: `{{VERSION}}`, `{{RELEASE_NOTES_URL}}`. Includes `Publisher: Nous Research`, `PublisherUrl: https://github.com/cubecloud/agent-desktop`, `PackageName: Hermes Agent`, `License: MIT`, `LicenseUrl: https://github.com/cubecloud/agent-desktop/blob/main/LICENSE`, `ShortDescription`, `Tags: [ai, agent, desktop, electron, llm]`.
+Locale manifest with placeholders: `{{VERSION}}`, `{{RELEASE_NOTES_URL}}`. Includes `Publisher: Nous Research`, `PublisherUrl: https://github.com/cubecloud/cubecloud-desktop`, `PackageName: Hermes Agent`, `License: MIT`, `LicenseUrl: https://github.com/cubecloud/cubecloud-desktop/blob/main/LICENSE`, `ShortDescription`, `Tags: [ai, agent, desktop, electron, llm]`.
 
 #### `build/winget/Version.template.yaml`
 
@@ -135,23 +135,23 @@ Update the Install section's platform table to add Windows (`.exe` and, once acc
 
 ```
 checkout
-  â†?npm ci                  â†?node_modules + electron-builder install-app-deps
-  â†?npm run build           â†?out/main + out/preload + out/renderer
-  â†?electron-builder --win nsis --x64
-                            â†?dist/hermes-desktop-<version>-setup.exe
-                            â†?dist/hermes-desktop-<version>-setup.exe.blockmap
-                            â†?dist/latest.yml
-  â†?upload-artifact "windows-artifacts"
+  â†’ npm ci                  â†’ node_modules + electron-builder install-app-deps
+  â†’ npm run build           â†’ out/main + out/preload + out/renderer
+  â†’ electron-builder --win nsis --x64
+                            â†’ dist/hermes-desktop-<version>-setup.exe
+                            â†’ dist/hermes-desktop-<version>-setup.exe.blockmap
+                            â†’ dist/latest.yml
+  â†’ upload-artifact "windows-artifacts"
 ```
 
 ### CI generate winget manifests
 
 ```
-download-artifact "windows-artifacts" â†?dist/
+download-artifact "windows-artifacts" â†’ dist/
 node scripts/generate-winget-manifests.mjs
-  â†?SHA256(dist/hermes-desktop-<version>-setup.exe)
-  â†?fill 3 templates with VERSION, INSTALLER_URL, INSTALLER_SHA256, RELEASE_DATE
-  â†?write dist/winget/manifests/n/NousResearch/HermesDesktop/<version>/*.yaml
+  â†’ SHA256(dist/hermes-desktop-<version>-setup.exe)
+  â†’ fill 3 templates with VERSION, INSTALLER_URL, INSTALLER_SHA256, RELEASE_DATE
+  â†’ write dist/winget/manifests/n/NousResearch/HermesDesktop/<version>/*.yaml
 upload-artifact "winget-manifests-<version>"
 ```
 
@@ -159,21 +159,21 @@ upload-artifact "winget-manifests-<version>"
 
 ```
 checkout
-  â†?npm ci
-  â†?npm run build
-  â†?apt install rpm
-  â†?electron-builder --linux AppImage deb rpm
-                            â†?dist/hermes-desktop-<version>.AppImage
-                            â†?dist/hermes-desktop-<version>.deb
-                            â†?dist/hermes-desktop-<version>.x86_64.rpm
-                            â†?dist/latest-linux.yml
-  â†?upload-artifact "linux-artifacts"
+  â†’ npm ci
+  â†’ npm run build
+  â†’ apt install rpm
+  â†’ electron-builder --linux AppImage deb rpm
+                            â†’ dist/hermes-desktop-<version>.AppImage
+                            â†’ dist/hermes-desktop-<version>.deb
+                            â†’ dist/hermes-desktop-<version>.x86_64.rpm
+                            â†’ dist/latest-linux.yml
+  â†’ upload-artifact "linux-artifacts"
 ```
 
 ### Publish (only on real release)
 
 ```
-download-artifact merge-multiple=true â†?artifacts/
+download-artifact merge-multiple=true â†’ artifacts/
   *.dmg, *.zip, *.AppImage, *.deb, *.rpm, *.exe, *.blockmap, latest-*.yml, latest.yml
   + artifacts/winget/manifests/... (excluded from release files glob)
 git tag v<version> + push
@@ -186,7 +186,7 @@ softprops/action-gh-release files=artifacts/* (excludes winget/ subdir)
 2. **`rpm` package missing on Linux runner:** electron-builder fails with a clear "Cannot find rpmbuild" error. We pre-install via apt, so this should not surface.
 3. **Tag already exists:** All build jobs gate on `tag_exists == 'false'`; new jobs replicate this guard.
 4. **Concurrency cancellation (pre-existing behavior):** With `cancel-in-progress: true`, a new run in the same group cancels the currently running one. A stray dispatch during a real release would cancel the release. Mitigation: dispatches are manual and rare; the safer fix (per-event-type concurrency group) is intentionally out of scope here.
-5. **`workflow_dispatch` on a branch other than `release`:** Allowed and intended â€?that is how E2 verification works. The `prepare` step still reads version from `package.json`, so it builds whatever version is on the branch. Real releases only happen on `release` branch (no `is_dry_run` short-circuit there because `is_dry_run` is `false` for push events by definition).
+5. **`workflow_dispatch` on a branch other than `release`:** Allowed and intended â€” that is how E2 verification works. The `prepare` step still reads version from `package.json`, so it builds whatever version is on the branch. Real releases only happen on `release` branch (no `is_dry_run` short-circuit there because `is_dry_run` is `false` for push events by definition).
 6. **Operator submits stale manifests:** The CI artifact name includes the version (`winget-manifests-<version>`), so it cannot be confused with a different release's manifests. The operator copies the directory wholesale into their `microsoft/winget-pkgs` clone.
 7. **Manifest schema validation:** Validated by the `microsoft/winget-pkgs` moderation bot at PR-submission time. Common failure modes (missing `MinimumOSVersion`, invalid `License`, mismatched `InstallerType`) are addressed up front in the templates.
 
@@ -199,8 +199,8 @@ softprops/action-gh-release files=artifacts/* (excludes winget/ subdir)
 3. `npm run lint`
 4. `npm run typecheck`
 5. `npm run test`
-6. `npm run build:rpm` â€?produces a real `.rpm` on this Fedora host (sanity-checks the new electron-builder rpm target).
-7. `node scripts/generate-winget-manifests.mjs` against a placeholder `dist/<name>-<version>-setup.exe` (created via `dd if=/dev/urandom of=dist/... bs=1M count=1` to provide arbitrary content) â€?verifies that the generator produces three valid YAML files with consistent placeholders replaced.
+6. `npm run build:rpm` â€” produces a real `.rpm` on this Fedora host (sanity-checks the new electron-builder rpm target).
+7. `node scripts/generate-winget-manifests.mjs` against a placeholder `dist/<name>-<version>-setup.exe` (created via `dd if=/dev/urandom of=dist/... bs=1M count=1` to provide arbitrary content) â€” verifies that the generator produces three valid YAML files with consistent placeholders replaced.
 8. (Optional) `actionlint .github/workflows/release.yml` if installed.
 
 ### CI on fork
@@ -208,12 +208,17 @@ softprops/action-gh-release files=artifacts/* (excludes winget/ subdir)
 9. Push `feat/winget-rpm-release` to `Aiacos/hermes-desktop`.
 10. Trigger `workflow_dispatch` from the Actions UI on `feat/winget-rpm-release` with `dry_run=true`.
 11. Verify all build jobs succeed:
-    - `prepare` âœ?    - `release_mac` (x64 + arm64) âœ?    - `release_linux` (with `.rpm`) âœ?    - `release_windows` âœ?    - `generate_winget` âœ?    - `publish` SKIPPED (status: skipped, not failed)
+    - `prepare` âœ“
+    - `release_mac` (x64 + arm64) âœ“
+    - `release_linux` (with `.rpm`) âœ“
+    - `release_windows` âœ“
+    - `generate_winget` âœ“
+    - `publish` SKIPPED (status: skipped, not failed)
 12. Download the `winget-manifests-<version>` artifact and inspect the three YAML files for correctness (URL, SHA256, version, no leftover placeholders).
 
 ### PR
 
-13. Open PR `feat/winget-rpm-release` â†?`cubecloud/agent-desktop:main`. PR description summarizes what was added, the verification done, and the manual steps the maintainer has to take post-merge to actually publish to winget (download manifest artifact from the first real release run, submit to `microsoft/winget-pkgs`).
+13. Open PR `feat/winget-rpm-release` â†’ `cubecloud/cubecloud-desktop:main`. PR description summarizes what was added, the verification done, and the manual steps the maintainer has to take post-merge to actually publish to winget (download manifest artifact from the first real release run, submit to `microsoft/winget-pkgs`).
 
 ## Open questions deferred to implementation
 

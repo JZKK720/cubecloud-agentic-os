@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Extend the existing GitHub Actions release pipeline to produce a Windows NSIS installer + winget manifests, and a Fedora `.rpm`, alongside the existing macOS/Linux artifacts. End state: open a PR from `feat/winget-rpm-release` to `cubecloud/agent-desktop:main`.
+**Goal:** Extend the existing GitHub Actions release pipeline to produce a Windows NSIS installer + winget manifests, and a Fedora `.rpm`, alongside the existing macOS/Linux artifacts. End state: open a PR from `feat/winget-rpm-release` to `cubecloud/cubecloud-desktop:main`.
 
 **Architecture:** Two new jobs added to `.github/workflows/release.yml` (Windows build + winget manifest generator), one existing job extended (Linux gets rpm), one job gated on a new `dry_run` input. Winget manifests are filled from YAML templates by a tested Node ESM script and uploaded as a CI artifact for manual submission to `microsoft/winget-pkgs`.
 
@@ -71,7 +71,7 @@ linux:
   synopsis: Self-improving AI assistant desktop app
   description: |
     Hermes Desktop is a native desktop app for installing, configuring, and chatting
-    with Hermes Agent â€?a self-improving AI assistant with tool use, multi-platform
+    with Hermes Agent â€” a self-improving AI assistant with tool use, multi-platform
     messaging, and a closed learning loop.
 appImage:
   artifactName: ${name}-${version}.${ext}
@@ -250,16 +250,16 @@ PackageIdentifier: NousResearch.HermesDesktop
 PackageVersion: { { VERSION } }
 PackageLocale: en-US
 Publisher: Nous Research
-PublisherUrl: https://github.com/cubecloud/agent-desktop
-PublisherSupportUrl: https://github.com/cubecloud/agent-desktop/issues
+PublisherUrl: https://github.com/cubecloud/cubecloud-desktop
+PublisherSupportUrl: https://github.com/cubecloud/cubecloud-desktop/issues
 PackageName: Hermes Agent
-PackageUrl: https://github.com/cubecloud/agent-desktop
+PackageUrl: https://github.com/cubecloud/cubecloud-desktop
 License: MIT
-LicenseUrl: https://github.com/cubecloud/agent-desktop/blob/main/LICENSE
+LicenseUrl: https://github.com/cubecloud/cubecloud-desktop/blob/main/LICENSE
 ShortDescription: Self-improving AI assistant desktop app
 Description: |-
   Hermes Desktop is a native desktop app for installing, configuring, and chatting
-  with Hermes Agent â€?a self-improving AI assistant with tool use, multi-platform
+  with Hermes Agent â€” a self-improving AI assistant with tool use, multi-platform
   messaging, and a closed learning loop.
 Tags:
   - ai
@@ -409,7 +409,7 @@ describe("generateWingetManifests", () => {
     const content = readFileSync(outFile, "utf-8");
     expect(content).toContain("Version: 9.9.9");
     expect(content).toContain(
-      "Url: https://github.com/cubecloud/agent-desktop/releases/download/v9.9.9/hermes-desktop-9.9.9-setup.exe",
+      "Url: https://github.com/cubecloud/cubecloud-desktop/releases/download/v9.9.9/hermes-desktop-9.9.9-setup.exe",
     );
     expect(content).toMatch(/Sha: [A-F0-9]{64}/);
     expect(content).toMatch(/Date: \d{4}-\d{2}-\d{2}/);
@@ -444,7 +444,7 @@ describe("generateWingetManifests", () => {
     );
     const content = readFileSync(outFile, "utf-8");
     expect(content).toContain(
-      "Notes: https://github.com/cubecloud/agent-desktop/releases/tag/v9.9.9",
+      "Notes: https://github.com/cubecloud/cubecloud-desktop/releases/tag/v9.9.9",
     );
     expect(content).not.toContain("{{");
   });
@@ -473,7 +473,7 @@ Run: `npm run test`
 
 Expected: `tests/winget-generator.test.ts` fails with an import resolution error like `Failed to resolve import "../scripts/generate-winget-manifests.mjs"` or similar. **The other existing tests must still pass.** Total: 4 new tests failing, all existing tests passing.
 
-If existing tests fail, stop â€?that's an unrelated breakage we caused. Investigate before proceeding.
+If existing tests fail, stop â€” that's an unrelated breakage we caused. Investigate before proceeding.
 
 ### Task 9: Implement the manifest generator
 
@@ -596,7 +596,7 @@ Run: `npm run test`
 
 Expected: all four `winget-generator` tests pass. All previously passing tests still pass. Output should end with `Tests` count incremented by 4.
 
-If failing: read the assertion error and fix the script. Do not modify the test to make it pass â€?modify the implementation.
+If failing: read the assertion error and fix the script. Do not modify the test to make it pass â€” modify the implementation.
 
 ### Task 11: Commit winget infrastructure
 
@@ -914,7 +914,7 @@ Run: `python3 -c "import yaml; d = yaml.safe_load(open('.github/workflows/releas
 
 Expected output: `jobs: ['prepare', 'release_mac', 'release_linux', 'release_windows', 'generate_winget', 'publish']`
 
-If not, the YAML has a structural issue â€?open it and verify indentation.
+If not, the YAML has a structural issue â€” open it and verify indentation.
 
 - [ ] **Step 2 (optional): Run actionlint if installed**
 
@@ -951,7 +951,7 @@ Locate the current Install section (lines ~22-37):
 ````markdown
 ## Install
 
-Download the latest build from the [Releases](https://github.com/cubecloud/agent-desktop/releases/) page.
+Download the latest build from the [Releases](https://github.com/cubecloud/cubecloud-desktop/releases/) page.
 
 | Platform | File                  |
 | -------- | --------------------- |
@@ -964,7 +964,7 @@ Download the latest build from the [Releases](https://github.com/cubecloud/agent
 > xattr -cr "/Applications/Hermes Agent.app"
 > ```
 >
-> Or right-click the app â†?**Open** â†?click **Open** in the confirmation dialog.
+> Or right-click the app â†’ **Open** â†’ click **Open** in the confirmation dialog.
 ````
 
 Replace the table and add a Linux/Windows notes block. The new section:
@@ -972,7 +972,7 @@ Replace the table and add a Linux/Windows notes block. The new section:
 ````markdown
 ## Install
 
-Download the latest build from the [Releases](https://github.com/cubecloud/agent-desktop/releases/) page.
+Download the latest build from the [Releases](https://github.com/cubecloud/cubecloud-desktop/releases/) page.
 
 | Platform       | File                    |
 | -------------- | ----------------------- |
@@ -993,7 +993,7 @@ winget install NousResearch.HermesDesktop
 
 Until then, download the `.exe` from the Releases page.
 
-> **Windows users:** The installer is not code-signed. Windows SmartScreen will warn on first launch â€?click "More info" â†?"Run anyway".
+> **Windows users:** The installer is not code-signed. Windows SmartScreen will warn on first launch â€” click "More info" â†’ "Run anyway".
 
 ### Fedora (RPM)
 
@@ -1011,7 +1011,7 @@ sudo dnf install ./hermes-desktop-<version>.rpm
 > xattr -cr "/Applications/Hermes Agent.app"
 > ```
 >
-> Or right-click the app â†?**Open** â†?click **Open** in the confirmation dialog.
+> Or right-click the app â†’ **Open** â†’ click **Open** in the confirmation dialog.
 
 ````
 
@@ -1086,7 +1086,7 @@ If push is rejected, resolve auth (e.g., `gh auth login` or SSH key) before retr
 
 Run: `gh workflow run release.yml --ref feat/winget-rpm-release -f dry_run=true`
 
-Expected: `gh` confirms the workflow was queued. (Alternative: trigger from the GitHub Actions UI on the `Release` workflow â†?Run workflow â†?branch `feat/winget-rpm-release` â†?leave dry_run checked.)
+Expected: `gh` confirms the workflow was queued. (Alternative: trigger from the GitHub Actions UI on the `Release` workflow â†’ Run workflow â†’ branch `feat/winget-rpm-release` â†’ leave dry_run checked.)
 
 - [ ] **Step 2: Watch the run**
 
@@ -1094,11 +1094,11 @@ Run: `gh run watch` (or `gh run list --workflow=release.yml --branch=feat/winget
 
 Expected progression:
 
-- `prepare` âœ?(~30s)
-- `release_mac` x64 + arm64 âœ?(~10-15min in parallel)
-- `release_linux` âœ?(~5-8min)
-- `release_windows` âœ?(~8-12min)
-- `generate_winget` âœ?(~30s, depends on `release_windows`)
+- `prepare` âœ“ (~30s)
+- `release_mac` x64 + arm64 âœ“ (~10-15min in parallel)
+- `release_linux` âœ“ (~5-8min)
+- `release_windows` âœ“ (~8-12min)
+- `generate_winget` âœ“ (~30s, depends on `release_windows`)
 - `publish` is **skipped** (status: `skipped`, not `failed`)
 
 Total wall-clock: ~15-20min (mac arm64 is usually the longest pole).
@@ -1109,7 +1109,7 @@ Read the failure with `gh run view <id> --log-failed`. Most likely failure modes
 
 - Windows job: `npm ci` fails on a native dep (better-sqlite3 needing windows-build-tools). Solution: add `npm config set msvs_version 2022` step or rely on electron-builder's own `install-app-deps`.
 - Linux rpm job: `rpmbuild` missing a dep. Solution: ensure `rpm` and possibly `rpm-build` are both apt-installed.
-- generate_winget: script error. Most likely a path mismatch â€?confirm artifact downloaded to `dist/`.
+- generate_winget: script error. Most likely a path mismatch â€” confirm artifact downloaded to `dist/`.
 
 Fix the issue, commit on the branch, push, and re-trigger. Do not proceed to PR until the dispatch succeeds end-to-end with `publish` skipped.
 
@@ -1131,7 +1131,7 @@ Expected:
 
 - No `{{...}}` placeholders left.
 - `InstallerSha256` is a 64-character uppercase hex string.
-- `InstallerUrl` points to the `cubecloud/agent-desktop` releases path with the correct version.
+- `InstallerUrl` points to the `cubecloud/cubecloud-desktop` releases path with the correct version.
 - `ReleaseDate` is today's date (UTC) in `YYYY-MM-DD`.
 - `PackageVersion` matches `package.json`.
 
@@ -1145,13 +1145,13 @@ Run: `rm -rf /tmp/winget-check`
 
 ## Phase 7: Open PR
 
-### Task 24: Open PR to `cubecloud/agent-desktop:main`
+### Task 24: Open PR to `cubecloud/cubecloud-desktop:main`
 
 This is a "shared state" action visible to others. The human operator confirms before running.
 
 - [ ] **Step 1: Confirm PR target with the user**
 
-Ask the user: "Ready to open the PR from `feat/winget-rpm-release` to `cubecloud/agent-desktop:main`? Or do you want to review the diff one more time first?"
+Ask the user: "Ready to open the PR from `feat/winget-rpm-release` to `cubecloud/cubecloud-desktop:main`? Or do you want to review the diff one more time first?"
 
 Wait for explicit confirmation.
 
@@ -1161,7 +1161,7 @@ Run:
 
 ```bash
 gh pr create \
-  --repo cubecloud/agent-desktop \
+  --repo cubecloud/cubecloud-desktop \
   --base main \
   --head Aiacos:feat/winget-rpm-release \
   --title "ci: add Windows (winget) and Fedora (RPM) release artifacts" \
@@ -1214,25 +1214,25 @@ Done.
 
 **Spec coverage:**
 
-- âœ?Windows NSIS build â†?Tasks 14, 17
-- âœ?Winget manifest generation â†?Tasks 6, 7, 9, 11, 15
-- âœ?Fedora RPM in CI â†?Task 13
-- âœ?Local rpm sanity-check â†?Task 4
-- âœ?`dry_run` workflow_dispatch input â†?Task 12
-- âœ?`publish` gated on `is_dry_run` â†?Task 16
-- âœ?Explicit gh-release files list (replaces `artifacts/*` glob) â†?Task 16
-- âœ?Linux metadata (vendor/synopsis/description) â†?Task 1
-- âœ?Explicit NSIS oneClick/perMachine â†?Task 2
-- âœ?README updates for Windows + Fedora install â†?Task 18
-- âœ?Local verification (lint/typecheck/test) â†?Task 20
-- âœ?CI verification on fork â†?Tasks 21â€?3
-- âœ?Open PR upstream â†?Task 24
+- âœ… Windows NSIS build â†’ Tasks 14, 17
+- âœ… Winget manifest generation â†’ Tasks 6, 7, 9, 11, 15
+- âœ… Fedora RPM in CI â†’ Task 13
+- âœ… Local rpm sanity-check â†’ Task 4
+- âœ… `dry_run` workflow_dispatch input â†’ Task 12
+- âœ… `publish` gated on `is_dry_run` â†’ Task 16
+- âœ… Explicit gh-release files list (replaces `artifacts/*` glob) â†’ Task 16
+- âœ… Linux metadata (vendor/synopsis/description) â†’ Task 1
+- âœ… Explicit NSIS oneClick/perMachine â†’ Task 2
+- âœ… README updates for Windows + Fedora install â†’ Task 18
+- âœ… Local verification (lint/typecheck/test) â†’ Task 20
+- âœ… CI verification on fork â†’ Tasks 21â€“23
+- âœ… Open PR upstream â†’ Task 24
 
-**Placeholder scan:** No "TBD" or "fill in details" left. The generated PR body in Task 24 has a "Test plan" with unchecked boxes â€?that is intentional, those are TODOs for the _maintainer_, not for the implementer.
+**Placeholder scan:** No "TBD" or "fill in details" left. The generated PR body in Task 24 has a "Test plan" with unchecked boxes â€” that is intentional, those are TODOs for the _maintainer_, not for the implementer.
 
 **Type/name consistency:**
 
-- `generateWingetManifests({ rootDir, version, name, publishOwner })` â€?same signature in test (Task 7), implementation (Task 9), and CLI entrypoint.
-- `winget-manifests-${{ needs.prepare.outputs.version }}` â€?same artifact name in `generate_winget` job (Task 15) and in the CI inspection step (Task 23).
-- `is_dry_run` output â€?defined in Task 12, consumed in Task 16.
-- `publishOwner: "cubecloud"` â€?same in workflow env (Task 15) and CLI default (Task 9).
+- `generateWingetManifests({ rootDir, version, name, publishOwner })` â€” same signature in test (Task 7), implementation (Task 9), and CLI entrypoint.
+- `winget-manifests-${{ needs.prepare.outputs.version }}` â€” same artifact name in `generate_winget` job (Task 15) and in the CI inspection step (Task 23).
+- `is_dry_run` output â€” defined in Task 12, consumed in Task 16.
+- `publishOwner: "cubecloud"` â€” same in workflow env (Task 15) and CLI default (Task 9).
