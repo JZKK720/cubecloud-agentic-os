@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="360" alt="Cubecloud 智方云" src="build/branding/cubecloud-zhifangyun.svg" />
+</p>
+
 > **Cubecloud Agent Desktop — デスクトップ版バイナリ向けドキュメント。**
 > Agentic-OS モノレポの README は [`../README.md`](../README.md)、
 > マスター索引は [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md) にあります。

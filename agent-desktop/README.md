@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="360" alt="Cubecloud Desktop" src="build/branding/cubecloud-logo.svg" />
+  <img width="360" alt="Cubecloud 智方云" src="build/branding/cubecloud-zhifangyun.svg" />
 </p>
 
 # Cubecloud Agent Desktop — the binary

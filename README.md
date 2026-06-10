@@ -12,6 +12,8 @@
 
 # Cubecloud Agentic-OS
 
+**[English](README.md)** · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
+
 > **A local-first agent desktop and operating model for teams that want portability, auditability, and lower AI operating cost.**
 > Cubecloud gives builders one control plane for runtimes, providers,
 > skills, memory, schedules, and optional code intelligence - without

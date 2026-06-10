@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="360" alt="Cubecloud 智方云" src="build/branding/cubecloud-zhifangyun.svg" />
+</p>
+
 > **Cubecloud Agent Desktop — 데스크톱 바이너리 문서입니다.**
 > Agentic-OS 모노레포 README 는 [`../README.md`](../README.md),
 > 마스터 인덱스는 [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)에 있습니다.

@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="360" alt="Cubecloud 智方云" src="build/branding/cubecloud-zhifangyun.svg" />
+</p>
+
 > **Cubecloud Agent Desktop —— 面向桌面端二进制发行版的说明文档。**
 > Agentic-OS 单仓的 README 在 [`../README.md`](../README.md)，
 > 主索引在 [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)。

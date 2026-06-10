@@ -4,6 +4,8 @@
 
 # Cubecloud Agentic-OS 中文文档（zh-CN）
 
+[English](README.md) · **简体中文** · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
+
 > **为追求可移植性、可审计性与更低 AI 运行成本的团队打造的本地优先智能体桌面与运作模型。**
 > Cubecloud 将运行时、提供者、技能、记忆、计划任务与可选代码智能
 > 统一到一个控制面中，而不是让用户的设备沦为某个托管包装层的薄客户端。
