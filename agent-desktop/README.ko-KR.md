@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="360" alt="Cubecloud 智方云" src="build/branding/cubecloud-zhifangyun.svg" />
+  <img width="360" alt="Cubecloud" src="build/branding/cubecloud-logo.svg" />
 </p>
 
 > **Cubecloud Agent Desktop — 데스크톱 바이너리 문서입니다.**

@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="540" alt="Cubecloud 智方云" src="agent-desktop/build/branding/cubecloud-zhifangyun.svg" />
+  <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
 # Cubecloud Agentic-OS 한국어 문서（ko-KR）

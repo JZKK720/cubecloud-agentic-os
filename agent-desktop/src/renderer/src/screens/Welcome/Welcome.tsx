@@ -7,7 +7,7 @@ import {
   KeyRound,
   Spinner,
 } from "../../assets/icons";
-import { useBrandWordmark } from "../../components/useBrandWordmark";
+import cubecloudWordmark from "../../assets/cubecloud-wordmark.svg";
 import {
   WSL_BASH_INSTALL_CMD,
   POWERSHELL_INSTALL_CMD,
@@ -86,7 +86,6 @@ function Welcome({
   onSwitchToLocal,
 }: WelcomeProps): React.JSX.Element {
   const { t, locale, setLocale } = useI18n();
-  const wordmark = useBrandWordmark();
   const [panel, setPanel] = useState<ConnectionPanel>("none");
 
   // Design Dials (Step 5). The agent's tone knobs are persisted
@@ -318,7 +317,7 @@ function Welcome({
       <>
         <div className="welcome-brand-shell">
           <img
-            src={wordmark}
+            src={cubecloudWordmark}
             alt="Cubecloud Agent Desktop"
             className="welcome-brand-wordmark"
           />

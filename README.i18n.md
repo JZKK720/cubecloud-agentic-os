@@ -10,10 +10,10 @@
 
 | File | Language | Path | Status | Maintainer |
 |---|---|---|---|---|
-| README (monorepo) | English | `README.md` (outer root) | **Live, V2.10.53 bilingual brand + language switcher** (logo swapped to the bilingual `cubecloud-zhifangyun.svg` at V2.10.51; placement re-flowed in V2.10.52 so the H1 sits under the badges and the curated 6-image Preview gallery sits after the intro bullets; a one-line English/简体中文/日本語/한국어 switcher was added under the H1 in V2.10.53) | Cubecloud Contributors |
-| README (monorepo) | Simplified Chinese (zh-CN) | `README.zh-CN.md` (outer root) | **Live, V2.10.53 bilingual brand + language switcher** (same structure as the English row; the switcher marks 简体中文 as the active language) | Cubecloud Contributors + Community |
-| README (monorepo) | Japanese (ja-JP) | `README.ja-JP.md` (outer root) | **Live, V2.10.53 bilingual brand + language switcher** (same structure as the English row; the switcher marks 日本語 as the active language) | Cubecloud Contributors + Community |
-| README (monorepo) | Korean (ko-KR) | `README.ko-KR.md` (outer root) | **Live, V2.10.53 bilingual brand + language switcher** (same structure as the English row; the switcher marks 한국어 as the active language) | Cubecloud Contributors + Community |
+| README (monorepo) | English | `README.md` (outer root) | **Live, V2.10.55 canonical wordmark** (V2.10.51 introduced a fabricated bilingual mark; V2.10.52 refined placement; V2.10.53 added the language switcher; V2.10.55 replaces the fabricated bilingual mark with the canonical `cubecloud-logo.svg` which is byte-identical to the user's `docs/logos/logo.svg/1290X480 常规.svg` brand-pack wordmark. Language switcher and placement re-flow from V2.10.52/V2.10.53 are preserved.) | Cubecloud Contributors |
+| README (monorepo) | Simplified Chinese (zh-CN) | `README.zh-CN.md` (outer root) | **Live, V2.10.55 canonical wordmark** (same structure as the English row; canonical wordmark swap from V2.10.55; the language switcher marks 简体中文 as the active language) | Cubecloud Contributors + Community |
+| README (monorepo) | Japanese (ja-JP) | `README.ja-JP.md` (outer root) | **Live, V2.10.55 canonical wordmark** (same structure as the English row; canonical wordmark swap from V2.10.55; the language switcher marks 日本語 as the active language) | Cubecloud Contributors + Community |
+| README (monorepo) | Korean (ko-KR) | `README.ko-KR.md` (outer root) | **Live, V2.10.55 canonical wordmark** (same structure as the English row; canonical wordmark swap from V2.10.55; the language switcher marks 한국어 as the active language) | Cubecloud Contributors + Community |
 | CONTRIBUTING (monorepo) | English | `CONTRIBUTING.md` (outer root) | Live (hardlink to inner) | Cubecloud Contributors |
 | CONTRIBUTING (monorepo) | Simplified Chinese (zh-CN) | `CONTRIBUTING.zh-CN.md` (outer root) | **Live, V2.10.17** (machine-translated starting point for the outer contributor policy; native speakers welcome to polish) | Cubecloud Contributors + Community |
 | SECURITY (monorepo) | English | `SECURITY.md` (outer root) | Live (hardlink to inner) | Cubecloud Contributors |
@@ -32,10 +32,10 @@
 | HANDBOOK operations (monorepo) | Simplified Chinese (zh-CN) | `docs/handbook/OPERATIONS.zh-CN.md` | **Live, V2.10.25** (machine-translated starting point for the operations guide; native speakers welcome to polish) | Cubecloud Contributors + Community |
 | RETIRED_AND_LEGACY (monorepo) | English | `docs/RETIRED_AND_LEGACY.md` | Live | Cubecloud Contributors |
 | RETIRED_AND_LEGACY (monorepo) | Simplified Chinese (zh-CN) | `docs/RETIRED_AND_LEGACY.zh-CN.md` | **Live, V2.10.28** (machine-translated starting point; native speakers welcome to review and polish) | Cubecloud Contributors + Community |
-| README (binary) | English | `agent-desktop/README.md` | **Live, V2.10.53 bilingual brand swap** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 swapped the top wordmark from `cubecloud-logo.svg` to the bilingual `cubecloud-zhifangyun.svg` to match the outer README family) | Cubecloud Contributors |
-| README (binary) | 日本語(ja-JP) | `agent-desktop/README.ja-JP.md` | **Live, V2.10.53 bilingual brand swap** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 added the bilingual brand mark above the existing welcome banner image to match the outer README family; native-speaker review still welcome) | Cubecloud Contributors + Community |
-| README (binary) | 简体中文(zh-CN) | `agent-desktop/README.zh-CN.md` | **Live, V2.10.53 bilingual brand swap** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 added the bilingual brand mark above the existing welcome banner image to match the outer README family; native-speaker review still welcome) | Cubecloud Contributors + Community |
-| README (binary) | 한국어(ko-KR) | `agent-desktop/README.ko-KR.md` | **Live, V2.10.53 bilingual brand swap** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 added the bilingual brand mark above the existing welcome banner image to match the outer README family; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (binary) | English | `agent-desktop/README.md` | **Live, V2.10.55 canonical wordmark** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 swapped to the V2.10.51 bilingual mark; V2.10.55 reverts to the canonical `cubecloud-logo.svg` because the user's brand pack does not include a 智方云 mark and the V2.10.51 bilingual SVG was hand-rolled from primitive paths) | Cubecloud Contributors |
+| README (binary) | 日本語(ja-JP) | `agent-desktop/README.ja-JP.md` | **Live, V2.10.55 canonical wordmark** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 added the bilingual mark above the welcome banner image; V2.10.55 swaps that for the canonical `cubecloud-logo.svg`; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (binary) | 简体中文(zh-CN) | `agent-desktop/README.zh-CN.md` | **Live, V2.10.55 canonical wordmark** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 added the bilingual mark above the welcome banner image; V2.10.55 swaps that for the canonical `cubecloud-logo.svg`; native-speaker review still welcome) | Cubecloud Contributors + Community |
+| README (binary) | 한국어(ko-KR) | `agent-desktop/README.ko-KR.md` | **Live, V2.10.55 canonical wordmark** (V2.10.48 preview gallery; V2.10.49 framing restoration; V2.10.53 added the bilingual mark above the welcome banner image; V2.10.55 swaps that for the canonical `cubecloud-logo.svg`; native-speaker review still welcome) | Cubecloud Contributors + Community |
 | CONTRIBUTING (binary) | English | `agent-desktop/CONTRIBUTING.md` | Live, source of truth | Cubecloud Contributors |
 | CONTRIBUTING (binary) | 日本語(ja-JP) | `agent-desktop/CONTRIBUTING.ja-JP.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
 | CONTRIBUTING (binary) | 简体中文(zh-CN) | `agent-desktop/CONTRIBUTING.zh-CN.md` | **Live, V2.10.32 wording + coordinate cleanup** (top-level contributor-policy copy refreshed, old repo coordinates removed; native-speaker review still welcome) | Cubecloud Contributors + Community |
@@ -62,7 +62,21 @@
 
 The outer root and `docs/` now host **monorepo translations**.
 
-- Brand assets (V2.10.51) — `agent-desktop/build/branding/cubecloud-logo.svg` (Latin wordmark, legacy), `agent-desktop/build/branding/cubecloud-mark.svg` (icon mark), `agent-desktop/build/branding/cubecloud-zhifangyun.svg` (bilingual cubecloud + 智方云 wordmark with `本地优先的智能体操作系统` tagline; referenced from all four root READMEs).
+- Brand assets (V2.10.55) — `docs/logos/logo.svg/` is the canonical
+  source of truth, a 12-asset brand pack covering 4 sizes
+  (120×120, 1290×480, 512×512, 800×800) × 3 color treatments
+  (反白 / 反黑 / 常规). The pack is mirrored to
+  `agent-desktop/build/branding/logo-pack/` (build-time) and
+  `agent-desktop/src/renderer/src/assets/logo-pack/` (Vite-bundled).
+  The legacy `agent-desktop/build/branding/cubecloud-logo.svg`
+  (byte-identical to `docs/logos/logo.svg/1290X480 常规.svg`) and
+  `agent-desktop/build/branding/cubecloud-mark.svg` (legacy icon
+  mark) stay in place so the existing build pipeline + README
+  references keep working. The V2.10.51-V2.10.54 hand-rolled
+  `cubecloud-zhifangyun.svg` was removed in V2.10.55 — the user's
+  brand pack does not include a 智方云 Chinese mark, and the legal
+  Chinese brand 智方云 is referenced in legal text only
+  (BRANDING_AND_LICENSE.md, ABOUT.md), not in product chrome.
 
 Currently that means:
 

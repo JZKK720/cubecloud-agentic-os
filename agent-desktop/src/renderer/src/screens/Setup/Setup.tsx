@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, ExternalLink } from "../../assets/icons";
-import { useBrandWordmark } from "../../components/useBrandWordmark";
+import cubecloudWordmark from "../../assets/cubecloud-wordmark.svg";
 import { PROVIDERS, LOCAL_PRESETS, OAUTH_PROVIDERS } from "../../constants";
 import { useI18n } from "../../components/useI18n";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
@@ -30,7 +30,6 @@ function Setup({
   onDismissVerifyWarning,
 }: SetupProps): React.JSX.Element {
   const { t, locale, setLocale } = useI18n();
-  const wordmark = useBrandWordmark();
   const [selectedProvider, setSelectedProvider] = useState("openrouter");
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("http://localhost:1234/v1");
@@ -338,7 +337,7 @@ function Setup({
 
       <div className="setup-brand-shell">
         <img
-          src={wordmark}
+          src={cubecloudWordmark}
           alt="Cubecloud Agent Desktop"
           className="setup-brand-wordmark"
         />

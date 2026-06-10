@@ -24,7 +24,7 @@ import Headroom from "../Headroom/Headroom";
 import Mcp from "../Mcp/Mcp";
 import RuntimeNotice from "../../components/RuntimeNotice";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
-import { useBrandWordmark } from "../../components/useBrandWordmark";
+import cubecloudWordmark from "../../assets/cubecloud-wordmark.svg";
 import {
   ChatBubble,
   Clock,
@@ -122,7 +122,6 @@ function Layout({
   onSwitchToLocal,
 }: LayoutProps = {}): React.JSX.Element {
   const { t } = useI18n();
-  const wordmark = useBrandWordmark();
   const [view, setView] = useState<View>("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -377,7 +376,7 @@ function Layout({
       <aside className="sidebar">
         <div className="sidebar-brand">
           <img
-            src={wordmark}
+            src={cubecloudWordmark}
             className="sidebar-brand-wordmark"
             alt="Cubecloud Agent Desktop"
           />
