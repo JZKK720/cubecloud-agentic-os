@@ -5,6 +5,13 @@ Distilled from:
   - https://github.com/JZKK720/ECC (Everything Claude Code, Copilot adapter)
   - https://github.com/JZKK720/taste-skill (anti-slop design rules, user-level)
 Apply to: every Copilot Chat request in this workspace.
+
+> **Project-specific rules (build commands, brand-pack source of truth,
+> swappable-surface contract, i18n workflow, security floor) live in
+> the workspace-root [`AGENTS.md`](../AGENTS.md).** This file carries
+> the generic Karpathy/ECC principles that apply across every Copilot
+> session in this workspace. For desktop-only work, also read
+> [`agent-desktop/AGENTS.md`](../agent-desktop/AGENTS.md).
 -->
 
 # Copilot Instructions —cubecloud-agentic-os

@@ -1,43 +1,97 @@
-# Agent Instructions
+# Agent Instructions — agent-desktop
 
-`agent-desktop` is the active implementation target for this workspace. Upstream `hermes-desktop` is a legacy reference only: use it for comparison when needed, but do not add new runtime, build, or workflow dependencies on a local legacy clone.
+`agent-desktop` is the active implementation target for this workspace.
+The upstream `hermes-desktop` is a legacy reference only: use it for
+comparison when needed, but do not add new runtime, build, or workflow
+dependencies on a local legacy clone.
 
-## Default Skills
+For cross-tool project rules (build commands, brand-pack source of
+truth, swappable-surface contract, i18n workflow, security floor), see
+the workspace-root [`AGENTS.md`](../AGENTS.md) at the repo root. This
+file is the **desktop-only** supplement.
 
-- Apply `karpathy-guidelines` by default for non-trivial work in this repo.
-- Apply `design-taste-frontend` by default for renderer UI, CSS, onboarding, welcome, setup, and empty-state work.
-- Add `electron-pro` when the change touches Electron main, preload, IPC, packaging, installers, or OS integration.
-- Add `typescript-expert` when the change touches complex typing, compiler diagnostics, tsconfig, or shared type contracts.
+## Default Skills (apply automatically)
+
+These skills live in `.agents/skills/<name>/SKILL.md` or
+`.github/skills/<name>/SKILL.md`. Load them when the trigger applies:
+
+| Trigger | Skill |
+|---|---|
+| Any non-trivial code work in this workspace | `karpathy-guidelines` (`.agents/skills/karpathy-guidelines/SKILL.md`) |
+| Renderer UI, CSS, onboarding, welcome, setup, empty states | `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`) |
+| README translations, screenshot refresh, PDF re-render, i18n sync | `.github/skills/docs-i18n-refresh/SKILL.md` |
+| Headroom, context compression, large logs, CodeGraph bundle compression | `.github/skills/headroom-workflow/SKILL.md` |
+
+> **Note:** A previous version of this file referenced
+> `electron-pro` and `typescript-expert` skills that do not exist in
+> this repo. They were a carry-over from another workspace. Do not
+> load them.
 
 ## Working Rules
 
-- Start from the owning file, symbol, test, or failing behavior before editing.
-- Make the smallest falsifiable change first, then validate immediately.
-- Keep onboarding and provider copy truthful to the app's current Hermes-backed capabilities.
-- Reuse existing hooks, preload bridges, provider plumbing, and CSS patterns before adding abstractions.
-- Do not spread inherited Hermes branding into new Cubecloud-facing surfaces.
-- Do not revert unrelated user changes.
+- Start from the owning file, symbol, test, or failing behavior
+  before editing. Use `grep_search` for cross-file references and
+  `codebase_search` for symbol-level lookups.
+- Make the smallest falsifiable change first, then validate
+  immediately.
+- Keep onboarding and provider copy truthful to the app's current
+  Hermes-backed capabilities. Do not promise OpenClaw or IronClaw
+  features that are not yet wired into the desktop.
+- Reuse existing hooks, preload bridges, provider plumbing, and
+  CSS patterns before adding abstractions. The patterns live in
+  `src/renderer/src/components/`, `src/main/`, and
+  `src/preload/index.ts`; check them first.
+- Do not spread inherited Hermes branding into new
+  Cubecloud-facing surfaces. The brand pack at
+  `../docs/logos/logo.svg/` is the canonical source — do not
+  hand-roll a new logo.
+- Do not revert unrelated user changes. The git log between HEAD
+  and `origin/main` is sacred.
 
 ## Repo Boundaries
 
-- Build and implement in `agent-desktop` unless the user explicitly asks for another target.
-- Treat upstream `hermes-desktop` as comparison material while the rebrand and provenance cleanup continues.
-- If you adapt code or copy from the legacy repo, rewrite it to current Cubecloud naming, assets, and contracts before landing it.
-- Do not reintroduce hard references to a local `hermes-desktop` path in docs, tests, workflows, or runtime code.
-- For monorepo docs / i18n / screenshot-refresh work, the source of truth is usually the outer root and `docs/`, not the inner mirror. The inner tree mirrors many of those files via hardlinks; `README.md` is the explicit outer-vs-inner exception.
-- Translation inventory lives in the outer `README.i18n.md`. If a task touches README translations, handbook translations, or preview refresh / PDF re-rendering, use the repo workflow skill at `.github/skills/docs-i18n-refresh/SKILL.md`.
-- Headroom is already integrated on the desktop side. If a task mentions Headroom, token savings, context compression, large logs or tool output, CodeGraph bundle compression, `headroom learn`, or Copilot-wide Headroom setup, use the repo workflow skill at `.github/skills/headroom-workflow/SKILL.md` and start from the existing Headroom main-process, MCP, and renderer surfaces rather than proposing a fresh integration.
+- Build and implement in `agent-desktop` unless the user
+  explicitly asks for another target.
+- Treat upstream `hermes-desktop` as comparison material while the
+  rebrand and provenance cleanup continues.
+- If you adapt code or copy from the legacy repo, rewrite it to
+  current Cubecloud naming, assets, and contracts before landing it.
+- Do not reintroduce hard references to a local `hermes-desktop`
+  path in docs, tests, workflows, or runtime code.
 
 ## Validation
 
-- Prefer the narrowest relevant check first.
-- Use `npm.cmd run typecheck` for repo-wide TypeScript validation when a change affects shared contracts or UI structure.
-- Use `npm.cmd exec vitest run tests/<slice>.test.ts` for focused test coverage when a nearby test exists.
-- Use broader build or packaging checks only when the change touches build config, packaging, or installer behavior.
+Prefer the narrowest relevant check first:
 
-## Skill References
+- **Single test** (fastest feedback):
+  `npm.cmd exec vitest run tests/<slice>.test.ts` (cwd `agent-desktop`)
+- **One workspace typecheck** (when shared contracts change):
+  `npm run typecheck --workspace @cubecloud/desktop-shell`
+- **Full desktop test suite** (before opening a PR):
+  `npm run test --workspace @cubecloud/desktop-shell`
+- **Monorepo typecheck** (only if the change touches
+  `packages/platform-core/` or `apps/desktop-shell/`):
+  `npm run typecheck` (at the repo root)
+- **Windows packaging** (only for build/packaging/installer
+  changes): `npm run build:win --workspace @cubecloud/desktop-shell`
+  followed by `npm run verify:win-package --workspace
+  @cubecloud/desktop-shell`
 
-- `karpathy-guidelines`: `.agents/skills/karpathy-guidelines/SKILL.md`
-- `design-taste-frontend`: `.agents/skills/design-taste-frontend/SKILL.md`
-- `electron-pro`: `.agents/skills/electron-pro/SKILL.md`
-- `typescript-expert`: `.agents/skills/typescript-expert/SKILL.md`
+The CI gate (`.github/workflows/ci.yml`) runs 3 focused tests
+(`App.gateway.dom.test.tsx`, `App.kanban.dom.test.tsx`,
+`runtimeSessions.test.ts`) plus a Windows electron-smoke and a
+Windows packaging job on every PR.
+
+## Cross-References
+
+- Workspace root rules: [`../AGENTS.md`](../AGENTS.md)
+- Workspace Copilot rules: [`.github/copilot-instructions.md`](../.github/copilot-instructions.md)
+- One-screen handbook: [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)
+- Threat model: [`../THREAT_MODEL.md`](../THREAT_MODEL.md)
+- Security policy: [`../SECURITY.md`](../SECURITY.md)
+- Brand + license: [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
+- Translation inventory: [`../README.i18n.md`](../README.i18n.md)
+- Combined README PDF: [`../docs/Cubecloud-README-en-zh.pdf`](../docs/Cubecloud-README-en-zh.pdf)
+- Brand pack source of truth: [`../docs/logos/logo.svg/`](../docs/logos/logo.svg/)
+- i18n workflow skill: [`../.github/skills/docs-i18n-refresh/SKILL.md`](../.github/skills/docs-i18n-refresh/SKILL.md)
+- Headroom workflow skill: [`../.github/skills/headroom-workflow/SKILL.md`](../.github/skills/headroom-workflow/SKILL.md)
