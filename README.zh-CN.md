@@ -139,14 +139,20 @@ Cubecloud 所说的"面向生产"，并不是"托管 SaaS 加销售后台"，而
 
 ## 架构一览
 
-桌面体验由 6 个相互配合的能力面构成：
+桌面体验由三个相互协作的层构成：
 
+**核心运行时层**
 - **状态层** — [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) 负责人设、会话、模型、提供者、技能、记忆、计划任务与看板状态。
 - **运行时编排** — [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) 描述了当前 Hermes 主道与后续 OpenClaw / IronClaw 主道。
 - **提供者层** — [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) 让模型提供者选择与运行时选择解耦。
 - **技能 harness** — [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) 在出站请求外层应用技能系统。
+
+**集成支持面**（可选，由用户主动启用）
 - **CodeGraph 接入面** — [`docs/CODEGRAPH-RUNTIME.md`](docs/CODEGRAPH-RUNTIME.md) 说明可选的语义代码智能路径。
 - **EverOS sidecar 辅助** — [`docs/EVEROS-SIDECAR.md`](docs/EVEROS-SIDECAR.md) 说明可选记忆与 harness sidecar 的生命周期。
+
+**用户管理的第三方应用**
+- 桌面可以连接操作者已经在使用的工具，例如 Open WebUI、OpenCode、Warp ADE、VS Code、Ollama、LM-Studio、Odysseus、ComfyUI 或 Open Design。这些应用不捆绑、不强制，用户可自行添加或移除。
 
 ### 可选：Headroom 上下文压缩
 

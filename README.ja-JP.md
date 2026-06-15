@@ -138,14 +138,20 @@ Cubecloudの言う「プロダクション対応」とは「ホスト型SaaSと�
 
 ## アーキテクチャ概要
 
-デスクトップ体験は6つの協調する能力面で構成されています：
+デスクトップ体験は3つの協調するレイヤーで構成されています：
 
+**コアランタイムレイヤー**
 - **状態層** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) がプロファイル、セッション、モデル、プロバイダー、スキル、メモリ、スケジュール、かんばん状態を管理。
 - **ランタイムオーケストレーション** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) が現在のHermesレーンと次のOpenClaw / IronClawレーンを説明。
 - **プロバイダーレイヤー** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) がモデルプロバイダー選択をランタイム選択から分離。
-- **スキルハーネス** - [`cubecloud-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) が送信リクエストの周囲にスキルレイヤーを適用。
+- **スキルハーネス** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) が送信リクエストの周囲にスキルレイヤーを適用。
+
+**統合サポートサーフェス**（オプション、ユーザーが明示的に有効化）
 - **CodeGraph面** - [`docs/CODEGRAPH-RUNTIME.md`](docs/CODEGRAPH-RUNTIME.md) がオプションのセマンティックコードインテリジェンスパスを説明。
 - **EverOSサイドカー** - [`docs/EVEROS-SIDECAR.md`](docs/EVEROS-SIDECAR.md) がオプションのメモリおよびハーネスサイドカーのライフサイクルを説明。
+
+**ユーザー管理のサードパーティアプリケーション**
+- デスクトップは、操作者がすでに使用しているツールに接続できます。例：Open WebUI、OpenCode、Warp ADE、VS Code、Ollama、LM-Studio、Odysseus、ComfyUI、Open Design。これらはバンドルされず、必須でもなく、ユーザーが追加・削除できます。
 
 ## どこから始めるか
 

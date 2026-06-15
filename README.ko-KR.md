@@ -137,14 +137,20 @@ Cubecloud가 말하는 "프로덕션 대응"이란 "호스팅 SaaS와 영업 대
 
 ## 아키텍처 개요
 
-데스크톱 경험은 6개의 협력하는 능력면으로 구성됩니다:
+데스크톱 경험은 3개의 협력하는 레이어로 구성됩니다:
 
+**코어 런타임 레이어**
 - **상태 레이어** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts)가 프로필, 세션, 모델, 프로바이더, 스킬, 메모리, 스케줄, 칸반 상태를 관리.
 - **런타임 오케스트레이션** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md)가 현재 Hermes 레인과 다음 OpenClaw / IronClaw 레인을 설명.
 - **프로바이더 레이어** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts)가 모델 프로바이더 선택을 런타임 선택과 분리.
-- **스킬 하네스** - [`cubecloud-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts)가 발신 요청 주위에 스킬 레이어를 적용.
+- **스킬 하네스** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts)가 발신 요청 주위에 스킬 레이어를 적용.
+
+**통합 지원 표면**（선택적, 사용자가 명시적으로 활성화）
 - **CodeGraph 표면** - [`docs/CODEGRAPH-RUNTIME.md`](docs/CODEGRAPH-RUNTIME.md)가 선택적 시맨틱 코드 인텔리전스 경로를 설명.
 - **EverOS 사이드카** - [`docs/EVEROS-SIDECAR.md`](docs/EVEROS-SIDECAR.md)가 선택적 메모리 및 하네스 사이드카의 라이프사이클을 설명.
+
+**사용자 관리 타사 애플리케이션**
+- 데스크톱은 운영자가 이미 사용 중인 도구에 연결할 수 있습니다. 예: Open WebUI, OpenCode, Warp ADE, VS Code, Ollama, LM-Studio, Odysseus, ComfyUI, Open Design. 이들은 번들되지 않고 필수도 아니며 사용자가 추가하거나 제거할 수 있습니다.
 
 ## 시작하기
 
