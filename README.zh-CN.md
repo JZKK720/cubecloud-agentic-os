@@ -92,7 +92,7 @@ Cubecloud 特别适合以下几类团队与操作者：
 - [`agent-desktop/`](agent-desktop/) 是面向终端用户交付的完整 Electron 桌面端。
 - [`apps/desktop-shell/`](apps/desktop-shell/) 是 Cubecloud 原创的状态层与控制平面工作区。
 - [`packages/platform-core/`](packages/platform-core/) 保存共享 TypeScript 契约。
-- [`.agents/skills/`](.agents/skills/) 包含 34 个旗舰级开源技能，来自 7 个上游仓库，镜像到 `~/.agents/skills/`。
+- [`.agents/skills/`](.agents/skills/) 包含 35 个旗舰级开源技能，来自 8 个上游仓库，镜像到 `~/.agents/skills/`。
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) 是仓库自带的 Copilot / VS Code 工作流层，对接可选的 Headroom 上下文压缩代理。完整安装 / 使用指南位于 [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md)。
 - [`docs/`](docs/) 保存手册、威胁模型、运行时规划、法律政策与过渡历史。
 
@@ -132,7 +132,7 @@ Cubecloud 所说的"面向生产"，并不是"托管 SaaS 加销售后台"，而
 - **可预测状态** — 人设、会话、提供者定义、记忆、计划任务与看板状态均保存在持久化的本地状态中，而非托管黑盒流程层。
 - **依赖可替换** — 运行时选择与提供者选择分离，团队可以迁移、灰度或回滚，而不会让整个用户工作流一起失效。
 - **可选 sidecar 依然保持可选** — CodeGraph 与 EverOS 在需要时扩展系统，但不会变成必须存在的隐藏平台依赖。
-- **方法论已版本化** — 34 技能生态有文档、有来源跟踪，并继承了上游技能流程中的 red-baseline 验证纪律。
+- **方法论已版本化** — 35 技能生态有文档、有来源跟踪，并继承了上游技能流程中的 red-baseline 验证纪律。
 - **法律表面清晰** — 仓库在一个地方说明路径级来源、商标姿态、商业重许可政策以及继承框架的 MIT 剖分。参见 [`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) 与 [`docs/legal/`](docs/legal/)。
 
 这就是它面向企业团队的价值主张：不是"请相信我们"，而是"请检查这套栈"。
@@ -192,7 +192,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   安全策略与上报方式
 ├── THREAT_MODEL.md               本地主导威胁模型
 ├── README.i18n.md                译文清单
-├── .agents/                      34 个镜像到 ~/.agents/skills/ 的开源技能
+├── .agents/                      35 个镜像到 ~/.agents/skills/ 的开源技能
 ├── .github/                      智能体指令、工作流技能与自动化
 │   └── skills/
 │       └── headroom-workflow/    面向可选 Headroom 代理的 Copilot / VS Code 工作流层

@@ -46,7 +46,7 @@ Three *consequences* fell out of those commitments:
 
 - The desktop has a **wide IPC surface** (`src/main/index.ts`, `src/preload/index.ts`) that exposes the runtime, the model registry, the provider registry, the skill manifests, the memory plane, the schedule runner, and the gateway layer to the renderer. That surface is the integration boundary; it is also the largest part of the inherited framework code.
 - The desktop has a **multi-runtime plan** (`docs/RUNTIME_ORCHESTRATION_PLAN.md`) that makes Hermes the day-1 lane and adds OpenClaw / IronClaw as additional lanes over the V2.6 → V2.7 window. The V2.4 → V2.5 work made the brand and license posture enforceable so that adding a second runtime did not have to revisit the legal surface.
-- The desktop has a **34-skill ecosystem** (the `.agents/skills/` tree) that the developer who *builds* the desktop benefits from, not just the user who *runs* it. The skills layer is the bridge between the desktop and the broader agent-runtime ecosystem. See §5 for the deep dive.
+- The desktop has a **35-skill ecosystem** (the `.agents/skills/` tree) that the developer who *builds* the desktop benefits from, not just the user who *runs* it. The skills layer is the bridge between the desktop and the broader agent-runtime ecosystem. See §5 for the deep dive.
 
 ## §3. Architecture
 
@@ -154,7 +154,7 @@ recommended reading for contributors, not required pre-reading.
 
 ## §5. Skills layer
 
-The desktop's **skills layer** is a 34-skill ecosystem under `.agents/skills/<name>/SKILL.md`, plus a functioning Python reference harness for the `ar-autoresearch` skill. The skills are loaded by the agent runtime (Copilot Chat today; any skill-aware agent runtime tomorrow) and auto-activate based on the `description` frontmatter.
+The desktop's **skills layer** is a 35-skill ecosystem under `.agents/skills/<name>/SKILL.md`, plus a functioning Python reference harness for the `ar-autoresearch` skill. The skills are loaded by the agent runtime (Copilot Chat today; any skill-aware agent runtime tomorrow) and auto-activate based on the `description` frontmatter.
 
 ### 5.1 Why a skills layer?
 
@@ -204,7 +204,7 @@ The methodology is **enforced by the description contract, not by the user's man
 
 ### 5.6 The pre-launch bundle (V2.9 — what the end user sees on first launch)
 
-The 34-skill developer-time ecosystem is the *contributor's* surface. The end user of the desktop binary sees a different surface: **the pre-launch bundle**, a curated subset that ships in the binary. The full seed list:
+The 35-skill developer-time ecosystem is the *contributor's* surface. The end user of the desktop binary sees a different surface: **the pre-launch bundle**, a curated subset that ships in the binary. The full seed list:
 
 - **Skills (3, user-visible)** — `cubecloud-persona` (operator tone), `cubecloud-onboarding` (first 5 minutes), `cubegraph-code-intel` (wraps the existing CodeGraph IPC as a skill). Source: `apps/desktop-shell/src/main/defaultSkills.ts`.
 - **Memory (6)** — conventions, runtime topology, two-tier skills, license/brand, workspace conventions, security posture. Source: `apps/desktop-shell/src/main/defaultMemories.ts`.

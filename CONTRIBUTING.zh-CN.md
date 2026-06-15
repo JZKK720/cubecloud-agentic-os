@@ -92,7 +92,7 @@ Cubecloud Agentic-OS 是一个单仓，包含以下主要部分：
 - `packages/platform-core/` — 单仓全局共享的 TS 类型。
 - `docs/handbook/` — 按主题长文：ARCHITECTURE / DEVELOPMENT / OPERATIONS / README。
 - `docs/legal/` — TRADEMARK_POLICY、EULA、COMMERCIAL_LICENSE 等法律文件。
-- `.agents/skills/` — 34 个技能包，镜像到 `~/.agents/skills/`。
+- `.agents/skills/` — 35 个技能包，镜像到 `~/.agents/skills/`。
 
 详见仓库根目录下的 `README.md` 与 `docs/HANDBOOK.md`。
 

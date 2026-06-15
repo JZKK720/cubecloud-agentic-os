@@ -220,6 +220,29 @@ const HIDDEN_SKILLS: readonly HiddenSkill[] = [
     ],
     includeBody: false,
   },
+  {
+    // V2.10.57 —autonomous high-reasoning operating mode.
+    // Injects when the user asks for ambitious, long-running,
+    // multi-step work that should run start-to-finish with minimal
+    // supervision. The skill body is included because it carries
+    // concrete frameworks (PEV loop, autonomy ladder, etc.).
+    id: "fable-mode",
+    label: "Fable Mode —autonomous high-reasoning operating mode",
+    intentTags: [
+      "fable mode",
+      "use fable",
+      "long horizon",
+      "autonomous run",
+      "plan end to end",
+      "self verify",
+      "sub-agent delegation",
+      "migrate this end to end",
+      "work to completion",
+    ],
+    skillPath: ".agents/skills/fable-mode",
+    includeBody: true,
+    maxBodyChars: 4000,
+  },
 ];
 
 /**

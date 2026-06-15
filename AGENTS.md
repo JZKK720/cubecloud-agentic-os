@@ -20,7 +20,7 @@ Distilled from:
 binary and the operating model around it. The desktop ships as
 `agent-desktop/`. The Cubecloud-original control plane lives in
 `apps/desktop-shell/`, the shared TypeScript contracts in
-`packages/platform-core/`, and the 34-skill ecosystem in
+`packages/platform-core/`, and the 35-skill ecosystem in
 `.agents/skills/`. Legal entity: **Cubecloud Limited Company**;
 Chinese trademark: **智方云**. License: AGPL-3.0-or-later OR
 Apache-2.0 OR MIT, with a path-by-path framework-MIT carve-out

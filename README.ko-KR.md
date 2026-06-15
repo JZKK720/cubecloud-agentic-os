@@ -90,7 +90,7 @@ Cubecloud는 다음과 같은 팀과 운영자에게 특히 적합합니다:
 - [`cubecloud-desktop/`](agent-desktop/)은 최종 사용자에게 제공되는 완전한 Electron 데스크톱입니다.
 - [`apps/desktop-shell/`](apps/desktop-shell/)은 Cubecloud 오리지널 상태 레이어 및 제어 평면 워크스페이스입니다.
 - [`packages/platform-core/`](packages/platform-core/)는 공유 TypeScript 계약을 보유합니다.
-- [`.agents/skills/`](.agents/skills/)에는 7개의 업스트림 리포지토리에서 적응된 34개의 일급 오픈소스 스킬이 포함되어 있으며 `~/.agents/skills/`로 미러링됩니다.
+- [`.agents/skills/`](.agents/skills/)에는 8개의 업스트림 리포지토리에서 적응된 35개의 일급 오픈소스 스킬이 포함되어 있으며 `~/.agents/skills/`로 미러링됩니다.
 - [`docs/`](docs/)는 핸드북, 위협 모델, 런타임 계획, 법적 정책, 전환 이력을 보유합니다.
 
 데스크톱 첫 실행 시 사용자는 다음을 얻습니다:
@@ -130,7 +130,7 @@ Cubecloud가 말하는 "프로덕션 대응"이란 "호스팅 SaaS와 영업 대
 - **예측 가능한 상태.** 프로필, 세션, 프로바이더 정의, 메모리, 스케줄, 칸반 상태가 불투명한 호스팅 워크플로 레이어가 아닌 영구적인 로컬 상태에 저장됩니다.
 - **교체 가능한 종속성.** 런타임 선택과 프로바이더 선택이 분리되어 있어 팀이 전체 사용자 워크플로를 붕괴시키지 않고 마이그레이션, 스테이징, 롤백할 수 있습니다.
 - **선택적 사이드카는 선택적으로 유지.** CodeGraph와 EverOS는 필요할 때 시스템을 확장하지만 필수적인 숨겨진 플랫폼 종속성이 되지 않습니다.
-- **버전 관리된 방법론.** 34개 스킬 생태계는 문서화되고 출처가 추적되며 업스트림 스킬 프로세스에서 상속된 red-baseline 규율로 지원됩니다.
+- **버전 관리된 방법론.** 35개 스킬 생태계는 문서화되고 출처가 추적되며 업스트림 스킬 프로세스에서 상속된 red-baseline 규율로 지원됩니다.
 - **명확한 법적 표면.** 리포지토리는 경로 수준 출처, 상표 자세, 상업적 재라이선스 정책, 상속 프레임워크의 MIT carve-out을 한 곳에서 문서화합니다. [`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) 및 [`docs/legal/`](docs/legal/) 참조.
 
 이것이 엔터프라이즈 스토리입니다: "우리를 믿으세요"가 아니라 "스택을 검사하세요".
@@ -170,7 +170,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   보안 정책 및 보고 방법
 ├── THREAT_MODEL.md               로컬-퍼스트 위협 모델
 ├── README.i18n.md                번역 인벤토리 매니페스트
-├── .agents/                      ~/.agents/skills/로 미러링되는 34개의 오픈소스 스킬
+├── .agents/                      ~/.agents/skills/로 미러링되는 35개의 오픈소스 스킬
 ├── .github/                      에이전트 지시, 워크플로 스킬, 자동화
 ├── apps/
 │   └── desktop-shell/            Cubecloud 오리지널 제어 평면 워크스페이스

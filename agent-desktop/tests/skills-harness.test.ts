@@ -100,4 +100,28 @@ describe("skills-harness dispatcher", () => {
     // But there's no `markdown`-specific tag, so no spurious matches.
     expect(ids).not.toContain("gbrian");
   });
+
+  it("returns fable-mode for an autonomous-run request", () => {
+    const matched = rankHiddenSkills(
+      "use fable mode and migrate this service to the new API end to end",
+    );
+    const ids = matched.map((s) => s.id);
+    expect(ids).toContain("fable-mode");
+  });
+
+  it("includes the fable-mode body in the fragment when matched", () => {
+    const fragment = buildHiddenSkillFragment(
+      "plan end to end: refactor the settings screen into a wizard and self-verify",
+    );
+    expect(fragment.length).toBeGreaterThan(0);
+    expect(fragment).toMatch(/Fable Mode/i);
+    expect(fragment).toMatch(/PEV loop|autonomy ladder|self-verify/i);
+  });
+
+  it("lists fable-mode as having a SKILL.md on disk", () => {
+    const status = listHiddenSkillStatus();
+    const fable = status.find((s) => s.id === "fable-mode");
+    expect(fable).toBeDefined();
+    expect(fable?.hasSkillFile).toBe(true);
+  });
 });
