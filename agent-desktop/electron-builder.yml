@@ -64,4 +64,32 @@ rpm:
   artifactName: ${name}-${version}.${ext}
   # Same SUID fix for .rpm consumers (Fedora 40+ also restricts userns).
   afterInstall: build/linux-after-install.sh
+# snap packaging follows the same convention other Electron apps use
+# (VS Code, Slack, Discord, Signal). Confinement: strict is the modern
+# default and works because we only need the user-home + x11 / wayland
+# plugs; grade: stable keeps the snap eligible for the global stable
+# channel. The snap store auto-revision is then driven by electron-builder
+# via snapcraft credentials in CI (see .github/workflows/release.yml).
+snap:
+  artifactName: ${name}-${version}.${ext}
+  confinement: strict
+  grade: stable
+  category: utility
+  description: >-
+    Agent Desktop is a native desktop shell for orchestrating Cubecloud
+    Agentic-OS runtimes, creative apps, and assistant workflows.
+  plugs:
+    - home
+    - network
+    - network-bind
+    - opengl
+    - wayland
+    - x11
+    - desktop
+    - desktop-legacy
+    - browser-support
+    - audio-playback
+    - audio-record
+    - camera
+    - removable-media
 npmRebuild: false

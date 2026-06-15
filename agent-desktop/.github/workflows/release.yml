@@ -60,9 +60,60 @@ jobs:
             echo "Real release: publish will run if tag does not exist."
           fi
 
+  # Fail fast if the macOS code-signing + notarization secrets aren't
+  # present, instead of waiting 10+ minutes per arch for the notarize
+  # step to fail. This also documents the exact secret set required to
+  # ship a real release. Required secrets:
+  #
+  #   CSC_LINK            base64 of the .p12 Developer ID Application
+  #                       certificate, exported from Keychain Access.
+  #                       Used by electron-builder to sign the binary.
+  #   CSC_KEY_PASSWORD    password for the .p12 above.
+  #   ASC_API_KEY         base64 of the App Store Connect API .p8 key.
+  #                       Generate at
+  #                       https://appstoreconnect.apple.com/access/api
+  #                       (App Manager role, "App Store Connect API" key).
+  #   ASC_KEY_ID          the 10-char key ID, e.g. "AB12CD34EF".
+  #   ASC_ISSUER_ID       the 10-char issuer ID (UUID-ish, no dashes).
+  #
+  # All five must be set on the fork (Settings -> Secrets and variables
+  # -> Actions) before a non-dry-run release can publish signed macOS
+  # artifacts. Without them, electron-builder will sign ad-hoc and
+  # notarization will be skipped, which produces a `.dmg` that opens
+  # on the developer's machine but is rejected by Gatekeeper on
+  # everyone else's. See docs/handbook/RELEASE.md (TODO) for the full
+  # bootstrap recipe.
+  check_macos_secrets:
+    name: Verify macOS signing secrets
+    needs: prepare
+    if: needs.prepare.outputs.tag_exists == 'false' && needs.prepare.outputs.is_dry_run == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read required secrets
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          ASC_API_KEY: ${{ secrets.ASC_API_KEY }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for v in CSC_LINK CSC_KEY_PASSWORD ASC_API_KEY ASC_KEY_ID ASC_ISSUER_ID; do
+            if [ -z "${!v:-}" ]; then
+              missing+=("$v")
+            fi
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::macOS notarization requires these secrets, which are missing: ${missing[*]}"
+            echo "::error::Add them at Settings -> Secrets and variables -> Actions, or run with dry_run=true."
+            exit 1
+          fi
+          echo "All macOS signing/notarization secrets are present."
+
   release_mac:
     name: Build macOS (${{ matrix.arch }})
-    needs: prepare
+    needs: [prepare, check_macos_secrets]
     if: needs.prepare.outputs.tag_exists == 'false'
     runs-on: macos-latest
     strategy:
@@ -96,10 +147,12 @@ jobs:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
         run: |
           set -euo pipefail
-          if [ -z "${ASC_API_KEY_BASE64:-}" ]; then
-            echo "ASC_API_KEY secret is missing — notarization will fail." >&2
-            exit 1
-          fi
+          # Secrets are verified upstream by the `check_macos_secrets`
+          # job, but we still defend in depth in case this job is
+          # re-run independently. The error message tells the operator
+          # where to look.
+          : "${ASC_API_KEY_BASE64:?ASC_API_KEY secret is missing — see check_macos_secrets job for the full list.}"
+          : "${ASC_KEY_ID:?ASC_KEY_ID secret is missing — see check_macos_secrets job for the full list.}"
           KEY_DIR="$RUNNER_TEMP/appstore"
           mkdir -p "$KEY_DIR"
           KEY_PATH="$KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
@@ -164,8 +217,28 @@ jobs:
       - name: Install rpmbuild
         run: sudo apt-get update && sudo apt-get install -y rpm
 
+      - name: Install snapcraft
+        # snap packaging goes through snapcraft; electron-builder will
+        # shell out to it when 'snap' is in the target list. The snap
+        # store credentials live in SNAPCRAFT_TOKEN (see release docs).
+        run: |
+          set -euo pipefail
+          sudo snap install --classic snapcraft
+          sudo snapcraft status || true   # verify the install
+          snapcraft version
+
       - name: Package Linux artifacts
-        run: npx electron-builder --linux AppImage deb rpm --publish never
+        env:
+          # snapcraft uploads directly to the snap store if these are
+          # present; for the release pipeline we just want a .snap file
+          # out of the build, so we clear the store creds and let
+          # electron-builder produce a local-only build. To publish
+          # to the stable channel, set SNAPCRAFT_TOKEN in repo secrets
+          # and remove the unset lines below.
+          SNAPCRAFT_TOKEN: ""
+        run: |
+          unset SNAPCRAFT_TOKEN
+          npx electron-builder --linux AppImage deb rpm snap --publish never
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -175,6 +248,7 @@ jobs:
             dist/*.AppImage
             dist/*.deb
             dist/*.rpm
+            dist/*.snap
             dist/latest-linux.yml
 
   release_windows:
@@ -345,6 +419,7 @@ jobs:
             artifacts/*.AppImage
             artifacts/*.deb
             artifacts/*.rpm
+            artifacts/*.snap
             artifacts/*.exe
             artifacts/*.blockmap
             artifacts/latest.yml

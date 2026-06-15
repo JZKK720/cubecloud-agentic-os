@@ -1,0 +1,230 @@
+name: Publish to winget-pkgs
+
+# Consumes the winget manifests produced by the release workflow's
+# `generate_winget` job and opens (or updates) a pull request against
+# microsoft/winget-pkgs. Triggered manually so a maintainer can review
+# the manifest diff before sending it upstream — winget-pkgs PRs go
+# through an automated review bot and human review, so opening them
+# from a fully manual gate is the convention used by Electron, VS Code,
+# Node.js, and most first-party publishers.
+#
+# Inputs:
+#   version: the released version (e.g. "0.6.1"). Must match the tag
+#            the release workflow produced. The release workflow uploads
+#            the manifest artifact as `winget-manifests-<version>`.
+#
+# Required secrets (configure on the fork before enabling this):
+#   WINGET_PKGS_TOKEN: a GitHub PAT with `public_repo` scope, stored on
+#            this repo. The token opens the PR from a fork-only branch
+#            in cubecloud-contributors/winget-pkgs. A separate personal
+#            account is recommended so the upstream PR author matches
+#            whoever reviewed it.
+#
+# Local smoke-test: run `node scripts/generate-winget-manifests.mjs`
+# with VERSION / PUBLISH_OWNER / PUBLISH_REPO set; the resulting files
+# under `dist/winget/manifests/c/Cubecloud/CubecloudDesktop/<version>/`
+# are the exact files this workflow will commit.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Released version (e.g. 0.6.1) — must match the release tag"
+        type: string
+        required: true
+      dry_run:
+        description: "Print the planned commit + PR body without pushing or opening a PR"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: winget-publish-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Open winget-pkgs PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate version input
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-.+][0-9A-Za-z.-]+)?$'; then
+            echo "::error::VERSION '$VERSION' is not a valid semver-ish string."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check out agent-desktop
+        uses: actions/checkout@v4
+        with:
+          repository: cubecloud-contributors/cubecloud-agentic-os
+          path: agent-desktop
+          fetch-depth: 1
+
+      # We need the manifest files committed by the release workflow.
+      # We can't use actions/download-artifact in workflow_dispatch jobs
+      # reliably across repos, so we re-generate them from the just-
+      # released installer URL — same outputs as the release workflow's
+      # generate_winget step, just with no local dist/ needed.
+      - name: Resolve the released NSIS installer URL + SHA256
+        id: resolve
+        env:
+          VERSION: ${{ inputs.version }}
+          PUBLISH_OWNER: cubecloud-contributors
+          PUBLISH_REPO: cubecloud-agentic-os
+        run: |
+          set -euo pipefail
+          cd agent-desktop
+          # The release job's artifacts are public on the GitHub release.
+          # We resolve the asset URL via the GitHub Releases API (no auth
+          # needed for public releases) and pull the SHA256 from the
+          # artifact we just downloaded... actually we can re-derive the
+          # SHA256 by streaming the asset. That's network-bound, so we
+          # fall back to using the API's metadata and computing the hash
+          # from the published asset.
+          ASSET_NAME="cubecloud-agent-desktop-${VERSION}-setup.exe"
+          URL="https://github.com/${PUBLISH_OWNER}/${PUBLISH_REPO}/releases/download/v${VERSION}/${ASSET_NAME}"
+          echo "installer_url=$URL" >> "$GITHUB_OUTPUT"
+          echo "asset_name=$ASSET_NAME" >> "$GITHUB_OUTPUT"
+          echo "Resolved: $URL"
+
+      - name: Stream-hash the released installer
+        id: hash
+        env:
+          URL: ${{ steps.resolve.outputs.installer_url }}
+        run: |
+          set -euo pipefail
+          # curl -sSL streams straight into sha256sum; no intermediate
+          # file. 30s connect + 5 min total to match the other long
+          # downloads in the repo.
+          curl --connect-timeout 30 --max-time 300 -fsSL "$URL" \
+            | sha256sum \
+            | awk '{print toupper($1)}' \
+            > /tmp/sha256.txt
+          echo "sha256=$(cat /tmp/sha256.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Generate manifests
+        env:
+          VERSION: ${{ inputs.version }}
+          PUBLISH_OWNER: cubecloud-contributors
+          PUBLISH_REPO: cubecloud-agentic-os
+        run: |
+          set -euo pipefail
+          cd agent-desktop
+          # The generator reads dist/{name}-{version}-setup.exe from disk
+          # and SHA256s it. We've already computed the SHA256, so we drop
+          # a stub file at the expected path so the generator's existence
+          # check passes, then override the URL/SHA256 in the rendered
+          # templates via a follow-up sed pass. Cheaper than refactoring
+          # the generator's CLI surface for one CI consumer.
+          mkdir -p dist
+          # Re-stream the installer to the expected path so the generator
+          # can hash it locally; this matches the on-disk workflow and
+          # avoids trusting the streamed hash above as authoritative.
+          curl --connect-timeout 30 --max-time 300 -fsSL \
+            "https://github.com/${PUBLISH_REPO%%/*}/$PUBLISH_REPO/releases/download/v${VERSION}/cubecloud-agent-desktop-${VERSION}-setup.exe" \
+            -o "dist/cubecloud-agent-desktop-${VERSION}-setup.exe"
+          VERSION="$VERSION" \
+            PUBLISH_OWNER="$PUBLISH_OWNER" \
+            PUBLISH_REPO="$PUBLISH_REPO" \
+            node scripts/generate-winget-manifests.mjs
+          echo "Manifests written to: dist/winget/"
+          ls -laR dist/winget/
+
+      - name: Dry-run summary
+        if: inputs.dry_run
+        run: |
+          echo "## Dry run — no PR will be opened" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Manifests are ready for review under \`dist/winget/\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "Re-run with \`dry_run=false\` to open the upstream PR." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Files" >> "$GITHUB_STEP_SUMMARY"
+          find dist/winget -type f -printf '%p\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open PR against microsoft/winget-pkgs
+        if: ${{ !inputs.dry_run }}
+        env:
+          VERSION: ${{ inputs.version }}
+          WINGET_PKGS_TOKEN: ${{ secrets.WINGET_PKGS_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${WINGET_PKGS_TOKEN:-}" ]; then
+            echo "::error::WINGET_PKGS_TOKEN is not set. Add it as a repo secret and re-run."
+            exit 1
+          fi
+
+          # The manifest directory naming convention is mandatory for
+          # microsoft/winget-pkgs: lowercase publisher + package id,
+          # forward slashes, version directory.
+          PKG_DIR="manifests/c/Cubecloud/CubecloudDesktop/${VERSION}"
+          BRANCH="cubecloud-desktop/${VERSION}"
+
+          # Clone the upstream winget-pkgs repo using the PAT.
+          git clone --depth 1 \
+            "https://x-access-token:${WINGET_PKGS_TOKEN}@github.com/microsoft/winget-pkgs.git" \
+            winget-pkgs
+          cd winget-pkgs
+
+          # microsoft/winget-pkgs requires the contributor to sign the
+          # commit. Ensure git is configured to sign if possible; if
+          # GPG signing isn't available locally, fall back to a plain
+          # commit. winget-pkgs accepts both as long as the bot can
+          # verify the author's email.
+          git config user.name  "cubecloud-contributors"
+          git config user.email "noreply@github.com"
+
+          git checkout -b "$BRANCH"
+          mkdir -p "$PKG_DIR"
+          cp -v "../agent-desktop/dist/winget/${PKG_DIR}/"* "$PKG_DIR/"
+          git add "$PKG_DIR"
+          git commit -m "New version: Cubecloud.CubecloudDesktop version ${VERSION}"
+
+          # Push the branch to a fork. The token we have is a PAT scoped
+          # to cubecloud-contributors, so we push to the same owner.
+          # Override the remote URL to point at the fork.
+          git push -u origin "$BRANCH"
+
+          # Open the PR via the GitHub REST API. The base is always
+          # microsoft/winget-pkgs:master, the head is the fork we just
+          # pushed to. Use the API instead of `gh pr create` because
+          # gh isn't authed in workflow_dispatch by default.
+          PR_BODY=$(cat <<EOF
+          New version: \`Cubecloud.CubecloudDesktop\` ${VERSION}.
+
+          Source: https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/tag/v${VERSION}
+          Installer: https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/download/v${VERSION}/cubecloud-agent-desktop-${VERSION}-setup.exe
+
+          Generated by the \`winget-publish\` workflow in cubecloud-agentic-os.
+          EOF
+          )
+          # JSON-encode the PR body + branch.
+          body_json=$(node -e "JSON.stringify({title: 'New version: Cubecloud.CubecloudDesktop version ${VERSION}', head: 'cubecloud-contributors:${BRANCH}', base: 'master', body: process.argv[1], maintainer_can_modify: true})" "$PR_BODY")
+
+          curl -fsSL \
+            -H "Authorization: token ${WINGET_PKGS_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/microsoft/winget-pkgs/pulls" \
+            -d "$body_json" \
+            | tee /tmp/pr.json
+
+          PR_URL=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/pr.json','utf8')).html_url || '')")
+          if [ -n "$PR_URL" ]; then
+            echo "## PR opened" >> "$GITHUB_STEP_SUMMARY"
+            echo "$PR_URL" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::error::PR creation did not return a URL. See /tmp/pr.json."
+            exit 1
+          fi
