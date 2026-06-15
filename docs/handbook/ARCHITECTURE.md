@@ -210,7 +210,7 @@ The test suite is Vitest, driven by `vitest.config.ts`. The test files are under
 
 ---
 
-**Where to look next.** [`docs/CODEGRAPH-RUNTIME.md`](CODEGRAPH-RUNTIME.md), [`docs/EVEROS-SIDECAR.md`](EVEROS-SIDECAR.md), [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](RUNTIME_ORCHESTRATION_PLAN.md), [`docs/CODEGRAPH_WORKSPACE_MIGRATION.md`](CODEGRAPH_WORKSPACE_MIGRATION.md).
+**Where to look next.** [`docs/CODEGRAPH-RUNTIME.md`](CODEGRAPH-RUNTIME.md), [`docs/EVEROS-SIDECAR.md`](EVEROS-SIDECAR.md), [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](RUNTIME_ORCHESTRATION_PLAN.md).
 
 **Recent updates (V2.6 — V2.10).** This file was last
 substantively edited during the V2.4 — V2.6 brand-license

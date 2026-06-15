@@ -35,17 +35,18 @@ The cubecloud.io manifest page is the canonical statement of what Cubecloud OS *
 
 This is the single most important positioning claim on the website, and it is the positioning that this repository is the source-available view of: **Cubecloud OS is an open-source operating layer, surfaces are swappable, the value is the management of the layer over time.**
 
-### The seven surfaces of Cubecloud OS
+### Surfaces referenced by the cubecloud.io homepage graph
 
-The homepage's "under the hood" graph, titled *"The private AI operating layer"* and labelled *"7 entities"*, enumerates the named surfaces and runtime categories of Cubecloud OS as:  `[SRC: homepage graph]`
+The homepage's "under the hood" graph, titled *"The private AI operating layer"* and labelled *"7 entities"*, enumerates named surfaces and runtime categories of Cubecloud OS as:  `[SRC: homepage graph]`
 
-- **OpenSpace** —the team control panel.
 - **Open WebUI** —the private AI workspace.
 - **Hermes** —memory, schedule, and subagents.
 - **OpenCode** —local coding assistant.
 - **IronClaw** —security, vault, and trusted execution.
 - **Warp ADE** —a shared workspace for teams building and testing AI-assisted software.
 - **ADE** —*(a separate graph node from Warp ADE; the relationship between "ADE" and "Warp ADE" is not explicit on the homepage. Treated here as a sibling surface to Warp ADE —possibly the runtime / IDE side of the agentic-development surface —pending clarification from the maintainers.)*  `[SRC: homepage graph]`
+
+**Note:** OpenSpace is no longer treated as an in-repo application surface. The Agent Desktop is the individual-operator control surface; any team-level control-panel functionality lives in the cubecloud.io product line outside this repository.
 
 Plus the runtime categories that sit on top of the hardware:  `[SRC: homepage graph]`
 
@@ -58,10 +59,9 @@ The demos page expands what each surface does, in the user's words (not paraphra
 
 | Surface | What it does (verbatim or close) |
 |---|---|
-| OpenSpace | "Track team work, approvals, and AI activity in one dashboard." |
 | Open WebUI | "Private AI chat for internal documents, search, and assistant tasks." Links Ollama, llama.cpp, LM Studio. |
-| IronClaw | "Control who can access what and keep sensitive work locked down." Vault, WASM, TEE, Egress Control, Trusted Execution. |
 | Hermes | "Let AI remember recurring tasks and follow up automatically." Memory, schedule, subagents. |
+| IronClaw | "Control who can access what and keep sensitive work locked down." Vault, WASM, TEE, Egress Control, Trusted Execution. |
 | Warp ADE | "A shared workspace for teams building and testing AI-assisted software." Runs OpenCode, Claude Code, and Codex CLI as agent sessions. Drive context synced across sessions. |
 | OpenCode | "Local coding assistant for private code review and fast iteration." LSP, sessions, privacy. |
 
@@ -99,7 +99,7 @@ The materials page also notes "150+ OEM partners" as a current scale indicator, 
 > In conversation, you described the brand as "**Cubecloud Agent OS**" (three words, capitals, space-separated), and the product line as having four items: **SMB private consulting, Wrapped AI Applications, local model and runtimes, bundled hardwares**. Each of those four items maps to real content on the website:
 >
 > - "SMB private consulting" →Phase 1 services on the materials page.
-> - "Wrapped AI Applications" →the swappable application surfaces on the demos page (OpenSpace, Open WebUI, IronClaw, Hermes, Warp ADE, OpenCode).
+> - "Wrapped AI Applications" →the swappable application surfaces on the demos page (Open WebUI, IronClaw, Hermes, Warp ADE, OpenCode). OpenSpace is no longer an in-repo surface; the Agent Desktop is the individual-operator control surface.
 > - "Local model and runtimes" →the runtime layer (Ollama / llama.cpp / LM Studio integration on the demos page; IronClaw's vault/TEE/egress runtime; Hermes' memory/schedule/subagent runtime).
 > - "Bundled hardwares" →the four AMD Ryzen AI SKUs on the hardware page.
 >
@@ -113,7 +113,7 @@ The materials page also notes "150+ OEM partners" as a current scale indicator, 
 
 The two names —**Cubecloud OS** (the brand on the cubecloud.io website) and **`cubecloud-agentic-os`** (the GitHub repository's hyphenated path) —refer to the same operating system. The repository is the open, version-controlled, public implementation of the Cubecloud OS operating layer.  `[SRC: user, 2026-06-08]`
 
-This repository implements the **Agents**, **Skills**, and **Data** runtime categories of the homepage graph, plus the desktop / individual-operator surface that ties them together. The named application surfaces —OpenSpace, Open WebUI, Hermes, OpenCode, IronClaw, Warp ADE —are the swappable surfaces per the manifest; some are represented in this repository as the corresponding code paths (for example, OpenCode's local coding assistant), and others (for example, OpenSpace's shared team state) live in the cubecloud.io product line outside this repository.  `[SRC: homepage graph, with SRC: manifest page for the "swappable surfaces" claim, and SRC: user, 2026-06-08 for the desktop-vs-team scope split]`
+This repository implements the **Agents**, **Skills**, and **Data** runtime categories of the homepage graph, plus the desktop / individual-operator surface that ties them together. The core runtime agents are **Hermes**, **IronClaw**, and **OpenClaw**; the integrated support surfaces are **CodeGraph**, **EverOS**, and **Headroom**. Third-party application surfaces such as Open WebUI, OpenCode, and Warp ADE can be connected or swapped by the user. OpenSpace is no longer an in-repo surface; any team-level control-panel functionality lives in the cubecloud.io product line outside this repository.  `[SRC: homepage graph, with SRC: manifest page for the "swappable surfaces" claim, and SRC: user, 2026-06-08 for the desktop-vs-team scope split]`
 
 Concretely, this repository contains:
 
@@ -140,7 +140,7 @@ Concretely, this repository contains:
 
 - **Not the only implementation of Cubecloud OS.** The contract is what the cubecloud.io manifest specifies —an open-source operating layer with swappable surfaces. This repository is one implementation. Other cubecloud.io deployments (for example, a team-server variant) may implement the same contract differently.
 - **Not the hosted inference layer.** This repo runs agents that *call* inference, but the inference itself (local GGUF, OpenAI-compatible API, etc.) is a configuration decision made by the operator, not a hard-coded one. The "no cloud API fees" commitment is at the *product* level (Cubecloud OS does not charge per-token); at the *repo* level, the operator is always free to choose their own inference backend.
-- **Not the team-deployment surface.** The desktop / individual-operator surface lives in this repo. The team / shared surface of any sub-component that has one (for example, OpenSpace's shared team state) lives outside this repository in the cubecloud.io product line.
+- **Not the team-deployment surface.** The desktop / individual-operator surface lives in this repo. Any team / shared surface of a sub-component lives outside this repository in the cubecloud.io product line.
 - **Not a marketing site.** The cubecloud.io website is the canonical public statement of cubecloud.io's positioning. This `ABOUT.md` is a developer-facing description of the operating-system source tree within that positioning; for sales, demos, hardware options, and partnership, see the website.
 
 ---
@@ -149,7 +149,6 @@ Concretely, this repository contains:
 
 | Homepage graph entity | Operationalized in this repo as |
 |---|---|
-| **OpenSpace** *(team control panel)* | Partial —the desktop-side surface is in this repo; the shared team state lives in the cubecloud.io product line.  `[SRC: demos page, with SRC: user, 2026-06-08 for the desktop-vs-team split]` |
 | **Open WebUI** *(private AI workspace)* | The chat / retrieval / tool-use surface in `agent-desktop/src/renderer/src/`. Integrations with Ollama, llama.cpp, LM Studio.  `[SRC: demos page]` |
 | **Hermes** *(memory, schedule, subagents)* | `agent-desktop/src/main/hermes*` and the in-app memory / schedule / subagent registry.  `[SRC: demos page, with repo audit]` |
 | **OpenCode** *(local coding assistant)* | `agent-desktop/src/renderer/src/screens/OpenCode/`.  `[SRC: demos page, with repo audit]` |
@@ -185,7 +184,7 @@ If you are **a developer evaluating cubecloud-agentic-os for use or contribution
 4. `docs/RETIRED_AND_LEGACY.md` —what is live, what is scratch, what is mirror.
 5. `agent-desktop/` —the desktop shell, with its own `README.md`, `AGENTS.md`, and `docs/` mirror.
 6. `.agents/skills/` and the desktop mirror at `agent-desktop/.agents/skills/` —the skill packs available to the in-app agent.
-7. For what each surface (OpenSpace, Open WebUI, IronClaw, Hermes, Warp ADE, OpenCode) does in practice, see `https://www.cubecloud.io/demos`.  `[SRC: demos page]`
+7. For what each surface (Open WebUI, IronClaw, Hermes, Warp ADE, OpenCode) does in practice, see `https://www.cubecloud.io/demos`.  `[SRC: demos page]`
 
 If you are **a customer evaluating cubecloud.io**, this repository is one component. The full product lineup, demos, hardware options, materials, and business plan are at `https://www.cubecloud.io`.
 

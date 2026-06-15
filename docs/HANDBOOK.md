@@ -39,7 +39,7 @@ What it is **not**:
 Three commitments drove the design, in order:
 
 1. **The user should not touch the CLI to use the desktop.** Install, configure, chat, schedule, back up, update — all of it from the GUI.
-2. **The user should not be locked in to one runtime or one provider.** Hermes today, OpenClaw / IronClaw tomorrow; Ollama, vLLM, llama.cpp, OpenRouter, Azure OpenAI today, more tomorrow.
+2. **The user should not be locked in to one runtime or one provider.** The runtime layer is separate from the provider layer: Hermes is the day-1 runtime agent, with OpenClaw and IronClaw as optional additional lanes; model providers such as Ollama, vLLM, llama.cpp, OpenRouter, and Azure OpenAI can be swapped independently.
 3. **The user should not be locked in to a license they cannot use.** Cubecloud-original work is dual-licensed; the inherited framework stays MIT; downstream consumers pick the license that fits their house policy.
 
 Three *consequences* fell out of those commitments:

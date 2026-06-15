@@ -28,11 +28,12 @@ documented in `BRANDING_AND_LICENSE.md`.
 
 The framing is **sovereign intelligence** for teams: local-first,
 data-stays-in-house, works-offline, no-cloud-API-fees, OEM-ready.
-The product promise is that the 6 named surfaces (OpenSpace, Open
-WebUI, Hermes, OpenCode, IronClaw, Warp ADE) are **swappable** — the
-value is the managed operating layer, not which tools are running
-at any moment. Honor that contract; do not hard-code surface
-assumptions into Cubecloud-original code paths.
+The product promise is that the core runtime agents (Hermes, IronClaw,
+OpenClaw), the integrated support surfaces (CodeGraph, EverOS,
+Headroom), and any user-managed third-party applications are
+**swappable** — the value is the managed operating layer, not which
+tool is running at any moment. Honor that contract; do not hard-code
+surface assumptions into Cubecloud-original code paths.
 
 ## 1. Think Before Coding
 
