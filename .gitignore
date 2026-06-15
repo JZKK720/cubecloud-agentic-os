@@ -20,6 +20,8 @@ coverage/
 # they MUST NOT be committed. Re-clone from upstream on demand.
 .review-extras/
 .review-codegraph/
+.review-graphify/
+graphify-out/
 
 # Top-level repo files (the outer cubecloud-agentic-os/ monorepo).
 # .agents/, .github/, apps/, packages/, docs/, scripts/ are tracked.

@@ -161,14 +161,20 @@ That is the enterprise story: not "trust us," but "inspect the stack."
 
 ## Architecture at a glance
 
-The desktop experience is built from six cooperating surfaces:
+The desktop experience is built from three cooperating layers:
 
+**Core runtime layer**
 - **State layer** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) owns profiles, sessions, models, providers, skills, memory, schedules, and kanban state.
 - **Runtime orchestration** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) describes Hermes as the current lane and OpenClaw / IronClaw as the next lanes.
 - **Provider layer** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) keeps model-provider selection separate from runtime selection.
 - **Skills harness** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) applies the skill layer around outgoing requests.
+
+**Integrated support surfaces** (optional, user-initiated)
 - **CodeGraph surface** - [`docs/CODEGRAPH-RUNTIME.md`](docs/CODEGRAPH-RUNTIME.md) explains the optional semantic code-intelligence path.
 - **EverOS sidecar** - [`docs/EVEROS-SIDECAR.md`](docs/EVEROS-SIDECAR.md) explains the optional memory and harness sidecar lifecycle.
+
+**User-managed third-party applications**
+- The desktop can connect to tools the operator already uses — for example Open WebUI, OpenCode, Warp ADE, VS Code, Ollama, LM-Studio, Odysseus, ComfyUI, or Open Design. These are not bundled, not required, and can be added or removed by the user.
 
 ### Conceptual model (V2.10.35)
 
@@ -222,6 +228,21 @@ user-global Copilot skills directory is at
 [`docs/agent-skills-bundle/install-headroom-workflow.cmd`](docs/agent-skills-bundle/install-headroom-workflow.cmd).
 Headroom is **never required**: the desktop is fully functional
 without it.
+
+### Optional: Graphify for repo-local coding support
+
+If you want a local knowledge-graph assist while coding in this repo,
+you can run Graphify as a **developer-side workflow**. This is not an
+agent-desktop runtime integration and does not change shipping product
+behavior.
+
+- `npm run graphify:repo` builds a deep graph for the current repo.
+- `npm run graphify:update` incrementally refreshes changed files.
+- `npm run graphify:query -- "<question>"` runs graph-based queries.
+
+Graphify artifacts are local-only and ignored by git (`graphify-out/`,
+`.review-graphify/`). If the CLI is not installed, use:
+`python -m pip install graphifyy`.
 
 ## Where to start
 
