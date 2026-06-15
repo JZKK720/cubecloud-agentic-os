@@ -262,6 +262,10 @@ function readHiddenSkillBody(skill: HiddenSkill): string {
     // (agent-desktop/ in dev, app dir in packaged build).
     candidates.push(resolve(process.cwd(), skill.skillPath, "SKILL.md"));
     candidates.push(resolve(skill.skillPath, "SKILL.md"));
+    // Fallback: resolve from this module's location. In dev and in the
+    // default electron-vite output layout (out/main/), the repo root is
+    // three levels above src/main/ or out/main/.
+    candidates.push(resolve(__dirname, "../../../", skill.skillPath, "SKILL.md"));
   }
 
   for (const path of candidates) {
@@ -390,6 +394,7 @@ export function listHiddenSkillStatus(): Array<{
       const candidates = [
         resolve(process.cwd(), skill.skillPath, "SKILL.md"),
         resolve(skill.skillPath, "SKILL.md"),
+        resolve(__dirname, "../../../", skill.skillPath, "SKILL.md"),
       ];
       hasSkillFile = candidates.some(
         (p) => existsSync(p) && statSync(p).isFile(),
