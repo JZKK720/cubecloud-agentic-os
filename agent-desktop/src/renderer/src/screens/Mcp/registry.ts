@@ -130,6 +130,18 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
     transport: "stdio",
     detail: "npx -y @playwright/mcp@0.0.69",
   },
+
+  // ── Internet research (third-party) ───────────────────
+  {
+    name: "agent-reach",
+    title: "Agent Reach",
+    description:
+      "Headless internet research across 13+ platforms (web, Twitter/X, Reddit, YouTube, Bilibili, XiaoHongShu, GitHub, RSS, and more).",
+    category: "search",
+    transport: "stdio",
+    detail: "python -m agent_reach.integrations.mcp_server",
+    hint: "Install with `pip install agent-reach[mcp]` in the environment that runs your agents. Only exposes a status tool; actual reads use upstream CLIs managed by Agent Reach.",
+  },
   {
     name: "puppeteer",
     title: "Puppeteer",
