@@ -1,6 +1,6 @@
 # Cubecloud Skills Index
 
-This directory contains **34 first-class skills**, adapted from 7 third-party repos. Each skill is independent, self-contained, and follows the standard `SKILL.md` frontmatter contract. Skills can be loaded by any agent runtime that reads the `description` for auto-activation.
+This directory contains **35 first-class skills**, adapted from 8 third-party repos. Each skill is independent, self-contained, and follows the standard `SKILL.md` frontmatter contract. Skills can be loaded by any agent runtime that reads the `description` for auto-activation.
 
 ## Provenance & naming
 
@@ -13,6 +13,7 @@ This directory contains **34 first-class skills**, adapted from 7 third-party re
 | `gbrain-` | [JZKK720/gbrain](https://github.com/JZKK720/gbrain) | Meta-skill (skillify) + post-work organiser (eiirp) | MIT | 2 |
 | `gstack-` | [JZKK720/gstack](https://github.com/JZKK720/gstack) | Plan / retro / investigate / QA workflows | MIT | 6 |
 | `sp-` | [JZKK720/superpowers](https://github.com/JZKK720/superpowers) | Process methodology: skill-first, TDD, debug, brainstorm, plan, execute, subagents, parallel, request/receive review, worktree, finish-branch, write-skill, verify | MIT | 14 |
+| `fable-mode` | [PH5h5W6d2L/fable-mode](https://github.com/PH5h5W6d2L/fable-mode) | Autonomous high-reasoning operating mode (PEV loop, autonomy ladder, self-verification, delegation, intent capture, effort calibration, memory) | MIT | 1 |
 
 ## The 34 skills
 
@@ -110,16 +111,22 @@ Are you ready to ship?                   →sp-finish-branch (merge / PR / keep 
 Are you about to hand off to a reviewer? →sp-request-review (then sp-receive-review after the response)
 ```
 
+### 8. Fable Mode — Autonomous operating mode (1 skill)
+
+| Skill | Purpose | When to load |
+|---|---|---|
+| `fable-mode` | Autonomous high-reasoning operating mode: long-horizon planning, proactive autonomy, self-verification, sub-agent delegation, evidence-grounded progress, effort calibration, and memory/continuity. | "use fable mode", "plan end to end", "autonomous run", "long horizon", "self verify", "migrate this end to end" |
+
 ## Source of truth
 
 - **`/memories/cubecloud-skills-ecosystem.md`** —memory-level index of which repo each skill came from, plus the conflict-check findings (e.g. `ar-autoresearch` vs `codegraph` —zero overlap, see the memory file for details).
 - Each `SKILL.md` carries its source in `metadata.source`.
 - For the canonical editorial of each skill, see the upstream repo link in the frontmatter.
-- **`docs/HANDBOOK.md` §5** in `agent-desktop/` —the master-handbook section that ties the 34-skill ecosystem to the desktop's product surface.
+- **`docs/HANDBOOK.md` §5** in `agent-desktop/` —the master-handbook section that ties the 35-skill ecosystem to the desktop's product surface.
 
 ## Repo-specific workflow skills
 
-The 34 skills above are the contributor-facing ecosystem imported and adapted from upstream sources. In addition to those, this repo may ship **workspace-only workflow skills** under `.github/skills/` for project maintenance work that should not be counted as part of the 34-skill public ecosystem.
+The 35 skills above are the contributor-facing ecosystem imported and adapted from upstream sources. In addition to those, this repo may ship **workspace-only workflow skills** under `.github/skills/` for project maintenance work that should not be counted as part of the 35-skill public ecosystem.
 
 - `.github/skills/docs-i18n-refresh/SKILL.md` —repo-specific workflow for doc sync, translation inventory updates, README PDF rerendering, and screenshot / preview sequencing.
 - `.github/skills/headroom-workflow/SKILL.md` —repo-specific workflow for Headroom context compression, Copilot / VS Code setup, CodeGraph bundle compression, and non-repo global skill mirroring.

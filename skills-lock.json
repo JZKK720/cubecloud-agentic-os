@@ -78,6 +78,12 @@
       "sourceType": "github",
       "skillPath": "skills/stitch-skill/SKILL.md",
       "computedHash": "acf2921a7e50c06e637f072ba52e36a994cbb44ecbe6e31435bc113b894f5499"
+    },
+    "fable-mode": {
+      "source": "PH5h5W6d2L/fable-mode",
+      "sourceType": "github",
+      "skillPath": "skills/fable-mode/SKILL.md",
+      "computedHash": "37cb067f5516528bf35a129d58e9400beb4829abe79c94d0f69676f0a9e4166d"
     }
   }
 }
