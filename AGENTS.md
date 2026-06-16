@@ -200,7 +200,7 @@ tasks:
 | `agent-desktop/` | The Electron desktop that ships to end users. This is the active implementation target. |
 | `apps/desktop-shell/` | Cubecloud-original control-plane workspace (Vite + React 19 + i18next + electron-vite). |
 | `packages/platform-core/` | Shared TypeScript contracts. |
-| `.agents/skills/` | 34 first-class open-source skills adapted from 7 upstream repos. |
+| `.agents/skills/` | {{SKILLS_UPSTREAM}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos. |
 | `.github/skills/` | Repo-authored Copilot / VS Code workflow skills (docs-i18n-refresh, headroom-workflow). |
 | `.github/prompts/` | Slash prompts for structured agent work. |
 | `.github/copilot-instructions.md` | Copilot-specific instruction file. The Karpathy/ECC generic principles. |

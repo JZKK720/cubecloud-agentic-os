@@ -189,9 +189,9 @@ npm run dev
 - **The long-form per-topic deep dives** — [`../docs/handbook/`](../docs/handbook/) (architecture, development, operations)
 - **The license / brand** — [`../LICENSE`](../LICENSE) and [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
 - **The live / scratch-pad / mirror index** — [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
-- **The skills ecosystem** — [`../.agents/skills/README.md`](../.agents/skills/README.md) (34 skills, mirrored to `~/.agents/skills/`)
+- **The skills ecosystem** — [`../.agents/skills/README.md`](../.agents/skills/README.md) ({{SKILLS_UPSTREAM}} skills, mirrored to `~/.agents/skills/`)
 - **The Cubecloud runtime wrappers** — [`../docs/CODEGRAPH-RUNTIME.md`](../docs/CODEGRAPH-RUNTIME.md), [`../docs/EVEROS-SIDECAR.md`](../docs/EVEROS-SIDECAR.md)
-- **The 34-skill ecosystem's per-version history** — [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) §"V2.6 / V2.7 / V2.8 / V2.9 transitions landed"
+- **The {{SKILLS_UPSTREAM}}-skill ecosystem's per-version history** — [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) §"V2.6 / V2.7 / V2.8 / V2.9 transitions landed"
 
 ## License
 

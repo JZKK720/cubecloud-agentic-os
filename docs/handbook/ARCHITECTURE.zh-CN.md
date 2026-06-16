@@ -192,7 +192,7 @@ Skills harness（`src/main/skills-harness.ts`）是 agent runtime 在启动时�
 - 返回合并后的技能集合，其中 repo-local 优先于 user-global；
 - 将结果缓存在内存中，并在文件系统变更时重新加载。
 
-Harness 解析的 34 技能生态见 `docs/HANDBOOK.md` §5 和 `.agents/skills/README.md`。Harness 本身是 Cubecloud 原创；技能内容来自上游 MIT-licensed repos 的改编（详见 `NOTICE` §“Adapted dependencies”）。
+Harness 解析的 {{SKILLS_UPSTREAM}} 技能生态见 `docs/HANDBOOK.md` §5 和 `.agents/skills/README.md`。Harness 本身是 Cubecloud 原创；技能内容来自上游 MIT-licensed repos 的改编（详见 `NOTICE` §“Adapted dependencies”）。
 
 ## 构建流水线
 

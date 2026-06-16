@@ -26,7 +26,7 @@ It is the **front door** to:
 - a local model endpoint (Ollama, vLLM, llama.cpp on loopback) **or** a remote provider (any OpenAI-compatible API),
 - a chat surface, session history, profiles, persona editor, skills, memory, tools, schedules, and 16 messaging gateways,
 - an optional **CodeGraph** semantic code-intelligence surface (MCP) and an optional **EverOS** sidecar (HTTP, memory and harness),
-- a **skills layer** of 34 first-class open-source skills (the `.agents/skills/` tree), which makes the desktop a *good* place to develop, not just to run.
+- a **skills layer** of {{SKILLS_UPSTREAM}} first-class open-source skills (the `.agents/skills/` tree), which makes the desktop a *good* place to develop, not just to run.
 
 What it is **not**:
 
@@ -162,7 +162,7 @@ The desktop is the *front door* to a chat surface, but the *people who build* th
 
 The skills are also mirrored to the **user-global** `~/.agents/skills/` directory on developer machines so they auto-activate in *every* Copilot workspace on the same machine, not just the `cubecloud-agentic-os` workspace. The mirror is plain-file `Copy-Item -Recurse` (or `cp -r` on macOS / Linux).
 
-### 5.2 The 34 skills (V2.6 + V2.7)
+### 5.2 The {{SKILLS_UPSTREAM}} skills (V2.6 + V2.7 baseline)
 
 | Prefix | Source | # skills | Skills |
 |---|---|---|---|
@@ -200,7 +200,7 @@ The 14 `sp-` skills form a **process methodology** that auto-activates on a chat
 11. **`sp-parallel`** —one-off parallel queries for research (not for plan execution).
 12. **`sp-finish-branch`** —verify, present 4 options (merge / PR / keep / discard), clean up.
 
-The methodology is **enforced by the description contract, not by the user's manual invocation**. Each skill's `description` is *trigger-only* (per the `sp-write-skill` Description Trap): no process summary in the description, so the agent reads the body to learn the process. The V2.8 audit trimmed all 34 skills' descriptions to trigger-only; all 34 also carry a `tests/red-baseline.md` per the TDD-for-skills discipline.
+The methodology is **enforced by the description contract, not by the user's manual invocation**. Each skill's `description` is *trigger-only* (per the `sp-write-skill` Description Trap): no process summary in the description, so the agent reads the body to learn the process. The V2.8 audit trimmed all {{SKILLS_UPSTREAM}} skills' descriptions to trigger-only; all {{SKILLS_UPSTREAM}} also carry a `tests/red-baseline.md` per the TDD-for-skills discipline.
 
 ### 5.6 The pre-launch bundle (V2.9 — what the end user sees on first launch)
 

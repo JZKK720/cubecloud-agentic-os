@@ -178,9 +178,10 @@ a `knowledge-graph.json` should appear in `.understand-anything/`.
 
 ### 5. gbrain (personal knowledge brain)
 
-Postgres-native personal knowledge brain with 43 skills, 30+ MCP tools,
-synthesis layer (writes the *answer* with citations, not just ranked
-pages), self-wiring knowledge graph, and 3 named schema packs.
+Postgres-native personal knowledge brain with a gbrain-native skill
+catalog, 30+ MCP tools, synthesis layer (writes the *answer* with
+citations, not just ranked pages), self-wiring knowledge graph, and
+3 named schema packs.
 
 **Best for**: power users who want their AI tools to do
 brain-first-retrieval before any external search. Overlaps conceptually

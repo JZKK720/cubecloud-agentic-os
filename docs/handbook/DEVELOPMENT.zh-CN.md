@@ -72,7 +72,7 @@ npm run package:mac     # macOS DMG
 
 ```
 cubecloud-desktop/
-├── .agents/skills/              # 技能层（34 技能 + autoresearch harness）
+├── .agents/skills/              # 技能层（{{SKILLS_UPSTREAM}} 技能 + autoresearch harness）
 │   ├── README.md                # 顶层技能索引与决策树
 │   ├── ar-autoresearch/         # 唯一一个带可运行代码 harness 的技能
 │   ├── po-*/                    # poskills 改编

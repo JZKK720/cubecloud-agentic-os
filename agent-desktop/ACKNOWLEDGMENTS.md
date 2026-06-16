@@ -185,7 +185,7 @@ the licensing analysis.
   have less context overhead — pick the one that fits the
   task.
 
-The 34 skills are also mirrored to the **user-global**
+The {{SKILLS_UPSTREAM}} skills are also mirrored to the **user-global**
 `~/.agents/skills/` directory on developer machines so they
 auto-activate in every Copilot workspace on the same machine,
 not just the `cubecloud-agentic-os` workspace. The mirror is

@@ -731,7 +731,7 @@ contributor policy itself: how to file a PR, the DCO sign-off
 model, the code style, the community channels. The outer
 `CONTRIBUTING.md` is a hardlink to the inner file (V2.10.13
 audit), but the **outer** perspective is the agentic-OS
-monorepo (V2.6+ skills ecosystem, 34 skills, the
+monorepo (V2.6+ skills ecosystem, {{SKILLS_UPSTREAM}} skills, the
 `apps/desktop-shell` workspace, the 3-monorepo-doc-layer
 hardlinks). The inner perspective is the binary (Hermes
 runtime, Electron build, etc.). The V2.10.17 translation

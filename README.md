@@ -109,7 +109,7 @@ This monorepo is broader than the desktop binary alone.
 - [`agent-desktop/`](agent-desktop/) is the full Electron desktop that ships to end users.
 - [`apps/desktop-shell/`](apps/desktop-shell/) is the Cubecloud-original state and control-plane workspace.
 - [`packages/platform-core/`](packages/platform-core/) holds shared TypeScript contracts.
-- [`.agents/skills/`](.agents/skills/) contains 35 first-class open-source skills adapted from 8 upstream repos and mirrored to `~/.agents/skills/`.
+- [`.agents/skills/`](.agents/skills/) contains {{SKILLS_UPSTREAM}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos and mirrored to `~/.agents/skills/`.
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) is a repo-authored Copilot / VS Code workflow layer for the optional Headroom context-compression proxy. The standalone install/use guide lives at [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md).
 - [`docs/`](docs/) holds the handbook, threat model, runtime plans, legal policies, and transition history.
 
@@ -154,7 +154,7 @@ inspectable, and replaceable.
 - **Predictable state.** Profiles, sessions, provider definitions, memories, schedules, and kanban state live in durable local state rather than in an opaque hosted workflow layer.
 - **Replaceable dependencies.** Runtime choice and provider choice are separated so teams can migrate, stage, or roll back without collapsing the whole user workflow.
 - **Optional sidecars stay optional.** CodeGraph and EverOS expand the system when needed, but they do not become mandatory hidden dependencies.
-- **Versioned methodology.** The 35-skill ecosystem is documented, provenance-tracked, and supported by a red-baseline discipline inherited from the upstream skill process.
+- **Versioned methodology.** The {{SKILLS_UPSTREAM}}-skill ecosystem is documented, provenance-tracked, and supported by a red-baseline discipline inherited from the upstream skill process.
 - **Clear legal surface.** The repo documents path-level provenance, trademark posture, commercial-relicensing policy, and the inherited-framework carve-out in one place. See [`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) and [`docs/legal/`](docs/legal/).
 
 That is the enterprise story: not "trust us," but "inspect the stack."
@@ -262,7 +262,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   security policy and reporting
 ├── THREAT_MODEL.md               local-first threat model
 ├── README.i18n.md                translation inventory manifest
-├── .agents/                      35 open-source skills mirrored to ~/.agents/skills/
+├── .agents/                      {{SKILLS_UPSTREAM}} open-source skills mirrored to ~/.agents/skills/
 ├── .github/                      agent instructions, workflow skills, and automation
 ├── apps/
 │   └── desktop-shell/            Cubecloud-original control plane workspace

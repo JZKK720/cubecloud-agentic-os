@@ -1,6 +1,6 @@
 > **Cubecloud Agent Desktop —— 桌面端二进制文档的贡献政策。**
 > 单仓级别的 DCO 1.1 政策请参阅 [`../CONTRIBUTING.md`](../CONTRIBUTING.md)。
-> 许可证、品牌与 34 个技能生态系统说明请参阅 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) 与 [`../.agents/skills/README.md`](../.agents/skills/README.md)。
+> 许可证、品牌与 {{SKILLS_UPSTREAM}} 个技能生态系统说明请参阅 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) 与 [`../.agents/skills/README.md`](../.agents/skills/README.md)。
 
 
 # 为 Agent Desktop 做贡献

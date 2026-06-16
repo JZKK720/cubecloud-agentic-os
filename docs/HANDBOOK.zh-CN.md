@@ -46,7 +46,7 @@
 
 - 桌面端必须拥有一个**宽 IPC 表面**（`src/main/index.ts`、`src/preload/index.ts`），把运行时、模型注册表、提供者注册表、技能清单、记忆平面、计划任务执行器与网关层暴露给渲染层。这个表面是集成边界，同时也是继承框架中最大的一块。
 - 桌面端需要一套**多运行时计划**（`docs/RUNTIME_ORCHESTRATION_PLAN.md`），让 Hermes 是 day-1 主车道，同时在 V2.6 → V2.7 窗口把 OpenClaw / IronClaw 加入为额外车道。V2.4 → V2.5 的品牌与许可梳理，使得第二个运行时的加入不需要重开法律表面。
-- 桌面端需要一个**35 技能生态**（`.agents/skills/` 树），让“构建桌面端的人”而不只是“使用桌面端的人”受益。技能层是桌面端与更广阔 agent-runtime 生态之间的桥梁。详见 §5。
+- 桌面端需要一个**{{SKILLS_UPSTREAM}} 技能生态**（`.agents/skills/` 树），让“构建桌面端的人”而不只是“使用桌面端的人”受益。技能层是桌面端与更广阔 agent-runtime 生态之间的桥梁。详见 §5。
 
 ## §3. 架构
 
@@ -146,7 +146,7 @@ Provider layer 与 runtime layer 是**分离的**。运行时（Hermes）与提�
 
 ## §5. 技能层
 
-桌面端的**技能层**由位于 `.agents/skills/<name>/SKILL.md` 的 35 技能生态组成，另有 `ar-autoresearch` 的可运行 Python 参考 harness。技能由 agent runtime 加载（今天是 Copilot Chat，明天可以是任何具备技能感知能力的 agent runtime），并根据 frontmatter 中的 `description` 自动激活。
+桌面端的**技能层**由位于 `.agents/skills/<name>/SKILL.md` 的 {{SKILLS_UPSTREAM}} 技能生态组成，另有 `ar-autoresearch` 的可运行 Python 参考 harness。技能由 agent runtime 加载（今天是 Copilot Chat，明天可以是任何具备技能感知能力的 agent runtime），并根据 frontmatter 中的 `description` 自动激活。
 
 ### 5.1 为什么需要技能层？
 
@@ -197,11 +197,11 @@ Provider layer 与 runtime layer 是**分离的**。运行时（Hermes）与提�
 11. **`sp-parallel`** —— 用于一次性并行研究，不用于执行计划。
 12. **`sp-finish-branch`** —— 验证、给出 4 个选项（merge / PR / keep / discard）、清理现场。
 
-该方法论是由**description 契约**强制执行的，而不是依赖用户手动调用。每个技能的 `description` 都是 *trigger-only*（遵循 `sp-write-a-skill` 的 Description Trap）：description 中不包含过程摘要，因此 agent 必须读取正文来学习流程。V2.8 审计把全部 35 个技能的 description 都裁剪为 trigger-only；同时所有 35 个技能都带有一个 `tests/red-baseline.md`，对应 TDD-for-skills 纪律。
+该方法论是由**description 契约**强制执行的，而不是依赖用户手动调用。每个技能的 `description` 都是 *trigger-only*（遵循 `sp-write-a-skill` 的 Description Trap）：description 中不包含过程摘要，因此 agent 必须读取正文来学习流程。V2.8 审计把全部 {{SKILLS_UPSTREAM}} 个技能的 description 都裁剪为 trigger-only；同时所有 {{SKILLS_UPSTREAM}} 个技能都带有一个 `tests/red-baseline.md`，对应 TDD-for-skills 纪律。
 
 ### 5.6 预启动包（V2.9——最终用户首次启动时看到什么）
 
-35 技能的开发者生态是**贡献者层**。桌面端最终用户看到的是另外一个表面：**预启动包**，它是随二进制文件一同交付的精简子集。完整种子列表如下：
+{{SKILLS_UPSTREAM}} 技能的开发者生态是**贡献者层**。桌面端最终用户看到的是另外一个表面：**预启动包**，它是随二进制文件一同交付的精简子集。完整种子列表如下：
 
 - **技能（3，用户可见）** —— `cubecloud-persona`（操作员语气）、`cubecloud-onboarding`（前 5 分钟）、`cubegraph-code-intel`（把现有 CodeGraph IPC 包装为技能）。来源：`apps/desktop-shell/src/main/defaultSkills.ts`。
 - **记忆（6）** —— 约定、运行时拓扑、双层技能、许可/品牌、工作区约定、安全姿态。来源：`apps/desktop-shell/src/main/defaultMemories.ts`。
