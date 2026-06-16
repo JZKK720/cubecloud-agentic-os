@@ -10,6 +10,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Structural docs check: fail any PR that hard-codes a skill
+  # count in prose. Pure Node, no install step required.
+  # The accepted forms are {{SKILLS_TOTAL}}, {{SKILLS_UPSTREAM}},
+  # {{SKILLS_REPOS}} — see scripts/skill-counts.cjs for the
+  # source of truth. This gate is what makes the prose count
+  # drift impossible: the next skill-add that forgets to update
+  # the count will fail CI rather than silently land.
+  check-skill-counts:
+    name: Verify skill counts in prose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify no hard-coded skill counts in prose
+        run: node scripts/check-skill-counts.cjs
+
   desktop-shell-checks:
     runs-on: ubuntu-latest
     steps:
