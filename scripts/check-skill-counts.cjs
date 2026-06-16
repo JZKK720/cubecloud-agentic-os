@@ -45,12 +45,16 @@ const validTokens = [
 ];
 
 // Matches a bare integer (34-48 to catch every drift we've seen)
-// followed by `skill` or `skills`. CJK equivalents for the JA/KO/ZH
+// followed by `skill` or `skills`, with up to 4 intervening words.
+// The "up to 4 words" form catches the prose style "34 first-class
+// open-source skills" without false-positiving on unrelated prose
+// like "V2.10.55 brand pack". CJK equivalents for the JA/KO/ZH
 // translations are matched separately below.
 //
 // 49+ is excluded deliberately: by the time the count reaches 50+
 // the drift problem is solved by a rewrite, not a token swap.
-const reEn = /\b(3[4-9]|4[0-8])\s+(?:skill|skills)\b/gi;
+const reEn =
+  /\b(3[4-9]|4[0-8])\b(?:\s+\S+){0,4}?\s+(?:skill|skills)\b/gi;
 const reCjk = /(3[4-9]|4[0-8])\s*个?\s*技能/g;
 const reJa = /(3[4-9]|4[0-8])\s*個?\s*スキル/g;
 const reKo = /(3[4-9]|4[0-8])\s*개?\s*스킬/g;
