@@ -11286,3 +11286,93 @@ body {
   color: var(--error);
   font-size: 12px;
 }
+
+/* ========================================================================
+   MODELS — V2.10.60 (Local-LLM detection)
+   Health dot for loopback / private / well-known local-LLM cards, plus
+   the "Detect running servers" button + suggestions under the Base URL
+   field. These are rendered against the loopback-only IPC and the
+   30 s periodic health probe (see local-server-scan.ts).
+   ======================================================================== */
+
+/* Green / red / grey dot next to a saved Model card's name. */
+.models-card-health {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-left: 4px;
+  background: var(--text-muted);
+  box-shadow: 0 0 0 2px var(--bg-secondary);
+  vertical-align: middle;
+}
+
+.models-card-health-up {
+  background: var(--success, #22c55e);
+  box-shadow:
+    0 0 0 2px var(--bg-secondary),
+    0 0 0 3px color-mix(in srgb, var(--success, #22c55e) 35%, transparent);
+}
+
+.models-card-health-down {
+  background: var(--error, #dc2626);
+  box-shadow:
+    0 0 0 2px var(--bg-secondary),
+    0 0 0 3px color-mix(in srgb, var(--error, #dc2626) 35%, transparent);
+}
+
+/* Container for the scan-localhost suggestion list, rendered under
+   the Base URL field in the Add/Edit modal. */
+.models-local-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.models-local-suggestions-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+.models-local-suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  padding: 6px 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.models-local-suggestion:hover {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.models-local-suggestion-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.models-local-suggestion-url {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.models-modal-hint-error {
+  color: var(--error);
+}

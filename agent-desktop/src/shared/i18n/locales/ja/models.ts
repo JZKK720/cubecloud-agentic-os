@@ -27,4 +27,21 @@ export default {
   pillActive: "有効",
   pillKeyLinked: "API キー連携済み",
   pillKeyMissing: "API キー未設定",
+  // V2.10.60
+  scanLocal: "ローカルサービスを検出",
+  scanLocalHelp:
+    "127.0.0.1 / ::1 で Ollama と LM Studio のよく知られたポートをプローブします。LAN ホストはデフォルトではスキャンされません。",
+  scanning: "スキャン中…",
+  localFound: "検出済み",
+  localFoundNone: "ループバック上にローカル LLM ランタイムが見つかりません",
+  noLocalServerFound: "実行中のサーバーは見つかりません",
+  useThisServer: "このサーバーを使用",
+  detectedServerBadge: "検出済み",
+  healthUp: "到達可能",
+  healthDown: "到達不能",
+  healthUnknown: "未確認",
+  healthChecking: "確認中…",
+  healthLatencyMs: "{ms} ms",
+  healthProbeFailed: "プローブ失敗",
+  runAgain: "再実行",
 } as const;

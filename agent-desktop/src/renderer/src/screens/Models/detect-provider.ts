@@ -43,6 +43,17 @@ export function detectProviderFromUrl(rawUrl: string): string | null {
   // require a private-IP match for the port-only heuristic.
   if (/:(11434|1234|1337|8000|8080)(\/|$)/.test(url)) return "custom";
 
+  // V2.10.60: explicit Ollama non-default port heuristic. Ollama's
+  // listen port can be remapped with OLLAMA_HOST, and power users
+  // often run it on :11435 / :21434 etc. Map those to the Ollama
+  // card label too — it costs nothing and matches what the user
+  // is actually running.
+  if (/:1\d{3,4}(\/|$)/.test(url) && /(ollama|llamacpp)/.test(url))
+    return "ollama";
+  // LM Studio default :1234; remapped ports are rare but documented.
+  if (/:12345?(\/|$)/.test(url) && /lm[-_ ]?studio/i.test(url))
+    return "lmstudio";
+
   return null;
 }
 

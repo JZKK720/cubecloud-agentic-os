@@ -28,4 +28,28 @@ export default {
   pillActive: "Active",
   pillKeyLinked: "API key linked",
   pillKeyMissing: "No API key",
+  // V2.10.60: Local-LLM detection. The Models page has a
+  // "Detect running servers" button that probes 127.0.0.1
+  // (and ::1) on the well-known Ollama and LM Studio ports.
+  // The matched servers land in a dropdown the user can
+  // one-click into the Base URL field. Each saved Model
+  // card also has a small health dot that refreshes
+  // periodically and shows a tooltip with the round-trip
+  // latency.
+  scanLocal: "Detect running servers",
+  scanLocalHelp:
+    "Probe 127.0.0.1 / ::1 on the well-known Ollama and LM Studio ports. LAN hosts are not scanned by default — use a custom URL for those.",
+  scanning: "Scanning…",
+  localFound: "Detected",
+  localFoundNone: "No local LLM runtimes found on loopback",
+  noLocalServerFound: "No running servers detected",
+  useThisServer: "Use this server",
+  detectedServerBadge: "Detected",
+  healthUp: "Reachable",
+  healthDown: "Not reachable",
+  healthUnknown: "Not yet checked",
+  healthChecking: "Checking…",
+  healthLatencyMs: "{ms} ms",
+  healthProbeFailed: "Probe failed",
+  runAgain: "Run again",
 } as const;

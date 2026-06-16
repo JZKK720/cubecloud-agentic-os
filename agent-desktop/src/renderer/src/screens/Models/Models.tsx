@@ -1,10 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Plus, Trash, Search, X } from "../../assets/icons";
 import { PROVIDERS } from "../../constants";
 import { useI18n } from "../../components/useI18n";
 import BrandLogo from "../../components/common/BrandLogo";
 import { detectProviderFromUrl } from "./detect-provider";
 import { useDiscoveredModels } from "../../hooks/useDiscoveredModels";
+
+/**
+ * V2.10.60: a result of `scanLocalServers` is a list of probed
+ * (host, port) pairs. We surface only the `suggestions` part on
+ * the Add/Edit modal — those are the named-provider base URLs
+ * the user can one-click into the Base URL field.
+ */
+interface LocalServerSuggestion {
+  provider: "ollama" | "lmstudio";
+  baseUrl: string;
+  label: string;
+}
 
 interface SavedModel {
   id: string;
@@ -58,6 +70,63 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
   // touches the dropdown we stop overriding their choice.
   const [providerTouched, setProviderTouched] = useState(false);
   const [providerAutoFilled, setProviderAutoFilled] = useState(false);
+
+  // V2.10.60: Local-LLM server scan state. "Detect running servers"
+  // probes 127.0.0.1 / ::1 on Ollama's :11434 and LM Studio's :1234.
+  // The result lands in `localScanResult.suggestions` for the
+  // one-click "Use this server" buttons in the modal.
+  const [scanningLocal, setScanningLocal] = useState(false);
+  const [localScanResult, setLocalScanResult] = useState<{
+    suggestions: LocalServerSuggestion[];
+    reachedAt: number;
+  } | null>(null);
+  const [localScanError, setLocalScanError] = useState<string | null>(null);
+
+  // V2.10.60: Per-card health dot state. Keyed by `model.id` so each
+  // card refreshes its own status independently. `unknown` is the
+  // initial state — we don't render a dot for it. `up` / `down`
+  // come from `probeLocalModelHealth`, refreshed every 30 s.
+  const [health, setHealth] = useState<
+    Record<string, { state: "up" | "down"; latencyMs: number; at: number }>
+  >({});
+  // Per-card debounce — when a probe is in flight, we don't fire
+  // another one for the same card until the first one settles.
+  const healthInFlightRef = useRef<Set<string>>(new Set());
+
+  // Run a single per-card probe. Called from a useEffect after the
+  // initial mount, and again from a 30 s interval for cards that
+  // look like local LLM endpoints.
+  const probeOneCard = useCallback(async (m: SavedModel) => {
+    if (healthInFlightRef.current.has(m.id)) return;
+    healthInFlightRef.current.add(m.id);
+    try {
+      const result = await window.hermesAPI.probeLocalModelHealth(
+        m.baseUrl || "",
+      );
+      if (result.reachable) {
+        setHealth((prev) => ({
+          ...prev,
+          [m.id]: {
+            state: "up",
+            latencyMs: result.latencyMs,
+            at: Date.now(),
+          },
+        }));
+      } else {
+        setHealth((prev) => ({
+          ...prev,
+          [m.id]: { state: "down", latencyMs: 0, at: Date.now() },
+        }));
+      }
+    } catch {
+      setHealth((prev) => ({
+        ...prev,
+        [m.id]: { state: "down", latencyMs: 0, at: Date.now() },
+      }));
+    } finally {
+      healthInFlightRef.current.delete(m.id);
+    }
+  }, []);
 
   function resolveCustomEnvKey(url: string): string {
     if (!url) return "CUSTOM_API_KEY";
@@ -181,6 +250,69 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
     formProvider,
     providerAutoFilled,
   ]);
+
+  // V2.10.60: "Detect running servers" handler. Probes 127.0.0.1
+  // and ::1 on the well-known Ollama / LM Studio ports and pops the
+  // results into `localScanResult.suggestions` for the modal.
+  const runLocalScan = useCallback(async () => {
+    setScanningLocal(true);
+    setLocalScanError(null);
+    try {
+      const result = await window.hermesAPI.scanLocalServers([]);
+      setLocalScanResult({
+        suggestions: result.suggestions,
+        reachedAt: Date.now(),
+      });
+    } catch (err) {
+      setLocalScanError(
+        err instanceof Error ? err.message : String(err),
+      );
+      setLocalScanResult(null);
+    } finally {
+      setScanningLocal(false);
+    }
+  }, []);
+
+  // V2.10.60: Probe local-LLM cards on mount and on a 30 s
+  // interval. The dot only renders for cards whose provider is
+  // "ollama" / "lmstudio" / "custom" with a baseUrl — cloud
+  // providers (OpenAI, Anthropic, etc.) are out of scope and
+  // would generate a lot of pointless HTTP requests.
+  useEffect(() => {
+    const localCards = models.filter((m) => {
+      if (!m.baseUrl) return false;
+      const p = m.provider;
+      if (p === "ollama" || p === "lmstudio" || p === "custom") return true;
+      // Custom URLs that look like loopback / private IPs count as
+      // local. We deliberately do NOT scan public cloud URLs.
+      try {
+        const u = new URL(m.baseUrl);
+        const h = u.hostname;
+        return (
+          h === "127.0.0.1" ||
+          h === "localhost" ||
+          h === "::1" ||
+          h.startsWith("10.") ||
+          h.startsWith("192.168.") ||
+          /^172\.(1[6-9]|2\d|3[01])\./.test(h)
+        );
+      } catch {
+        return false;
+      }
+    });
+    // Fire one probe per card in parallel; the in-flight ref
+    // makes sure a 30 s re-tick doesn't pile up duplicates while
+    // a slow probe is still pending.
+    for (const m of localCards) {
+      void probeOneCard(m);
+    }
+    const id = setInterval(() => {
+      for (const m of localCards) {
+        void probeOneCard(m);
+      }
+    }, 30000);
+    return () => clearInterval(id);
+  }, [models, probeOneCard]);
 
   async function handleSave(): Promise<void> {
     const name = formName.trim();
@@ -323,6 +455,11 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
               ? resolveCustomEnvKey(m.baseUrl ?? "")
               : null;
             const hasKey = !!envKey && !!envMap[envKey];
+            // V2.10.60: render the health dot for any card whose
+            // baseUrl is on loopback / private / well-known local
+            // LLM ports. `health[m.id]` is undefined for cards we
+            // haven't probed yet (and we don't probe them at all).
+            const cardHealth = health[m.id];
             return (
               <div
                 key={m.id}
@@ -337,6 +474,23 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
                       size={20}
                     />
                     <div className="models-card-name">{m.name}</div>
+                    {cardHealth && (
+                      <span
+                        className={`models-card-health models-card-health-${cardHealth.state}`}
+                        title={
+                          cardHealth.state === "up"
+                            ? t("models.healthLatencyMs", {
+                                ms: cardHealth.latencyMs,
+                              })
+                            : t("models.healthDown")
+                        }
+                        aria-label={
+                          cardHealth.state === "up"
+                            ? t("models.healthUp")
+                            : t("models.healthDown")
+                        }
+                      />
+                    )}
                   </div>
                   <div className="models-card-tags">
                     {isActive && (
@@ -539,13 +693,72 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
                 <label className="models-modal-label">
                   {t("common.baseUrl")} ({t("common.optional")})
                 </label>
-                <input
-                  className="input"
-                  type="text"
-                  value={formBaseUrl}
-                  onChange={(e) => setFormBaseUrl(e.target.value)}
-                  placeholder={t("models.baseUrlPlaceholder")}
-                />
+                <div className="settings-model-row">
+                  <input
+                    className="input"
+                    type="text"
+                    value={formBaseUrl}
+                    onChange={(e) => setFormBaseUrl(e.target.value)}
+                    placeholder={t("models.baseUrlPlaceholder")}
+                  />
+                  {/* V2.10.60: one-click "Detect running servers"
+                      button. Probes loopback on the well-known
+                      Ollama / LM Studio ports; the result populates
+                      a "Use this server" list under the input. */}
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={runLocalScan}
+                    disabled={scanningLocal}
+                    title={t("models.scanLocalHelp")}
+                  >
+                    {scanningLocal
+                      ? t("models.scanning")
+                      : t("models.scanLocal")}
+                  </button>
+                </div>
+                {/* V2.10.60: local-scan suggestions. Each entry is a
+                    "Use this server" button that fills the Base URL
+                    field with a ready-to-paste loopback URL and
+                    picks the right provider in the dropdown. */}
+                {localScanResult && localScanResult.suggestions.length > 0 && (
+                  <div className="models-local-suggestions">
+                    <div className="models-local-suggestions-label">
+                      {t("models.localFound")}
+                    </div>
+                    {localScanResult.suggestions.map((s) => (
+                      <button
+                        type="button"
+                        key={`${s.provider}@${s.baseUrl}`}
+                        className="btn btn-secondary btn-sm models-local-suggestion"
+                        onClick={() => {
+                          setFormBaseUrl(s.baseUrl);
+                          setFormProvider(s.provider);
+                          setProviderTouched(true);
+                          setProviderAutoFilled(false);
+                        }}
+                      >
+                        <span className="models-local-suggestion-label">
+                          {s.label}
+                        </span>
+                        <span className="models-local-suggestion-url">
+                          {s.baseUrl}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {localScanResult &&
+                  localScanResult.suggestions.length === 0 && (
+                    <div className="models-modal-hint">
+                      {t("models.localFoundNone")}
+                    </div>
+                  )}
+                {localScanError && (
+                  <div className="models-modal-hint models-modal-hint-error">
+                    {localScanError}
+                  </div>
+                )}
                 <span className="models-modal-hint">
                   {t("models.customProviderHint")}
                 </span>

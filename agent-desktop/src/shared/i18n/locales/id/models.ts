@@ -27,4 +27,21 @@ export default {
   pillActive: "Aktif",
   pillKeyLinked: "API key terhubung",
   pillKeyMissing: "Tanpa API key",
+  // V2.10.60
+  scanLocal: "Deteksi server lokal",
+  scanLocalHelp:
+    "Memindai 127.0.0.1 / ::1 pada port Ollama dan LM Studio. Host LAN tidak dipindai secara default — gunakan URL kustom untuk itu.",
+  scanning: "Memindai…",
+  localFound: "Terdeteksi",
+  localFoundNone: "Tidak ada runtime LLM lokal di loopback",
+  noLocalServerFound: "Tidak ada server yang berjalan terdeteksi",
+  useThisServer: "Gunakan server ini",
+  detectedServerBadge: "Terdeteksi",
+  healthUp: "Dapat dijangkau",
+  healthDown: "Tidak dapat dijangkau",
+  healthUnknown: "Belum diperiksa",
+  healthChecking: "Memeriksa…",
+  healthLatencyMs: "{ms} ms",
+  healthProbeFailed: "Pemeriksaan gagal",
+  runAgain: "Jalankan lagi",
 } as const;

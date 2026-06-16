@@ -16,6 +16,7 @@ import icon from "../../resources/icon.png?asset";
 import type { Attachment } from "../shared/attachments";
 import { stageAttachment, clearStagedAttachments } from "./attachment-staging";
 import { discoverProviderModels } from "./model-discovery";
+import { scanLocalServers, probeLocalModelHealth } from "./local-server-scan";
 import { readMediaAsDataUrl, saveMedia, mediaFileExists } from "./media";
 import {
   checkInstallStatus,
@@ -1242,6 +1243,24 @@ function setupIPC(): void {
     ) => {
       return discoverProviderModels(provider, baseUrl, apiKey, profile);
     },
+  );
+
+  // Local-LLM server scan (V2.10.60) —probes 127.0.0.1 + ::1 on
+  // Ollama's :11434 and LM Studio's :1234 to answer the question
+  // "is there a local LLM runtime already running?". Returns the
+  // raw probe list + ready-to-paste `suggestions` for the renderer.
+  // 1.5s per probe, all probes in parallel; the renderer shows a
+  // spinner while it runs.
+  ipcMain.handle("scan-local-servers", (_event, extraHosts?: string[]) =>
+    scanLocalServers({ extraHosts: extraHosts ?? [] }),
+  );
+
+  // Local-LLM health check for the saved-Model card's status dot
+  // (V2.10.60). The renderer debounces these per card and only
+  // hits them for cards whose provider is a local one (ollama /
+  // lmstudio / custom on a private/loopback host).
+  ipcMain.handle("probe-local-model-health", (_event, baseUrl: string) =>
+    probeLocalModelHealth(baseUrl),
   );
 
   // Gateway

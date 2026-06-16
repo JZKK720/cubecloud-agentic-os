@@ -28,4 +28,21 @@ export default {
   pillActive: "Activo",
   pillKeyLinked: "API key vinculada",
   pillKeyMissing: "Sin API key",
+  // V2.10.60
+  scanLocal: "Detectar servidores locales",
+  scanLocalHelp:
+    "Sondea 127.0.0.1 / ::1 en los puertos conocidos de Ollama y LM Studio. Los hosts de LAN no se escanean por defecto.",
+  scanning: "Escaneando…",
+  localFound: "Detectado",
+  localFoundNone: "No se encontraron runtimes LLM locales en loopback",
+  noLocalServerFound: "No se detectaron servidores en ejecución",
+  useThisServer: "Usar este servidor",
+  detectedServerBadge: "Detectado",
+  healthUp: "Accesible",
+  healthDown: "No accesible",
+  healthUnknown: "Sin comprobar",
+  healthChecking: "Comprobando…",
+  healthLatencyMs: "{ms} ms",
+  healthProbeFailed: "Sondeo fallido",
+  runAgain: "Volver a ejecutar",
 } as const;

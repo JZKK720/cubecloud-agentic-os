@@ -534,6 +534,39 @@ interface KanbanCreateTaskInput {
   maxRetries?: number;
 }
 
+/** V2.10.60: One probed (host, port) for the local-LLM scan. */
+interface LocalServerProbe {
+  host: string;
+  port: number;
+  provider: "ollama" | "lmstudio" | "custom";
+  label: string;
+  reachable: boolean;
+  latencyMs: number;
+  statusCode: number | null;
+  error: string | null;
+  baseUrl: string;
+}
+
+/** V2.10.60: Full result of a `scanLocalServers` call. */
+interface LocalServerScanResult {
+  scannedAt: string;
+  hosts: string[];
+  probes: LocalServerProbe[];
+  reachable: LocalServerProbe[];
+  suggestions: Array<{
+    provider: "ollama" | "lmstudio";
+    baseUrl: string;
+    label: string;
+  }>;
+}
+
+/** V2.10.60: Per-card health probe for the local server dot. */
+interface LocalModelHealth {
+  reachable: boolean;
+  latencyMs: number;
+  error: string | null;
+}
+
 interface PlanStepShape {
   id: string;
   title: string;
@@ -741,6 +774,14 @@ interface HermesAPI {
     /** Subset of `models` flagged as free (Nous Portal today). #367. */
     freeModels?: string[];
   }>;
+  /** V2.10.60: probe 127.0.0.1 / ::1 (and any user-passed LAN hosts)
+   *  on the well-known local-LLM ports. Returns the raw probe list
+   *  + ready-to-paste `suggestions` for the Models page Add/Edit
+   *  modal. 1.5s per probe, all probes in parallel. */
+  scanLocalServers: (extraHosts?: string[]) => Promise<LocalServerScanResult>;
+  /** V2.10.60: per-card health probe for the saved-Model card's
+   *  green/red status dot. The renderer debounces these per card. */
+  probeLocalModelHealth: (baseUrl: string) => Promise<LocalModelHealth>;
   onChatChunk: (callback: (chunk: string) => void) => () => void;
   onChatReasoningChunk: (callback: (chunk: string) => void) => () => void;
   onChatDone: (callback: (sessionId?: string) => void) => () => void;

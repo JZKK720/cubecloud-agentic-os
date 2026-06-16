@@ -26,4 +26,21 @@ export default {
   pillActive: "目前使用",
   pillKeyLinked: "已綁定 API 金鑰",
   pillKeyMissing: "未設定 API 金鑰",
+  // V2.10.60
+  scanLocal: "偵測本機服務",
+  scanLocalHelp:
+    "在回環位址 (127.0.0.1 / ::1) 上探測 Ollama 與 LM Studio 的常用連接埠。預設不掃描區域網路主機 — 區域網路請使用自訂 URL。",
+  scanning: "掃描中…",
+  localFound: "已發現",
+  localFoundNone: "回環位址上未發現本機 LLM 執行環境",
+  noLocalServerFound: "未偵測到正在執行的服務",
+  useThisServer: "使用此服務",
+  detectedServerBadge: "已發現",
+  healthUp: "可達",
+  healthDown: "無法到達",
+  healthUnknown: "尚未檢查",
+  healthChecking: "檢查中…",
+  healthLatencyMs: "{ms} 毫秒",
+  healthProbeFailed: "檢查失敗",
+  runAgain: "重新檢查",
 } as const;

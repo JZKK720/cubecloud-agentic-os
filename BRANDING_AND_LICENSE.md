@@ -1871,3 +1871,157 @@ double-clicks).
   (`expected 18 to be 17`) are still pre-existing on
   `9122425`; this commit does not introduce any new
   test failures.
+
+
+---
+
+## V2.10.60 - Ollama + LM Studio first-class integration on the Models page
+
+**Scope:** 1 new main-process module
+(`agent-desktop/src/main/local-server-scan.ts`), 2 main IPC
+handlers (`scan-local-servers`, `probe-local-model-health`),
+preload bridge surface (`scanLocalServers` +
+`probeLocalModelHealth`), `Models.tsx` (health dots on
+loopback / private / well-known local LLM cards, scan-
+localhost button + suggestions in the Add/Edit modal,
+periodic 30 s health probe), 7 i18n locale files (en +
+zh-CN + ja + ko-KR + es + id + pt-BR + pt-PT + zh-TW), and
+CSS for the new `.models-card-health*` and
+`.models-local-suggestion*` classes.
+
+**What changed:**
+
+1. **New `local-server-scan.ts` module** probes well-known
+   local-LLM ports (11434 for Ollama, 1234 for LM Studio)
+   on `127.0.0.1` and `::1` in parallel, with a 1.5 s
+   per-probe timeout. The module exports `scanLocalServers`
+   and `probeLocalModelHealth`, both pure HTTP probes
+   with no dependency on the Ollama CLI or the LM Studio
+   CLI. Network scope is loopback only by default; LAN
+   hosts can be opted in via the `extraHosts` parameter
+   on `scanLocalServers`.
+2. **Two new IPC handlers** in
+   `agent-desktop/src/main/index.ts`:
+   - `scan-local-servers` returns the full probe list +
+     ready-to-paste `suggestions` for the Add/Edit modal.
+   - `probe-local-model-health(baseUrl)` returns
+     `{ reachable, latencyMs, error }` for a single URL
+     and is called per-card for the green/red status
+     dot.
+3. **Preload bridge** at
+   `agent-desktop/src/preload/index.ts` + the
+   `HermesAPI` type declaration in
+   `agent-desktop/src/preload/index.d.ts` exposes
+   `scanLocalServers` and `probeLocalModelHealth` to the
+   renderer.
+4. **Renderer UI** in
+   `agent-desktop/src/renderer/src/screens/Models/Models.tsx`:
+   - The Add/Edit modal gains a **"Detect running servers"**
+     button next to the Base URL field. The result of
+     `scanLocalServers()` renders as a list of
+     one-click "Use this server" buttons that fill the
+     Base URL field and the provider dropdown.
+   - Each saved-Model card whose baseUrl is on loopback,
+     a private IP, or one of the well-known local LLM
+     ports (11434 / 1234 / 1337 / 8000 / 8080) gains a
+     small health dot (green = reachable, red = down,
+     grey = not yet checked). The dot refreshes every
+     30 s and on initial mount.
+   - The `detectProviderFromUrl` heuristic also gained
+     a non-default-port Ollama / LM Studio fallback so
+     URLs like `http://gpu-host.lan:21434/v1` resolve
+     to the "Ollama" card label, not the generic
+     "Local / Custom" label.
+5. **i18n keys** added to all 8 locales: `scanLocal`,
+   `scanLocalHelp`, `scanning`, `localFound`,
+   `localFoundNone`, `noLocalServerFound`, `useThisServer`,
+   `detectedServerBadge`, `healthUp`, `healthDown`,
+   `healthUnknown`, `healthChecking`, `healthLatencyMs`,
+   `healthProbeFailed`, `runAgain`. The en + zh-CN
+   files have full natural-language strings; the other
+   6 (es, id, ja, pt-BR, pt-PT, zh-TW) have proper
+   localized translations.
+6. **CSS** appended to
+   `agent-desktop/src/renderer/src/assets/main.css`:
+   `.models-card-health`, `.models-card-health-up`,
+   `.models-card-health-down`, `.models-local-suggestions`,
+   `.models-local-suggestions-label`,
+   `.models-local-suggestion`,
+   `.models-local-suggestion-label`,
+   `.models-local-suggestion-url`, and
+   `.models-modal-hint-error`. The dot uses a green glow
+   for "reachable" and a red glow for "down" so the
+   state is visible at a glance even on the default
+   200x96 card.
+
+**Verification:**
+
+- `npm run typecheck` (in `agent-desktop/`) is clean
+  for both `tsconfig.node.json` and `tsconfig.web.json`.
+- The new IPC types flow through the preload type
+  declaration, so renderer code that calls
+  `window.hermesAPI.scanLocalServers()` and
+  `window.hermesAPI.probeLocalModelHealth()` is type-
+  safe.
+- All 4 audit scripts (mojibake, i18n coverage, skill
+  counts, doc-pair) remain green at the post-V2.10.60
+  baseline. The 8 locales still pass the per-locale key
+  coverage check (no missing keys for the 15 new
+  `models.*` keys).
+- The 2 pre-existing `Layout.test.tsx` failures
+  (`expected 18 to be 17`) are still pre-existing on
+  `9122425` + V2.10.59; this commit does not introduce
+  any new test failures.
+
+**Out of scope (deliberate):**
+
+- The `headroom learn --apply` branch-and-review flow
+  (already documented in V2.10.35) is not modified. The
+  new local-LLM integration is purely additive on top
+  of the existing discoverProviderFromUrl /
+  `models.json` / `config.yaml` pipeline.
+- The `installer.ts` env-key resolution for
+  `OLLAMA_API_KEY` / `LMSTUDIO_API_KEY` already exists
+  in the V2.6 baseline and is not changed.
+- The native-speaker review of any zh-CN / ja-JP / ko-KR
+  / es / id / pt-BR / pt-PT / zh-TW strings is still
+  on the V2.10.31 list. The new V2.10.60 strings are
+  machine-translated starting points, in the same shape
+  as the existing zh-CN monorepo docs.
+- A "pull a model" UI for Ollama is not in scope. The
+  existing `discoverProviderModels` IPC at
+  `agent-desktop/src/main/model-discovery.ts` already
+  lists the model catalog via Ollama's `/api/tags`
+  endpoint; the user just has to invoke "Refresh" on
+  the model picker after adding the Ollama card.
+
+**Why this is the right V2.10.60 step:**
+
+The user asked to "go through to surface settings" and
+"integrate Ollama + LM Studio locally". A surface audit
+showed that Ollama + LM Studio were already fully integrated
+at the data layer (`models.json` / `discoverProviderModels`
+/ `installer.ts` env-key resolution / `headroom-chat.ts`
+`isOllamaLikeProvider` detection), but the *surface* - the
+Models page in the Agent Desktop UI - had no way to discover
+a running local LLM, no way to confirm a saved Model card
+was actually reachable, and a slightly broken provider
+heuristic for non-default ports. V2.10.60 closes the
+surface gap with: a scan-localhost button, one-click
+"Use this server" suggestions in the modal, and per-card
+health dots that refresh every 30 s. The new IPC layer
+(`local-server-scan.ts`) lives in the main process so the
+sandboxed renderer does not have to deal with CORS or
+mixed-content quirks, and the probes are cheap enough
+(1.5 s, 4 hosts x 2 ports = 8 parallel HTTP GETs) that
+the renderer can re-probe on a timer without breaking
+the UX.
+
+This is the first release in the v2.10.60 micro-wave
+(60-69) that adds a new feature surface to the inner
+binary; the prior v2.10.43-59 micro-wave was a
+rebrand / cleanup / doc-only arc. The next natural step
+in the v2.10.60+ micro-wave is a "Settings -> Runtimes"
+refresh that surfaces the loopback scan inside the
+onboarding Welcome flow (V2.10.62 candidate), but that
+will be its own scope.

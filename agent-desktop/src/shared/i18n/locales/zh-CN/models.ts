@@ -22,6 +22,25 @@ export default {
   customProviderHint: "仅在自定义或本地提供商时需要填写",
   apiKeyLabel: "API Key",
   apiKeyHint:
-    "保存为环境变量。会按 URL 匹配对应的环境变量名,否则使用 CUSTOM_API_KEY。",  pillActive: "当前",
+    "保存为环境变量。会按 URL 匹配对应的环境变量名,否则使用 CUSTOM_API_KEY。",
+  pillActive: "当前",
   pillKeyLinked: "已绑定 API 密钥",
-  pillKeyMissing: "未设置 API 密钥",} as const;
+  pillKeyMissing: "未设置 API 密钥",
+  // V2.10.60: Local-LLM detection
+  scanLocal: "检测本地服务",
+  scanLocalHelp:
+    "在回环地址 (127.0.0.1 / ::1) 上探测 Ollama 和 LM Studio 的常用端口。默认不扫描局域网主机 — 局域网请用自定义 URL。",
+  scanning: "正在扫描…",
+  localFound: "已发现",
+  localFoundNone: "回环地址上未发现本地 LLM 运行时",
+  noLocalServerFound: "未检测到正在运行的服务",
+  useThisServer: "使用此服务",
+  detectedServerBadge: "已发现",
+  healthUp: "可达",
+  healthDown: "不可达",
+  healthUnknown: "尚未检测",
+  healthChecking: "检测中…",
+  healthLatencyMs: "{ms} 毫秒",
+  healthProbeFailed: "检测失败",
+  runAgain: "重新检测",
+} as const;

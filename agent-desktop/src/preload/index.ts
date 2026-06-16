@@ -540,6 +540,54 @@ const hermesAPI = {
       profile,
     ),
 
+  // V2.10.60: Local-LLM server scan. Probes Ollama :11434 and
+  // LM Studio :1234 on 127.0.0.1 / ::1 (and any user-passed LAN
+  // hosts) to answer the question "is there a local LLM runtime
+  // already running on this machine?". Returns the raw probe
+  // list + ready-to-paste `suggestions` for the Add/Edit modal.
+  scanLocalServers: (extraHosts?: string[]): Promise<{
+    scannedAt: string;
+    hosts: string[];
+    probes: Array<{
+      host: string;
+      port: number;
+      provider: "ollama" | "lmstudio" | "custom";
+      label: string;
+      reachable: boolean;
+      latencyMs: number;
+      statusCode: number | null;
+      error: string | null;
+      baseUrl: string;
+    }>;
+    reachable: Array<{
+      host: string;
+      port: number;
+      provider: "ollama" | "lmstudio" | "custom";
+      label: string;
+      reachable: boolean;
+      latencyMs: number;
+      statusCode: number | null;
+      error: string | null;
+      baseUrl: string;
+    }>;
+    suggestions: Array<{
+      provider: "ollama" | "lmstudio";
+      baseUrl: string;
+      label: string;
+    }>;
+  }> => ipcRenderer.invoke("scan-local-servers", extraHosts ?? []),
+
+  // V2.10.60: Per-card health probe for the green/red status dot
+  // on saved Model cards. The renderer debounces these per card
+  // (one in-flight request per card at a time, 10s minimum gap).
+  probeLocalModelHealth: (
+    baseUrl: string,
+  ): Promise<{
+    reachable: boolean;
+    latencyMs: number;
+    error: string | null;
+  }> => ipcRenderer.invoke("probe-local-model-health", baseUrl),
+
   onChatChunk: (callback: (chunk: string) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, chunk: string): void =>
       callback(chunk);
