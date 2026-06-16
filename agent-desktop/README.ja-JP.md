@@ -112,7 +112,7 @@ CLI を手作業で管理する代わりに、本アプリではインストー�
 ### Fedora (RPM)
 
 ```bash
-sudo dnf install ./cubecloud-desktop-<version>.rpm
+sudo dnf install ./agent-desktop-rpm.$2
 ```
 
 > **Fedora ユーザーへ:** `.rpm` は GPG 署名されていません。署名検証を強制する設定の場合は、インストールコマンドに `--nogpgcheck` を追加してください。`.rpm` ビルドは自動アップデートに対応していません（`electron-updater` の制約）。アップデートする場合は新しい `.rpm` を再インストールしてください。

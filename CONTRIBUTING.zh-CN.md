@@ -88,7 +88,7 @@
 Cubecloud Agentic-OS 是一个单仓，包含以下主要部分：
 
 - `apps/desktop-shell/` — 活跃的 `@cubecloud/desktop-shell` 工作区。
-- `cubecloud-desktop/` — 完整的 Electron 二进制文件（含沉继的 hermes-desktop 框架）。
+- `agent-desktop/` — 完整的 Electron 二进制文件（含继承的 hermes-desktop 框架）。
 - `packages/platform-core/` — 单仓全局共享的 TS 类型。
 - `docs/handbook/` — 按主题长文：ARCHITECTURE / DEVELOPMENT / OPERATIONS / README。
 - `docs/legal/` — TRADEMARK_POLICY、EULA、COMMERCIAL_LICENSE 等法律文件。
@@ -102,7 +102,7 @@ Cubecloud Agentic-OS 是一个单仓，包含以下主要部分：
 
 - TypeScript：严格模式。避免 `any`，除非有明确理由。
 - React 19 与函数组件。优先使用 hooks，而非 class 组件。
-- Electron IPC 调用：所有 IPC 渠道必须显式在 `cubecloud-desktop/src/main/ipc/` 下注册。
+- Electron IPC 调用：所有 IPC 渠道必须显式在 `agent-desktop/src/main/ipc/` 下注册。
 - 依赖：使用 `npm ci` 以保证与锁定文件一致。不要走 `npm install <package>` 而不同步锁定。
 - Lint：提交前运行 `npm run lint`。
 - 测试：为 bug 修复与新功能添加单元测试。
@@ -126,18 +126,46 @@ Cubecloud-original 工作以三选一的双许可发布：
 
 ## 开发者证书来源（DCO）
 
-所有入库贡献必须遵循 **DCO 1.1** 签名模型。不使用 CLA。
-每个提交必须包含一行 `Signed-off-by:`，样例：
+所有入库贡献必须遵循 [**DCO 1.1**](https://developercertificate.org/) 签名模型。不使用 CLA。
+DCO 是一份轻量但具有法律效力的声明，承诺提交内容由你本人编写，或你拥有以项目开源许可证提交它的合法权利。
 
+### 如何签名
+
+在提交信息（commit message）中追加一行 `Signed-off-by:`：
+
+```text
+Signed-off-by: Your Name <your.email@example.com>
 ```
+
+必须使用真实姓名（不接受昵称或匿名昵称）。邮箱不必与 GitHub 账号一致，但必须是可验证的地址。CI 会拒绝未携带合法 `Signed-off-by:` 行的提交。
+
+### 为什么用 DCO 而非 CLA
+
+- **零摩擦。** 不需要网页表单，不需要回签 PDF，也不会被 CLA 机器人阻塞 PR。
+- **按提交签名，而非按仓库。** 每次提交都需要签名；不需要在一份 CLA 文件上签字、把未来的工作一并让渡。
+- **开源标准。** Linux 内核、Docker、Kubernetes 以及绝大多数 CNCF 项目都使用 DCO。
+- **对本项目而言法律上等价。** DCO 与 CLA 都要求你声明作者身份；DCO 按提交维度完成这一点，因此我们无需维护一个独立的 CLA 仓库。
+
+### DCO 与双重许可
+
+DCO 是**贡献侧**机制——它证明你有权以本项目许可证提交代码。项目的**许可证**是**分发侧**机制（详见 [`LICENSE`](../LICENSE) 与 [`BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) §"V2.5 已落地的过渡"）。两者相互独立，不能相互替代。
+
+- 你贡献的代码（按 V2.10+ 的 V2.3 模块、渲染器重建、状态层、脚本、文档、新文件）将随 Cubecloud-original 工作进入下游消费者的可选许可范围（AGPL-3.0-or-later / Apache-2.0 / MIT 三选一）。
+- 你的贡献所依赖的继承 `hermes-desktop` 框架代码保留其原始 MIT 条款，不受你贡献的影响。
+- 品牌资产、托管服务与付费功能**不属于**贡献许可的范畴；它们由 [`docs/legal/TRADEMARK_POLICY.md`](../docs/legal/TRADEMARK_POLICY.md)、[`docs/legal/CUBECLOUD-EULA.md`](../docs/legal/CUBECLOUD-EULA.md) 与 [`docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md) 单独管理。
+
+### 示例
+
+使用 `git commit -s` 自动追加签名行：
+
+```text
 feat(skills): add 3 promoted user-visible skills at first launch
 
+# `-s` flag auto-appends:
 # Signed-off-by: Your Name <your.email@example.com>
 ```
 
-使用 `git commit -s` 自动追加该行。如果忘了 `-s`，在推送前使用 `git commit --amend -s` 编辑提交信息。
-
-贡献者代码需要原创作者个人同意（个人贡献）或者是你拥有合法权利提交的作品（工作产出）。
+如果忘了 `-s`，在推送前使用 `git commit --amend -s` 编辑提交信息即可。贡献者代码需要原创作者个人同意（个人贡献）或者是你拥有合法权利提交的作品（工作产出）。
 
 ## 报告漏洞
 

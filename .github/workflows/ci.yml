@@ -32,6 +32,48 @@ jobs:
       - name: Verify no hard-coded skill counts in prose
         run: node scripts/check-skill-counts.cjs
 
+  # Mojibake gate: fail any PR that introduces a U+FFFD replacement
+  # character or CP1252-substituted-UTF-8 mojibake into a tracked
+  # source file.  Pure Node, no install step required.  Catches the
+  # same class of bug the doc-pair check catches, but at the byte
+  # level so it works across all languages.
+  check-mojibake:
+    name: Verify no mojibake in source files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify no U+FFFD or CP1252 markers in tracked files
+        run: node scripts/check-mojibake.cjs
+
+  # i18n coverage gate: fail any PR that drops a locale file or
+  # introduces drift between an EN source key and a translated
+  # value.  Pure Node, no install step required.  `--strict` mode
+  # (see scripts/check-i18n-coverage.cjs) makes missing locale
+  # files a hard fail.  In default mode (drift informational) the
+  # job still reports the table; the strict mode is opt-in for
+  # release branches.
+  check-i18n-coverage:
+    name: Verify i18n locale coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify all locales have all locale files
+        run: node scripts/check-i18n-coverage.cjs
+
   desktop-shell-checks:
     runs-on: ubuntu-latest
     steps:

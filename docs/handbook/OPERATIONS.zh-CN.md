@@ -9,7 +9,7 @@
 ```powershell
 # 从 GitHub release 页面下载最新 MSI
 # （Cubecloud-pending: 一旦品牌切换完成，替换为 Cubecloud 自有发布 URL）
-Invoke-WebRequest -Uri https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/cubecloud-desktop-setup.msi -OutFile cubecloud-setup.msi
+Invoke-WebRequest -Uri https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-setup.msi -OutFile cubecloud-setup.msi
 
 # 运行安装器（SmartScreen 会告警——点击 “More info” → “Run anyway”）
 msiexec /i cubecloud-setup.msi
@@ -18,7 +18,7 @@ msiexec /i cubecloud-setup.msi
 ### Fedora
 
 ```bash
-curl -L -o cubecloud.rpm https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/cubecloud-desktop-x86_64.rpm
+curl -L -o cubecloud.rpm https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-x86_64.rpm
 sudo dnf install ./cubecloud.rpm
 # 如果你的系统强制检查签名：sudo dnf install ./cubecloud.rpm --nogpgcheck
 ```
@@ -26,7 +26,7 @@ sudo dnf install ./cubecloud.rpm
 ### macOS
 
 ```bash
-curl -L -o cubecloud.dmg https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/cubecloud-desktop-x64.dmg
+curl -L -o cubecloud.dmg https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-x64.dmg
 open cubecloud.dmg
 # 将 Cubecloud.app 拖入 /Applications
 ```
@@ -45,9 +45,9 @@ open cubecloud.dmg
 ### 数据存放位置
 
 - **桌面端状态**（profiles、sessions、models、providers、skills、memory、tools、schedules、kanban）—— 位于用户应用数据目录下的 SQLite 数据库。
-  - Windows: `%APPDATA%\cubecloud-desktop\state.db`
-  - macOS: `~/Library/Application Support/cubecloud-desktop/state.db`
-  - Linux: `~/.config/cubecloud-desktop/state.db`
+  - Windows: `%APPDATA%\agent-desktop\state.db`
+  - macOS: `~/Library/Application Support/agent-desktop/state.db`
+  - Linux: `~/.config/agent-desktop/state.db`
 - **运行时状态**（Hermes / OpenClaw / IronClaw）—— 位于运行时自己的 home 目录中。
   - Hermes: `~/.hermes/`
   - OpenClaw: `~/.openclaw/`
@@ -121,17 +121,17 @@ kill -9 <pid>
 ```bash
 # macOS
 rm -rf "/Applications/Cubecloud.app"
-rm -rf ~/Library/Application\ Support/cubecloud-desktop
-rm -rf ~/Library/Logs/cubecloud-desktop
+rm -rf ~/Library/Application\ Support/agent-desktop
+rm -rf ~/Library/Logs/agent-desktop
 
 # Windows
 # 使用 “Apps & Features” → Cubecloud Desktop → Uninstall。
-# 然后删除 %APPDATA%\cubecloud-desktop 和 %LOCALAPPDATA%\cubecloud-desktop。
+# 然后删除 %APPDATA%\agent-desktop 和 %LOCALAPPDATA%\agent-desktop。
 
 # Linux
-sudo dnf remove cubecloud-desktop
-rm -rf ~/.config/cubecloud-desktop
-rm -rf ~/.local/share/cubecloud-desktop
+sudo dnf remove agent-desktop
+rm -rf ~/.config/agent-desktop
+rm -rf ~/.local/share/agent-desktop
 ```
 
 运行时 home（`~/.hermes/` 等）**不会**由桌面端卸载器删除；如果用户希望完全清空状态，需要自己单独删除它们。
@@ -176,12 +176,12 @@ rm -rf ~/.local/share/cubecloud-desktop
 
 ## 迁移路径
 
-### 从上游 `hermes-desktop` 迁移到 `cubecloud-desktop`
+### 从上游 `hermes-desktop` 迁移到 `agent-desktop`
 
 V2.3 → V2.4 → V2.5 的工作是品牌迁移；底层框架仍然是 `hermes-desktop`（MIT）。迁移流程：
 
 1. 备份上游安装：`cp -r ~/.hermes ~/.hermes.bak`。
-2. 在上游安装之上安装 `cubecloud-desktop`。
+2. 在上游安装之上安装 `agent-desktop`。
 3. 桌面端首次启动向导会检测现有 `~/.hermes/` 并提供导入选项。
 4. 导入完成后，桌面端中的 `~/.hermes/` 在内容上保持不变；可见变化主要是品牌层（图标、splash、locale strings）。
 

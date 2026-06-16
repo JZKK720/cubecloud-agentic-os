@@ -17,7 +17,7 @@
 | 治理文档 | 外层根目录下的 `README.md`、`LICENSE`、`NOTICE`、`BRANDING_AND_LICENSE.md`、`CONTRIBUTING.md`、`ACKNOWLEDGMENTS.md`；外层 `docs/` 下的 `docs/HANDBOOK.md`、`docs/handbook/*`、`docs/legal/*` | **活跃**（真实来源） | 在 V2.10（方案 A）中从 `cubecloud-desktop/` 移至外层根目录。内层镜像通过 `scripts/sync-docs.ps1` 以 Windows 硬链接（文件）和目录连接（目录）的形式重新创建。 | 保留。内层影子自动重新生成。 |
 | `cubecloud-desktop/{README,LICENSE,NOTICE,BRANDING_AND_LICENSE,CONTRIBUTING,ACKNOWLEDGMENTS}.md` 和 `cubecloud-desktop/docs/HANDBOOK.md` + `docs/handbook/*` | 内层镜像 | **硬链接**（不作为链接跟踪） | 见上文。这些路径下的 shell 渲染是无管理员权限的镜像，以便 Electron 构建继续在旧位置找到文档。 | 在外层文件编辑后通过 `scripts/sync-docs.ps1` 重新生成。 |
 
-## 为什么保留 `apps/desktop-shell/` 即使 `cubecloud-desktop/` 看起来相似
+## 为什么保留 `apps/desktop-shell/` 即使 `agent-desktop/` 看起来相似
 
 两者是**互补**的，而非重复。`cubecloud-desktop/` 是带有继承 hermes-desktop 框架的**完整 Electron 应用**。它是渲染器、主进程和构建流水线所在的位置。它**不在**外层 `package.json` 工作区中，因为工作区数组是 `node` 的概念（它告诉 `npm install` 在哪里查找工作区），而内层树是一个带有自己 `node_modules/` 的 vendored 副本。
 

@@ -117,7 +117,7 @@ Cubecloud Agent Desktop 는 Cubecloud Agentic-OS 모노레포를 위한 네이�
 ### Fedora (RPM)
 
 ```bash
-sudo dnf install ./cubecloud-desktop-<version>.rpm
+sudo dnf install ./agent-desktop-rpm.$2
 ```
 
 > **Fedora 사용자:** `.rpm` 파일은 GPG 서명되어 있지 않습니다. 시스템이 서명 검증을 강제하면 `--nogpgcheck` 를 덧붙이세요. `.rpm` 빌드는 `electron-updater` 제약 때문에 자동 업데이트를 지원하지 않으므로 새 `.rpm` 을 다시 설치해야 합니다.

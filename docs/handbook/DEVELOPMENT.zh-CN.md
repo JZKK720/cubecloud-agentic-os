@@ -16,7 +16,7 @@
 ```bash
 # 克隆
 git clone https://github.com/cubecloud-contributors/cubecloud-agentic-os
-cd cubecloud-agentic-os/cubecloud-desktop
+cd cubecloud-agentic-os/agent-desktop
 
 # 安装 JS 依赖
 npm ci   # 或: pnpm install --frozen-lockfile
@@ -71,7 +71,7 @@ npm run package:mac     # macOS DMG
 ## 项目布局
 
 ```
-cubecloud-desktop/
+agent-desktop/
 ├── .agents/skills/              # 技能层（{{SKILLS_UPSTREAM}} 技能 + autoresearch harness）
 │   ├── README.md                # 顶层技能索引与决策树
 │   ├── ar-autoresearch/         # 唯一一个带可运行代码 harness 的技能

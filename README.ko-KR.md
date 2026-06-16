@@ -11,7 +11,7 @@
 > 하나의 제어 평면으로 통합하며, 사용자의 머신을 호스팅 래퍼의 thin client로 만들지 않습니다.
 
 Cubecloud Agentic-OS는 **Cubecloud Agent Desktop** 및 그 운영 모델을 위한 모노레포입니다.
-데스크톱 바이너리는 [`cubecloud-desktop/`](agent-desktop/)에 있습니다.
+데스크톱 바이너리는 [`agent-desktop/`](agent-desktop/)에 있습니다.
 Cubecloud 오리지널 제어 평면, 사전 실행 번들, 개발자용 스킬 생태계는
 [`apps/desktop-shell/`](apps/desktop-shell/),
 [`packages/platform-core/`](packages/platform-core/), [`.agents/`](.agents/)에 있습니다.
@@ -87,7 +87,7 @@ Cubecloud는 다음과 같은 팀과 운영자에게 특히 적합합니다:
 
 이 모노레포가 제공하는 것은 데스크톱 바이너리만이 아닙니다.
 
-- [`cubecloud-desktop/`](agent-desktop/)은 최종 사용자에게 제공되는 완전한 Electron 데스크톱입니다.
+- [`agent-desktop/`](agent-desktop/)은 최종 사용자에게 제공되는 완전한 Electron 데스크톱입니다.
 - [`apps/desktop-shell/`](apps/desktop-shell/)은 Cubecloud 오리지널 상태 레이어 및 제어 평면 워크스페이스입니다.
 - [`packages/platform-core/`](packages/platform-core/)는 공유 TypeScript 계약을 보유합니다.
 - [`.agents/skills/`](.agents/skills/)에는 8개의 업스트림 리포지토리에서 적응된 35개의 일급 오픈소스 스킬이 포함되어 있으며 `~/.agents/skills/`로 미러링됩니다.
@@ -155,7 +155,7 @@ Cubecloud가 말하는 "프로덕션 대응"이란 "호스팅 SaaS와 영업 대
 ## 시작하기
 
 - **새 기여자:** [`docs/HANDBOOK.md`](docs/HANDBOOK.md) 섹션 1, 2, 3, 5를 읽으세요.
-- **데스크톱 평가자:** 먼저 [`cubecloud-desktop/README.md`](agent-desktop/README.md)를 읽은 후 [`docs/HANDBOOK.md`](docs/HANDBOOK.md) 섹션 1, 3, 10을 읽으세요.
+- **데스크톱 평가자:** 먼저 [`agent-desktop/README.md`](agent-desktop/README.md)를 읽은 후 [`docs/HANDBOOK.md`](docs/HANDBOOK.md) 섹션 1, 3, 10을 읽으세요.
 - **리뷰어 또는 릴리스 담당자:** [`docs/HANDBOOK.md`](docs/HANDBOOK.md) 섹션 1, 3, 4, 6, 9, 10, 11을 순서대로 읽으세요.
 
 ## 리포지토리 레이아웃
@@ -184,7 +184,7 @@ cubecloud-agentic-os/
 ├── scripts/
 │   ├── sync-docs.ps1             하드링크 및 정션 재생성 스크립트
 │   └── v2.10.20-readme-combined-pdf.cjs
-└── cubecloud-desktop/            사용자에게 제공되는 Electron 데스크톱
+└── agent-desktop/            사용자에게 제공되는 Electron 데스크톱
 ```
 
 ## 라이선스
@@ -221,7 +221,7 @@ AGPL-3.0-or-later가 기본 라이선스입니다. Apache-2.0과 MIT는 조직 �
 번역 인벤토리는 [`README.i18n.md`](README.i18n.md)에 있습니다.
 영중 통합 README PDF는 [`docs/Cubecloud-README-en-zh.pdf`](docs/Cubecloud-README-en-zh.pdf)에 있습니다.
 
-바이너리 대상 번역은 계속 `cubecloud-desktop/` 아래에 있습니다.
+바이너리 대상 번역은 계속 `agent-desktop/` 아래에 있습니다.
 모노레포에 일본어나 한국어를 추가하거나 기존 zh-CN 텍스트를 개선하려면
 [`README.i18n.md`](README.i18n.md)의 워크플로를 따르세요.
 

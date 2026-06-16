@@ -12,7 +12,7 @@
 > ユーザーのマシンをホスト型ラッパーの thin client に変えません。
 
 Cubecloud Agentic-OS は **Cubecloud Agent Desktop** とその運用モデルのモノレポです。
-デスクトップバイナリは [`cubecloud-desktop/`](agent-desktop/) にあります。
+デスクトップバイナリは [`agent-desktop/`](agent-desktop/) にあります。
 Cubecloudオリジナルのコントロールプレーン、プレローンチバンドル、開発時スキルエコシステムは
 [`apps/desktop-shell/`](apps/desktop-shell/)、
 [`packages/platform-core/`](packages/platform-core/)、[`.agents/`](.agents/) にあります。
@@ -88,7 +88,7 @@ Cubecloudは以下のようなチームやオペレーターに特に適して�
 
 このモノレポが提供するのは、デスクトップバイナリだけではありません。
 
-- [`cubecloud-desktop/`](agent-desktop/) はエンドユーザーに提供される完全なElectronデスクトップです。
+- [`agent-desktop/`](agent-desktop/) はエンドユーザーに提供される完全なElectronデスクトップです。
 - [`apps/desktop-shell/`](apps/desktop-shell/) はCubecloudオリジナルの状態層とコントロールプレーンワークスペースです。
 - [`packages/platform-core/`](packages/platform-core/) は共有TypeScriptコントラクトを保持します。
 - [`.agents/skills/`](.agents/skills/) には8つのアップストリームリポジトリから適応された35の第一級オープンソーススキルが含まれ、`~/.agents/skills/` にミラーリングされます。
@@ -156,7 +156,7 @@ Cubecloudの言う「プロダクション対応」とは「ホスト型SaaSと�
 ## どこから始めるか
 
 - **新しいコントリビューター：** [`docs/HANDBOOK.md`](docs/HANDBOOK.md) のセクション1、2、3、5を読んでください。
-- **デスクトップを評価する読者：** 最初に [`cubecloud-desktop/README.md`](agent-desktop/README.md) を読み、次に [`docs/HANDBOOK.md`](docs/HANDBOOK.md) のセクション1、3、10を読んでください。
+- **デスクトップを評価する読者：** 最初に [`agent-desktop/README.md`](agent-desktop/README.md) を読み、次に [`docs/HANDBOOK.md`](docs/HANDBOOK.md) のセクション1、3、10を読んでください。
 - **レビュアーまたはリリース担当者：** [`docs/HANDBOOK.md`](docs/HANDBOOK.md) のセクション1、3、4、6、9、10、11を順番に読んでください。
 
 ## リポジトリレイアウト
@@ -185,7 +185,7 @@ cubecloud-agentic-os/
 ├── scripts/
 │   ├── sync-docs.ps1             ハードリンクとジャンクション再生成スクリプト
 │   └── v2.10.20-readme-combined-pdf.cjs
-└── cubecloud-desktop/            ユーザーに提供されるElectronデスクトップ
+└── agent-desktop/            ユーザーに提供されるElectronデスクトップ
 ```
 
 ## ライセンス
@@ -222,7 +222,7 @@ AGPL-3.0-or-laterがプライマリライセンスです。Apache-2.0とMITは�
 翻訳インベントリは [`README.i18n.md`](README.i18n.md) にあります。
 英中統合README PDFは [`docs/Cubecloud-README-en-zh.pdf`](docs/Cubecloud-README-en-zh.pdf) にあります。
 
-バイナリ向けの翻訳は引き続き `cubecloud-desktop/` の下にあります。
+バイナリ向けの翻訳は引き続き `agent-desktop/` の下にあります。
 モノレポに日本語や韓国語を追加したい場合、または既存のzh-CNテキストを改善したい場合は、
 [`README.i18n.md`](README.i18n.md) のワークフローに従ってください。
 

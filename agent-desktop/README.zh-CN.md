@@ -112,7 +112,7 @@ Cubecloud Desktop 是一款原生桌面控制中心，用于安装、配置并�
 ### Fedora (RPM)
 
 ```bash
-sudo dnf install ./cubecloud-desktop-<version>.rpm
+sudo dnf install ./agent-desktop-rpm.$2
 ```
 
 > **Fedora 用户注意：** `.rpm` 包没有 GPG 签名。如果您的系统强制检查签名，请在安装命令后添加 `--nogpgcheck`。`.rpm` 构建不支持自动更新（这是 `electron-updater` 的限制）；若要更新，请重新安装新的 `.rpm` 包。
