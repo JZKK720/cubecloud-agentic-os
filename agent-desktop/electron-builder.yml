@@ -1,5 +1,5 @@
 appId: io.cubecloud.desktop
-productName: cubecloud-agent-desktop
+productName: agent-desktop
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: cubecloud-agent-desktop
+  executableName: agent-desktop
   target:
     - nsis
     - portable

@@ -1,4 +1,4 @@
-# Releasing cubecloud-agent-desktop
+# Releasing agent-desktop
 
 The release pipeline lives in `.github/workflows/release.yml`. It runs
 on pushes to the `release` branch and via manual `workflow_dispatch`.

@@ -17,7 +17,7 @@ via the release pipeline (.github/RELEASING.md).
 # Use the unpacked build instead — it is identical code, does not need
 # elevation, and SmartScreen does not gate it.
 
-$exe = "$PWD\agent-desktop\dist\win-unpacked\cubecloud-agent-desktop.exe"
+$exe = "$PWD\agent-desktop\dist\win-unpacked\agent-desktop.exe"
 & $exe
 ```
 
@@ -29,7 +29,7 @@ npm run build:unpack       # produces dist\win-unpacked\ without an installer
 
 ## Why the NSIS installer is blocked
 
-The NSIS artifact at `dist\cubecloud-agent-desktop-<ver>-setup.exe` is
+The NSIS artifact at `dist\agent-desktop-<ver>-setup.exe` is
 unsigned. The first time any user runs an unsigned installer,
 Windows SmartScreen intercepts it with the localized message
 "应用程序控制策略已阻止此文件" (Application control policy has blocked
@@ -46,7 +46,7 @@ passes without prompting.
 
 | # | Approach | When to use | Notes |
 |---|---|---|---|
-| 1 | **Unpacked binary smoke test** | Every local dev run | `dist\win-unpacked\cubecloud-agent-desktop.exe`. No elevation, no SmartScreen gate. **Default for this repo.** |
+| 1 | **Unpacked binary smoke test** | Every local dev run | `dist\win-unpacked\agent-desktop.exe`. No elevation, no SmartScreen gate. **Default for this repo.** |
 | 2 | **Portable NSIS** | Verifying the no-install path | `dist\…-portable.exe`. First launch shows the "Windows protected your PC" prompt — click "More info → Run anyway". Windows remembers per-user. |
 | 3 | **Self-signed test cert** | End-to-end install/uninstall rehearsal | `New-SelfSignedCertificate` + `Set-AuthenticodeSignature` embeds a cert, but SmartScreen still warns (untrusted root). Useful only for `Add/Remove Programs` round-trip tests. |
 | 4 | **Disable SmartScreen on the dev box** | Last resort, not recommended | `Set-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name EnableSmartScreen -Value 0` then restart. Disables SmartScreen for **all** executables on this box. |

@@ -45,7 +45,7 @@ describe("generateWingetManifests", () => {
     const distDir = join(TEST_DIR, "dist");
     mkdirSync(distDir, { recursive: true });
     writeFileSync(
-      join(distDir, "cubecloud-desktop-9.9.9-setup.exe"),
+      join(distDir, "agent-desktop-9.9.9-setup.exe"),
       "fake-installer-bytes",
     );
 
@@ -82,7 +82,7 @@ describe("generateWingetManifests", () => {
     const distDir = join(TEST_DIR, "dist");
     mkdirSync(distDir, { recursive: true });
     writeFileSync(
-      join(distDir, "cubecloud-desktop-9.9.9-setup.exe"),
+      join(distDir, "agent-desktop-9.9.9-setup.exe"),
       "fake-installer-bytes",
     );
 
@@ -107,7 +107,7 @@ describe("generateWingetManifests", () => {
     const content = readFileSync(outFile, "utf-8");
     expect(content).toContain("Version: 9.9.9");
     expect(content).toContain(
-      "Url: https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/download/v9.9.9/cubecloud-desktop-9.9.9-setup.exe",
+      "Url: https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/download/v9.9.9/agent-desktop-9.9.9-setup.exe",
     );
     expect(content).toMatch(/Sha: [A-F0-9]{64}/);
     expect(content).toMatch(/Date: \d{4}-\d{2}-\d{2}/);
@@ -119,7 +119,7 @@ describe("generateWingetManifests", () => {
     const distDir = join(TEST_DIR, "dist");
     mkdirSync(distDir, { recursive: true });
     writeFileSync(
-      join(distDir, "cubecloud-desktop-9.9.9-setup.exe"),
+      join(distDir, "agent-desktop-9.9.9-setup.exe"),
       "fake-installer-bytes",
     );
 
@@ -168,7 +168,7 @@ describe("generateWingetManifests", () => {
     const distDir = join(TEST_DIR, "dist");
     mkdirSync(distDir, { recursive: true });
     writeFileSync(
-      join(distDir, "cubecloud-desktop-9.9.9-setup.exe"),
+      join(distDir, "agent-desktop-9.9.9-setup.exe"),
       "fake-installer-bytes",
     );
 

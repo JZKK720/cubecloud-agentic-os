@@ -171,9 +171,9 @@ jobs:
       - name: Verify native module architecture
         run: |
           set -euo pipefail
-          NODE_FILE="dist/mac-${{ matrix.arch }}/Hermes Agent.app/Contents/Resources/app.asar.unpacked/node_modules/better-sqlite3/build/Release/better_sqlite3.node"
+          NODE_FILE="dist/mac-${{ matrix.arch }}/agent-desktop.app/Contents/Resources/app.asar.unpacked/node_modules/better-sqlite3/build/Release/better_sqlite3.node"
           if [ ! -f "$NODE_FILE" ]; then
-            NODE_FILE="dist/mac/Hermes Agent.app/Contents/Resources/app.asar.unpacked/node_modules/better-sqlite3/build/Release/better_sqlite3.node"
+            NODE_FILE="dist/mac/agent-desktop.app/Contents/Resources/app.asar.unpacked/node_modules/better-sqlite3/build/Release/better_sqlite3.node"
           fi
           file "$NODE_FILE"
           case "${{ matrix.arch }}" in
@@ -358,7 +358,7 @@ jobs:
             .readdirSync(artifactsDir)
             .filter(
               (name) =>
-                name.startsWith(`cubecloud-desktop-${version}-`) &&
+                name.startsWith(`agent-desktop-${version}-`) &&
                 name.endsWith("-mac.zip"),
             )
             .sort((a, b) => {
@@ -411,7 +411,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
-          name: cubecloud-agent-desktop ${{ needs.prepare.outputs.tag }}
+          name: agent-desktop ${{ needs.prepare.outputs.tag }}
           generate_release_notes: true
           files: |
             artifacts/*.dmg

@@ -104,7 +104,7 @@ short version:
 ### Fedora (RPM)
 
 ```bash
-sudo dnf install ./cubecloud-desktop-<version>.rpm
+sudo dnf install ./agent-desktop-<version>.rpm
 ```
 
 > **Fedora users:** The `.rpm` is not GPG-signed. If your system enforces

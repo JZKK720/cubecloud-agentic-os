@@ -1709,3 +1709,165 @@ section of BRANDING_AND_LICENSE.md to "4 changelog files"
 - macOS / Linux installer rebuilds (carried over since
   V2.10.43d).
 - Native-speaker review of any of the zh-CN docs.
+
+
+## V2.10.59 - drop the `cubecloud-` prefix from the inner binary product name
+
+**Scope:** `agent-desktop/package.json`,
+`agent-desktop/electron-builder.yml`, `agent-desktop/dev-app-update.yml`,
+`agent-desktop/README.md`, `agent-desktop/docs/handbook/OPERATIONS.md`,
+`agent-desktop/docs/dev-smoke.md`, `agent-desktop/.github/RELEASING.md`,
+`agent-desktop/.github/workflows/release.yml`,
+`agent-desktop/.github/workflows/winget-publish.yml`,
+`agent-desktop/tests/winget-generator.test.ts`,
+`docs/handbook/OPERATIONS.md`, `.github/workflows/ci.yml`,
+`scripts/check-doc-pair.cjs`, and the existing audit scripts
+(`scripts/check-mojibake.cjs`, `scripts/check-i18n-coverage.cjs`,
+`scripts/fix-stale-paths.cjs`, `scripts/skill-counts.cjs`).
+
+**What changed:**
+
+1. **`package.json#name`**: `cubecloud-agent-desktop` -> `agent-desktop`.
+   This is the field that `electron-builder` reads as `${name}` in
+   artifact-name templates, so the resulting NSIS installer and
+   portable build now use the `agent-desktop-` prefix instead of
+   the `cubecloud-agent-desktop-` prefix that V2.10.43b introduced.
+2. **`electron-builder.yml#productName`**: `cubecloud-agent-desktop`
+   -> `agent-desktop`. The Windows Start Menu entry, the macOS
+   `.app` bundle, and the Linux `desktop-entry` file all read
+   from this value, so the displayed product name is now
+   `agent-desktop` rather than `cubecloud-agent-desktop`.
+3. **`electron-builder.yml#win.executableName`**:
+   `cubecloud-agent-desktop` -> `agent-desktop`. The bare `.exe`
+   name inside `dist/win-unpacked/` is now `agent-desktop.exe`.
+4. **`dev-app-update.yml#updaterCacheDirName`**:
+   `cubecloud-agent-desktop-updater` -> `agent-desktop-updater`.
+   The auto-updater stores its diff cache under this directory;
+   existing v0.6.1 installs will see a fresh cache directory on
+   first launch after this rename, with no functional impact
+   (the cache is rebuildable from `latest.yml`).
+5. **CI asset globs** (`release.yml`, `winget-publish.yml`):
+   4 `cubecloud-agent-desktop-${VERSION}-setup.exe` references
+   replaced with `agent-desktop-${VERSION}-setup.exe`; 1
+   `cubecloud-desktop/${VERSION}` branch name in
+   `winget-publish.yml` replaced with `agent-desktop/${VERSION}`;
+   2 `Hermes Agent.app` references in `release.yml` replaced
+   with `agent-desktop.app` (the new macOS bundle name);
+   1 `cubecloud-desktop-${version}-` filter in `release.yml`
+   replaced with `agent-desktop-${version}-`; 1
+   `name: cubecloud-agent-desktop ${{...}}` step label
+   replaced with `name: agent-desktop ${{...}}`.
+6. **Test fixtures + expected URLs** in
+   `agent-desktop/tests/winget-generator.test.ts`:
+   4 `cubecloud-desktop-9.9.9-setup.exe` fixture writes
+   replaced with `agent-desktop-9.9.9-setup.exe`; 1
+   expected manifest URL rewritten to use the new prefix.
+7. **Active doc references** in `agent-desktop/README.md`,
+   `agent-desktop/docs/handbook/OPERATIONS.md`,
+   `agent-desktop/docs/dev-smoke.md`,
+   `agent-desktop/.github/RELEASING.md`, and
+   `docs/handbook/OPERATIONS.md` rewritten from
+   `cubecloud-desktop-<version>.{rpm,msi,...}` to
+   `agent-desktop-<version>.{...}` and from
+   `cubecloud-desktop-setup.exe` /
+   `cubecloud-desktop-x86_64.rpm` /
+   `cubecloud-desktop-x64.dmg` to their `agent-desktop-`
+   counterparts.
+8. **CI gate** `.github/workflows/ci.yml` adds a new
+   `check-doc-pair` job that runs
+   `node scripts/check-doc-pair.cjs` between
+   `check-skill-counts` and `check-mojibake`. The script
+   reports EN/ZH section drift across the 11 documented
+   doc pairs (the same 5 pairs from V2.10.58 + 6 more
+   that were implicit in the i18n manifest but never
+   structurally diffed before).
+9. **New audit scripts** in `scripts/`: `check-mojibake.cjs`
+   (byte-level U+FFFD + CP1252-substituted-UTF-8 scan over
+   805 source files, all clean), `check-i18n-coverage.cjs`
+   (per-locale key coverage across the 8 renderer locales,
+   flags `kanban.ts` missing in 4 of 8), `fix-stale-paths.cjs`
+   (the bulk rewriter that did the rename), and now
+   `check-doc-pair.cjs` (the structural EN/ZH section diff).
+
+**Why this is the right V2.10.59 step:**
+
+The V2.10.43b commit added the `cubecloud-` prefix to
+`productName`, `executableName`, and `package.json#name` at
+the same time as the V2.10.43c directory rename
+(`cubecloud-desktop/` -> `agent-desktop/`). The directory
+rename was correct - the working tree is now `agent-desktop/`
+- but the product-name prefix was longer than the operator
+workflow needed. A reader installing the v0.6.1 binary
+sees a `cubecloud-agent-desktop-0.6.1-setup.exe` file in
+their Downloads folder, even though the inner directory is
+just `agent-desktop/` and the BRANDING narrative keeps
+calling the binary the "Agent Desktop".
+
+V2.10.59 drops the prefix so the artifact name matches the
+directory name and the everyday product name. The macOS
+bundle is now `agent-desktop.app`, the Start Menu entry is
+`agent-desktop`, the package name is `agent-desktop`, the
+executable is `agent-desktop.exe`, and the GitHub release
+asset is `agent-desktop-0.6.1-setup.exe`. The `appId`
+(`io.cubecloud.desktop`) and the `Cubecloud` brand strings
+in i18n / docs / legal files stay - they are about
+**publisher identity** (the legal entity that signs the
+binary), not the **product name** (the file the user
+double-clicks).
+
+**Out of scope (deliberately):**
+
+- The 17 historical `cubecloud-desktop/` references in
+  `docs/RETIRED_AND_LEGACY.zh-CN.md` (the historical
+  retirement table) are intentionally preserved. They
+  document the V2.10.43c rename as part of migration
+  history.
+- The `apps/desktop-shell/` strings
+  (`cubecloud-desktop-shell-smoke-probe`,
+  `cubecloud-desktop-shell-theme`, the
+  `prelaunchSeed.smoke.mjs` V2.10.43c comment) are left
+  as-is. `apps/desktop-shell` is a separate Cubecloud-
+  original control-plane workspace with its own
+  `@cubecloud/desktop-shell` package name, and the
+  `cubecloud-desktop-shell-*` strings are control-plane
+  internal identifiers, not references to the inner
+  binary's productName.
+- The 2 historical `cubecloud-desktop-` references in
+  `BRANDING_AND_LICENSE.md` (the V2.10.43c section that
+  originally added the prefix, and the V2.10.32
+  "old publish-coordinate cleanup" section) are left as-is.
+  They are historical narrative, not active references.
+- `package-lock.json` will need a one-shot `npm install`
+  to refresh the name field after the `package.json#name`
+  change. Tracked as a developer-machine follow-up, not
+  committed in this pass.
+- The `agent-desktop/BRANDING_AND_LICENSE.md` hardlink
+  copies of the V2.10.43a-d narrative still mention
+  `cubecloud-agent-desktop-0.6.1-setup.exe` because that
+  was the actual release artifact name. A future V2.10.59+
+  addendum to that narrative can be added; this commit
+  just appends the current reversal at the bottom of the
+  file.
+
+**Verification:**
+
+- `node scripts/check-mojibake.cjs`: 805 files, 0 FFFD, 0
+  CP1252 markers (clean).
+- `node scripts/check-i18n-coverage.cjs`: 24 locale
+  files per source, only known `kanban.ts` drift in 4 of
+  8 locales.
+- `node scripts/check-skill-counts.cjs`: no hard-coded
+  counts in prose.
+- `node scripts/check-doc-pair.cjs`: 11 doc pairs
+  compared; the same 5 doc-pair drift items from V2.10.58
+  are still documented in the drift report (none are
+  caused by this commit).
+- `npm run typecheck` (agent-desktop): both `tsc` passes
+  succeed with no errors.
+- `npx vitest run tests/winget-generator.test.ts`: 5 / 5
+  pass.
+- `npx vitest run` (full agent-desktop suite): the 2
+  pre-existing failures in `Layout.test.tsx`
+  (`expected 18 to be 17`) are still pre-existing on
+  `9122425`; this commit does not introduce any new
+  test failures.

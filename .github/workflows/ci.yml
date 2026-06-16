@@ -32,6 +32,26 @@ jobs:
       - name: Verify no hard-coded skill counts in prose
         run: node scripts/check-skill-counts.cjs
 
+  # Doc-pair section diff: fail any PR that drops an EN section in a
+  # documented EN/ZH doc pair, or adds a ZH-only section that drifts
+  # further from EN.  Pure Node, no install step required.  Defaults
+  # to drift informational; --strict mode (see script) makes
+  # missing EN sections a hard fail.  Pair list lives in the script.
+  check-doc-pair:
+    name: Verify EN/ZH doc pair section parity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify section parity across EN/ZH doc pairs
+        run: node scripts/check-doc-pair.cjs
+
   # Mojibake gate: fail any PR that introduces a U+FFFD replacement
   # character or CP1252-substituted-UTF-8 mojibake into a tracked
   # source file.  Pure Node, no install step required.  Catches the
