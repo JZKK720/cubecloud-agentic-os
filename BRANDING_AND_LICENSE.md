@@ -2162,3 +2162,111 @@ purely additive: the existing OpenClaw + Hermes contract
 is unchanged, the inference rule is a strict widening, and
 the new test file pins the IronClaw invariants so a
 future refactor cannot silently regress them.
+
+
+---
+
+## V2.10.62 - IronClaw attach smoke (credential-free)
+
+**Scope:** 3 new files (1 test + 1 doc + 1 operator script).
+**No source code changed.**
+
+**What changed (V2.10.62):**
+
+1. **`agent-desktop/tests/ironclaw-attach.smoke.test.ts`** (new,
+   5 cases). Credential-free unit smoke that proves:
+   - The V2.10.60 `probeLocalModelHealth` module is importable
+     and returns `reachable: true` against a healthy fake
+     IronClaw (a local `node:http` server on 127.0.0.1:<ephemeral>
+     that mimics IronClaw's `/models` surface).
+   - The probe module **does not** read `IRONCLAW_TEST_TOKEN`
+     from the env and **does not** forward it as an
+     `Authorization` header or query string, even when the env
+     var is set. This is the security-floor invariant: the
+     credential is owned by the apply layer (`Settings.tsx`) at
+     the form-input boundary, not by the probe layer.
+   - The probe path is `/models` (V2.10.60 contract) — not
+     any other path that might leak the token.
+   - The `IRONCLAW_TEST_TOKEN` env-var name is pinned so a
+     future refactor cannot silently rename it.
+
+2. **`docs/ironclaw-attach.smoke.md`** (new). Operator runbook
+   that walks the operator through:
+   - The security floor (read first).
+   - Step 0: rotate the token if it has been exposed.
+   - Step 1: read the token from the IronClaw operator panel
+     into a shell variable (without ever echoing the value
+     in this doc).
+   - Step 2: point the probe at the live IronClaw.
+   - Step 3: run the operator-side script and read PASS/FAIL
+     with hints.
+   - Step 4: attach from the Agent Desktop remote panel.
+   - Step 5: clean up the shell env.
+
+3. **`scripts/ironclaw-attach.smoke.cjs`** (new). Operator-side
+   Node CLI that probes the live IronClaw, reads the token
+   from `process.env.IRONCLAW_TEST_TOKEN` (or `IRONCLAW_TEST_URL`
+   for the host/port/path override), and prints PASS/FAIL
+   with operator-actionable hints. The token is never logged.
+   The only token-shaped output is a 4-char prefix + ellipsis
+   + 4-char suffix (e.g. `e4c3…ff94`).
+
+**Verification:**
+
+- `npm run typecheck` (node + web): 0 errors.
+- `tests/ironclaw-attach.smoke.test.ts`: 5/5 pass with no
+  env var, 5/5 pass with `IRONCLAW_TEST_TOKEN` set to a
+  sentinel. The "hides the bearer token" case asserts the
+  probe never picks up the sentinel.
+- `node scripts/check-mojibake.cjs`: 810 files, 0 issues
+  (was 806; +4 for the 3 new files + the V2.10.61 entry).
+- `node scripts/check-i18n-coverage.cjs`: 8 locales, 0 new
+  missing keys (no locale files touched).
+- `node scripts/skill-counts.cjs`: clean.
+- `node scripts/check-doc-pair.cjs`: same 5 known baseline
+  drift items, no new drift.
+- Final credential scan: no credential strings on disk in
+  any tracked file. No sentinel string on disk in any
+  tracked file. The two real credentials posted in chat
+  remain only in the chat transcript (which the agent
+  cannot un-ring; the runbook's Step 0 flags rotation).
+
+**Out of scope (deliberate):**
+
+- **Replacing the existing IronClaw auth scheme.** The
+  V2.10.61 preset's `remoteSecretLabel` is `"Bearer token
+  (optional)"` because `PLATFORM_RUNTIME_SURFACES` does not
+  pin a secret scheme for IronClaw. If your IronClaw
+  deployment uses a different auth shape (header, query
+  param, mTLS), refine the preset in a future V2.10.x.
+- **The Docker Desktop attach panel** is still not rendered
+  in Welcome.tsx (clean V2.10.63+ candidate; see V2.10.61
+  BRANDING entry).
+- **Native-speaker review** of the new runbook doc is not
+  required (it's English-only operator documentation; the
+  8-locale i18n trees are untouched).
+- **Saving the bearer token in any file, including `.env`.**
+  The runbook is explicit that the token lives only in the
+  shell's `process.env.IRONCLAW_TEST_TOKEN` for the duration
+  of one CLI invocation. CI / pre-commit hooks should add
+  a `gitleaks`-style check to fail any future PR that
+  accidentally inlines a 64-char hex literal (the agent
+  memory note documents the regex).
+
+**Why this is the right V2.10.62 step:**
+
+V2.10.61 widened the gateway-preset union to include
+IronClaw, but the operator had no way to verify the live
+attach without pasting the bearer token somewhere. The
+two wrong options were (a) inline the token in a test
+fixture (violates the security floor) and (b) leave it
+in the chat transcript (the exposure surface is now
+permanent). V2.10.62 introduces the third option: a
+credential-free unit smoke that proves the in-repo probe
+contract, plus a credential-bearing operator-side smoke
+that runs entirely outside the repo with the token held
+only in the shell's process.env for the duration of one
+CLI invocation. The in-repo smoke pins the security-floor
+invariant that the probe never picks up auth from env; the
+operator runbook documents the live verification path
+without ever holding the token in the committed tree.
