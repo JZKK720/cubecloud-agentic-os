@@ -12,7 +12,12 @@ export default {
   switchToLocal: "Beralih ke mode lokal",
   installSizeHint: "Ini akan menginstal komponen yang diperlukan (~2 GB)",
   lanePickerHint:
-    "Ini adalah jalur gateway langsung. {{ironclaw}} tersedia sebagai runtime kontainer, bukan gateway langsung, jadi gunakan hand-off Docker Desktop di bawah untuk memasangkannya.",
+    // V2.10.61 — rewritten to drop the false-promise "below"
+    // Docker handoff reference (the panel is not rendered in
+    // Welcome.tsx). The Docker Desktop attach panel is a clean
+    // V2.10.62 candidate; until then, the lane picker points
+    // users at the remote panel as the truthful IronClaw path.
+    "Ini adalah jalur gateway langsung. {{ironclaw}} tersedia sebagai runtime kontainer — pilih dari panel remote untuk memasang ke port yang diterbitkan.",
   copyInstallCommand: "Salin perintah instalasi",
   dividerOr: "atau",
   connectRemote: "Hubungkan ke runtime remote",

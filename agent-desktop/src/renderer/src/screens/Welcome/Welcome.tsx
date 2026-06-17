@@ -172,16 +172,24 @@ function Welcome({
     openclawProvider?.definition.displayName ?? GATEWAY_RUNTIME_PRESETS.openclaw.displayName;
   const ironclawRuntimeName =
     ironclawProvider?.definition.displayName ?? "IronClaw";
-  const selectedGatewayRuntime =
-    gatewayRuntimePreset === "hermes"
-      ? {
-          ...GATEWAY_RUNTIME_PRESETS.hermes,
-          displayName: hermesRuntimeName,
-        }
-      : {
-          ...GATEWAY_RUNTIME_PRESETS.openclaw,
-          displayName: openclawRuntimeName,
-        };
+  const selectedGatewayRuntime = (() => {
+    if (gatewayRuntimePreset === "hermes") {
+      return {
+        ...GATEWAY_RUNTIME_PRESETS.hermes,
+        displayName: hermesRuntimeName,
+      };
+    }
+    if (gatewayRuntimePreset === "ironclaw") {
+      return {
+        ...GATEWAY_RUNTIME_PRESETS.ironclaw,
+        displayName: ironclawRuntimeName,
+      };
+    }
+    return {
+      ...GATEWAY_RUNTIME_PRESETS.openclaw,
+      displayName: openclawRuntimeName,
+    };
+  })();
 
   function persistGatewayRuntimePreset(next: GatewayRuntimePresetId): void {
     setGatewayRuntimePreset(next);
@@ -191,7 +199,9 @@ function Welcome({
   function runtimeDisplayNameFor(
     presetId: GatewayRuntimePresetId,
   ): string {
-    return presetId === "openclaw" ? openclawRuntimeName : hermesRuntimeName;
+    if (presetId === "ironclaw") return ironclawRuntimeName;
+    if (presetId === "openclaw") return openclawRuntimeName;
+    return hermesRuntimeName;
   }
 
   function applyGatewayRuntimePreset(next: GatewayRuntimePresetId): void {
@@ -366,9 +376,13 @@ function Welcome({
             ? t("welcome.connectRemoteSubtitleOpenclaw", {
                 runtime: openclawRuntimeName,
               })
-            : t("welcome.connectRemoteSubtitleHermes", {
-                runtime: hermesRuntimeName,
-              }),
+            : gatewayRuntimePreset === "ironclaw"
+              ? t("welcome.connectRemoteSubtitleIronclaw", {
+                  runtime: ironclawRuntimeName,
+                })
+              : t("welcome.connectRemoteSubtitleHermes", {
+                  runtime: hermesRuntimeName,
+                }),
           true,
         )}
 
@@ -388,6 +402,17 @@ function Welcome({
               onClick={() => applyGatewayRuntimePreset("openclaw")}
             >
               {openclawRuntimeName}
+            </button>
+            {/* V2.10.61 — IronClaw remote-gateway lane. IronClaw
+                only supports remote-gateway attach (not SSH tunnel),
+                so the button is rendered in the remote panel and
+                intentionally omitted from the SSH panel below. */}
+            <button
+              className={`btn ${gatewayRuntimePreset === "ironclaw" ? "btn-primary" : "btn-secondary"}`}
+              type="button"
+              onClick={() => applyGatewayRuntimePreset("ironclaw")}
+            >
+              {ironclawRuntimeName}
             </button>
           </div>
           <p className="welcome-remote-hint welcome-lane-hint">
@@ -465,6 +490,11 @@ function Welcome({
         {renderLocaleSwitch()}
         {renderBrandHeader(
           t("welcome.connectSshPanelTitle"),
+          // V2.10.61 — IronClaw is gateway-only and the SSH
+          // panel does not render the IronClaw button. If a
+          // stored config still has ironclaw selected here, we
+          // fall through to the hermes subtitle so the user
+          // sees sensible copy rather than the openclaw one.
           gatewayRuntimePreset === "openclaw"
             ? t("welcome.connectSshSubtitleOpenclaw", {
                 runtime: openclawRuntimeName,
@@ -492,6 +522,13 @@ function Welcome({
             >
               {openclawRuntimeName}
             </button>
+            {/* V2.10.61 — IronClaw is gateway-only and does not
+                support SSH attach. The lane is intentionally
+                omitted from the SSH panel. If a stored config
+                is migrated forward with ironclaw selected, the
+                inferGatewayRuntimePreset path falls back to
+                hermes and the runtime-orchestration layer's
+                canAttachViaSshTunnel=false guard takes over. */}
           </div>
           <p className="welcome-remote-hint welcome-lane-hint">
             {t("welcome.lanePickerHint", {

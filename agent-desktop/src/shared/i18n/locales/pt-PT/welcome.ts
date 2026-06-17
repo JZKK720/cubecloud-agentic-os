@@ -12,7 +12,12 @@ export default {
   switchToLocal: "Mudar para modo local",
   installSizeHint: "Isto irá instalar os componentes necessários (~2 GB)",
   lanePickerHint:
-    "Estas s茫o pistas de gateway direto. {{ironclaw}} 茅 distribu铆do como um runtime de contentor, n茫o como um gateway direto; utilize a transfer锚ncia do Docker Desktop abaixo para anexar.",
+    // V2.10.61 — rewritten to drop the false-promise "abaixo"
+    // Docker handoff reference (the panel is not rendered in
+    // Welcome.tsx). The Docker Desktop attach panel is a clean
+    // V2.10.62 candidate; until then, the lane picker points
+    // users at the remote panel as the truthful IronClaw path.
+    "Estas são pistas de gateway direto. {{ironclaw}} é distribuído como um runtime de contentor — selecione-o no painel remoto para anexar à porta publicada.",
   copyInstallCommand: "Copiar comando de instalação",
   dividerOr: "ou",
   connectRemote: "Ligar ao runtime remoto",

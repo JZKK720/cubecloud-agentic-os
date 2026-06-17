@@ -1,10 +1,17 @@
 import {
   DEFAULT_LOCAL_GATEWAY_PORT,
   DEFAULT_SSH_REMOTE_PORT,
+  IRONCLAW_DEFAULT_PORT,
   OPENCLAW_LOCAL_GATEWAY_PORT,
 } from "./runtime-defaults";
 
-export type GatewayRuntimePresetId = "hermes" | "openclaw";
+// V2.10.61 — widened to include IronClaw. IronClaw only supports
+// the remote-gateway connection mode (not SSH tunnel — see
+// RuntimeProviderDefinition.ironclaw.canAttachViaSshTunnel in
+// src/shared/runtime-orchestration.ts), so the SSH-tunnel panel
+// in Settings.tsx / Welcome.tsx hides the IronClaw button while
+// the remote-gateway panel renders it normally.
+export type GatewayRuntimePresetId = "hermes" | "openclaw" | "ironclaw";
 
 export interface GatewayRuntimePreset {
   id: GatewayRuntimePresetId;
@@ -14,9 +21,18 @@ export interface GatewayRuntimePreset {
   remoteSecretPlaceholder: string;
   remoteSecretHint: string;
   remoteHint: string;
+  // V2.10.61 — sshRemotePort remains a `number` so the existing
+  // parseInt / placeholder call sites in Settings.tsx and
+  // Welcome.tsx compile unchanged. IronClaw's value is the
+  // WASM-sandbox container default; it is never surfaced in the
+  // SSH panel because that panel is hidden for ironclaw.
   sshRemotePort: number;
   sshSecretLabel: string;
   sshSecretHint: string;
+  // V2.10.61 — explicit flag so the SSH panel can hide the
+  // IronClaw button (ironclaw is gateway-only, not tunnel-able)
+  // without having to re-read the runtime-orchestration layer.
+  sshSupported: boolean;
 }
 
 const REMOTE_GATEWAY_EXAMPLE_HOST = "192.168.1.100";
@@ -39,6 +55,7 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
     sshSecretLabel: "API server key",
     sshSecretHint:
       "Optional for SSH unless the remote Hermes gateway expects API_SERVER_KEY for tunneled requests.",
+    sshSupported: true,
   },
   openclaw: {
     id: "openclaw",
@@ -54,13 +71,40 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
     sshSecretLabel: "Gateway token or password",
     sshSecretHint:
       "Use this when OpenClaw gateway auth is enabled. HTTP compatibility must also be enabled on the remote gateway.",
+    sshSupported: true,
+  },
+  // V2.10.61 — IronClaw ships as a WASM-sandbox container
+  // runtime (no SSH tunnel). The lane lives on the remote-gateway
+  // panel only. Auth is via a Bearer token (the operator decides
+  // whether the published container port requires it; the
+  // PLATFORM_RUNTIME_SURFACES entry for ironclaw does not pin a
+  // secret scheme). The /health suffix on the example URL mirrors
+  // the PLATFORM_RUNTIME_PROVIDERS.ironclaw.remoteExampleUrl.
+  ironclaw: {
+    id: "ironclaw",
+    displayName: "IronClaw",
+    remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:${IRONCLAW_DEFAULT_PORT}/health`,
+    remoteSecretLabel: "Bearer token (optional)",
+    remoteSecretPlaceholder:
+      "Paste the IronClaw container token if the gateway enforces auth",
+    remoteSecretHint:
+      "Leave this empty if the published IronClaw container port accepts unauthenticated health checks.",
+    remoteHint:
+      "Use the published IronClaw container port (default 8281). The /health path is the operator-facing surface; WASM-sandbox tool execution is enabled on the container side, not in Agent Desktop.",
+    sshRemotePort: IRONCLAW_DEFAULT_PORT,
+    sshSecretLabel: "Bearer token (optional)",
+    sshSecretHint:
+      "SSH attach is not supported for IronClaw. Use the remote-gateway panel instead.",
+    sshSupported: false,
   },
 };
 
 export function coerceGatewayRuntimePreset(
   value: unknown,
 ): GatewayRuntimePresetId | null {
-  return value === "openclaw" || value === "hermes" ? value : null;
+  return value === "openclaw" || value === "hermes" || value === "ironclaw"
+    ? value
+    : null;
 }
 
 export function resolveGatewayRuntimePreset(args: {
@@ -82,6 +126,13 @@ export function inferGatewayRuntimePreset(args: {
   sshRemotePort?: number | string | null;
 }): GatewayRuntimePresetId {
   const sshRemotePort = Number(args.sshRemotePort);
+  // V2.10.61 — SSH lane no longer pins a port for IronClaw, but
+  // keep the check defensive in case an older profile stored the
+  // container default. The SSH panel will still hide the
+  // IronClaw button via sshSupported=false.
+  if (sshRemotePort === IRONCLAW_DEFAULT_PORT) {
+    return "ironclaw";
+  }
   if (sshRemotePort === OPENCLAW_LOCAL_GATEWAY_PORT) {
     return "openclaw";
   }
@@ -93,6 +144,16 @@ export function inferGatewayRuntimePreset(args: {
 
   try {
     const parsed = new URL(remoteUrl);
+    if (Number(parsed.port) === IRONCLAW_DEFAULT_PORT) {
+      return "ironclaw";
+    }
+    if (/\/health(?:\/|$)/i.test(parsed.pathname)) {
+      // /health is the documented IronClaw operator surface; an
+      // explicit port match above already handles the common case,
+      // this catches operator-pinned IronClaw containers on a
+      // non-default port that still expose /health.
+      return "ironclaw";
+    }
     if (Number(parsed.port) === OPENCLAW_LOCAL_GATEWAY_PORT) {
       return "openclaw";
     }
@@ -112,6 +173,9 @@ function normalisePresetPath(
 ): string {
   if (presetId === "openclaw") {
     return !pathname || pathname === "/" ? "/v1" : pathname;
+  }
+  if (presetId === "ironclaw") {
+    return !pathname || pathname === "/" ? "/health" : pathname;
   }
 
   return pathname === "/v1" || pathname === "/v1/" ? "/" : pathname || "/";
@@ -137,6 +201,9 @@ export function applyGatewayRuntimePresetToRemoteUrl(
       result = result.replace(/\/$/, "");
     }
     if (presetId === "openclaw" && result.endsWith("/")) {
+      result = result.slice(0, -1);
+    }
+    if (presetId === "ironclaw" && result.endsWith("/")) {
       result = result.slice(0, -1);
     }
     return result;

@@ -7,8 +7,6 @@ export default {
   installLocalRuntime: "Install local runtime",
   existingGatewayNote: "A live gateway was detected — install is optional.",
   installSizeHint: "Installs required components (~2 GB).",
-  lanePickerHint:
-    "These are direct gateway lanes. {{ironclaw}} ships as a container runtime, not a direct gateway, so use the Docker Desktop handoff below to attach it.",
   addOnRuntimesNote: "Ollama, LM Studio, vLLM, and more are configured in the next step.",
   dockerScanCopy:
     "For an existing {{runtimes}} gateway container. Continue with the default local install below if none of them are already running.",
@@ -47,11 +45,20 @@ export default {
     "Use an existing runtime URL when Agent Desktop should attach to a running {{runtime}} gateway instead of installing locally.",
   connectRemoteSubtitleOpenclaw:
     "Attach to a running {{runtime}} compatibility endpoint instead of installing locally. Agent Desktop expects the OpenClaw HTTP compatibility surface to be enabled.",
-  connectSshPanelTitle: "Tunnel into a remote gateway",
-  connectSshSubtitleHermes:
-    "Use SSH when the {{runtime}} gateway should stay private and reachable only through a tunnel from Agent Desktop.",
-  connectSshSubtitleOpenclaw:
-    "Use SSH when the {{runtime}} compatibility gateway should stay private and reachable only through a tunnel from Agent Desktop.",
+  // V2.10.61 — IronClaw third remote lane. IronClaw ships as a
+  // WASM-sandbox container runtime, so the lane copy names the
+  // operator-facing surface (/health) and points at the container
+  // default port. SSH attach is intentionally not advertised.
+  connectRemoteSubtitleIronclaw:
+    "Attach to a running {{runtime}} WASM-sandbox container gateway instead of installing locally. Use the published container port (default 8281) and the operator-facing /health surface.",
+  // V2.10.61 — rewritten to drop the false-promise "below" Docker
+  // handoff reference (the panel was not actually rendered in
+  // Welcome.tsx). The Docker Desktop attach panel is a clean
+  // V2.10.62 candidate; until then, the lane picker tells the
+  // user the truth (IronClaw is attachable from the remote
+  // panel; the Docker handoff is on the roadmap).
+  lanePickerHint:
+    "These are direct gateway lanes. {{ironclaw}} ships as a container runtime — pick it from the remote panel to attach to the published port.",
   runtimeLane: "Runtime lane",
   sshHost: "SSH Host",
   sshHostPlaceholder: "192.168.1.100 or myserver.local",
@@ -68,6 +75,13 @@ export default {
     "{{runtime}} usually listens on {{port}} and requires its HTTP compatibility surface to be enabled before Agent Desktop can attach.",
   sshRuntimeHermesNote:
     "{{runtime}} usually listens on {{port}} for SSH attach.",
+  // V2.10.61 — IronClaw note for the SSH lane. IronClaw is
+  // gateway-only (no SSH attach) so this string is never actually
+  // shown in V2.10.61 (the lane button is hidden in the SSH
+  // panel via sshSupported=false), but we ship the key so future
+  // i18n audits do not flag it as missing.
+  sshRuntimeIronclawNote:
+    "{{runtime}} is gateway-only and does not support SSH attach. Use the remote-gateway panel with the published container port (default {{port}}).",
   sshSecretOpenclawNote: "(required when OpenClaw auth is enabled)",
   sshSecretHermesNote: "(optional unless the remote Hermes gateway enforces auth)",
   testingSshConnection: "Testing SSH connection…",

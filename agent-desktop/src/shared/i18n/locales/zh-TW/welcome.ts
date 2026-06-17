@@ -11,7 +11,12 @@ export default {
   switchToLocal: "切換到本機模式",
   installSizeHint: "這將安裝所需元件（約 2 GB）",
   lanePickerHint:
-    "這些是直接閘道通道。{{ironclaw}} 是容器執行階段而非直接閘道，請改用下方的 Docker Desktop 交接來連接。",
+    // V2.10.61 — rewritten to drop the false-promise "下方"
+    // Docker handoff reference (the panel is not rendered in
+    // Welcome.tsx). The Docker Desktop attach panel is a clean
+    // V2.10.62 candidate; until then, the lane picker points
+    // users at the remote panel as the truthful IronClaw path.
+    "這些是直接閘道通道。{{ironclaw}} 是容器執行階段——請從遠端面板選擇它以連接到已發佈的埠。",
   copyInstallCommand: "複製安裝命令",
   dividerOr: "或",
   connectRemote: "連線到遠端執行環境",

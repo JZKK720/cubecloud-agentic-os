@@ -2025,3 +2025,140 @@ in the v2.10.60+ micro-wave is a "Settings -> Runtimes"
 refresh that surfaces the loopback scan inside the
 onboarding Welcome flow (V2.10.62 candidate), but that
 will be its own scope.
+
+
+---
+
+## V2.10.61 - IronClaw third lane in Connect-to-remote-gateway
+
+**Scope:** 12 modified files + 1 new test file (13 files, +452/-58).
+
+**What changed (V2.10.61):**
+
+1. **`GatewayRuntimePresetId` widened** from
+   `"hermes" | "openclaw"` to `"hermes" | "openclaw" | "ironclaw"`
+   in `agent-desktop/src/shared/gateway-runtime-presets.ts`. The
+   new `ironclaw` entry declares `sshSupported: false` so the
+   SSH-tunnel panel in Settings.tsx and Welcome.tsx can hide
+   the IronClaw button while the remote-gateway panel renders
+   it normally. This matches the truthful state from
+   `runtime-orchestration.ts.ironclaw.canAttachViaSshTunnel:
+   false` and the `PLATFORM_RUNTIME_PROVIDERS.ironclaw.sshRemotePort:
+   null` declaration.
+
+2. **`inferGatewayRuntimePreset` extended** to detect IronClaw
+   from the WASM-sandbox container port (`8281`) and from the
+   `/health` operator surface (catches operator-pinned
+   IronClaw containers on a non-default port that still expose
+   `/health`).
+
+3. **`applyGatewayRuntimePresetToRemoteUrl` extended** so the
+   IronClaw lane snaps to `/health` (matches the documented
+   IronClaw operator surface) and trims trailing slashes
+   consistently with the OpenClaw lane.
+
+4. **`IRONCLAW_DEFAULT_PORT = 8281` and
+   `IRONCLAW_LOCAL_GATEWAY_URL` constants** added to
+   `src/shared/runtime-defaults.ts`, mirroring the OpenClaw
+   pair (`OPENCLAW_LOCAL_GATEWAY_PORT = 18789`).
+
+5. **Renderer UI - Settings.tsx:**
+   - The "Runtime lane" picker in the **remote panel** now
+     renders three buttons (Hermes Agent / OpenClaw /
+     IronClaw) instead of two.
+   - The "Runtime lane" picker in the **SSH panel** is
+     unchanged (IronClaw does not support SSH attach; the
+     lane is intentionally omitted; comment in the JSX
+     documents the omission).
+   - `connectionModeHint` widened: IronClaw gets a
+     gateway-only hint in the SSH panel and a WASM-sandbox
+     container hint in the remote panel.
+   - The API-key banner variant now mentions IronClaw
+     (auth optional; switch to remote panel if SSH is
+     selected with IronClaw).
+
+6. **Renderer UI - Welcome.tsx:**
+   - The "Runtime lane" picker in the **remote panel** now
+     renders three buttons (Hermes Agent / OpenClaw /
+     IronClaw) instead of two.
+   - The "Runtime lane" picker in the **SSH panel** is
+     unchanged (same comment pattern).
+   - `connectRemoteSubtitleIronclaw` added to the dispatch
+     in the brand-header subtitle; the SSH subtitle
+     dispatch falls through to hermes when IronClaw is
+     somehow selected (defensive).
+
+7. **i18n keys** added to `en/welcome.ts` and
+   `zh-CN/welcome.ts`:
+   - `connectRemoteSubtitleIronclaw` (new lane subtitle)
+   - `sshRuntimeIronclawNote` (defensive; not shown because
+     the SSH panel hides the IronClaw button, but shipped
+     so future i18n audits do not flag it as missing)
+   - `lanePickerHint` rewritten in all 8 locales (en +
+     zh-CN + the 6 fallback locales) to drop the
+     false-promise "below" Docker handoff reference (the
+     panel was not actually rendered in Welcome.tsx). The
+     new copy points users at the remote panel as the
+     truthful IronClaw attach path.
+
+8. **New test file**
+   `agent-desktop/tests/gateway-runtime-presets.test.ts`
+   with 9 cases covering the union widening, the
+   `sshSupported: false` invariant, the port/path inference
+   rule, the snap-to-/health URL normalisation, the
+   stored-preset precedence, and the fall-back-to-hermes
+   edge case for empty or unparseable URLs.
+
+**Verification:**
+
+- `npm run typecheck` (node + web): 0 errors.
+- `node scripts/check-mojibake.cjs`: 806 files, 0 issues.
+- `node scripts/check-i18n-coverage.cjs`: 8 locales, 0
+  new missing keys (the 6 fallback locales fall through to
+  en for the new IronClaw keys; the 5 known kanban.ts
+  drift items are pre-existing).
+- `node scripts/skill-counts.cjs`: clean.
+- `node scripts/check-doc-pair.cjs`: same 5 known V2.10.59
+  baseline drift items, no new drift.
+- `tests/gateway-runtime-presets.test.ts`: 9/9 pass.
+- `tests/runtime-orchestration.test.ts`: 2/2 pass.
+- `Settings.test.tsx`: 10/10 pass.
+- `Welcome.test.tsx`: 6/6 pass.
+
+**Out of scope (deliberate):**
+
+- **Docker Desktop attach panel in Welcome.tsx** is still
+  not rendered, even though the previous `lanePickerHint`
+  text referenced it. V2.10.61 rewrites the hint to drop
+  the false promise. The actual Docker handoff panel is a
+  clean **V2.10.62** candidate (the existing
+  `discoverDockerRuntimes` IPC at
+  `src/main/index.ts` already exists).
+- **Native-speaker review** of the 8-locale new strings
+  is still on the V2.10.31 list.
+- **IronClaw auth model** is currently a Bearer token
+  placeholder (the PLATFORM_RUNTIME_SURFACES entry does
+  not pin a secret scheme). A future V2.10.x can refine
+  the preset if IronClaw ships a different auth shape.
+- **Screenshot refresh pass** for the binary previews
+  (still on the V2.10.30+ list).
+
+**Why this is the right V2.10.61 step:**
+
+The V2.10.60 work closed the Models-page surface gap for
+Ollama + LM Studio. The next asymmetry the user surfaced
+was the gateway-preset layer: IronClaw was first-class in
+the runtime model (`runtime-orchestration.ts`,
+`runtime-registry.ts`, `platform-core`) but absent from
+the gateway preset (`GatewayRuntimePresetId =
+"hermes" | "openclaw"`), so the Connect-to-remote-gateway
+form only exposed two lanes. V2.10.61 widens the preset
+union, renders the third button in the remote panel,
+hides it from the SSH panel (matching the truthful
+`canAttachViaSshTunnel: false` capability), and rewrites
+the `lanePickerHint` to stop lying about a "below" Docker
+handoff that does not exist in Welcome.tsx. The diff is
+purely additive: the existing OpenClaw + Hermes contract
+is unchanged, the inference rule is a strict widening, and
+the new test file pins the IronClaw invariants so a
+future refactor cannot silently regress them.

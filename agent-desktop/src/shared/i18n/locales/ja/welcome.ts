@@ -9,7 +9,12 @@ export default {
   recheck: "インストールしました — 再チェック",
   installSizeHint: "必要なコンポーネント（約 2 GB）をインストールします",
   lanePickerHint:
-    "これらは直接ゲートウェイのレーンです。{{ironclaw}} はコンテナランタイムであり直接ゲートウェイではないため、以下の Docker Desktop ハンドオフで接続してください。",
+    // V2.10.61 — rewritten to drop the false-promise "以下"
+    // Docker handoff reference (the panel is not rendered in
+    // Welcome.tsx). The Docker Desktop attach panel is a clean
+    // V2.10.62 candidate; until then, the lane picker points
+    // users at the remote panel as the truthful IronClaw path.
+    "これらは直接ゲートウェイのレーンです。{{ironclaw}} はコンテナランタイムです。公開ポートへ接続するには、リモートパネルから選択してください。",
   copyInstallCommand: "インストールコマンドをコピー",
   dividerOr: "または",
   connectRemote: "リモートランタイムに接続",

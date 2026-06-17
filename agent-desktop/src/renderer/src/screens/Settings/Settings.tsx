@@ -202,6 +202,14 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     runtimeProviders.find(
       (provider) => provider.definition.id === "openclaw",
     ) ?? null;
+  // V2.10.61 — IronClaw is a remote-gateway-only runtime, so the
+  // provider snapshot drives the lane displayName on the remote
+  // panel. SSH is not supported (sshSupported=false on the preset),
+  // so the SSH panel hides the IronClaw button.
+  const ironclawProvider =
+    runtimeProviders.find(
+      (provider) => provider.definition.id === "ironclaw",
+    ) ?? null;
   const openclawImportAction =
     openclawProvider?.actions.find(
       (action) => action.id === "import-existing-state",
@@ -212,18 +220,33 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   const openclawInstallGuideAction =
     openclawProvider?.actions.find((action) => action.id === "open-install-guide") ??
     null;
-  const selectedGatewayRuntime =
-    gatewayRuntimePreset === "hermes"
-      ? {
-          ...GATEWAY_RUNTIME_PRESETS.hermes,
-          displayName: runtimeProviders.find((provider) => provider.definition.id === "hermes")?.definition.displayName ??
-            GATEWAY_RUNTIME_PRESETS.hermes.displayName,
-        }
-      : {
-          ...GATEWAY_RUNTIME_PRESETS.openclaw,
-          displayName: openclawProvider?.definition.displayName ??
-            GATEWAY_RUNTIME_PRESETS.openclaw.displayName,
-        };
+  // V2.10.61 — widened to handle the ironclaw preset. The
+  // selectedGatewayRuntime drives the URL placeholder, the secret
+  // label, and the connection-mode hint copy in the remote panel.
+  const selectedGatewayRuntime = (() => {
+    if (gatewayRuntimePreset === "hermes") {
+      return {
+        ...GATEWAY_RUNTIME_PRESETS.hermes,
+        displayName:
+          runtimeProviders.find((provider) => provider.definition.id === "hermes")
+            ?.definition.displayName ?? GATEWAY_RUNTIME_PRESETS.hermes.displayName,
+      };
+    }
+    if (gatewayRuntimePreset === "ironclaw") {
+      return {
+        ...GATEWAY_RUNTIME_PRESETS.ironclaw,
+        displayName:
+          ironclawProvider?.definition.displayName ??
+          GATEWAY_RUNTIME_PRESETS.ironclaw.displayName,
+      };
+    }
+    return {
+      ...GATEWAY_RUNTIME_PRESETS.openclaw,
+      displayName:
+        openclawProvider?.definition.displayName ??
+        GATEWAY_RUNTIME_PRESETS.openclaw.displayName,
+    };
+  })();
 
   function persistGatewayRuntimePreset(next: GatewayRuntimePresetId): void {
     setGatewayRuntimePreset(next);
@@ -233,11 +256,22 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   function runtimeDisplayNameFor(
     presetId: GatewayRuntimePresetId,
   ): string {
-    return presetId === "openclaw"
-      ? openclawProvider?.definition.displayName ??
-          GATEWAY_RUNTIME_PRESETS.openclaw.displayName
-      : runtimeProviders.find((provider) => provider.definition.id === "hermes")
-            ?.definition.displayName ?? GATEWAY_RUNTIME_PRESETS.hermes.displayName;
+    if (presetId === "ironclaw") {
+      return (
+        ironclawProvider?.definition.displayName ??
+        GATEWAY_RUNTIME_PRESETS.ironclaw.displayName
+      );
+    }
+    if (presetId === "openclaw") {
+      return (
+        openclawProvider?.definition.displayName ??
+        GATEWAY_RUNTIME_PRESETS.openclaw.displayName
+      );
+    }
+    return (
+      runtimeProviders.find((provider) => provider.definition.id === "hermes")
+        ?.definition.displayName ?? GATEWAY_RUNTIME_PRESETS.hermes.displayName
+    );
   }
 
   function applyGatewayRuntimePreset(next: GatewayRuntimePresetId): void {
@@ -674,10 +708,14 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       : connMode === "ssh"
         ? gatewayRuntimePreset === "openclaw"
           ? `Tunnel to a remote ${selectedGatewayRuntime.displayName} compatibility gateway over SSH with no exposed ports. OpenClaw HTTP compatibility must be enabled on the remote host.`
-          : `Tunnel to a remote ${selectedGatewayRuntime.displayName} gateway over SSH with no exposed ports. Save its API server key here if auth is enabled.`
+          : gatewayRuntimePreset === "ironclaw"
+            ? `${selectedGatewayRuntime.displayName} is gateway-only and does not support SSH attach. Use the remote panel to attach to the published container port (default 8281).`
+            : `Tunnel to a remote ${selectedGatewayRuntime.displayName} gateway over SSH with no exposed ports. Save its API server key here if auth is enabled.`
         : gatewayRuntimePreset === "openclaw"
           ? `Attach directly to a remote ${selectedGatewayRuntime.displayName} compatibility endpoint. Use the URL ending in /v1 and provide the gateway token or password if auth is enabled.`
-          : `Attach directly to a remote ${selectedGatewayRuntime.displayName} gateway over HTTP. Provide the API server key if auth is enabled.`;
+          : gatewayRuntimePreset === "ironclaw"
+            ? `Attach directly to a remote ${selectedGatewayRuntime.displayName} WASM-sandbox container gateway. Use the published container port (default 8281) and the /health operator-facing surface.`
+            : `Attach directly to a remote ${selectedGatewayRuntime.displayName} gateway over HTTP. Provide the API server key if auth is enabled.`;
 
   async function handleBackup(): Promise<void> {
     setBackingUp(true);
@@ -1046,9 +1084,13 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                 ? connMode === "ssh"
                   ? "SSH mode: enable OpenClaw HTTP compatibility on the remote host, then provide the gateway token or password here if auth is enabled."
                   : "Remote mode: point Agent Desktop at the OpenClaw compatibility URL, usually ending in /v1, and provide the gateway token or password if auth is enabled."
-                : connMode === "ssh"
-                  ? "SSH mode: add API_SERVER_KEY=<your-key> to ~/.hermes/profiles/<profile>/.env on the remote host, then restart the gateway there."
-                  : "Remote mode: add API_SERVER_KEY=<your-key> to the .env on your remote runtime host, then restart the gateway."}
+                : gatewayRuntimePreset === "ironclaw"
+                  ? connMode === "ssh"
+                    ? "IronClaw is gateway-only and does not support SSH attach. Switch to the Remote panel to attach to the published container port (default 8281)."
+                    : "Remote mode: point Agent Desktop at the published IronClaw container port (default 8281) and the /health operator-facing surface. The Bearer token is optional unless the container enforces auth."
+                  : connMode === "ssh"
+                    ? "SSH mode: add API_SERVER_KEY=<your-key> to ~/.hermes/profiles/<profile>/.env on the remote host, then restart the gateway there."
+                    : "Remote mode: add API_SERVER_KEY=<your-key> to the .env on your remote runtime host, then restart the gateway."}
             </div>
           </div>
         )}
@@ -1072,6 +1114,20 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                 >
                   {selectedGatewayRuntime.displayName === GATEWAY_RUNTIME_PRESETS.hermes.displayName
                     ? GATEWAY_RUNTIME_PRESETS.openclaw.displayName
+                    : selectedGatewayRuntime.displayName}
+                </button>
+                {/* V2.10.61 — IronClaw remote-gateway lane. IronClaw
+                    only supports remote-gateway attach (not SSH
+                    tunnel), so the button is rendered unconditionally
+                    in the remote panel and intentionally omitted from
+                    the SSH panel below. */}
+                <button
+                  className={`settings-theme-option ${gatewayRuntimePreset === "ironclaw" ? "active" : ""}`}
+                  type="button"
+                  onClick={() => applyGatewayRuntimePreset("ironclaw")}
+                >
+                  {selectedGatewayRuntime.displayName === GATEWAY_RUNTIME_PRESETS.hermes.displayName
+                    ? GATEWAY_RUNTIME_PRESETS.ironclaw.displayName
                     : selectedGatewayRuntime.displayName}
                 </button>
               </div>
@@ -1154,6 +1210,14 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                     ? GATEWAY_RUNTIME_PRESETS.openclaw.displayName
                     : selectedGatewayRuntime.displayName}
                 </button>
+                {/* V2.10.61 — IronClaw is gateway-only and does not
+                    support SSH attach. The lane is intentionally
+                    omitted from the SSH panel. If a stored config
+                    is migrated forward with ironclaw selected, the
+                    applyGatewayRuntimePreset path is blocked by
+                    inferGatewayRuntimePreset's /health port rule
+                    AND by the runtime-orchestration layer's
+                    canAttachViaSshTunnel=false guard. */}
               </div>
             </div>
             <div className="settings-field">

@@ -10,8 +10,6 @@ export default {
   recheck: "我已安装完成，重新检查",
   switchToLocal: "切换到本地模式",
   installSizeHint: "这将安装所需组件（约 2 GB）",
-  lanePickerHint:
-    "这些是直接网关通道。{{ironclaw}} 是容器运行时而非直接网关，请使用下方的 Docker Desktop 切换来挂接。",
   copyInstallCommand: "复制安装命令",
   dividerOr: "或",
   // V2.10.44 — install-lane shell labels. These are OS/shell
@@ -29,6 +27,17 @@ export default {
     "当 Agent Desktop 需要挂接到正在运行的 {{runtime}} 网关而非本地安装时，使用已有的运行时 URL。",
   connectRemoteSubtitleOpenclaw:
     "挂接到正在运行的 {{runtime}} 兼容端点，而非本地安装。Agent Desktop 需要启用 OpenClaw 的 HTTP 兼容层。",
+  // V2.10.61 — IronClaw 第三个远程通道。IronClaw 以 WASM 沙箱
+  // 容器运行时形式分发，所以通道文案点名 /health 操作面，并
+  // 指向容器默认端口。SSH 挂接不主动引导。
+  connectRemoteSubtitleIronclaw:
+    "挂接到正在运行的 {{runtime}} WASM 沙箱容器网关，而非本地安装。请使用已发布的容器端口（默认 8281）和 /health 操作面。",
+  // V2.10.61 — 改写以去掉“下方” Docker 切换的虚假承诺（该面
+  // 板实际上没有在 Welcome.tsx 中渲染）。Docker Desktop 挂接面
+  // 板是干净的 V2.10.62 候选；在此之前，通道选择器告诉用户真
+  // 相（IronClaw 可以从远程面板挂接；Docker 挂接在路线图上）。
+  lanePickerHint:
+    "这些是直接网关通道。{{ironclaw}} 是容器运行时——在远程面板中选择它以挂接到已发布的端口。",
   connectSshPanelTitle: "通过 SSH 隧道接入远程网关",
   connectSshSubtitleHermes:
     "当 {{runtime}} 网关需要保持私有、仅通过 Agent Desktop 的隧道可达时，使用 SSH。",
@@ -49,6 +58,12 @@ export default {
   sshRuntimeOpenclawNote:
     "{{runtime}} 通常监听 {{port}} 端口，并需要启用 HTTP 兼容层后 Agent Desktop 才能挂接。",
   sshRuntimeHermesNote: "{{runtime}} SSH 接入通常监听 {{port}} 端口。",
+  // V2.10.61 — IronClaw 的 SSH 通道说明。IronClaw 仅支持网
+  // 关挂接（不支持 SSH 挂接），所以该字符串在 V2.10.61 中
+  // 实际不会展示（通过 sshSupported=false 在 SSH 面板隐藏
+  // 通道按钮），但仍提供键以避免 i18n 审计误报。
+  sshRuntimeIronclawNote:
+    "{{runtime}} 仅支持网关挂接，不支持 SSH 挂接。请使用远程面板与已发布的容器端口（默认 {{port}}）。",
   sshSecretOpenclawNote: "（启用 OpenClaw 鉴权时必填）",
   sshSecretHermesNote: "（除非远程 Hermes 网关强制鉴权，否则可选）",
   testingSshConnection: "正在测试 SSH 连接…",
