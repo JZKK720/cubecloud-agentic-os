@@ -2270,3 +2270,130 @@ CLI invocation. The in-repo smoke pins the security-floor
 invariant that the probe never picks up auth from env; the
 operator runbook documents the live verification path
 without ever holding the token in the committed tree.
+
+
+---
+
+## V2.10.63 - Hermes Agent attach smoke (credential-free)
+
+**Scope:** 3 new files (1 test + 1 doc + 1 operator script).
+**No source code changed.**
+
+**What changed (V2.10.63):**
+
+1. **`agent-desktop/tests/hermes-agent-attach.smoke.test.ts`** (new,
+   11 cases). Credential-free unit smoke that proves:
+   - The V2.10.61 `diagnoseRemoteConnection` function is
+     importable from `src/main/hermes.ts`.
+   - It resolves `runtime: "hermes"` on a 200 `/health`
+     response, with `ok: true`, `code: "ok"`,
+     `transport: "remote"`, `statusCode: 200`.
+   - It returns `code: "auth"` on a 401 `/health` response,
+     with `runtime: "hermes"` still set (auth failure is
+     recoverable, not "wrong server").
+   - It falls back to `runtime: "openclaw"` on a 404
+     `/health` + 200 `/v1/models` with the openclaw model
+     shape.
+   - It returns `code: "wrong-port"` on a 404 `/health` + 200
+     `/v1/models` with a non-openclaw body.
+   - It returns `code: "openclaw-compat-disabled"` when
+     `expectedRuntime === "openclaw"` and the host exposes a
+     wrong-port shape on `/v1/models` (the operator picked the
+     OpenClaw lane, but the host did not serve it).
+   - It returns `code: "unreachable"` on a refused
+     connection.
+   - The probe module **does not** read `HERMES_TEST_TOKEN`
+     from the env and does not forward it as a header or
+     query string. The credential is owned by the apply
+     layer (`Settings.tsx`) at the form-input boundary.
+   - When the caller passes an apiKey (the apply layer does,
+     on every Test-Connection click), the probe forwards it
+     as `Authorization: Bearer <key>`.
+
+2. **`docs/hermes-agent-attach.smoke.md`** (new). Operator
+   runbook that walks the operator through:
+   - The security floor (read first).
+   - Step 0: verify Hermes is running on the local loopback
+     port (8642) with a plain curl.
+   - Step 1: read the local `API_SERVER_KEY` from
+     `~/.hermes/profiles/<profile>/.env` into a shell
+     variable (without ever echoing the value in this doc).
+   - Step 2: point the probe at the live Hermes.
+   - Step 3: run the operator-side script and read
+     PASS/FAIL with hints.
+   - Step 4: attach from the Agent Desktop remote panel.
+   - Step 5: clean up the shell env.
+   - A side-by-side comparison table with the V2.10.62
+     IronClaw runbook so an operator can read one and
+     immediately know how to run the other.
+
+3. **`scripts/hermes-agent-attach.smoke.cjs`** (new).
+   Operator-side Node CLI that probes the live Hermes, reads
+   the API server key from
+   `process.env.HERMES_TEST_TOKEN` (or `HERMES_TEST_URL` for
+   the host/port/path override), and prints PASS/FAIL with
+   operator-actionable hints. The key is never logged.
+   The only key-shaped output is a 4-char prefix + ellipsis
+   + 4-char suffix (e.g. `desk…8c`).
+
+**Verification:**
+
+- `npm run typecheck` (node + web): 0 errors.
+- `tests/hermes-agent-attach.smoke.test.ts`: 11/11 pass with
+  no env var, 11/11 pass with `HERMES_TEST_TOKEN` set to a
+  sentinel. The "hides the bearer token" case asserts the
+  probe never picks up the sentinel.
+- `tests/ironclaw-attach.smoke.test.ts`: 5/5 pass (V2.10.62
+  contract still holds).
+- `tests/gateway-runtime-presets.test.ts`: 9/9 pass.
+- `tests/runtime-orchestration.test.ts`: 2/2 pass.
+- `node scripts/check-mojibake.cjs`: 813 files, 0 issues
+  (was 810; +3 for the 3 new files).
+- `node scripts/check-i18n-coverage.cjs`: 8 locales, 0 new
+  missing keys (no locale files touched).
+- `node scripts/skill-counts.cjs`: clean.
+- `node scripts/check-doc-pair.cjs`: same 5 known baseline
+  drift items, no new drift.
+- Final credential scan: no real credentials on disk in
+  any tracked file. No test sentinel on disk in any
+  tracked file. The two real IronClaw credentials posted
+  in earlier chat remain only in the chat transcript
+  (which the agent cannot un-ring; the runbook's Step 0
+  flags rotation).
+
+**Out of scope (deliberate):**
+
+- **The Docker Desktop attach panel** is still not rendered
+  in Welcome.tsx (clean V2.10.64+ candidate; see V2.10.61
+  BRANDING entry).
+- **Replacing the existing `diagnoseRemoteConnection`**
+  surface. The smoke pins the V2.10.61 contract; any future
+  refactor that changes the diagnostic code set must update
+  the runbook + test + script in lockstep.
+- **Saving the API server key in any file, including
+  `.env`.** The runbook is explicit that the key lives only
+  in the shell's `process.env.HERMES_TEST_TOKEN` for the
+  duration of one CLI invocation.
+- **Verifying the live attach against a real Hermes
+  install on this dev box.** The dev box has `~/.hermes`
+  runtime-home data (sessions, profiles, memories,
+  SOUL.md) but no Hermes binary on PATH; same constraint
+  as the V2.10.62 IronClaw smoke. The operator-side
+  runbook is the verification path; an operator with a
+  Hermes install can run it on their host.
+
+**Why this is the right V2.10.63 step:**
+
+The V2.10.61 connect-to-remote-gateway form has three
+lanes (Hermes / OpenClaw / IronClaw). V2.10.62 covered
+the IronClaw lane with a credential-free unit smoke +
+operator runbook. V2.10.63 applies the same pattern to
+the Hermes lane — the most important lane, because Hermes
+is the default Agent Desktop runtime. The Hermes probe
+(`diagnoseRemoteConnection`) is also a more complex
+surface than the IronClaw probe (`probeLocalModelHealth`):
+it has 6 diagnostic codes, 3 runtime resolutions, and a
+security-floor invariant around the local connection-
+config fallback path. The 11-case smoke pins each of
+those without ever touching a real Hermes install or a
+real API server key.
