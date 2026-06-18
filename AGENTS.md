@@ -35,6 +35,36 @@ Headroom), and any user-managed third-party applications are
 tool is running at any moment. Honor that contract; do not hard-code
 surface assumptions into Cubecloud-original code paths.
 
+**Tiers of the agent surface (do not conflate):**
+
+1. **Core runtime agents** — `RuntimeProviderId` in
+   `agent-desktop/src/shared/runtime-orchestration.ts`. HTTP gateways
+   the desktop attaches to for chat. Hermes (default, port 8642),
+   IronClaw (WASM-sandbox gateway-handoff, port 8281), OpenClaw
+   (optional, port 18789). The desktop attaches over HTTP; it does
+   not shell out to an interactive TUI for the chat path.
+2. **Integrated support surfaces** — CodeGraph, EverOS, Headroom.
+   Operator-installed, desktop-spawned sidecars.
+3. **User-managed third-party apps** — anything the operator installs
+   that is not a coding-agent CLI. Includes local model servers
+   (Ollama, LM Studio, vLLM, llama.cpp) and chat/retrieval tools
+   (Open WebUI, OpenCode, Warp ADE). The desktop *discovers* these
+   via local scan or manual attach; it does not treat them as chat
+   gateways.
+4. **Coding-agent CLIs** — a 24-entry `AGENT_CLI_CATALOG` in
+   `agent-desktop/src/shared/agent-clis.ts` (Claude Code, Codex CLI,
+   GitHub Copilot CLI, Gemini CLI, OpenCode, Aider, Kimi CLI, Qwen
+   Code, etc.). The desktop *discovers* these on PATH via
+   `discoverAgentClis()` for potential in-renderer code-task lanes;
+   they are not treated as chat gateways. Adding a new entry here
+   does not change the runtime layer.
+
+`copilot-cli` is one entry in tier 4, not a fourth runtime lane. It is
+detected by `discoverAgentClis()` alongside its 23 siblings and is
+not special. If the desktop later drives coding-agent CLIs for
+in-renderer code tasks, that feature serves the whole catalog, not
+`copilot-cli` alone.
+
 ## 1. Think Before Coding
 
 - State assumptions explicitly. If two interpretations of the

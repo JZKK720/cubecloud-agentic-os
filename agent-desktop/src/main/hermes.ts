@@ -257,6 +257,49 @@ export async function diagnoseRemoteConnection(
 
   const baseUrl = normaliseRemoteUrl(url);
   const headers = resolveProbeHeaders(url, apiKey);
+
+  // V2.10.65 — IronClaw detection. IronClaw's HTTP gateway exposes
+  // /api/health (not /health) and returns a distinctive shape:
+  // {"status":"healthy","channel":"gateway"}. Probe this BEFORE the
+  // Hermes /health check because both IronClaw and Hermes return 200
+  // on their respective health endpoints — without this branch,
+  // IronClaw gets misclassified as Hermes.
+  //
+  // Only run this probe when the caller explicitly expects IronClaw
+  // (expectedRuntime === "ironclaw") or when no runtime is cached
+  // (useCache, the auto-detect path). This avoids an extra round-trip
+  // for callers that already know they're probing Hermes or OpenClaw.
+  if (expectedRuntime === "ironclaw" || useCache) {
+    const ironClawResponse = await requestText(
+      `${baseUrl}/api/health`,
+      headers,
+    );
+    if (
+      ironClawResponse?.statusCode === 200 &&
+      ironClawResponse.body.includes('"channel":"gateway"')
+    ) {
+      if (useCache) {
+        cacheGatewayRuntime(url, "ironclaw");
+      }
+      return {
+        ok: true,
+        code: "ok",
+        transport: "remote",
+        runtime: "ironclaw",
+        statusCode: ironClawResponse.statusCode,
+      };
+    }
+    if (ironClawResponse && isAuthStatusCode(ironClawResponse.statusCode)) {
+      return {
+        ok: false,
+        code: "auth",
+        transport: "remote",
+        runtime: "ironclaw",
+        statusCode: ironClawResponse.statusCode,
+      };
+    }
+  }
+
   const hermesResponse = await requestText(`${baseUrl}/health`, headers);
 
   if (hermesResponse?.statusCode === 200) {

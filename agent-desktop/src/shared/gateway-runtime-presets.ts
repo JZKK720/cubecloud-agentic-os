@@ -73,24 +73,26 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
       "Use this when OpenClaw gateway auth is enabled. HTTP compatibility must also be enabled on the remote gateway.",
     sshSupported: true,
   },
-  // V2.10.61 — IronClaw ships as a WASM-sandbox container
-  // runtime (no SSH tunnel). The lane lives on the remote-gateway
-  // panel only. Auth is via a Bearer token (the operator decides
-  // whether the published container port requires it; the
-  // PLATFORM_RUNTIME_SURFACES entry for ironclaw does not pin a
-  // secret scheme). The /health suffix on the example URL mirrors
-  // the PLATFORM_RUNTIME_PROVIDERS.ironclaw.remoteExampleUrl.
+  // V2.10.65 — IronClaw ships as a WASM-sandbox container runtime
+  // (no SSH tunnel). The lane lives on the remote-gateway panel
+  // only. Auth is via a Bearer token (GATEWAY_AUTH_TOKEN in the
+  // container env). The gateway port (container 3000 → host 3231)
+  // exposes the OpenAI-compatible /v1/chat/completions and
+  // /v1/models surface plus /api/health. The example URL uses
+  // /api/health because it returns the IronClaw-specific shape
+  // {"status":"healthy","channel":"gateway"} that distinguishes
+  // it from Hermes's /health response.
   ironclaw: {
     id: "ironclaw",
     displayName: "IronClaw",
-    remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:${IRONCLAW_DEFAULT_PORT}/health`,
+    remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:${IRONCLAW_DEFAULT_PORT}/api/health`,
     remoteSecretLabel: "Bearer token (optional)",
     remoteSecretPlaceholder:
-      "Paste the IronClaw container token if the gateway enforces auth",
+      "Paste the IronClaw GATEWAY_AUTH_TOKEN if the gateway enforces auth",
     remoteSecretHint:
-      "Leave this empty if the published IronClaw container port accepts unauthenticated health checks.",
+      "Leave this empty if the published IronClaw gateway port accepts unauthenticated requests.",
     remoteHint:
-      "Use the published IronClaw container port (default 8281). The /health path is the operator-facing surface; WASM-sandbox tool execution is enabled on the container side, not in Agent Desktop.",
+      "Use the published IronClaw gateway port (default 3231, container port 3000). The /api/health path returns the IronClaw-specific health shape; /v1/chat/completions and /v1/models are the OpenAI-compatible chat surface.",
     sshRemotePort: IRONCLAW_DEFAULT_PORT,
     sshSecretLabel: "Bearer token (optional)",
     sshSecretHint:
@@ -147,11 +149,13 @@ export function inferGatewayRuntimePreset(args: {
     if (Number(parsed.port) === IRONCLAW_DEFAULT_PORT) {
       return "ironclaw";
     }
-    if (/\/health(?:\/|$)/i.test(parsed.pathname)) {
-      // /health is the documented IronClaw operator surface; an
-      // explicit port match above already handles the common case,
-      // this catches operator-pinned IronClaw containers on a
-      // non-default port that still expose /health.
+    if (/\/api\/health(?:\/|$)/i.test(parsed.pathname)) {
+      // /api/health is the IronClaw gateway health surface; it
+      // returns {"status":"healthy","channel":"gateway"} which
+      // distinguishes it from Hermes's /health. An explicit port
+      // match above already handles the common case; this catches
+      // operator-pinned IronClaw containers on a non-default
+      // port that still expose /api/health.
       return "ironclaw";
     }
     if (Number(parsed.port) === OPENCLAW_LOCAL_GATEWAY_PORT) {
@@ -175,7 +179,7 @@ function normalisePresetPath(
     return !pathname || pathname === "/" ? "/v1" : pathname;
   }
   if (presetId === "ironclaw") {
-    return !pathname || pathname === "/" ? "/health" : pathname;
+    return !pathname || pathname === "/" ? "/api/health" : pathname;
   }
 
   return pathname === "/v1" || pathname === "/v1/" ? "/" : pathname || "/";

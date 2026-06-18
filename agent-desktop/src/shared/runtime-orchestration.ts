@@ -187,6 +187,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
     notes: [
       "Treat as an attached gateway runtime, not a native Agent Desktop dashboard or scheduler.",
       "Keep Docker discovery scoped to truthful handoff of an already-running IronClaw gateway container.",
+      "V2.10.65 — IronClaw's OpenAI-compatible gateway is on container port 3000 (host 3231). Port 8281 (container 8080) is the internal HTTP channel bus; port 50051 is gRPC. The desktop attaches to the gateway port for chat and WASM-sandboxed tool execution.",
     ],
   },
   {
