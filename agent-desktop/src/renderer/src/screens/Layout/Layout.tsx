@@ -21,6 +21,7 @@ import Plans from "../Plans/Plans";
 import CodeGraph from "../CodeGraph/CodeGraph";
 import EverOS from "../EverOS/EverOS";
 import Headroom from "../Headroom/Headroom";
+import SandboxTasks from "../SandboxTasks/SandboxTasks";
 import Mcp from "../Mcp/Mcp";
 import RuntimeNotice from "../../components/RuntimeNotice";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
@@ -67,6 +68,7 @@ type View =
   | "headroom"
   | "gateway"
   | "mcp"
+  | "sandboxtasks"
   | "settings";
 
 const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string; group: "work" | "configure" | "platform" }[] = [
@@ -78,6 +80,7 @@ const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string; group: "work"
   { view: "codegraph", icon: Network, labelKey: "navigation.codegraph", group: "work" },
   { view: "everos", icon: Database, labelKey: "navigation.everos", group: "work" },
   { view: "headroom", icon: Sparkles, labelKey: "navigation.headroom", group: "work" },
+  { view: "sandboxtasks", icon: Network, labelKey: "navigation.sandboxtasks", group: "work" },
   { view: "models", icon: Layers, labelKey: "navigation.models", group: "configure" },
   { view: "providers", icon: KeyRound, labelKey: "navigation.providers", group: "configure" },
   { view: "skills", icon: Puzzle, labelKey: "navigation.skills", group: "configure" },
@@ -592,6 +595,12 @@ function Layout({
         {visitedViews.has("headroom") && (
           <div style={paneStyle("headroom")}>
             <Headroom visible={view === "headroom"} />
+          </div>
+        )}
+
+        {visitedViews.has("sandboxtasks") && (
+          <div style={paneStyle("sandboxtasks")}>
+            <SandboxTasks visible={view === "sandboxtasks"} />
           </div>
         )}
 

@@ -782,6 +782,51 @@ interface HermesAPI {
   /** V2.10.60: per-card health probe for the saved-Model card's
    *  green/red status dot. The renderer debounces these per card. */
   probeLocalModelHealth: (baseUrl: string) => Promise<LocalModelHealth>;
+  /** V2.10.65: IronClaw Sandbox Tasks — probe the IronClaw gateway
+   *  /api/health endpoint for reachability and detection. */
+  ironclawProbe: (
+    url: string,
+    token?: string,
+  ) => Promise<{
+    url: string;
+    healthy: boolean;
+    channel: string;
+    status: string;
+    latencyMs: number;
+    error: string | null;
+  }>;
+  /** V2.10.65: IronClaw Sandbox Tasks — list models from the
+   *  IronClaw gateway's /v1/models endpoint. */
+  ironclawModels: (
+    url: string,
+    token?: string,
+  ) => Promise<
+    Array<{ id: string; ownedBy: string; created: number }>
+  >;
+  /** V2.10.65: IronClaw Sandbox Tasks — dispatch a task to the
+   *  IronClaw gateway via POST /v1/chat/completions. The WASM
+   *  sandbox runs inside the chat path transparently. */
+  ironclawDispatch: (
+    url: string,
+    token: string | undefined,
+    task: {
+      model: string;
+      message: string;
+      contextFolder?: string;
+    },
+  ) => Promise<{
+    ok: boolean;
+    reply: string;
+    model: string;
+    toolCalls: Array<{ name: string; args: string; result: string }>;
+    usage: {
+      promptTokens: number;
+      completionTokens: number;
+      totalTokens: number;
+    };
+    latencyMs: number;
+    error?: string;
+  }>;
   onChatChunk: (callback: (chunk: string) => void) => () => void;
   onChatReasoningChunk: (callback: (chunk: string) => void) => () => void;
   onChatDone: (callback: (sessionId?: string) => void) => () => void;

@@ -17,6 +17,11 @@ import type { Attachment } from "../shared/attachments";
 import { stageAttachment, clearStagedAttachments } from "./attachment-staging";
 import { discoverProviderModels } from "./model-discovery";
 import { scanLocalServers, probeLocalModelHealth } from "./local-server-scan";
+import {
+  probeIronClawGateway,
+  listIronClawModels,
+  dispatchSandboxTask,
+} from "./ironclaw-sandbox";
 import { readMediaAsDataUrl, saveMedia, mediaFileExists } from "./media";
 import {
   checkInstallStatus,
@@ -1261,6 +1266,27 @@ function setupIPC(): void {
   // lmstudio / custom on a private/loopback host).
   ipcMain.handle("probe-local-model-health", (_event, baseUrl: string) =>
     probeLocalModelHealth(baseUrl),
+  );
+
+  // V2.10.65 — IronClaw Sandbox Tasks IPC handlers. The renderer
+  // SandboxTasks screen calls these to probe the IronClaw gateway,
+  // list available models, and dispatch sandbox tasks. The bearer
+  // token is passed from the renderer's connection form and is
+  // never persisted or logged.
+  ipcMain.handle(
+    "ironclaw:probe",
+    (_event, url: string, token?: string) =>
+      probeIronClawGateway(url, token),
+  );
+  ipcMain.handle(
+    "ironclaw:models",
+    (_event, url: string, token?: string) =>
+      listIronClawModels(url, token),
+  );
+  ipcMain.handle(
+    "ironclaw:dispatch",
+    (_event, url: string, token: string | undefined, task: import("./ironclaw-sandbox").SandboxTaskRequest) =>
+      dispatchSandboxTask(url, token, task),
   );
 
   // Gateway

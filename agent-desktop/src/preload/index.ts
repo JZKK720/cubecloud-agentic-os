@@ -588,6 +588,51 @@ const hermesAPI = {
     error: string | null;
   }> => ipcRenderer.invoke("probe-local-model-health", baseUrl),
 
+  // V2.10.65: IronClaw Sandbox Tasks. The renderer SandboxTasks
+  // screen calls these to probe the IronClaw gateway, list models,
+  // and dispatch sandbox tasks. The bearer token is passed from
+  // the renderer's connection form and is never persisted.
+  ironclawProbe: (
+    url: string,
+    token?: string,
+  ): Promise<{
+    url: string;
+    healthy: boolean;
+    channel: string;
+    status: string;
+    latencyMs: number;
+    error: string | null;
+  }> => ipcRenderer.invoke("ironclaw:probe", url, token),
+
+  ironclawModels: (
+    url: string,
+    token?: string,
+  ): Promise<
+    Array<{ id: string; ownedBy: string; created: number }>
+  > => ipcRenderer.invoke("ironclaw:models", url, token),
+
+  ironclawDispatch: (
+    url: string,
+    token: string | undefined,
+    task: {
+      model: string;
+      message: string;
+      contextFolder?: string;
+    },
+  ): Promise<{
+    ok: boolean;
+    reply: string;
+    model: string;
+    toolCalls: Array<{ name: string; args: string; result: string }>;
+    usage: {
+      promptTokens: number;
+      completionTokens: number;
+      totalTokens: number;
+    };
+    latencyMs: number;
+    error?: string;
+  }> => ipcRenderer.invoke("ironclaw:dispatch", url, token, task),
+
   onChatChunk: (callback: (chunk: string) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, chunk: string): void =>
       callback(chunk);

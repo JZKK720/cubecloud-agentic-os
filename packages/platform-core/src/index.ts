@@ -16,6 +16,7 @@ export type PlatformView =
   | "workspace"
   | "gateway"
   | "operations"
+  | "sandboxtasks"
   | "settings";
 
 // ── Agent-feature shared types ──────────────────────────────────────────────
