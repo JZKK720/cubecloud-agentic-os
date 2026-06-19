@@ -65,6 +65,76 @@ to `diagnoseRemoteConnection(url, expectedRuntime, apiKey)` in
 | **Operator runbook** | [`docs/ironclaw-attach.smoke.md`](../ironclaw-attach.smoke.md) (V2.10.62) |
 | **What the desktop does** | Attaches to the gateway port. Does **not** install, spawn, or upgrade IronClaw. |
 
+#### 1.3.1 IronClaw native API surface (V2.10.67 — documented, not yet implemented)
+
+IronClaw's gateway on port 3231 exposes **two API surfaces**:
+
+**OpenAI-compatible** (currently used by the Sandbox Tasks screen):
+
+| Endpoint | Method | Status | Description |
+|---|---|---|---|
+| `/v1/chat/completions` | POST | 200 | Non-streaming chat completions (OpenAI format) |
+| `/v1/models` | GET | 200 | Model list (`{"data":[{"id":"...","owned_by":"ironclaw"}]}`) |
+
+**Native SSE + Jobs** (discovered V2.10.67, planned for V2.10.6x upgrade):
+
+| Endpoint | Method | Status | Description |
+|---|---|---|---|
+| `/api/health` | GET | 200 | `{"status":"healthy","channel":"gateway"}` |
+| `/api/chat/events?token=<token>` | GET (SSE) | 200 `text/event-stream` | Live streaming chat updates via Server-Sent Events |
+| `/api/jobs` | GET | 200 | Job queue — returns `{"jobs":[{"id","title","state","created_at","started_at"}]}` |
+| `/api/status` | GET | 404 on this build | Documented but not available in current container version |
+| `/api/memory` | GET | 404 on this build | Documented but not available in current container version |
+| `/api/chat` | POST | 404 on this build | Documented but not available in current container version |
+
+**SSE event types** (named events on the `/api/chat/events` stream):
+
+| Event | Description |
+|---|---|
+| `stream_chunk` | Text chunk (like our `chat-chunk` IPC) |
+| `response` | Complete response |
+| `thinking` | Reasoning / thinking tokens |
+| `tool_started` | WASM sandbox tool execution started |
+| `tool_result` | Tool execution result |
+| `tool_completed` | Tool execution completed |
+| `approval_needed` | Human-in-the-loop approval required |
+| `gate_required` | Security gate triggered |
+| `gate_resolved` | Security gate resolved |
+| `status` | Status update |
+| `plan_update` | Plan / task plan update |
+| `suggestions` | Follow-up suggestions |
+| `error` | Error event |
+
+**Jobs API** (`/api/jobs`):
+
+Returns a job queue with real entries:
+```json
+{
+  "jobs": [
+    {
+      "id": "d9477a8d-...",
+      "title": "sandbox-worker-smoke-...",
+      "state": "completed",
+      "user_id": "default",
+      "created_at": "2026-06-09T15:48:08.760876+00:00",
+      "started_at": "2026-06-09T15:48:09.044724+00:00"
+    }
+  ]
+}
+```
+
+Job states observed: `completed`. Expected: `pending`, `active`, `completed`, `failed`.
+
+**Auth:** All native API endpoints require `GATEWAY_AUTH_TOKEN` either as
+`Authorization: Bearer <token>` header or `?token=<token>` query parameter.
+
+**Upgrade plan (V2.10.6x):** Switch the Sandbox Tasks screen from the
+OpenAI-compatible non-streaming API to the native SSE + Jobs API for:
+- Real-time streaming responses (`stream_chunk` events)
+- WASM sandbox tool execution visibility (`tool_started` → `tool_result` → `tool_completed`)
+- Job queue tracking (submit, list, monitor state transitions)
+- Human-in-the-loop approval flow (`approval_needed` events)
+
 ### 1.4 All three lanes side-by-side
 
 | Lane | Default port | Local install | Remote attach | SSH lane | Lane added |

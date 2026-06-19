@@ -3,6 +3,7 @@
   "private": true,
   "productName": "Agent Desktop",
   "version": "0.1.0",
+  "main": "out/main/index.js",
   "description": "Agent Desktop — desktop shell for Cubecloud Agentic-OS",
   "author": "Cubecloud Contributors",
   "license": "(AGPL-3.0-or-later OR Apache-2.0 OR MIT) WITH framework-MIT-exception",
