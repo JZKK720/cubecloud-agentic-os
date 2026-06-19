@@ -293,7 +293,7 @@ render in the GUI.
 | **CodeGraph** (optional) | Operator | `pip install codegraph` + `codegraph init` | Loopback | Spawns CLI or imports SDK |
 | **EverOS** (optional) | Operator | `pip install everos` | Loopback | Spawns sidecar |
 | **Headroom** (optional) | Operator | `pip install headroom` | Loopback | Spawns proxy + hosts MCP |
-| **35 skills** | **The agent runtime** (Copilot Chat etc.) | `node .agents/skills/install.cjs` (or global mirror) | n/a | Loaded by the runtime, not the renderer |
+| **{{SKILLS_TOTAL}} skills** | **The agent runtime** (Copilot Chat etc.) | `node .agents/skills/install.cjs` (or global mirror) | n/a | Loaded by the runtime, not the renderer |
 
 ---
 
