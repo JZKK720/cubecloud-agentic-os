@@ -446,6 +446,45 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
           )}
         </div>
       )}
+
+      {/* V2.10.66 — Knowledge Graph Tools section.
+          Graphify and Understand-Anything are complementary
+          tools that extend the code intelligence surface beyond
+          what CodeGraph alone provides. Graphify handles
+          multimodal input (docs, papers, images, video);
+          Understand-Anything provides an interactive dashboard
+          with business domain mapping and guided tours. */}
+      <div className="codegraph-extra-tools">
+        <h3 className="codegraph-extra-tools-title">
+          {t("codegraph.extraToolsTitle", "Knowledge Graph Tools")}
+        </h3>
+        <div className="codegraph-extra-tools-grid">
+          <div className="codegraph-extra-tool-card">
+            <div className="codegraph-extra-tool-name">Graphify</div>
+            <div className="codegraph-extra-tool-desc">
+              {t(
+                "codegraph.graphifyDesc",
+                "Multimodal knowledge graph — code, docs, papers, images, video. Exposes an MCP server for agent queries. Install: pip install graphifyy && graphify install",
+              )}
+            </div>
+            <div className="codegraph-extra-tool-mcp">
+              {t("codegraph.mcpHint", "Register via the MCP screen after install")}
+            </div>
+          </div>
+          <div className="codegraph-extra-tool-card">
+            <div className="codegraph-extra-tool-name">Understand-Anything</div>
+            <div className="codegraph-extra-tool-desc">
+              {t(
+                "codegraph.understandDesc",
+                "Interactive knowledge graph dashboard with business domain mapping, guided tours, and onboarding guides. Multi-agent LLM pipeline. Install: curl -fsSL https://raw.githubusercontent.com/Egonex-AI/Understand-Anything/main/install.sh | bash",
+              )}
+            </div>
+            <div className="codegraph-extra-tool-future">
+              {t("codegraph.futureFeature", "Future feature — deep analysis button coming in V2.10.7x")}
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

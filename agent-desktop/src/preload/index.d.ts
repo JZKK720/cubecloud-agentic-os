@@ -827,6 +827,21 @@ interface HermesAPI {
     latencyMs: number;
     error?: string;
   }>;
+  /** V2.10.66: Agent-Reach internet capability status probe.
+   *  Runs `agent-reach doctor` to check which channels are
+   *  configured. Never reads credentials. */
+  agentReachProbe: () => Promise<{
+    installed: boolean;
+    version: string | null;
+    detectedCommand: string | null;
+    channels: Array<{
+      name: string;
+      status: "ok" | "error" | "not-configured";
+      backend: string | null;
+      detail: string | null;
+    }>;
+    error: string | null;
+  }>;
   onChatChunk: (callback: (chunk: string) => void) => () => void;
   onChatReasoningChunk: (callback: (chunk: string) => void) => () => void;
   onChatDone: (callback: (sessionId?: string) => void) => () => void;

@@ -22,6 +22,7 @@ import {
   listIronClawModels,
   dispatchSandboxTask,
 } from "./ironclaw-sandbox";
+import { probeAgentReach } from "./agent-reach";
 import { readMediaAsDataUrl, saveMedia, mediaFileExists } from "./media";
 import {
   checkInstallStatus,
@@ -1288,6 +1289,12 @@ function setupIPC(): void {
     (_event, url: string, token: string | undefined, task: import("./ironclaw-sandbox").SandboxTaskRequest) =>
       dispatchSandboxTask(url, token, task),
   );
+
+  // V2.10.66 — Agent-Reach internet capability status probe.
+  // Runs `agent-reach doctor` to check which internet channels
+  // are configured. Never reads credentials — doctor only
+  // reports channel status.
+  ipcMain.handle("agent-reach:probe", () => probeAgentReach());
 
   // Gateway
   ipcMain.handle("start-gateway", async () => {

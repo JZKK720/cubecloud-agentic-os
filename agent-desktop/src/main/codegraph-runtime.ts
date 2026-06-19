@@ -15,7 +15,7 @@
  * Background:
  *   The existing `src/main/codegraph.ts` shells out to the `codegraph`
  *   CLI for every operation (init, status, context, UA-graph export).
- *   The npm package `@colbymchenry/codegraph` (0.9.x) ALSO ships a
+ *   The npm package `@colbymchenry/codegraph` (1.0.x) ALSO ships a
  *   programmatic SDK that exposes the same operations as a TypeScript
  *   class — `CodeGraph.init/open/indexAll/searchNodes/getCallers/
  *   getCallees/getImpactRadius/buildContext/watch/…` — without spawning

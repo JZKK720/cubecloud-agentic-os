@@ -1,11 +1,27 @@
 import { useState, useEffect, useCallback } from "react";
 import { useI18n } from "../../components/useI18n";
+import { Refresh, CheckCircle, XCircle, Alert as AlertIcon } from "../../assets/icons";
 
 interface ToolsetInfo {
   key: string;
   label: string;
   description: string;
   enabled: boolean;
+}
+
+interface AgentReachChannel {
+  name: string;
+  status: "ok" | "error" | "not-configured";
+  backend: string | null;
+  detail: string | null;
+}
+
+interface AgentReachStatus {
+  installed: boolean;
+  version: string | null;
+  detectedCommand: string | null;
+  channels: AgentReachChannel[];
+  error: string | null;
 }
 
 interface ToolsProps {
@@ -253,6 +269,8 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
   const { t } = useI18n();
   const [toolsets, setToolsets] = useState<ToolsetInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [agentReach, setAgentReach] = useState<AgentReachStatus | null>(null);
+  const [agentReachLoading, setAgentReachLoading] = useState(false);
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -261,9 +279,22 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     setLoading(false);
   }, [profile]);
 
+  const loadAgentReach = useCallback(async (): Promise<void> => {
+    setAgentReachLoading(true);
+    try {
+      const status = await window.hermesAPI.agentReachProbe();
+      setAgentReach(status);
+    } catch {
+      setAgentReach(null);
+    } finally {
+      setAgentReachLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadToolsets();
-  }, [loadToolsets]);
+    loadAgentReach();
+  }, [loadToolsets, loadAgentReach]);
 
   async function handleToggle(
     key: string,
@@ -317,6 +348,74 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
             <div className="tools-card-description">{t.description}</div>
           </div>
         ))}
+      </div>
+
+      {/* V2.10.66 — Agent-Reach internet capability status */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            {t("tools.agentReachTitle", "Internet Capabilities (Agent-Reach)")}
+          </h3>
+          <button
+            className="btn btn-secondary tools-agent-reach-refresh"
+            onClick={loadAgentReach}
+            disabled={agentReachLoading}
+          >
+            <Refresh size={14} />
+            {agentReachLoading
+              ? t("tools.agentReachScanning", "Scanning...")
+              : t("tools.agentReachRefresh", "Refresh")}
+          </button>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          {t(
+            "tools.agentReachSubtitle",
+            "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: pip install agent-reach",
+          )}
+        </p>
+        {agentReach?.installed ? (
+          <div className="tools-agent-reach-status">
+            <span className="tools-agent-reach-installed">
+              <CheckCircle size={14} /> {t("tools.agentReachInstalled", "Installed")}
+              {agentReach.version && ` (v${agentReach.version})`}
+            </span>
+            {agentReach.channels.length > 0 && (
+              <div className="tools-agent-reach-channels">
+                {agentReach.channels.map((ch) => (
+                  <div
+                    key={ch.name}
+                    className={`tools-agent-reach-channel tools-agent-reach-channel-${ch.status}`}
+                  >
+                    <span className="tools-agent-reach-channel-name">{ch.name}</span>
+                    {ch.backend && (
+                      <span className="tools-agent-reach-channel-backend">{ch.backend}</span>
+                    )}
+                    {ch.status === "ok" ? (
+                      <CheckCircle size={12} className="tools-agent-reach-channel-ok" />
+                    ) : ch.status === "error" ? (
+                      <XCircle size={12} className="tools-agent-reach-channel-err" />
+                    ) : (
+                      <span className="tools-agent-reach-channel-pending">—</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            {agentReach.error && (
+              <div className="tools-agent-reach-error">
+                <AlertIcon size={12} /> {agentReach.error}
+              </div>
+            )}
+          </div>
+        ) : agentReach ? (
+          <div className="tools-agent-reach-not-installed">
+            {t(
+              "tools.agentReachNotInstalled",
+              "Agent-Reach is not installed. The runtime agent does not have internet capability tools.",
+            )}
+          </div>
+        ) : null}
       </div>
     </div>
   );

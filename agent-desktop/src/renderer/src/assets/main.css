@@ -10101,6 +10101,144 @@ body {
   word-break: break-word;
   color: var(--text-muted, #57606a);
 }
+
+/* V2.10.66 — Agent-Reach status section on Tools screen */
+.tools-section-divider {
+  border-top: 1px solid var(--border, #d0d7de);
+  margin: 24px 0 16px 0;
+}
+.tools-agent-reach {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tools-agent-reach-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tools-agent-reach-title {
+  font-size: 1.05em;
+  font-weight: 700;
+  margin: 0;
+}
+.tools-agent-reach-subtitle {
+  color: var(--text-muted, #888);
+  font-size: 0.85em;
+  margin: 0;
+  line-height: 1.4;
+}
+.tools-agent-reach-status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tools-agent-reach-installed {
+  color: var(--success, #1a7f37);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85em;
+}
+.tools-agent-reach-channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tools-agent-reach-channel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border, #d0d7de);
+  border-radius: 6px;
+  font-size: 0.8em;
+  background: var(--bg-secondary, #f6f8fa);
+}
+.tools-agent-reach-channel-ok {
+  border-color: var(--success, #1a7f37);
+}
+.tools-agent-reach-channel-err {
+  border-color: var(--danger, #cf222e);
+}
+.tools-agent-reach-channel-name {
+  font-weight: 600;
+}
+.tools-agent-reach-channel-backend {
+  color: var(--text-muted, #888);
+  font-family: monospace;
+  font-size: 0.85em;
+}
+.tools-agent-reach-channel-ok-icon {
+  color: var(--success, #1a7f37);
+}
+.tools-agent-reach-channel-err-icon {
+  color: var(--danger, #cf222e);
+}
+.tools-agent-reach-channel-pending {
+  color: var(--text-muted, #888);
+}
+.tools-agent-reach-error {
+  color: var(--danger, #cf222e);
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tools-agent-reach-not-installed {
+  color: var(--text-muted, #888);
+  font-size: 0.85em;
+  padding: 8px 12px;
+  background: var(--bg-secondary, #f6f8fa);
+  border: 1px solid var(--border, #d0d7de);
+  border-radius: 6px;
+}
+
+/* V2.10.66 — Knowledge Graph Tools section on CodeGraph screen */
+.codegraph-extra-tools {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border, #d0d7de);
+}
+.codegraph-extra-tools-title {
+  font-size: 1.05em;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+.codegraph-extra-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.codegraph-extra-tool-card {
+  background: var(--bg-secondary, #f6f8fa);
+  border: 1px solid var(--border, #d0d7de);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.codegraph-extra-tool-name {
+  font-weight: 700;
+  font-size: 0.95em;
+}
+.codegraph-extra-tool-desc {
+  color: var(--text-muted, #57606a);
+  font-size: 0.82em;
+  line-height: 1.4;
+}
+.codegraph-extra-tool-mcp {
+  color: var(--accent, #0969da);
+  font-size: 0.8em;
+  font-weight: 600;
+}
+.codegraph-extra-tool-future {
+  color: var(--text-muted, #888);
+  font-size: 0.8em;
+  font-style: italic;
+}
 .plans-dispatch:disabled,
 .plans-delete:disabled {
   opacity: 0.4;

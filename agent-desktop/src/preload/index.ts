@@ -633,6 +633,22 @@ const hermesAPI = {
     error?: string;
   }> => ipcRenderer.invoke("ironclaw:dispatch", url, token, task),
 
+  // V2.10.66: Agent-Reach internet capability status. Probes
+  // whether agent-reach is installed and which channels are
+  // configured. Never reads credentials.
+  agentReachProbe: (): Promise<{
+    installed: boolean;
+    version: string | null;
+    detectedCommand: string | null;
+    channels: Array<{
+      name: string;
+      status: "ok" | "error" | "not-configured";
+      backend: string | null;
+      detail: string | null;
+    }>;
+    error: string | null;
+  }> => ipcRenderer.invoke("agent-reach:probe"),
+
   onChatChunk: (callback: (chunk: string) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, chunk: string): void =>
       callback(chunk);
