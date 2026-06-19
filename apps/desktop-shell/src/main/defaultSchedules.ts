@@ -33,11 +33,6 @@ export const DEFAULT_SCHEDULES: AgentSchedule[] = [
   {
     id: "cubecloud-daily-standup",
     name: "Daily standup digest",
-    description:
-      "Every weekday at 09:00 local time, summarise the last 24 " +
-      "hours of activity: chat sessions, kanban moves, " +
-      "scheduled-task runs, harness outputs. Post to the " +
-      "Console tab.",
     cron: "0 9 * * 1-5",
     prompt:
       "Summarise the last 24 hours of activity. Group by: chat " +
@@ -50,6 +45,8 @@ export const DEFAULT_SCHEDULES: AgentSchedule[] = [
     profile: "default",
     kanbanBoardSlug: null,
     enabled: false,
+    nextRunAt: null,
+    lastRunAt: null,
   },
 ];
 

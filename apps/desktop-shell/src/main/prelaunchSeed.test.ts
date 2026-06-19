@@ -60,6 +60,7 @@ describe("V2.9 pre-launch bundle — seed idempotency", () => {
           name: "my-custom-skill",
           category: "domain-knowledge",
           description: "Use when the user wants to test the seed preserves user skills.",
+          path: "",
         },
       ];
       const out = seedDefaultSkills(userAdded);
@@ -96,6 +97,7 @@ describe("V2.9 pre-launch bundle — seed idempotency", () => {
           id: "my-custom-memory",
           label: "My custom memory",
           content: "I am a custom memory.",
+          createdAt: 0,
         },
       ];
       const out = seedDefaultMemories(userAdded);

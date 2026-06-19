@@ -451,7 +451,14 @@ function readKanbanState(
       kanbanFilePath(runtimeProviderId),
       defaultKanbanState(),
       (state) => {
-        const seeded = seedDefaultKanban(state.boards, Object.values(state.tasks).flat());
+        const seeded = seedDefaultKanban(
+          state.boards.map((b) => ({
+            ...b,
+            counts: {} as Record<string, number>,
+            total: 0,
+          })),
+          Object.values(state.tasks).flat(),
+        );
         return { ...state, boards: seeded.boards, tasks: seedTasksAsRecord(seeded.tasks) };
       },
       true,
@@ -1457,7 +1464,7 @@ function listStoredSkills(
   return readJsonFileWithSeed<StoredSkill[]>(
     skillsIndexFilePath(runtimeProviderId),
     [],
-    seedDefaultSkills as (s: StoredSkill[]) => StoredSkill[],
+    seedDefaultSkills as unknown as (s: StoredSkill[]) => StoredSkill[],
     true,
   );
 }

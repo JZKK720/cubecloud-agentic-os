@@ -32,6 +32,7 @@ export const DEFAULT_MEMORIES: AgentMemoryEntry[] = [
   {
     id: "cubecloud-conventions",
     label: "Cubecloud conventions",
+    createdAt: 0,
     content:
       "DCO 1.1 sign-off required on every commit. SPDX headers in " +
       "Cubecloud-original files: (AGPL-3.0-or-later OR Apache-2.0 OR " +
@@ -42,6 +43,7 @@ export const DEFAULT_MEMORIES: AgentMemoryEntry[] = [
   {
     id: "cubecloud-runtime-topology",
     label: "Runtime orchestration",
+    createdAt: 0,
     content:
       "Hermes is the day-1 lane. OpenClaw (V2.6+) and IronClaw " +
       "(V2.6+) are additional lanes, not replacements. CodeGraph is " +
@@ -52,6 +54,7 @@ export const DEFAULT_MEMORIES: AgentMemoryEntry[] = [
   {
     id: "cubecloud-skills-two-tier",
     label: "Skills layer is two-tier",
+    createdAt: 0,
     content:
       "User-visible: skills-lock.json (the Skills screen). " +
       "Hidden: src/main/skills-harness.ts HIDDEN_SKILLS[] (auto-injects " +
@@ -63,6 +66,7 @@ export const DEFAULT_MEMORIES: AgentMemoryEntry[] = [
   {
     id: "cubecloud-license-brand",
     label: "Brand & license",
+    createdAt: 0,
     content:
       "Cubecloud marks (logo, wordmark, splash, screenshots) are " +
       "All-rights-reserved; see docs/legal/TRADEMARK_POLICY.md. " +
@@ -74,6 +78,7 @@ export const DEFAULT_MEMORIES: AgentMemoryEntry[] = [
   {
     id: "cubecloud-workspace-conventions",
     label: "Workspace conventions",
+    createdAt: 0,
     content:
       "apps/desktop-shell is Cubecloud-original state layer. " +
       "src/main and src/renderer are the inherited hermes-desktop " +
@@ -84,6 +89,7 @@ export const DEFAULT_MEMORIES: AgentMemoryEntry[] = [
   {
     id: "cubecloud-security-posture",
     label: "Security & threat model",
+    createdAt: 0,
     content:
       "Local user is the trust boundary. Outbound calls are user-" +
       "confirmed or sandboxed to loopback. The agent runtime runs in " +

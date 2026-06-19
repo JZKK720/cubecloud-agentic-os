@@ -26,6 +26,8 @@ export const DEFAULT_KANBAN_BOARD: KanbanBoard = {
     "Use this to learn the kanban flow, then delete the " +
     "board when you're ready.",
   isCurrent: true,
+  counts: { queued: 3, active: 1, failed: 1 },
+  total: 5,
 };
 
 /**
@@ -50,6 +52,9 @@ export const DEFAULT_KANBAN_TASKS: KanbanTask[] = [
     priority: 1,
     assignee: "default",
     skills: ["cubecloud-onboarding"],
+    createdAt: null,
+    startedAt: null,
+    completedAt: null,
   },
   {
     id: "onboarding-configure-provider",
@@ -62,6 +67,9 @@ export const DEFAULT_KANBAN_TASKS: KanbanTask[] = [
     priority: 2,
     assignee: "default",
     skills: ["cubecloud-onboarding"],
+    createdAt: null,
+    startedAt: null,
+    completedAt: null,
   },
   {
     id: "onboarding-first-chat",
@@ -74,6 +82,9 @@ export const DEFAULT_KANBAN_TASKS: KanbanTask[] = [
     priority: 1,
     assignee: "default",
     skills: ["cubecloud-onboarding"],
+    createdAt: null,
+    startedAt: null,
+    completedAt: null,
   },
   {
     id: "onboarding-install-skill",
@@ -85,6 +96,9 @@ export const DEFAULT_KANBAN_TASKS: KanbanTask[] = [
     priority: 3,
     assignee: "default",
     skills: [],
+    createdAt: null,
+    startedAt: null,
+    completedAt: null,
   },
   {
     id: "onboarding-first-schedule",
@@ -98,6 +112,9 @@ export const DEFAULT_KANBAN_TASKS: KanbanTask[] = [
     priority: 4,
     assignee: "default",
     skills: [],
+    createdAt: null,
+    startedAt: null,
+    completedAt: null,
   },
 ];
 
