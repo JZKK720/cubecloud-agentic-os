@@ -649,6 +649,22 @@ const hermesAPI = {
     error: string | null;
   }> => ipcRenderer.invoke("agent-reach:probe"),
 
+  // V2.10.67: Auto-discovery — scan localhost for running runtime
+  // gateways. Returns discovered runtimes sorted by health.
+  autoDiscoveryScan: (): Promise<{
+    scannedAt: string;
+    discovered: Array<{
+      url: string;
+      runtime: "hermes" | "ironclaw" | "openclaw";
+      healthy: boolean;
+      authRequired: boolean;
+      statusCode: number | null;
+      latencyMs: number;
+    }>;
+    healthyCount: number;
+    authRequiredCount: number;
+  }> => ipcRenderer.invoke("auto-discovery:scan"),
+
   onChatChunk: (callback: (chunk: string) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, chunk: string): void =>
       callback(chunk);

@@ -85,7 +85,43 @@ function App(): React.JSX.Element {
       } else {
         const status = await window.hermesAPI.checkInstall();
         if (!status.installed) {
-          next = "welcome";
+          // V2.10.67 — Auto-discovery: no local install and no
+          // saved remote connection. Scan localhost for running
+          // runtime gateways before falling back to the Welcome
+          // form. If exactly one healthy gateway is found, auto-
+          // connect and go to main. If multiple are found, go to
+          // Welcome with a picker. If none, go to Welcome as
+          // before.
+          try {
+            const scan = await window.hermesAPI.autoDiscoveryScan();
+            if (scan.healthyCount === 1) {
+              const found = scan.discovered.find((d) => d.healthy);
+              if (found) {
+                // Auto-connect: save the connection and go to main
+                await window.hermesAPI.setConnectionConfig({
+                  mode: "remote",
+                  remoteUrl: found.url,
+                  apiKey: "",
+                  gatewayRuntimePreset: found.runtime,
+                });
+                setConnectionMode("remote");
+                setGatewayRuntimePreset(found.runtime);
+                setCachedGatewayRuntimePreset(found.runtime);
+                next = "main";
+              } else {
+                next = "welcome";
+              }
+            } else {
+              // 0 or multiple healthy — go to Welcome (picker
+              // or manual form). The scan results are passed
+              // via the installError hint so Welcome can show
+              // "We found N agents" if multiple.
+              next = "welcome";
+            }
+          } catch {
+            // Auto-scan failed — fall back to Welcome
+            next = "welcome";
+          }
         } else if (!status.hasApiKey) {
           next = "setup";
         } else {

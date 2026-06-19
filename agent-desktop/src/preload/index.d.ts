@@ -842,7 +842,22 @@ interface HermesAPI {
     }>;
     error: string | null;
   }>;
-  onChatChunk: (callback: (chunk: string) => void) => () => void;
+  /** V2.10.67: Auto-discovery — scan localhost for running
+   *  runtime gateways (Hermes, IronClaw, OpenClaw). Probes
+   *  known ports in parallel. Never sends credentials. */
+  autoDiscoveryScan: () => Promise<{
+    scannedAt: string;
+    discovered: Array<{
+      url: string;
+      runtime: "hermes" | "ironclaw" | "openclaw";
+      healthy: boolean;
+      authRequired: boolean;
+      statusCode: number | null;
+      latencyMs: number;
+    }>;
+    healthyCount: number;
+    authRequiredCount: number;
+  }>;
   onChatReasoningChunk: (callback: (chunk: string) => void) => () => void;
   onChatDone: (callback: (sessionId?: string) => void) => () => void;
   onChatToolProgress: (callback: (tool: string) => void) => () => void;

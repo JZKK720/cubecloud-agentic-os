@@ -23,6 +23,7 @@ import {
   dispatchSandboxTask,
 } from "./ironclaw-sandbox";
 import { probeAgentReach } from "./agent-reach";
+import { scanLocalhostRuntimes } from "./auto-discovery";
 import { readMediaAsDataUrl, saveMedia, mediaFileExists } from "./media";
 import {
   checkInstallStatus,
@@ -1295,6 +1296,12 @@ function setupIPC(): void {
   // are configured. Never reads credentials — doctor only
   // reports channel status.
   ipcMain.handle("agent-reach:probe", () => probeAgentReach());
+
+  // V2.10.67 — Auto-discovery: scan localhost for running runtime
+  // gateways (Hermes, IronClaw, OpenClaw). Probes known ports in
+  // parallel using the existing diagnoseRemoteConnection function.
+  // Never sends credentials — only health-check probes.
+  ipcMain.handle("auto-discovery:scan", () => scanLocalhostRuntimes());
 
   // Gateway
   ipcMain.handle("start-gateway", async () => {

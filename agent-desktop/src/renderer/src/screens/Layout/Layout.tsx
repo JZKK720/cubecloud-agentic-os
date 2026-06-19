@@ -25,6 +25,7 @@ import SandboxTasks from "../SandboxTasks/SandboxTasks";
 import Mcp from "../Mcp/Mcp";
 import RuntimeNotice from "../../components/RuntimeNotice";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
+import ToolSuggestions from "../../components/ToolSuggestions";
 import cubecloudWordmark from "../../assets/cubecloud-wordmark.svg";
 import {
   ChatBubble,
@@ -407,6 +408,8 @@ function Layout({
             )}
           </div>
         </nav>
+
+        <ToolSuggestions />
 
         <div className="sidebar-footer">
           {updateState && (
