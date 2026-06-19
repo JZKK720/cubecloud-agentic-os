@@ -15,6 +15,7 @@ export default {
   codegraph: "CodeGraph",
   everos: "EverOS",
   headroom: "Headroom",
+  sandboxtasks: "沙箱任务",
   gateway: "网关",
   plans: "Plans",
   mcp: "MCP",

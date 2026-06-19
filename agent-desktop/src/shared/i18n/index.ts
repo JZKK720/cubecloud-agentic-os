@@ -194,6 +194,14 @@ import headroomPtBr from "./locales/pt-BR/headroom";
 import headroomPtPt from "./locales/pt-PT/headroom";
 import headroomZhCn from "./locales/zh-CN/headroom";
 import headroomZhTw from "./locales/zh-TW/headroom";
+import sandboxTasksEn from "./locales/en/sandboxTasks";
+import sandboxTasksEs from "./locales/es/sandboxTasks";
+import sandboxTasksId from "./locales/id/sandboxTasks";
+import sandboxTasksJa from "./locales/ja/sandboxTasks";
+import sandboxTasksPtBr from "./locales/pt-BR/sandboxTasks";
+import sandboxTasksPtPt from "./locales/pt-PT/sandboxTasks";
+import sandboxTasksZhCn from "./locales/zh-CN/sandboxTasks";
+import sandboxTasksZhTw from "./locales/zh-TW/sandboxTasks";
 
 export const resources = {
   en: {
@@ -214,6 +222,7 @@ export const resources = {
       gateway: gatewayEn,
       agents: agentsEn,
       headroom: headroomEn,
+      sandboxTasks: sandboxTasksEn,
       soul: soulEn,
       memory: memoryEn,
       install: installEn,
@@ -240,6 +249,7 @@ export const resources = {
       schedules: schedulesEs,
       skills: skillsEs,
       headroom: headroomEs,
+      sandboxTasks: sandboxTasksEs,
       gateway: gatewayEs,
       agents: agentsEs,
       soul: soulEs,
@@ -274,6 +284,7 @@ export const resources = {
       constants: constantsId,
       everos: everosid,
       headroom: headroomId,
+      sandboxTasks: sandboxTasksId,
       plans: plansId,
       mcp: mcpId,
     },
@@ -302,6 +313,7 @@ export const resources = {
       kanban: kanbanZh,
       everos: everoszhCN,
       headroom: headroomZhCn,
+      sandboxTasks: sandboxTasksZhCn,
       plans: plansZhCn,
       mcp: mcpZhCn,
     },
@@ -332,6 +344,7 @@ export const resources = {
       plans: plansZhTw,
       mcp: mcpZhTw,
       headroom: headroomZhTw,
+      sandboxTasks: sandboxTasksZhTw,
     },
   },
   "pt-BR": {
@@ -359,6 +372,7 @@ export const resources = {
       plans: plansPtBr,
       mcp: mcpPtBr,
       headroom: headroomPtBr,
+      sandboxTasks: sandboxTasksPtBr,
     },
   },
   "pt-PT": {
@@ -385,6 +399,7 @@ export const resources = {
       kanban: kanbanPtPt,
       everos: everosptPT,
       headroom: headroomPtPt,
+      sandboxTasks: sandboxTasksPtPt,
       plans: plansPtPt,
       mcp: mcpPtPt,
     },
@@ -414,6 +429,7 @@ export const resources = {
       plans: plansJa,
       mcp: mcpJa,
       headroom: headroomJa,
+      sandboxTasks: sandboxTasksJa,
     },
   },
 } satisfies Resource;
