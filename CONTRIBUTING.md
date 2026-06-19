@@ -92,8 +92,6 @@ docs/legal/              Active legal policies: TRADEMARK, EULA,
                          PAID_SERVICES, COMMERCIAL_LICENSE
 scripts/                 Cubecloud-original smoke / capture / verify scripts
 tests/                   Unit tests (Vitest)
-apps/desktop-shell/      The Cubecloud-original rebuilds of the renderer
-                         and the agent control plane
 licenses/                Vendored copies of the three offered licenses
                          (AGPL-3.0, Apache-2.0, MIT) and reference-only
                          upstream project licenses

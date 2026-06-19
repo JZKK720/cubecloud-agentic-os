@@ -21,10 +21,9 @@
 
 Cubecloud Agentic-OS is the monorepo for the **Cubecloud Agent Desktop**
 and the operating model around it. The desktop binary lives in
-[`agent-desktop/`](agent-desktop/). The Cubecloud-original control
-plane, prelaunch bundle, and developer-time skill ecosystem live in
-[`apps/desktop-shell/`](apps/desktop-shell/),
-[`packages/platform-core/`](packages/platform-core/), and
+[`agent-desktop/`](agent-desktop/). The shared TypeScript contracts
+and the developer-time skill ecosystem live in
+[`packages/platform-core/`](packages/platform-core/) and
 [`.agents/`](.agents/).
 
 The short version:
@@ -106,8 +105,7 @@ control plane, or a model vendor to own your runtime lifecycle for you.
 
 This monorepo is broader than the desktop binary alone.
 
-- [`agent-desktop/`](agent-desktop/) is the full Electron desktop that ships to end users.
-- [`apps/desktop-shell/`](apps/desktop-shell/) is the Cubecloud-original state and control-plane workspace.
+- [`agent-desktop/`](agent-desktop/) is the full Electron desktop that ships to end users. This is the active implementation target; all builds come from here.
 - [`packages/platform-core/`](packages/platform-core/) holds shared TypeScript contracts.
 - [`.agents/skills/`](.agents/skills/) contains {{SKILLS_UPSTREAM}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos and mirrored to `~/.agents/skills/`.
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) is a repo-authored Copilot / VS Code workflow layer for the optional Headroom context-compression proxy. The standalone install/use guide lives at [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md).
@@ -164,9 +162,9 @@ That is the enterprise story: not "trust us," but "inspect the stack."
 The desktop experience is built from three cooperating layers:
 
 **Core runtime layer**
-- **State layer** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) owns profiles, sessions, models, providers, skills, memory, schedules, and kanban state.
+- **State layer** - [`agent-desktop/src/main/agentControlPlane.ts`](agent-desktop/src/main/agentControlPlane.ts) owns profiles, sessions, models, providers, skills, memory, schedules, and kanban state.
 - **Runtime orchestration** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) describes Hermes as the current lane, IronClaw as a current gateway-handoff lane, and OpenClaw as an optional future lane.
-- **Provider layer** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) keeps model-provider selection separate from runtime selection.
+- **Provider layer** - [`agent-desktop/src/main/providerDiscovery.ts`](agent-desktop/src/main/providerDiscovery.ts) keeps model-provider selection separate from runtime selection.
 - **Skills harness** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) applies the skill layer around outgoing requests.
 
 **Integrated support surfaces** (optional, user-initiated)
@@ -192,7 +190,7 @@ desk**:
   dispatch a chat turn, run a scheduled prompt, commit a learned
   proposal, apply a CodeGraph query result, or revert an `AGENTS.md`
   edit. The dispatch ledger in
-  [`agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts)
+  [`agentControlPlane.ts`](agent-desktop/src/main/agentControlPlane.ts)
   is the action log; the `headroom learn --apply` review flow is
   the **branch-and-review** gate that prevents AI from writing to
   the ontology without an explicit human action.
@@ -264,8 +262,6 @@ cubecloud-agentic-os/
 ├── README.i18n.md                translation inventory manifest
 ├── .agents/                      {{SKILLS_UPSTREAM}} open-source skills mirrored to ~/.agents/skills/
 ├── .github/                      agent instructions, workflow skills, and automation
-├── apps/
-│   └── desktop-shell/            Cubecloud-original control plane workspace
 ├── packages/
 │   └── platform-core/            shared TypeScript contracts
 ├── docs/

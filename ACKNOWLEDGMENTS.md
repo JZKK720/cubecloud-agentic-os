@@ -24,10 +24,11 @@ renderer, and is the only upstream source code in this
 repository. We are deeply grateful to the `hermes-desktop`
 authors and contributors for the foundation.
 
-The `apps/desktop-shell` package is a Cubecloud-original
-rebuild of the renderer, agent control plane, runtime sessions,
-provider discovery, and lifecycle plumbing on top of the
-inherited framework. The rebuilds were done in 2026 by the
+The Cubecloud-original rebuilds of the renderer, agent control plane,
+runtime sessions, provider discovery, and lifecycle plumbing live
+inside `agent-desktop/src/main/` (the wrapper workspace that hosted
+them in parallel, `apps/desktop-shell/`, was retired in V2.10.67,
+commit `06a10b9`). The rebuilds were done in 2026 by the
 Cubecloud Contributors.
 
 The **`@colbymchenry/codegraph`** npm SDK is the optional

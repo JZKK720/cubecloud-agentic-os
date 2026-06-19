@@ -115,18 +115,41 @@ in-renderer code tasks, that feature serves the whole catalog, not
 
 ## 5. Build & Test Commands (use these exact forms)
 
-The repo is an npm workspaces monorepo. From the repo root:
+**`agent-desktop/` is the only thing this monorepo actually builds.** The
+`cubecloud-agentic-os` repo is the business wrapper around the desktop
+binary — every build target, every installer, every runnable artifact
+comes from `agent-desktop/`. There is no other build.
+
+The repo is an npm workspaces monorepo with two live workspaces:
+`agent-desktop/` (the Electron desktop binary) and `packages/platform-core/`
+(shared TypeScript contracts). The old `apps/desktop-shell/` workspace
+was a **retired legacy wrong build** — see [§6.7](#67-dual-readme-contract-do-not-conflate)
+and [§7](#7-repo-layout). It must never be revived. Its historical
+references in tracked docs are artifacts to be cleaned up, not
+descriptions of a current workspace.
+
+The current workspace name (read from `agent-desktop/package.json#name`)
+is **`cubecloud-agent-desktop`**, not `@cubecloud/desktop-shell`.
+
+From the repo root:
 
 | Goal | Command |
 |---|---|
 | Install | `npm install` (or `npm ci` in CI) |
 | Typecheck the whole monorepo | `npm run typecheck` |
-| Typecheck one workspace | `npm run typecheck --workspace @cubecloud/<name>` |
-| Run all `agent-desktop` tests | `npm run test --workspace @cubecloud/desktop-shell` |
+| Typecheck one workspace | `npm run typecheck --workspace cubecloud-agent-desktop` (or `--workspace @cubecloud/platform-core`) |
+| Run all `agent-desktop` tests | `npm run test --workspace cubecloud-agent-desktop` |
 | Run a single test | `npm.cmd exec vitest run tests/<slice>.test.ts` (cwd `agent-desktop`) |
-| Build a Windows package | `npm run build:win --workspace @cubecloud/desktop-shell` |
-| Verify the packaged app | `npm run verify:win-package --workspace @cubecloud/desktop-shell` |
-| Build the desktop-shell + platform-core | `npm run build` (root) |
+| Build a Windows package | `npm run build:win --workspace cubecloud-agent-desktop` |
+| Verify the packaged asar | `npm run verify:bundle --workspace cubecloud-agent-desktop` |
+| Build the agent-desktop + platform-core | `npm run build` (root) |
+
+**`agent-desktop/` is the only workspace with a working `npm run build:win`.**
+The root-level `npm run build` builds source only and produces no
+installer. The electron-builder pipeline (with
+`postinstall: electron-builder install-app-deps`) lives entirely inside
+`agent-desktop/`. Use `--workspace cubecloud-agent-desktop` (npm
+workspaces syntax), not `--project` (pnpm syntax).
 
 Test files live in `agent-desktop/tests/`. There are ~95 Vitest
 files; CI runs 3 focused tests per PR (`App.gateway.dom.test.tsx`,
@@ -223,12 +246,40 @@ tasks:
   model; `docs/legal/` for the legal posture (TRADEMARK_POLICY,
   COMMERCIAL_LICENSE, CUBECLOUD-EULA, PROVENANCE_TRACKER).
 
+### 6.7 Dual-README contract (do not conflate)
+
+**`cubecloud-agentic-os` is the business wrapper of the monorepo** —
+the outer-root framing that explains what this product is to evaluators,
+contributors, and investors. **All actual builds live in `agent-desktop/`** —
+that is where the desktop binary, the installer, and every runnable
+artifact come from. There is no third place; `apps/desktop-shell/` was
+a retired legacy wrong build and is gone.
+
+This repo has **two independent README files**, each with a distinct
+audience. They are NOT hardlinks and NOT in the `sync-docs.ps1` set
+(which only hardlinks governance docs like `CONTRIBUTING.md` and
+`SECURITY.md`). Updates to one do not auto-propagate to the other.
+
+| README | Audience | Content |
+|---|---|---|
+| `README.md` (root) | Evaluator / contributor / investor | Monorepo business framing, workspace tree, three-tier architecture (V2.10.57), brand, market positioning, Headroom layer |
+| `agent-desktop/README.md` | End user / installer of the binary | Install commands, 22-image preview gallery, provider/gateway/tools tables, first-launch flow |
+
+i18n mirrors follow the same split: `README.zh-CN.md` (root) and
+`agent-desktop/README.zh-CN.md` (inner). Translation inventory lives in
+`README.i18n.md` — consult it before declaring a README out of date.
+
+When asked to "update the README," ask: *"Is this about what the desktop
+binary does (→ `agent-desktop/README.md`), or about the broader
+agentic-OS story (→ root `README.md`)?"* If both, update both — but
+treat them as two separate edits, not one.
+
 ## 7. Repo Layout
 
 | Path | Purpose |
 |---|---|
 | `agent-desktop/` | The Electron desktop that ships to end users. This is the active implementation target. |
-| `apps/desktop-shell/` | Cubecloud-original control-plane workspace (Vite + React 19 + i18next + electron-vite). |
+| `apps/desktop-shell/` | **Retired in V2.10.67** (commit `06a10b9`). The `desktop-shell/` subdir is gone. References to it in older docs and READMEs are stale — treat them as `agent-desktop/` for build purposes. |
 | `packages/platform-core/` | Shared TypeScript contracts. |
 | `.agents/skills/` | {{SKILLS_UPSTREAM}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos. |
 | `.github/skills/` | Repo-authored Copilot / VS Code workflow skills (docs-i18n-refresh, headroom-workflow). |

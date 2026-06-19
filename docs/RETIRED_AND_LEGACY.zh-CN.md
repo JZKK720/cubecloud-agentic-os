@@ -9,26 +9,37 @@
 
 | 目录 | 路径 | 状态 | 原因 | 操作 |
 |---|---|---|---|---|
-| Agentic-OS 状态层 + 种子 | `apps/desktop-shell/` | **活跃** | 作为 `@cubecloud/desktop-shell` 工作区接入外层 `package.json`（dev / build / typecheck）。包含 agentic-OS 原创状态层（`agentControlPlane.ts`、`runtimeSessions.ts`、`providerDiscovery.ts`、`hermesLifecycle.ts`）、5 个预启动种子文件（`default*.ts`）以及 5 个 vitest 测试文件。冒烟测试 `prelaunchSeed.smoke.mjs`（40/40）锁定 V2.9 契约。 | 保留。在 README + HANDBOOK 中记录。 |
-| 完整 Electron 框架（hermes-desktop 谱系） | `cubecloud-desktop/` | **活跃**（构建目标） | 用户安装的 Electron 应用。包含继承的 hermes-desktop 框架（MIT）、品牌层、渲染器、构建流水线，以及 Cubecloud 原创运行时包装器（`codegraph-runtime.ts`、`everos-sidecar.ts`、`skills-harness.ts`）。不在工作区中；由 `apps/desktop-shell` 的 `npm install` + `npm run build` 在共享 electron-vite 层消费。 | 保留。在 HANDBOOK §3（层级图）中记录。 |
-| 预启动包种子（V2.9） | `apps/desktop-shell/src/main/default{Skills,Memories,Harnesses,Schedules,Kanban}.ts` + `prelaunchSeed.test.ts` + `prelaunchSeed.smoke.mjs` | **活跃** | 3 个用户可见技能 + 6 个记忆种子 + 3 个默认禁用的 harness + 1 个默认禁用的计划任务 + 1 个入门看板。由 40/40 冒烟测试锁定。 | 保留。在 HANDBOOK §5.6 中记录。 |
+| Agentic-OS 状态层 + 种子 | ~~`apps/desktop-shell/`~~ | **已退役，V2.10.67（commit `06a10b9`）** | 原本作为 `@cubecloud/desktop-shell` 工作区接入外层 `package.json`（dev / build / typecheck）。该工作区在 V2.10.67 中被退役，因为内层 `agent-desktop/` 现在直接承载 agentic-OS 原创状态层（`agentControlPlane.ts`、`runtimeSessions.ts`、`providerDiscovery.ts`、`hermesLifecycle.ts`），包装工作区变成多余。`desktop-shell/` 子目录已从工作树中删除。 | 不要重新引入。状态层现位于 `agent-desktop/src/main/agentControlPlane.ts` 等处，详见 HANDBOOK §3。 |
+| 完整 Electron 框架（hermes-desktop 谱系） | `agent-desktop/` | **活跃**（构建目标） | 用户安装的 Electron 应用，也是唯一的真实构建目标。包含继承的 hermes-desktop 框架（MIT）、品牌层、渲染器、构建流水线、状态层，以及 Cubecloud 原创运行时包装器（`codegraph-runtime.ts`、`everos-sidecar.ts`、`skills-harness.ts`）。npm 工作区名称为 `cubecloud-agent-desktop`。 | 保留。在 HANDBOOK §3（层级图）中记录。 |
+| 预启动包种子（V2.9 → V2.10.67） | `agent-desktop/src/main/default{Skills,Memories,Harnesses,Schedules,Kanban}.ts` + `prelaunchSeed.test.ts` + `prelaunchSeed.smoke.mjs` | **活跃** | 3 个用户可见技能 + 6 个记忆种子 + 3 个默认禁用的 harness + 1 个默认禁用的计划任务 + 1 个入门看板。由冒烟测试锁定。在 V2.10.67 中从 `apps/desktop-shell/src/main/...` 迁移过来。 | 保留。在 HANDBOOK §5.6 中记录。 |
 | `.agents/` 技能生态 | `.agents/skills/<name>/SKILL.md`（{{SKILLS_TOTAL}} 个技能，其中 {{SKILLS_UPSTREAM}} 个上游改编） | **活跃** | {{SKILLS_UPSTREAM}} 技能贡献者界面。在开发者机器上镜像到 `~/.agents/skills/`。 | 保留。在 HANDBOOK §5 + `.agents/skills/README.md` 中记录。 |
 | 暂存区：克隆的上游仓库 | `.review-extras/` 和 `.review-codegraph/` | **暂存区，不在 git 中** | 在 V2.6 + V2.7 技能导入期间用于研究上游来源的本地克隆。不属于构建的一部分，不被任何活跃代码引用，可随时删除，并在需要时重新克隆。 | 可安全清理本地副本；只有在需要重新研究上游来源时再重新克隆。 |
 | 治理文档 | 外层根目录下的 `README.md`、`LICENSE`、`NOTICE`、`BRANDING_AND_LICENSE.md`、`CONTRIBUTING.md`、`ACKNOWLEDGMENTS.md`；外层 `docs/` 下的 `docs/HANDBOOK.md`、`docs/handbook/*`、`docs/legal/*` | **活跃**（真实来源） | 在 V2.10（方案 A）中从 `cubecloud-desktop/` 移至外层根目录。内层镜像通过 `scripts/sync-docs.ps1` 以 Windows 硬链接（文件）和目录连接（目录）的形式重新创建。 | 保留。内层影子自动重新生成。 |
 | `cubecloud-desktop/{README,LICENSE,NOTICE,BRANDING_AND_LICENSE,CONTRIBUTING,ACKNOWLEDGMENTS}.md` 和 `cubecloud-desktop/docs/HANDBOOK.md` + `docs/handbook/*` | 内层镜像 | **硬链接**（不作为链接跟踪） | 见上文。这些路径下的 shell 渲染是无管理员权限的镜像，以便 Electron 构建继续在旧位置找到文档。 | 在外层文件编辑后通过 `scripts/sync-docs.ps1` 重新生成。 |
 
-## 为什么保留 `apps/desktop-shell/` 即使 `agent-desktop/` 看起来相似
+## `apps/desktop-shell/` 发生了什么（V2.10.67 退役）
 
-两者是**互补**的，而非重复。`cubecloud-desktop/` 是带有继承 hermes-desktop 框架的**完整 Electron 应用**。它是渲染器、主进程和构建流水线所在的位置。它**不在**外层 `package.json` 工作区中，因为工作区数组是 `node` 的概念（它告诉 `npm install` 在哪里查找工作区），而内层树是一个带有自己 `node_modules/` 的 vendored 副本。
+`apps/desktop-shell/` 原本是一个**包装工作区**，与继承的 `agent-desktop/` 框架并行承载 agentic-OS 原创状态层。两者最初是分离的，因为内层 `agent-desktop/` 是 `hermes-desktop`（MIT）的 vendored 副本，独立运行自己的 `npm install`，而包装工作区存在的目的是在不混合两个许可证域的前提下，把 Cubecloud 原创的控制面搭在框架之上。
 
-`apps/desktop-shell/` 是**agentic-OS 原创状态层**，它在继承框架之上重建桌面的*控制面*。`apps/desktop-shell/src/main/` 中的五个 `default*.ts` 种子文件由同一文件夹中的 `agentControlPlane.ts` 读取消费。这些读取由 `cubecloud-desktop/src/main/` 中的 IPC 处理器调用。因此边界是：
+事后证明这个分离是一个错误的决策。状态层代码（`agentControlPlane.ts`、各种 `default*.ts` 种子、预启动冒烟测试）根本不依赖独立的工作区，而为一个桌面二进制维护两个工作区带来了真实的 bug：
 
-- `cubecloud-desktop/src/main/ipc/**` — IPC 桥接（继承框架，MIT）。
-- `apps/desktop-shell/src/main/agentControlPlane.ts` — 状态平面（agentic-OS 原创，双许可）。
-- `apps/desktop-shell/src/main/default*.ts` — 预启动种子（agentic-OS 原创，双许可）。
-- `cubecloud-desktop/src/main/skills-harness.ts` — 技能清单解析器（agentic-OS 原创，双许可）。
+- v0.6.0 / v0.6.1 的 GitHub Release 是从包装工作区构建的，得到的安装包是一个"假的包装"——asar 根目录落在单仓包装器上，而不是真正的 agent-desktop 构建。面向用户的程序名是对的，但启动路径是坏的，花了一个修复版才恢复。
+- V2.10.59 想通过去掉 `electron-builder.yml` 的 `cubecloud-` 前缀来简化产品名，但包装工作区仍然接在 `package.json` 里，导致这次改名再次造成 release 产物与构建树之间的不一致。
 
-消除重复的正确方式**不是**删除两者之一，而是明确边界（本文件所做的），并保持冒烟测试（`apps/desktop-shell/prelaunchSeed.smoke.mjs`，40/40）作为两半之间的契约。
+V2.10.67（commit `06a10b9`）退役了包装工作区：
+
+- `desktop-shell/` 子目录已从工作树中删除。
+- 外层 `package.json` 的 workspaces 数组现在只包含 `agent-desktop/` 和 `packages/platform-core/`。
+- agentic-OS 原创状态层被直接搬入 `agent-desktop/src/main/`（它本来就是 agentic-OS 原创、双许可，所以搬进内层树并不会改变许可态势）。
+- build / test / CI 脚本全部更新为 `--workspace cubecloud-agent-desktop`，不再是 `--workspace @cubecloud/desktop-shell`。
+
+包装工作区曾经划定的边界——"状态面在包装里，IPC 桥接在内层框架里"——现在合并到 `agent-desktop/src/main/` 同一个命名空间下：
+
+- `agent-desktop/src/main/ipc/**` — IPC 桥接（继承框架，MIT）。
+- `agent-desktop/src/main/agentControlPlane.ts` — 状态平面（agentic-OS 原创，双许可）。
+- `agent-desktop/src/main/default*.ts` — 预启动种子（agentic-OS 原创，双许可）。
+
+不再有"框架外面再包一层"。Electron 构建直接来自 `agent-desktop/`，产出 Windows 安装包。不要重新引入包装工作区。
 
 | 目录 | 路径 | 状态 | 原因 | 操作 |
 |---|---|---|---|---|

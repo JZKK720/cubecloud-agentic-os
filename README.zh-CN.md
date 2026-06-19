@@ -12,8 +12,7 @@
 
 Cubecloud Agentic-OS 是 **Cubecloud Agent Desktop** 及其运作模型的单仓代码库。
 桌面端二进制文件位于 [`agent-desktop/`](agent-desktop/)。
-Cubecloud 原创的控制平面、预启动上下文与开发期技能生态位于
-[`apps/desktop-shell/`](apps/desktop-shell/)、
+共享 TypeScript 契约与开发期技能生态位于
 [`packages/platform-core/`](packages/platform-core/) 与
 [`.agents/`](.agents/)。
 
@@ -89,8 +88,7 @@ Cubecloud 特别适合以下几类团队与操作者：
 
 这个单仓交付的内容远不止一个桌面端二进制文件。
 
-- [`agent-desktop/`](agent-desktop/) 是面向终端用户交付的完整 Electron 桌面端。
-- [`apps/desktop-shell/`](apps/desktop-shell/) 是 Cubecloud 原创的状态层与控制平面工作区。
+- [`agent-desktop/`](agent-desktop/) 是面向终端用户交付的完整 Electron 桌面端，也是唯一的活跃实现目标 —— 所有构建产物均来自此目录。
 - [`packages/platform-core/`](packages/platform-core/) 保存共享 TypeScript 契约。
 - [`.agents/skills/`](.agents/skills/) 包含 35 个旗舰级开源技能，来自 8 个上游仓库，镜像到 `~/.agents/skills/`。
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) 是仓库自带的 Copilot / VS Code 工作流层，对接可选的 Headroom 上下文压缩代理。完整安装 / 使用指南位于 [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md)。
@@ -142,9 +140,9 @@ Cubecloud 所说的"面向生产"，并不是"托管 SaaS 加销售后台"，而
 桌面体验由三个相互协作的层构成：
 
 **核心运行时层**
-- **状态层** — [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) 负责人设、会话、模型、提供者、技能、记忆、计划任务与看板状态。
+- **状态层** — [`agent-desktop/src/main/agentControlPlane.ts`](agent-desktop/src/main/agentControlPlane.ts) 负责人设、会话、模型、提供者、技能、记忆、计划任务与看板状态。
 - **运行时编排** — [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) 描述了当前 Hermes 主道与后续 OpenClaw / IronClaw 主道。
-- **提供者层** — [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) 让模型提供者选择与运行时选择解耦。
+- **提供者层** — [`agent-desktop/src/main/providerDiscovery.ts`](agent-desktop/src/main/providerDiscovery.ts) 让模型提供者选择与运行时选择解耦。
 - **技能 harness** — [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) 在出站请求外层应用技能系统。
 
 **集成支持面**（可选，由用户主动启用）
@@ -169,7 +167,7 @@ Headroom **永远不是必需的**：即便不安装它，桌面端也完全可�
 Cubecloud 的本地表面可以干净地映射到一个小**对象 + 动作**模型。这个模型在概念上接近 Palantir Foundry 所说的企业级"本体（Ontology）"，但**范围被收敛到单个操作者的一张桌面上**：
 
 - **对象（名词）** 是智能体操作的持久化事物：人设、会话、模型、提供者、技能、记忆、工具、计划任务与看板任务。它们以显式 JSON 注册表的形式持久化、归本地用户掌控，而不是托管在工作流引擎里的不透明 blob。
-- **动作（动词）** 是智能体对这些对象执行的操作：分发一次聊天回合、运行一条计划任务、提交一条学习提案、应用一条 CodeGraph 查询结果，或者回滚一次 `AGENTS.md` 修改。[`agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) 中的分发流水就是动作日志；`headroom learn --apply` 的复核流就是**分支-复核**闸门，防止 AI 在没有显式人工动作的情况下写入本体。
+- **动作（动词）** 是智能体对这些对象执行的操作：分发一次聊天回合、运行一条计划任务、提交一条学习提案、应用一条 CodeGraph 查询结果，或者回滚一次 `AGENTS.md` 修改。[`agentControlPlane.ts`](agent-desktop/src/main/agentControlPlane.ts) 中的分发流水就是动作日志；`headroom learn --apply` 的复核流就是**分支-复核**闸门，防止 AI 在没有显式人工动作的情况下写入本体。
 - **操作者范围** — Foundry 的本体是组织的数字孪生；Cubecloud 的本体是一张桌面的数字孪生。这是一个有意识的尺度差异，不是缺失功能。同样的名词 / 动词结构可以下放到独立开发者与小型企业操作者身上，而不需要让他们为他们并不需要的多租户平台付费。
 
 明确写出这个模型的目的，是让新的贡献者能够把任何未来的特性映射到"这是一个新对象"或"这是一个新动作"，并把它放到架构中正确的层。当前实现仍然使用手写的 JSON 注册表；未来某次硬化重构可以把它们合并成一个强类型的注册表，而不需要改变这份概念契约。
@@ -196,8 +194,6 @@ cubecloud-agentic-os/
 ├── .github/                      智能体指令、工作流技能与自动化
 │   └── skills/
 │       └── headroom-workflow/    面向可选 Headroom 代理的 Copilot / VS Code 工作流层
-├── apps/
-│   └── desktop-shell/            Cubecloud 原创控制平面工作区
 ├── packages/
 │   └── platform-core/            共享 TypeScript 契约
 ├── docs/

@@ -57,7 +57,7 @@ Three *consequences* fell out of those commitments:
 | Electron shell | `src/main/index.ts`, `src/preload/index.ts`, `electron.vite.config.ts` | Spawns the main process, mounts the renderer, exposes the preload bridge. | Inherited from `hermes-desktop` (MIT). |
 | IPC channel surface | `src/main/ipc/**` | Handlers for every channel the renderer can call. | Mixed. New channels (CodeGraph, EverOS, skills harness) are Cubecloud-original. |
 | Renderer UI | `src/renderer/src/**` | React 19 + i18next. All screens. | **Cubecloud-original rebuild** on top of the inherited framework. |
-| State layer | `apps/desktop-shell/src/state/**` | Profiles, sessions, models, providers, skills, memory, tools, schedules, kanban. | **Cubecloud-original.** The SQLite schema, the dispatch logic, the kanban board, and the agent-profile model are all Cubecloud-original. |
+| State layer | `agent-desktop/src/main/state/**` | Profiles, sessions, models, providers, skills, memory, tools, schedules, kanban. | **Cubecloud-original.** The SQLite schema, the dispatch logic, the kanban board, and the agent-profile model are all Cubecloud-original. |
 | Runtime orchestration | `src/main/hermes-runtime/**`, `src/main/openclaw/**`, `src/main/ironclaw/**` | Detect, install, configure, and proxy to each agent runtime. | Mixed. Hermes is inherited; OpenClaw and IronClaw are Cubecloud-original additions. |
 | CodeGraph surface | `src/main/codegraph-runtime.ts`, `src/main/codegraph.ts` | Two backends for the CodeGraph screen: a CLI subprocess (inherited) and an embedded SDK wrapper (Cubecloud-original). | See `docs/CODEGRAPH-RUNTIME.md`. |
 | EverOS sidecar | `src/main/everos-sidecar.ts` | Lifecycle manager for the optional `everos server start` Python sidecar. | Cubecloud-original. See `docs/EVEROS-SIDECAR.md`. |
@@ -123,7 +123,7 @@ Palantir's Foundry calls an "ontology" for the enterprise, but
   hosted workflow engine.
 - **Actions (verbs)** are the things the agent does to those objects.
   In this repo they are the dispatch ledger in
-  [`apps/desktop-shell/src/main/agentControlPlane.ts`](../../apps/desktop-shell/src/main/agentControlPlane.ts)
+  [`agent-desktop/src/main/agentControlPlane.ts`](../../agent-desktop/src/main/agentControlPlane.ts)
   (`ControlPlaneDispatchRuntimeRequest` / `Result` / `Executor`),
   schedule execution (`AgentSchedule.cron + prompt + profile`),
   CodeGraph query application (`CodeGraphQueryTemplate.mode`),
@@ -206,13 +206,13 @@ The methodology is **enforced by the description contract, not by the user's man
 
 The 35-skill developer-time ecosystem is the *contributor's* surface. The end user of the desktop binary sees a different surface: **the pre-launch bundle**, a curated subset that ships in the binary. The full seed list:
 
-- **Skills (3, user-visible)** — `cubecloud-persona` (operator tone), `cubecloud-onboarding` (first 5 minutes), `cubegraph-code-intel` (wraps the existing CodeGraph IPC as a skill). Source: `apps/desktop-shell/src/main/defaultSkills.ts`.
-- **Memory (6)** — conventions, runtime topology, two-tier skills, license/brand, workspace conventions, security posture. Source: `apps/desktop-shell/src/main/defaultMemories.ts`.
-- **Harnesses (3, disabled)** — `cubecloud-memory-distill`, `cubecloud-cost-watchdog`, `cubecloud-skill-audit`. User enables after installing `everos`. Source: `apps/desktop-shell/src/main/defaultHarnesses.ts`.
-- **Schedules (1, disabled)** — `cubecloud-daily-standup`. User enables after configuring a profile. Source: `apps/desktop-shell/src/main/defaultSchedules.ts`.
-- **Kanban (1 starter board + 5 deletable example tasks)** — "Onboarding — delete me" with 5 tasks that walk the user through install / configure / chat / skill / schedule. Source: `apps/desktop-shell/src/main/defaultKanban.ts`.
+- **Skills (3, user-visible)** — `cubecloud-persona` (operator tone), `cubecloud-onboarding` (first 5 minutes), `cubegraph-code-intel` (wraps the existing CodeGraph IPC as a skill). Source: `agent-desktop/src/main/defaultSkills.ts`.
+- **Memory (6)** — conventions, runtime topology, two-tier skills, license/brand, workspace conventions, security posture. Source: `agent-desktop/src/main/defaultMemories.ts`.
+- **Harnesses (3, disabled)** — `cubecloud-memory-distill`, `cubecloud-cost-watchdog`, `cubecloud-skill-audit`. User enables after installing `everos`. Source: `agent-desktop/src/main/defaultHarnesses.ts`.
+- **Schedules (1, disabled)** — `cubecloud-daily-standup`. User enables after configuring a profile. Source: `agent-desktop/src/main/defaultSchedules.ts`.
+- **Kanban (1 starter board + 5 deletable example tasks)** — "Onboarding — delete me" with 5 tasks that walk the user through install / configure / chat / skill / schedule. Source: `agent-desktop/src/main/defaultKanban.ts`.
 
-The seed is **idempotent** (a second run on the seeded set adds nothing) and **respects user deletions** (if the user deleted a seed, the seed is not re-added). The contract is pinned by `apps/desktop-shell/src/main/prelaunchSeed.test.ts`. The user can opt out per-entry by deleting it from the desktop UI; the seed won't re-add it.
+The seed is **idempotent** (a second run on the seeded set adds nothing) and **respects user deletions** (if the user deleted a seed, the seed is not re-added). The contract is pinned by `agent-desktop/src/main/prelaunchSeed.test.ts`. The user can opt out per-entry by deleting it from the desktop UI; the seed won't re-add it.
 
 The pre-launch bundle is documented in `BRANDING_AND_LICENSE.md` §"V2.9 transitions landed". The full provenance is in `NOTICE` §"Direct dependencies — Cubecloud-original work (2026)".
 ### 5.4 Adding a new skill

@@ -10,40 +10,65 @@ changelog.
 
 | Surface | Path | Status | Why | Action |
 |---|---|---|---|---|
-| Agentic-OS state layer + seeds | `apps/desktop-shell/` | **Live** | Wired as the `@cubecloud/desktop-shell` workspace in the outer `package.json` (dev / build / typecheck). Contains the agentic-OS-original state layer (`agentControlPlane.ts`, `runtimeSessions.ts`, `providerDiscovery.ts`, `hermesLifecycle.ts`), the 5 pre-launch seed files (`default*.ts`), and 5 vitest test files. The smoke test `prelaunchSeed.smoke.mjs` (40/40) pins the V2.9 contract. | Keep. Document in README + HANDBOOK. |
-| Full Electron framework (hermes-desktop lineage) | `agent-desktop/` | **Live** (build target) | The Electron app the user installs. Contains the inherited hermes-desktop framework (MIT), the branding layer, the renderer, the build pipeline, and the Cubecloud-original runtime wrappers (`codegraph-runtime.ts`, `everos-sidecar.ts`, `skills-harness.ts`). Not in workspaces; consumed by `npm install` + `npm run build` of `apps/desktop-shell` at the shared electron-vite layer. | Keep. Document in HANDBOOK §3 (Layer map). |
-| Pre-launch bundle seed (V2.9) | `apps/desktop-shell/src/main/default{Skills,Memories,Harnesses,Schedules,Kanban}.ts` + `prelaunchSeed.test.ts` + `prelaunchSeed.smoke.mjs` | **Live** | 3 user-visible skills + 6 memory seeds + 3 disabled harnesses + 1 disabled schedule + 1 kanban starter board. Pinned by the 40/40 smoke test. | Keep. Document in HANDBOOK §5.6. |
+| Agentic-OS state layer + seeds | ~~`apps/desktop-shell/`~~ | **Retired, V2.10.67 (commit `06a10b9`)** | Was wired as the `@cubecloud/desktop-shell` workspace in the outer `package.json` (dev / build / typecheck). The workspace was retired because the inner `agent-desktop/` now hosts the agentic-OS-original state layer (`agentControlPlane.ts`, `runtimeSessions.ts`, `providerDiscovery.ts`, `hermesLifecycle.ts`) directly, making the wrapper workspace redundant. The `desktop-shell/` subdir is gone from the working tree. | Do not reintroduce. State layer lives at `agent-desktop/src/main/agentControlPlane.ts` and friends; see HANDBOOK §3. |
+| Full Electron framework (hermes-desktop lineage) | `agent-desktop/` | **Live** (build target) | The Electron app the user installs and the only true build target. Contains the inherited hermes-desktop framework (MIT), the branding layer, the renderer, the build pipeline, the state layer, and the Cubecloud-original runtime wrappers (`codegraph-runtime.ts`, `everos-sidecar.ts`, `skills-harness.ts`). The npm workspace name is `cubecloud-agent-desktop`. | Keep. Document in HANDBOOK §3 (Layer map). |
+| Pre-launch bundle seed (V2.9 → V2.10.67) | `agent-desktop/src/main/default{Skills,Memories,Harnesses,Schedules,Kanban}.ts` + `prelaunchSeed.test.ts` + `prelaunchSeed.smoke.mjs` | **Live** | 3 user-visible skills + 6 memory seeds + 3 disabled harnesses + 1 disabled schedule + 1 kanban starter board. Pinned by the smoke test. Migrated from `apps/desktop-shell/src/main/...` in V2.10.67 when the wrapper workspace was retired. | Keep. Document in HANDBOOK §5.6. |
 | `.agents/` skills ecosystem | `.agents/skills/<name>/SKILL.md` ({{SKILLS_TOTAL}} skills, of which {{SKILLS_UPSTREAM}} upstream-adapted) | **Live** | The contributor surface, mirrored to `~/.agents/skills/` on developer machines. | Keep. Document in HANDBOOK §5 + `.agents/skills/README.md`. |
 | Scratch-pad: cloned upstream repos | `.review-extras/` and `.review-codegraph/` | **Scratch-pad, not in git** | Local study clones used during the V2.6 + V2.7 skills import. They are not part of the build, not referenced by any live code, and can be safely deleted and re-cloned on demand. | Safe to purge locally; re-clone only when you need to restudy the upstream sources. |
 | OpenSpace as an in-repo application surface | Mentioned in `ABOUT.md`, `AGENTS.md`, `README.md` | **Retired from in-repo messaging, V2.10.57** | OpenSpace is no longer treated as an in-repo application surface. The Agent Desktop (`agent-desktop/`) is the individual-operator control surface; any team-level control-panel functionality lives in the cubecloud.io product line outside this repository. A code audit confirmed zero OpenSpace references in source, test, or config files. | Keep the retirement notes in `ABOUT.md`; do not reintroduce OpenSpace as a built-in surface. |
 | Governance docs | `README.md`, `LICENSE`, `NOTICE`, `BRANDING_AND_LICENSE.md`, `CONTRIBUTING.md`, `ACKNOWLEDGMENTS.md` at outer root; `docs/HANDBOOK.md`, `docs/handbook/*`, `docs/legal/*` at outer `docs/` | **Live** (source of truth) | Moved from `agent-desktop/` to the outer root in V2.10 (Option A). The inner mirror re-creates them as Windows hardlinks (files) and junctions (directories) via `scripts/sync-docs.ps1`. | Keep. The inner shadows are auto-regenerated. |
 | `agent-desktop/{README,LICENSE,NOTICE,BRANDING_AND_LICENSE,CONTRIBUTING,ACKNOWLEDGMENTS}.md` and `agent-desktop/docs/HANDBOOK.md` + `docs/handbook/*` | inner mirror | **Hardlinks** (not tracked as links) | See above. The shell-rendering at these paths is an admin-free mirror so the Electron build keeps finding the docs at the old locations. | Regenerate via `scripts/sync-docs.ps1` after any edit to the outer files. |
 
-## Why we keep `apps/desktop-shell/` even though `agent-desktop/` looks similar
+## What happened to `apps/desktop-shell/` (V2.10.67 retirement)
 
-The two are **complementary**, not duplicative. `agent-desktop/` is the
-**full Electron app** with the inherited hermes-desktop framework. It is
-where the renderer, the main process, and the build pipeline live. It is
-**not** in the outer `package.json` workspaces because the workspaces array
-is a `node` thing (it tells `npm install` where to look for workspaces),
-and the inner tree is a vendored copy with its own `node_modules/`.
+`apps/desktop-shell/` was a **wrapper workspace** that hosted the
+agentic-OS-original state layer in parallel with the inherited
+`agent-desktop/` framework. The two were originally split because the
+inner `agent-desktop/` was a vendored copy of `hermes-desktop` (MIT) that
+ran its own `npm install` in isolation, and the wrapper workspace
+existed to wire the Cubecloud-original control surface on top without
+mixing the two license domains.
 
-`apps/desktop-shell/` is the **agentic-OS-original state layer** that
-rebuilds the desktop's *control surface* on top of the inherited framework.
-The five `default*.ts` seed files in `apps/desktop-shell/src/main/` are
-consumed by the `agentControlPlane.ts` reads in the same folder. Those
-reads are called by the IPC handlers in `agent-desktop/src/main/`. So
-the boundary is:
+That separation turned out to be the wrong call. The state-layer code
+(`agentControlPlane.ts`, the `default*.ts` seeds, the pre-launch smoke
+test) had no dependency on being in a separate workspace, and shipping
+two workspaces for one desktop binary caused real bugs:
 
-- `agent-desktop/src/main/ipc/**` \u2014 the IPC bridge (inherited framework, MIT).
-- `apps/desktop-shell/src/main/agentControlPlane.ts` \u2014 the state plane (agentic-OS-original, dual-license).
-- `apps/desktop-shell/src/main/default*.ts` \u2014 the pre-launch seeds (agentic-OS-original, dual-license).
+- The v0.6.0 / v0.6.1 GitHub Releases were built from the wrapper
+  workspace, and the resulting installer was a "fake wrapper" — the asar
+  was rooted at the monorepo wrapper rather than the real agent-desktop
+  build. The user-facing program name was right but the launch path was
+  broken in ways that took a second fix release to recover from.
+- V2.10.59 tried to simplify the product name by dropping the
+  `cubecloud-` prefix from `electron-builder.yml` — but the wrapper
+  workspace was still wired in `package.json`, so the rename created a
+  second mismatch between release artifacts and the build tree.
+
+In V2.10.67 (commit `06a10b9`) the wrapper workspace was retired:
+
+- The `desktop-shell/` subdir was removed from the working tree.
+- The outer `package.json` workspaces array now contains only
+  `agent-desktop/` and `packages/platform-core/`.
+- The agentic-OS-original state layer was moved into
+  `agent-desktop/src/main/` directly (it was always licensed
+  agentic-OS-original, dual-license, so moving it inside the inner tree
+  did not change the license posture).
+- The build, test, and CI scripts were updated to use
+  `--workspace cubecloud-agent-desktop` instead of
+  `--workspace @cubecloud/desktop-shell`.
+
+The boundary that the wrapper workspace used to draw — "state plane in
+the wrapper, IPC bridge in the inner framework" — is now a single
+namespace inside `agent-desktop/src/main/`:
+
+- `agent-desktop/src/main/ipc/**` — the IPC bridge (inherited framework, MIT).
+- `agent-desktop/src/main/agentControlPlane.ts` — the state plane (agentic-OS-original, dual-license).
+- `agent-desktop/src/main/default*.ts` — the pre-launch seeds (agentic-OS-original, dual-license).
+
+There is no longer any "wrapper around the framework." The Electron
+build comes straight from `agent-desktop/` and produces the Windows
+installer. Do not reintroduce a wrapper workspace.
 - `agent-desktop/src/main/skills-harness.ts` \u2014 the skill manifest resolver (agentic-OS-original, dual-license).
-
-The right way to retire the duplication is **not** to delete one of the
-two. It is to make the boundary explicit (which this file does) and to
-keep the smoke test (`apps/desktop-shell/prelaunchSeed.smoke.mjs`,
-40/40) as the contract between the two halves.
 
 
 

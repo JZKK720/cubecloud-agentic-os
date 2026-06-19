@@ -12,8 +12,7 @@
 
 Cubecloud Agentic-OS는 **Cubecloud Agent Desktop** 및 그 운영 모델을 위한 모노레포입니다.
 데스크톱 바이너리는 [`agent-desktop/`](agent-desktop/)에 있습니다.
-Cubecloud 오리지널 제어 평면, 사전 실행 번들, 개발자용 스킬 생태계는
-[`apps/desktop-shell/`](apps/desktop-shell/),
+공유 TypeScript 계약과 개발자용 스킬 생태계는
 [`packages/platform-core/`](packages/platform-core/), [`.agents/`](.agents/)에 있습니다.
 
 네 줄로 요약하면:
@@ -87,8 +86,7 @@ Cubecloud는 다음과 같은 팀과 운영자에게 특히 적합합니다:
 
 이 모노레포가 제공하는 것은 데스크톱 바이너리만이 아닙니다.
 
-- [`agent-desktop/`](agent-desktop/)은 최종 사용자에게 제공되는 완전한 Electron 데스크톱입니다.
-- [`apps/desktop-shell/`](apps/desktop-shell/)은 Cubecloud 오리지널 상태 레이어 및 제어 평면 워크스페이스입니다.
+- [`agent-desktop/`](agent-desktop/)은 최종 사용자에게 제공되는 완전한 Electron 데스크톱입니다. 유일한 활성 구현 대상이며 모든 빌드 결과물은 여기에서 생성됩니다.
 - [`packages/platform-core/`](packages/platform-core/)는 공유 TypeScript 계약을 보유합니다.
 - [`.agents/skills/`](.agents/skills/)에는 8개의 업스트림 리포지토리에서 적응된 35개의 일급 오픈소스 스킬이 포함되어 있으며 `~/.agents/skills/`로 미러링됩니다.
 - [`docs/`](docs/)는 핸드북, 위협 모델, 런타임 계획, 법적 정책, 전환 이력을 보유합니다.
@@ -140,9 +138,9 @@ Cubecloud가 말하는 "프로덕션 대응"이란 "호스팅 SaaS와 영업 대
 데스크톱 경험은 3개의 협력하는 레이어로 구성됩니다:
 
 **코어 런타임 레이어**
-- **상태 레이어** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts)가 프로필, 세션, 모델, 프로바이더, 스킬, 메모리, 스케줄, 칸반 상태를 관리.
+- **상태 레이어** - [`agent-desktop/src/main/agentControlPlane.ts`](agent-desktop/src/main/agentControlPlane.ts)가 프로필, 세션, 모델, 프로바이더, 스킬, 메모리, 스케줄, 칸반 상태를 관리.
 - **런타임 오케스트레이션** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md)가 현재 Hermes 레인과 다음 OpenClaw / IronClaw 레인을 설명.
-- **프로바이더 레이어** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts)가 모델 프로바이더 선택을 런타임 선택과 분리.
+- **프로바이더 레이어** - [`agent-desktop/src/main/providerDiscovery.ts`](agent-desktop/src/main/providerDiscovery.ts)가 모델 프로바이더 선택을 런타임 선택과 분리.
 - **스킬 하네스** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts)가 발신 요청 주위에 스킬 레이어를 적용.
 
 **통합 지원 표면**（선택적, 사용자가 명시적으로 활성화）
@@ -172,8 +170,6 @@ cubecloud-agentic-os/
 ├── README.i18n.md                번역 인벤토리 매니페스트
 ├── .agents/                      ~/.agents/skills/로 미러링되는 35개의 오픈소스 스킬
 ├── .github/                      에이전트 지시, 워크플로 스킬, 자동화
-├── apps/
-│   └── desktop-shell/            Cubecloud 오리지널 제어 평면 워크스페이스
 ├── packages/
 │   └── platform-core/            공유 TypeScript 계약
 ├── docs/

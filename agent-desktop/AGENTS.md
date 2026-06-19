@@ -66,16 +66,15 @@ Prefer the narrowest relevant check first:
 - **Single test** (fastest feedback):
   `npm.cmd exec vitest run tests/<slice>.test.ts` (cwd `agent-desktop`)
 - **One workspace typecheck** (when shared contracts change):
-  `npm run typecheck --workspace @cubecloud/desktop-shell`
+  `npm run typecheck --workspace cubecloud-agent-desktop`
 - **Full desktop test suite** (before opening a PR):
-  `npm run test --workspace @cubecloud/desktop-shell`
+  `npm run test --workspace cubecloud-agent-desktop`
 - **Monorepo typecheck** (only if the change touches
-  `packages/platform-core/` or `apps/desktop-shell/`):
+  `packages/platform-core/`):
   `npm run typecheck` (at the repo root)
 - **Windows packaging** (only for build/packaging/installer
-  changes): `npm run build:win --workspace @cubecloud/desktop-shell`
-  followed by `npm run verify:win-package --workspace
-  @cubecloud/desktop-shell`
+  changes): `npm run build:win --workspace cubecloud-agent-desktop`
+  followed by `npm run verify:bundle --workspace cubecloud-agent-desktop`
 
 The CI gate (`.github/workflows/ci.yml`) runs 3 focused tests
 (`App.gateway.dom.test.tsx`, `App.kanban.dom.test.tsx`,

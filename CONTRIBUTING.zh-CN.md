@@ -87,8 +87,7 @@
 
 Cubecloud Agentic-OS 是一个单仓，包含以下主要部分：
 
-- `apps/desktop-shell/` — 活跃的 `@cubecloud/desktop-shell` 工作区。
-- `agent-desktop/` — 完整的 Electron 二进制文件（含继承的 hermes-desktop 框架）。
+- `agent-desktop/` — 完整的 Electron 二进制文件（含继承的 hermes-desktop 框架），也是唯一的活跃实现目标 —— 所有构建产物均来自此目录。
 - `packages/platform-core/` — 单仓全局共享的 TS 类型。
 - `docs/handbook/` — 按主题长文：ARCHITECTURE / DEVELOPMENT / OPERATIONS / README。
 - `docs/legal/` — TRADEMARK_POLICY、EULA、COMMERCIAL_LICENSE 等法律文件。

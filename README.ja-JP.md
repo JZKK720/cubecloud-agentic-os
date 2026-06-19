@@ -13,8 +13,7 @@
 
 Cubecloud Agentic-OS は **Cubecloud Agent Desktop** とその運用モデルのモノレポです。
 デスクトップバイナリは [`agent-desktop/`](agent-desktop/) にあります。
-Cubecloudオリジナルのコントロールプレーン、プレローンチバンドル、開発時スキルエコシステムは
-[`apps/desktop-shell/`](apps/desktop-shell/)、
+共有 TypeScript コントラクトと開発時スキルエコシステムは
 [`packages/platform-core/`](packages/platform-core/)、[`.agents/`](.agents/) にあります。
 
 4行でまとめると：
@@ -88,8 +87,7 @@ Cubecloudは以下のようなチームやオペレーターに特に適して�
 
 このモノレポが提供するのは、デスクトップバイナリだけではありません。
 
-- [`agent-desktop/`](agent-desktop/) はエンドユーザーに提供される完全なElectronデスクトップです。
-- [`apps/desktop-shell/`](apps/desktop-shell/) はCubecloudオリジナルの状態層とコントロールプレーンワークスペースです。
+- [`agent-desktop/`](agent-desktop/) はエンドユーザーに提供される完全なElectronデスクトップです。唯一の実装ターゲットであり、すべてのビルド成果物はここから生成されます。
 - [`packages/platform-core/`](packages/platform-core/) は共有TypeScriptコントラクトを保持します。
 - [`.agents/skills/`](.agents/skills/) には8つのアップストリームリポジトリから適応された35の第一級オープンソーススキルが含まれ、`~/.agents/skills/` にミラーリングされます。
 - [`docs/`](docs/) はハンドブック、脅威モデル、ランタイム計画、法的ポリシー、移行履歴を保持します。
@@ -141,9 +139,9 @@ Cubecloudの言う「プロダクション対応」とは「ホスト型SaaSと�
 デスクトップ体験は3つの協調するレイヤーで構成されています：
 
 **コアランタイムレイヤー**
-- **状態層** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) がプロファイル、セッション、モデル、プロバイダー、スキル、メモリ、スケジュール、かんばん状態を管理。
+- **状態層** - [`agent-desktop/src/main/agentControlPlane.ts`](agent-desktop/src/main/agentControlPlane.ts) がプロファイル、セッション、モデル、プロバイダー、スキル、メモリ、スケジュール、かんばん状態を管理。
 - **ランタイムオーケストレーション** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) が現在のHermesレーンと次のOpenClaw / IronClawレーンを説明。
-- **プロバイダーレイヤー** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) がモデルプロバイダー選択をランタイム選択から分離。
+- **プロバイダーレイヤー** - [`agent-desktop/src/main/providerDiscovery.ts`](agent-desktop/src/main/providerDiscovery.ts) がモデルプロバイダー選択をランタイム選択から分離。
 - **スキルハーネス** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) が送信リクエストの周囲にスキルレイヤーを適用。
 
 **統合サポートサーフェス**（オプション、ユーザーが明示的に有効化）
@@ -173,8 +171,6 @@ cubecloud-agentic-os/
 ├── README.i18n.md                翻訳インベントリマニフェスト
 ├── .agents/                      ~/.agents/skills/ にミラーリングされる35のオープンソーススキル
 ├── .github/                      エージェント指示、ワークフロースキル、自動化
-├── apps/
-│   └── desktop-shell/            Cubecloudオリジナルコントロールプレーンワークスペース
 ├── packages/
 │   └── platform-core/            共有TypeScriptコントラクト
 ├── docs/

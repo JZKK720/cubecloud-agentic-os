@@ -121,6 +121,13 @@ the upstream; only the *git* presence is removed.
 
 ### V2.10.3 —Affirmation: `apps/desktop-shell/` is live, not retired
 
+> **Superseded by V2.10.67 (commit `06a10b9`)** — The workspace was
+> actually retired in V2.10.67. The `desktop-shell/` subdir is gone from
+> the working tree, removed from the outer `package.json` workspaces
+> field, and all build/test/typecheck scripts point at the `agent-desktop/`
+> workspace. The text below is preserved as a record of what was
+> asserted at V2.10.3 time, not as a current description.
+
 There was a brief moment in the conversation history where the
 phrase "we retired apps/desktop-shell" was used. To set the
 record straight for future maintainers: **`apps/desktop-shell/`
@@ -140,6 +147,10 @@ surface is **mirror** if it is a hardlink/junction/build-output
 of a live surface.
 
 ### V2.10.4 —Per-file SPDX header in `apps/desktop-shell/.gitignore`
+
+> **Superseded by V2.10.67 (commit `06a10b9`)** — The
+> `apps/desktop-shell/.gitignore` file no longer exists. The
+> workspace was retired.
 
 The `@cubecloud/desktop-shell` workspace did not have a
 workspace-level `.gitignore`. V2.10.4 adds one for the things
