@@ -456,7 +456,7 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
           with business domain mapping and guided tours. */}
       <div className="codegraph-extra-tools">
         <h3 className="codegraph-extra-tools-title">
-          {t("codegraph.extraToolsTitle", "Knowledge Graph Tools")}
+          {t("codegraph.extraToolsTitle", { defaultValue: "Knowledge Graph Tools" })}
         </h3>
         <div className="codegraph-extra-tools-grid">
           <div className="codegraph-extra-tool-card">
@@ -464,11 +464,11 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
             <div className="codegraph-extra-tool-desc">
               {t(
                 "codegraph.graphifyDesc",
-                "Multimodal knowledge graph — code, docs, papers, images, video. Exposes an MCP server for agent queries. Install: pip install graphifyy && graphify install",
+                { defaultValue: "Multimodal knowledge graph — code, docs, papers, images, video. Exposes an MCP server for agent queries. Install: pip install graphifyy && graphify install" },
               )}
             </div>
             <div className="codegraph-extra-tool-mcp">
-              {t("codegraph.mcpHint", "Register via the MCP screen after install")}
+              {t("codegraph.mcpHint", { defaultValue: "Register via the MCP screen after install" })}
             </div>
           </div>
           <div className="codegraph-extra-tool-card">
@@ -476,11 +476,11 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
             <div className="codegraph-extra-tool-desc">
               {t(
                 "codegraph.understandDesc",
-                "Interactive knowledge graph dashboard with business domain mapping, guided tours, and onboarding guides. Multi-agent LLM pipeline. Install: curl -fsSL https://raw.githubusercontent.com/Egonex-AI/Understand-Anything/main/install.sh | bash",
+                { defaultValue: "Interactive knowledge graph dashboard with business domain mapping, guided tours, and onboarding guides. Multi-agent LLM pipeline. Install: curl -fsSL https://raw.githubusercontent.com/Egonex-AI/Understand-Anything/main/install.sh | bash" },
               )}
             </div>
             <div className="codegraph-extra-tool-future">
-              {t("codegraph.futureFeature", "Future feature — deep analysis button coming in V2.10.7x")}
+              {t("codegraph.futureFeature", { defaultValue: "Future feature — deep analysis button coming in V2.10.7x" })}
             </div>
           </div>
         </div>

@@ -144,11 +144,11 @@ export default function SandboxTasks({
   return (
     <div className="screen sandbox-tasks-screen">
       <div className="sandbox-tasks-header">
-        <h2>{t("sandboxTasks.title", "Sandbox Tasks")}</h2>
+        <h2>{t("sandboxTasks.title", { defaultValue: "Sandbox Tasks" })}</h2>
         <p className="sandbox-tasks-subtitle">
           {t(
             "sandboxTasks.subtitle",
-            "Dispatch tasks to the IronClaw WASM-sandbox gateway. Tool calls execute in isolated sandbox containers.",
+            { defaultValue: "Dispatch tasks to the IronClaw WASM-sandbox gateway. Tool calls execute in isolated sandbox containers." },
           )}
         </p>
       </div>
@@ -156,7 +156,7 @@ export default function SandboxTasks({
       {/* Connection panel */}
       <div className="sandbox-tasks-card">
         <label className="sandbox-tasks-label">
-          {t("sandboxTasks.gatewayUrl", "IronClaw Gateway URL")}
+          {t("sandboxTasks.gatewayUrl", { defaultValue: "IronClaw Gateway URL" })}
         </label>
         <div className="sandbox-tasks-row">
           <input
@@ -173,13 +173,13 @@ export default function SandboxTasks({
           >
             <Refresh size={14} />
             {probing
-              ? t("sandboxTasks.probing", "Probing...")
-              : t("sandboxTasks.connect", "Connect")}
+              ? t("sandboxTasks.probing", { defaultValue: "Probing..." })
+              : t("sandboxTasks.connect", { defaultValue: "Connect" })}
           </button>
         </div>
 
         <label className="sandbox-tasks-label">
-          {t("sandboxTasks.bearerToken", "Bearer token (optional)")}
+          {t("sandboxTasks.bearerToken", { defaultValue: "Bearer token (optional)" })}
         </label>
         <input
           type="password"
@@ -193,11 +193,11 @@ export default function SandboxTasks({
           <div className="sandbox-tasks-status">
             {connection.healthy ? (
               <span className="sandbox-tasks-status-ok">
-                <CheckCircle size={14} /> {t("sandboxTasks.connected", "Connected")} ({connection.latencyMs}ms)
+                <CheckCircle size={14} /> {t("sandboxTasks.connected", { defaultValue: "Connected" })} ({connection.latencyMs}ms)
               </span>
             ) : (
               <span className="sandbox-tasks-status-err">
-                <XCircle size={14} /> {connection.error || t("sandboxTasks.notConnected", "Not connected")}
+                <XCircle size={14} /> {connection.error || t("sandboxTasks.notConnected", { defaultValue: "Not connected" })}
               </span>
             )}
           </div>
@@ -208,11 +208,11 @@ export default function SandboxTasks({
       {connection?.healthy && models.length > 0 && (
         <div className="sandbox-tasks-card">
           <label className="sandbox-tasks-label">
-            {t("sandboxTasks.model", "Model")}
+            {t("sandboxTasks.model", { defaultValue: "Model" })}
           </label>
           <select
             className="sandbox-tasks-select"
-            title={t("sandboxTasks.model", "Model")}
+            title={t("sandboxTasks.model", { defaultValue: "Model" })}
             value={selectedModel}
             onChange={(e) => setSelectedModel(e.target.value)}
           >
@@ -229,7 +229,7 @@ export default function SandboxTasks({
       {connection?.healthy && (
         <div className="sandbox-tasks-card">
           <label className="sandbox-tasks-label">
-            {t("sandboxTasks.contextFolder", "Context folder (optional)")}
+            {t("sandboxTasks.contextFolder", { defaultValue: "Context folder (optional)" })}
           </label>
           <input
             type="text"
@@ -240,7 +240,7 @@ export default function SandboxTasks({
           />
 
           <label className="sandbox-tasks-label">
-            {t("sandboxTasks.taskDescription", "Describe the task")}
+            {t("sandboxTasks.taskDescription", { defaultValue: "Describe the task" })}
           </label>
           <textarea
             className="sandbox-tasks-textarea"
@@ -256,8 +256,8 @@ export default function SandboxTasks({
           >
             <Send size={14} />
             {dispatching
-              ? t("sandboxTasks.dispatching", "Dispatching...")
-              : t("sandboxTasks.sendToSandbox", "Send to Sandbox")}
+              ? t("sandboxTasks.dispatching", { defaultValue: "Dispatching..." })
+              : t("sandboxTasks.sendToSandbox", { defaultValue: "Send to Sandbox" })}
           </button>
         </div>
       )}
@@ -275,11 +275,11 @@ export default function SandboxTasks({
           <div className="sandbox-tasks-result-header">
             {result.ok ? (
               <span className="sandbox-tasks-status-ok">
-                <CheckCircle size={14} /> {t("sandboxTasks.completed", "Completed")} ({result.latencyMs}ms)
+                <CheckCircle size={14} /> {t("sandboxTasks.completed", { defaultValue: "Completed" })} ({result.latencyMs}ms)
               </span>
             ) : (
               <span className="sandbox-tasks-status-err">
-                <XCircle size={14} /> {t("sandboxTasks.failed", "Failed")}
+                <XCircle size={14} /> {t("sandboxTasks.failed", { defaultValue: "Failed" })}
               </span>
             )}
             <span className="sandbox-tasks-result-model">{result.model}</span>
@@ -291,7 +291,7 @@ export default function SandboxTasks({
           {result.reply && (
             <div className="sandbox-tasks-reply">
               <label className="sandbox-tasks-label">
-                {t("sandboxTasks.reply", "Reply")}
+                {t("sandboxTasks.reply", { defaultValue: "Reply" })}
               </label>
               <pre className="sandbox-tasks-pre">{result.reply}</pre>
             </div>
@@ -300,7 +300,7 @@ export default function SandboxTasks({
           {result.toolCalls.length > 0 && (
             <div className="sandbox-tasks-tool-calls">
               <label className="sandbox-tasks-label">
-                {t("sandboxTasks.toolCalls", "Tool calls (WASM sandbox)")}
+                {t("sandboxTasks.toolCalls", { defaultValue: "Tool calls (WASM sandbox)" })}
               </label>
               {result.toolCalls.map((tc, i) => (
                 <div key={i} className="sandbox-tasks-tool-call">

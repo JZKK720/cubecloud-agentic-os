@@ -98,12 +98,12 @@ function App(): React.JSX.Element {
               const found = scan.discovered.find((d) => d.healthy);
               if (found) {
                 // Auto-connect: save the connection and go to main
-                await window.hermesAPI.setConnectionConfig({
-                  mode: "remote",
-                  remoteUrl: found.url,
-                  apiKey: "",
-                  gatewayRuntimePreset: found.runtime,
-                });
+                await window.hermesAPI.setConnectionConfig(
+                  "remote",
+                  found.url,
+                  "",
+                  found.runtime,
+                );
                 setConnectionMode("remote");
                 setGatewayRuntimePreset(found.runtime);
                 setCachedGatewayRuntimePreset(found.runtime);

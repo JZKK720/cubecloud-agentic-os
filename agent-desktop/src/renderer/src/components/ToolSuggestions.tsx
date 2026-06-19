@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useI18n } from "./useI18n";
-import { Sparkles, X, CheckCircle, Download } from "../assets/icons";
+import { Sparkles, X, Download } from "../assets/icons";
 
 interface ToolSuggestion {
   id: string;
@@ -104,12 +104,12 @@ export default function ToolSuggestions(): React.JSX.Element | null {
       <div className="tool-suggestions-header">
         <Sparkles size={14} />
         <span className="tool-suggestions-title">
-          {t("toolSuggestions.title", "Enhance your agent")}
+          {t("toolSuggestions.title", { defaultValue: "Enhance your agent" })}
         </span>
         <button
           className="tool-suggestions-dismiss"
           onClick={handleDismiss}
-          title={t("toolSuggestions.dismiss", "Dismiss")}
+          title={t("toolSuggestions.dismiss", { defaultValue: "Dismiss" })}
         >
           <X size={12} />
         </button>
@@ -122,7 +122,7 @@ export default function ToolSuggestions(): React.JSX.Element | null {
         >
           {t(
             "toolSuggestions.expand",
-            "CodeGraph · Graphify · EverOS · Headroom · Agent-Reach →",
+            { defaultValue: "CodeGraph · Graphify · EverOS · Headroom · Agent-Reach →" },
           )}
         </button>
       ) : (
@@ -134,7 +134,7 @@ export default function ToolSuggestions(): React.JSX.Element | null {
                 <span className="tool-suggestion-desc">{tool.description}</span>
                 {tool.needsApiKey && (
                   <span className="tool-suggestion-api-key-hint">
-                    {t("toolSuggestions.needsKey", "Needs API key")}
+                    {t("toolSuggestions.needsKey", { defaultValue: "Needs API key" })}
                   </span>
                 )}
               </div>
@@ -151,14 +151,14 @@ export default function ToolSuggestions(): React.JSX.Element | null {
                 }}
               >
                 <Download size={12} />
-                {t("toolSuggestions.copy", "Copy")}
+                {t("toolSuggestions.copy", { defaultValue: "Copy" })}
               </button>
             </div>
           ))}
           <p className="tool-suggestions-hint">
             {t(
               "toolSuggestions.hint",
-              "Paste the command in a terminal on the gateway machine. Tools are optional and can be installed anytime.",
+              { defaultValue: "Paste the command in a terminal on the gateway machine. Tools are optional and can be installed anytime." },
             )}
           </p>
         </div>

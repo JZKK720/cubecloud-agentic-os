@@ -1287,7 +1287,7 @@ function setupIPC(): void {
   );
   ipcMain.handle(
     "ironclaw:dispatch",
-    (_event, url: string, token: string | undefined, task: import("./ironclaw-sandbox").SandboxTaskRequest) =>
+    (_event, url: string, token: string | undefined, task: { model: string; message: string; contextFolder?: string }) =>
       dispatchSandboxTask(url, token, task),
   );
 

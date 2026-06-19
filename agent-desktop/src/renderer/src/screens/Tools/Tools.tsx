@@ -355,7 +355,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       <div className="tools-agent-reach">
         <div className="tools-agent-reach-header">
           <h3 className="tools-agent-reach-title">
-            {t("tools.agentReachTitle", "Internet Capabilities (Agent-Reach)")}
+            {t("tools.agentReachTitle", { defaultValue: "Internet Capabilities (Agent-Reach)" })}
           </h3>
           <button
             className="btn btn-secondary tools-agent-reach-refresh"
@@ -364,20 +364,20 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           >
             <Refresh size={14} />
             {agentReachLoading
-              ? t("tools.agentReachScanning", "Scanning...")
-              : t("tools.agentReachRefresh", "Refresh")}
+              ? t("tools.agentReachScanning", { defaultValue: "Scanning..." })
+              : t("tools.agentReachRefresh", { defaultValue: "Refresh" })}
           </button>
         </div>
         <p className="tools-agent-reach-subtitle">
           {t(
             "tools.agentReachSubtitle",
-            "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: pip install agent-reach",
+            { defaultValue: "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: pip install agent-reach" },
           )}
         </p>
         {agentReach?.installed ? (
           <div className="tools-agent-reach-status">
             <span className="tools-agent-reach-installed">
-              <CheckCircle size={14} /> {t("tools.agentReachInstalled", "Installed")}
+              <CheckCircle size={14} /> {t("tools.agentReachInstalled", { defaultValue: "Installed" })}
               {agentReach.version && ` (v${agentReach.version})`}
             </span>
             {agentReach.channels.length > 0 && (
@@ -412,7 +412,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           <div className="tools-agent-reach-not-installed">
             {t(
               "tools.agentReachNotInstalled",
-              "Agent-Reach is not installed. The runtime agent does not have internet capability tools.",
+              { defaultValue: "Agent-Reach is not installed. The runtime agent does not have internet capability tools." },
             )}
           </div>
         ) : null}
