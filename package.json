@@ -1,7 +1,7 @@
 {
   "name": "cubecloud-agentic-os",
   "private": true,
-  "version": "0.1.0",
+  "version": "2.10.67",
   "description": "Desktop-first agentic operating system shell for Cubecloud",
   "workspaces": [
     "apps/*",
@@ -14,5 +14,8 @@
     "graphify:repo": "node scripts/graphify-repo.cjs run",
     "graphify:update": "node scripts/graphify-repo.cjs update",
     "graphify:query": "node scripts/graphify-repo.cjs query"
+  },
+  "devDependencies": {
+    "electron": "^42.4.1"
   }
 }
