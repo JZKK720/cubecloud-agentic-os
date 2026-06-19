@@ -80,31 +80,51 @@ export default function SandboxTasks({
   const [probing, setProbing] = useState(false);
   const [dispatching, setDispatching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasToken = token.trim().length > 0;
 
   const probeGateway = useCallback(async () => {
     setProbing(true);
     setError(null);
+    const authToken = token.trim() || undefined;
     try {
       const conn = await window.hermesAPI.ironclawProbe(
         gatewayUrl,
-        token || undefined,
+        authToken,
       );
       setConnection(conn);
-      if (conn.healthy) {
+      if (!conn.healthy) {
+        setModels([]);
+        setSelectedModel("");
+        return;
+      }
+
+      if (!authToken) {
+        setModels([]);
+        setSelectedModel("");
+        return;
+      }
+
+      try {
         const modelList = await window.hermesAPI.ironclawModels(
           gatewayUrl,
-          token || undefined,
+          authToken,
         );
         setModels(modelList);
         if (modelList.length > 0 && !selectedModel) {
           setSelectedModel(modelList[0].id);
+        } else if (modelList.length === 0) {
+          setSelectedModel("");
         }
-      } else {
+      } catch (err) {
         setModels([]);
+        setSelectedModel("");
+        setError((err as Error).message);
       }
     } catch (err) {
       setError((err as Error).message);
       setConnection(null);
+      setModels([]);
+      setSelectedModel("");
     } finally {
       setProbing(false);
     }
@@ -202,6 +222,15 @@ export default function SandboxTasks({
             )}
           </div>
         )}
+
+        {connection?.healthy && !hasToken && (
+          <p className="sandbox-tasks-subtitle">
+            {t("sandboxTasks.tokenRequiredHint", {
+              defaultValue:
+                "Gateway is reachable. Add a gateway token and reconnect to load models.",
+            })}
+          </p>
+        )}
       </div>
 
       {/* Model picker */}
@@ -226,7 +255,7 @@ export default function SandboxTasks({
       )}
 
       {/* Task input */}
-      {connection?.healthy && (
+      {connection?.healthy && models.length > 0 && (
         <div className="sandbox-tasks-card">
           <label className="sandbox-tasks-label">
             {t("sandboxTasks.contextFolder", { defaultValue: "Context folder (optional)" })}

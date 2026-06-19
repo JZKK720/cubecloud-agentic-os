@@ -24,9 +24,9 @@ interface ConnectionDiagnosticFormatArgs {
 }
 
 function resolveSecretName(runtimePresetId: GatewayRuntimePresetId): string {
-  return runtimePresetId === "openclaw"
-    ? "token or password"
-    : "API server key";
+  if (runtimePresetId === "openclaw") return "token or password";
+  if (runtimePresetId === "ironclaw") return "gateway token";
+  return "API server key";
 }
 
 export function formatConnectionDiagnosticStatus({

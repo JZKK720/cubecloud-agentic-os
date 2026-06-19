@@ -23,6 +23,13 @@ coverage/
 .review-graphify/
 graphify-out/
 
+# V2.10.68: local runtime / install artifacts that must not be committed.
+# agent-desktop/.codegraph/ is the CodeGraph SQLite runtime DB (3+ MB, per-machine).
+# .agents/skills/last30days/ is a local junction to a cloned skill repo
+# (C:\Users\<user>\.last30days-skill-repo); re-clone from upstream on demand.
+agent-desktop/.codegraph/
+.agents/skills/last30days/
+
 # Top-level repo files (the outer cubecloud-agentic-os/ monorepo).
 # .agents/, .github/, apps/, packages/, docs/, scripts/ are tracked.
 # The agent-desktop/ subdir is the vendored mirror; its

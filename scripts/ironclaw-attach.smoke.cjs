@@ -6,7 +6,8 @@
 // This script runs OUTSIDE the repo on the operator's local dev box.
 // It reads the IronClaw bearer token from the IRONCLAW_TEST_TOKEN
 // environment variable, probes the live IronClaw on the published
-// port (default 8281), and prints PASS / FAIL with the latency. It
+// gateway port (default 3231), and prints PASS / FAIL with the
+// latency. It
 // never echoes the token. It never writes the token to a file.
 //
 // Usage (operator-side, in a local pwsh or bash):
@@ -14,7 +15,7 @@
 //   $env:IRONCLAW_TEST_TOKEN = "<paste token from IronClaw operator panel>"
 //   node scripts/ironclaw-attach.smoke.cjs
 //   # or override host/port/path:
-//   $env:IRONCLAW_TEST_URL = "http://gpu-host.lan:9000/health"
+//   $env:IRONCLAW_TEST_URL = "http://gpu-host.lan:9000/api/health"
 //   node scripts/ironclaw-attach.smoke.cjs
 //
 // The script is intentionally NOT a vitest test — it is a one-shot
@@ -33,9 +34,9 @@ const http = require("node:http");
 const https = require("node:https");
 const { URL } = require("node:url");
 
-// Default to the documented IronClaw operator surface. Operators
+// Default to the live browser-facing IronClaw gateway surface. Operators
 // can override via IRONCLAW_TEST_URL.
-const DEFAULT_URL = "http://127.0.0.1:8281/health";
+const DEFAULT_URL = "http://127.0.0.1:3231/api/health";
 const PROBE_TIMEOUT_MS = 3000;
 
 // Helper: redacted-string printer. Used in any place we might
@@ -153,7 +154,7 @@ async function main() {
       );
     } else if (result.status === 404) {
       console.error(
-        "[ironclaw-attach.smoke] hint  : IronClaw returned 404 on this path. Try IRONCLAW_TEST_URL=http://host:port/models or /v1/models.",
+        "[ironclaw-attach.smoke] hint  : IronClaw returned 404 on this path. Try IRONCLAW_TEST_URL=http://host:port/api/health or another published gateway path.",
       );
     } else if (result.error === "timeout") {
       console.error(

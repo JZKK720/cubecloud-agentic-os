@@ -116,7 +116,7 @@ This monorepo is broader than the desktop binary alone.
 On first launch, the desktop gives the user:
 
 - A native Electron desktop built with React 19, i18next, Vite, and electron-builder.
-- A multi-runtime picker: Hermes today, with OpenClaw and IronClaw planned as additional lanes.
+- A multi-runtime picker: Hermes today, with IronClaw as a current gateway-handoff lane and OpenClaw as an optional future lane.
 - A provider layer that can talk to local providers such as Ollama, vLLM, and llama.cpp or remote OpenAI-compatible APIs.
 - Three user-visible first-launch skills: `cubecloud-persona`, `cubecloud-onboarding`, and `cubegraph-code-intel`.
 - A prelaunch operating context with seeded memories, harness placeholders, a schedule placeholder, and a starter kanban board.
@@ -165,7 +165,7 @@ The desktop experience is built from three cooperating layers:
 
 **Core runtime layer**
 - **State layer** - [`apps/desktop-shell/src/main/agentControlPlane.ts`](apps/desktop-shell/src/main/agentControlPlane.ts) owns profiles, sessions, models, providers, skills, memory, schedules, and kanban state.
-- **Runtime orchestration** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) describes Hermes as the current lane and OpenClaw / IronClaw as the next lanes.
+- **Runtime orchestration** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) describes Hermes as the current lane, IronClaw as a current gateway-handoff lane, and OpenClaw as an optional future lane.
 - **Provider layer** - [`apps/desktop-shell/src/main/providerDiscovery.ts`](apps/desktop-shell/src/main/providerDiscovery.ts) keeps model-provider selection separate from runtime selection.
 - **Skills harness** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) applies the skill layer around outgoing requests.
 

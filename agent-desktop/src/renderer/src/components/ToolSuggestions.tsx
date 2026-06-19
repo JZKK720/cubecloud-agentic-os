@@ -2,7 +2,7 @@
  * V2.10.67 — Ambient tool suggestions panel.
  *
  * A small, non-blocking panel at the bottom of the sidebar that
- * shows optional support tools (CodeGraph, Graphify, EverOS,
+ * shows optional support tools (CodeGraph, EverOS,
  * Headroom, Agent-Reach) with one-click install buttons.
  *
  * The panel is dismissible — the user can close it and come back
@@ -35,19 +35,10 @@ const TOOL_SUGGESTIONS: ToolSuggestion[] = [
     needsApiKey: false,
   },
   {
-    id: "graphify",
-    name: "Graphify",
-    description: "Multimodal knowledge graph — code, docs, papers, images",
-    installCommand: "pip install graphifyy",
-    installType: "pip",
-    screen: "codegraph",
-    needsApiKey: true,
-  },
-  {
     id: "everos",
     name: "EverOS",
-    description: "Memory harness — persistent agent memory across sessions",
-    installCommand: "pip install everos",
+    description: "Memory harness — persistent agent memory across sessions (verify local sidecar support on your platform)",
+    installCommand: "python -m pip install --user everos",
     installType: "pip",
     screen: "everos",
     needsApiKey: false,
@@ -56,7 +47,7 @@ const TOOL_SUGGESTIONS: ToolSuggestion[] = [
     id: "headroom",
     name: "Headroom",
     description: "Context compression — save tokens on long conversations",
-    installCommand: "pip install headroom",
+    installCommand: 'python -m pip install --user "headroom-ai[all]"',
     installType: "pip",
     screen: "headroom",
     needsApiKey: false,
@@ -65,7 +56,7 @@ const TOOL_SUGGESTIONS: ToolSuggestion[] = [
     id: "agent-reach",
     name: "Agent-Reach",
     description: "Internet capabilities — Twitter, Reddit, YouTube, RSS, search",
-    installCommand: "pip install agent-reach",
+    installCommand: "python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
     installType: "pip",
     screen: "tools",
     needsApiKey: true,
@@ -122,7 +113,7 @@ export default function ToolSuggestions(): React.JSX.Element | null {
         >
           {t(
             "toolSuggestions.expand",
-            { defaultValue: "CodeGraph · Graphify · EverOS · Headroom · Agent-Reach →" },
+            { defaultValue: "CodeGraph · EverOS · Headroom · Agent-Reach →" },
           )}
         </button>
       ) : (

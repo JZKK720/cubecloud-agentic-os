@@ -16,6 +16,8 @@ describe("runtime orchestration contract", () => {
 
     expect(ironclaw.role).toBe("gateway-handoff");
     expect(ironclaw.capabilities.canDiscoverViaDocker).toBe(true);
+    expect(ironclaw.capabilities.canAttachViaSshTunnel).toBe(true);
+    expect(ironclaw.connectionModes).toContain("ssh-tunnel");
     expect(ironclaw.preferredTaskOrchestratorIds).toEqual(["hermes", "ecc"]);
 
     expect(openclaw.onboardingSurface).toBe("setup");

@@ -13,7 +13,10 @@ import {
   startSshTunnel,
   stopSshTunnel,
 } from "./ssh-tunnel";
-import { OPENCLAW_LOCAL_GATEWAY_PORT } from "../shared/runtime-defaults";
+import {
+  IRONCLAW_DEFAULT_PORT,
+  OPENCLAW_LOCAL_GATEWAY_PORT,
+} from "../shared/runtime-defaults";
 
 type SshStartupDeps = {
   getConnectionConfig: typeof getConnectionConfig;
@@ -26,6 +29,7 @@ type SshStartupDeps = {
   sshGatewayStatus: typeof sshGatewayStatus;
   sshStartGateway: typeof sshStartGateway;
   openClawLocalGatewayPort: number;
+  ironClawGatewayPort: number;
   now: () => number;
   wait: (ms: number) => Promise<void>;
 };
@@ -40,7 +44,10 @@ export function createSshStartupHelpers(deps: SshStartupDeps): {
   startConfiguredSshTunnel: () => Promise<boolean>;
 } {
   function shouldAutoStartHermesSshGateway(remotePort: number): boolean {
-    return remotePort !== deps.openClawLocalGatewayPort;
+    return (
+      remotePort !== deps.openClawLocalGatewayPort &&
+      remotePort !== deps.ironClawGatewayPort
+    );
   }
 
   async function waitForRemoteGateway(
@@ -112,6 +119,7 @@ const defaultSshStartupHelpers = createSshStartupHelpers({
   sshGatewayStatus,
   sshStartGateway,
   openClawLocalGatewayPort: OPENCLAW_LOCAL_GATEWAY_PORT,
+  ironClawGatewayPort: IRONCLAW_DEFAULT_PORT,
   now: () => Date.now(),
   wait: (ms: number) => new Promise((resolve) => setTimeout(resolve, ms)),
 });

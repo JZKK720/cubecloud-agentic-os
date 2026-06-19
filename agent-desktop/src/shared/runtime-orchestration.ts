@@ -170,12 +170,12 @@ export const RUNTIME_PROVIDER_CATALOG = [
     role: "gateway-handoff",
     integrationStatus: "current",
     onboardingSurface: "welcome",
-    connectionModes: ["docker-gateway", "remote-gateway"],
+    connectionModes: ["docker-gateway", "remote-gateway", "ssh-tunnel"],
     capabilities: {
       canInstallLocally: false,
       canAttachToExistingLocalGateway: false,
       canAttachToRemoteGateway: true,
-      canAttachViaSshTunnel: false,
+      canAttachViaSshTunnel: true,
       canDiscoverViaDocker: true,
       canImportExistingState: false,
       canDiscoverLocalCli: false,
@@ -188,6 +188,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
       "Treat as an attached gateway runtime, not a native Agent Desktop dashboard or scheduler.",
       "Keep Docker discovery scoped to truthful handoff of an already-running IronClaw gateway container.",
       "V2.10.65 — IronClaw's OpenAI-compatible gateway is on container port 3000 (host 3231). Port 8281 (container 8080) is the internal HTTP channel bus; port 50051 is gRPC. The desktop attaches to the gateway port for chat and WASM-sandboxed tool execution.",
+      "SSH attach reuses the existing forwarded-gateway path and expects the IronClaw operator surface on /api/health plus the OpenAI-compatible /v1 endpoints behind the tunnel.",
     ],
   },
   {
@@ -335,7 +336,7 @@ const DOCKER_DISCOVERY_TARGETS: Record<
     id: "ironclaw",
     displayName: "IronClaw",
     keywords: ["ironclaw", "iron-claw"],
-    preferredPorts: [8281, 3000, 8080, 8644, 8789, 8642],
+    preferredPorts: [3231, 3000, 8281, 8080, 8644, 8789, 8642],
   },
   openclaw: {
     id: "openclaw",

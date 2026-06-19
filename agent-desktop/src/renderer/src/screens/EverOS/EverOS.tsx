@@ -95,6 +95,7 @@ function formatTimestamp(ts: number | null): string {
 
 function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
   const { t } = useI18n();
+  const isWindows = window.electron?.process?.platform === "win32";
   const [config, setConfig] = useState<EverOsConfig | null>(null);
   const [health, setHealth] = useState<EverOsHealthStatus | null>(null);
   const [query, setQuery] = useState("");
@@ -305,6 +306,22 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
         </div>
       </header>
 
+      {isWindows && (
+        <article className="panel-card">
+          <h2>
+            {t("everos.windowsNote.title", {
+              defaultValue: "Windows note",
+            })}
+          </h2>
+          <p className="workspace-copy">
+            <AlertIcon size={14} /> {t("everos.windowsNote.body", {
+              defaultValue:
+                "Managed local EverOS may still require WSL or a remote host on Windows. If the local sidecar fails to start, keep using this screen against a WSL-hosted or remote EverOS base URL.",
+            })}
+          </p>
+        </article>
+      )}
+
       {/* Sidecar lifecycle card. Renders the spawn process
           state, a Start/Stop/Restart control, the last error
           line, and (when the user expands it) a 200-line log
@@ -338,7 +355,7 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
               {sidecar.lastError}
             </p>
           )}
-          <dl className="operator-field-grid">
+          <div className="operator-field-grid">
             <div className="operator-field">
               <span>{t("everos.sidecar.pid")}</span>
               <strong>{sidecar.pid ?? "--"}</strong>
@@ -359,7 +376,7 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
                   : "--"}
               </strong>
             </div>
-          </dl>
+          </div>
           <div className="registry-footer">
             {sidecar.state === "stopped" ||
             sidecar.state === "exited" ||
@@ -550,7 +567,7 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
             </p>
           )}
           {health?.reachable && config && (
-            <dl className="operator-field-grid">
+            <div className="operator-field-grid">
               <div className="operator-field">
                 <span>{t("everos.config.baseUrl")}</span>
                 <strong className="mono">{config.baseUrl}</strong>
@@ -567,7 +584,7 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
                 <span>{t("everos.health.scannedAt")}</span>
                 <strong>{formatTimestamp(Date.parse(health.scannedAt))}</strong>
               </div>
-            </dl>
+            </div>
           )}
         </article>
 

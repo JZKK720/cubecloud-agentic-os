@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useId } from "react";
 import { useTheme } from "../../components/ThemeProvider";
 import { THEME_OPTIONS } from "../../constants";
 import { useI18n } from "../../components/useI18n";
@@ -202,10 +202,9 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     runtimeProviders.find(
       (provider) => provider.definition.id === "openclaw",
     ) ?? null;
-  // V2.10.61 — IronClaw is a remote-gateway-only runtime, so the
-  // provider snapshot drives the lane displayName on the remote
-  // panel. SSH is not supported (sshSupported=false on the preset),
-  // so the SSH panel hides the IronClaw button.
+  // Provider snapshots drive lane labels on the connection panels.
+  // IronClaw now supports SSH attach through the same forwarded
+  // gateway path as OpenClaw, so both panels should expose it.
   const ironclawProvider =
     runtimeProviders.find(
       (provider) => provider.definition.id === "ironclaw",
@@ -709,7 +708,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
         ? gatewayRuntimePreset === "openclaw"
           ? `Tunnel to a remote ${selectedGatewayRuntime.displayName} compatibility gateway over SSH with no exposed ports. OpenClaw HTTP compatibility must be enabled on the remote host.`
           : gatewayRuntimePreset === "ironclaw"
-            ? `${selectedGatewayRuntime.displayName} is gateway-only and does not support SSH attach. Use the remote panel to attach to the published container port (default 8281).`
+            ? `Tunnel to a remote ${selectedGatewayRuntime.displayName} gateway over SSH with no exposed ports. The forwarded gateway should expose /api/health plus the OpenAI-compatible /v1 endpoints, and may require a gateway token.`
             : `Tunnel to a remote ${selectedGatewayRuntime.displayName} gateway over SSH with no exposed ports. Save its API server key here if auth is enabled.`
         : gatewayRuntimePreset === "openclaw"
           ? `Attach directly to a remote ${selectedGatewayRuntime.displayName} compatibility endpoint. Use the URL ending in /v1 and provide the gateway token or password if auth is enabled.`
@@ -946,7 +945,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       <div className="settings-section">
         <div className="settings-section-title">Community</div>
         <div className="settings-field">
-          <div className="settings-field-hint" style={{ marginBottom: 10 }}>
+          <div className="settings-field-hint settings-field-hint--spaced-sm">
             Open the current community channel to ask questions, report issues,
             and share feedback.
           </div>
@@ -958,7 +957,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               }
               title={TELEGRAM_COMMUNITY_URL}
             >
-              <Send size={14} style={{ marginRight: 6 }} />
+              <Send size={14} className="settings-inline-icon" />
               Open Community Channel
             </button>
           </div>
@@ -970,8 +969,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       <div className="settings-section">
         <div className="settings-section-title">/careful guard</div>
         <div
-          className="settings-field-hint"
-          style={{ marginBottom: 12, lineHeight: 1.5 }}
+          className="settings-field-hint settings-field-hint--spaced-md settings-field-hint--relaxed"
         >
           V2 Step 9 — checks shell commands against the destructive-pattern
           list. The main use site is the Plans dispatch flow, which surfaces
@@ -983,7 +981,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
 
       <div className="settings-section">
         <div className="settings-section-title">Task orchestration</div>
-        <div className="settings-field-hint" style={{ marginBottom: 12 }}>
+        <div className="settings-field-hint settings-field-hint--spaced-md">
           Hermes remains the default orchestrator. Optional runtimes and
           bridges can be surfaced here without reviving the retired Office
           surface.
@@ -1009,7 +1007,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
         <div className="settings-section-title">
           {t("settings.connectionSection")}
           {connStatus && (
-            <span className="settings-saved" style={{ marginLeft: 8 }}>
+              <span className="settings-saved settings-saved--offset">
               {connStatus}
             </span>
           )}
@@ -1086,8 +1084,8 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                   : "Remote mode: point Agent Desktop at the OpenClaw compatibility URL, usually ending in /v1, and provide the gateway token or password if auth is enabled."
                 : gatewayRuntimePreset === "ironclaw"
                   ? connMode === "ssh"
-                    ? "IronClaw is gateway-only and does not support SSH attach. Switch to the Remote panel to attach to the published container port (default 8281)."
-                    : "Remote mode: point Agent Desktop at the published IronClaw container port (default 8281) and the /health operator-facing surface. The Bearer token is optional unless the container enforces auth."
+                    ? "SSH mode: point the tunnel at the published IronClaw gateway port (default 3231). The forwarded gateway should expose /api/health plus the OpenAI-compatible /v1 endpoints, and the Bearer token is optional unless the gateway enforces auth."
+                    : "Remote mode: point Agent Desktop at the published IronClaw gateway port (default 3231) and the /api/health operator-facing surface. The Bearer token is optional unless the container enforces auth."
                   : connMode === "ssh"
                     ? "SSH mode: add API_SERVER_KEY=<your-key> to ~/.hermes/profiles/<profile>/.env on the remote host, then restart the gateway there."
                     : "Remote mode: add API_SERVER_KEY=<your-key> to the .env on your remote runtime host, then restart the gateway."}
@@ -1210,14 +1208,13 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
                     ? GATEWAY_RUNTIME_PRESETS.openclaw.displayName
                     : selectedGatewayRuntime.displayName}
                 </button>
-                {/* V2.10.61 — IronClaw is gateway-only and does not
-                    support SSH attach. The lane is intentionally
-                    omitted from the SSH panel. If a stored config
-                    is migrated forward with ironclaw selected, the
-                    applyGatewayRuntimePreset path is blocked by
-                    inferGatewayRuntimePreset's /health port rule
-                    AND by the runtime-orchestration layer's
-                    canAttachViaSshTunnel=false guard. */}
+                <button
+                  className={`settings-theme-option ${gatewayRuntimePreset === "ironclaw" ? "active" : ""}`}
+                  type="button"
+                  onClick={() => applyGatewayRuntimePreset("ironclaw")}
+                >
+                  {ironclawProvider?.definition.displayName ?? GATEWAY_RUNTIME_PRESETS.ironclaw.displayName}
+                </button>
               </div>
             </div>
             <div className="settings-field">
@@ -1253,7 +1250,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             <div className="settings-field">
               <label className="settings-field-label">
                 Private Key Path{" "}
-                <span style={{ fontWeight: 400, opacity: 0.6 }}>
+                <span className="settings-field-note">
                   (optional, defaults to ~/.ssh/id_rsa)
                 </span>
               </label>
@@ -1268,7 +1265,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             <div className="settings-field">
               <label className="settings-field-label">
                 Remote Runtime Port{" "}
-                <span style={{ fontWeight: 400, opacity: 0.6 }}>
+                <span className="settings-field-note">
                   (default {selectedGatewayRuntime.sshRemotePort})
                 </span>
               </label>
@@ -1281,12 +1278,12 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               />
               <div className="settings-field-hint">
                 Make sure you can run{" "}
-                <code style={{ fontFamily: "monospace" }}>
+                <code className="settings-inline-code">
                   ssh {sshUser || "user"}@{sshHost || "host"}
                 </code>{" "}
                 without a password prompt. The first connection trusts the host
                 key and stores it in{" "}
-                <code style={{ fontFamily: "monospace" }}>
+                <code className="settings-inline-code">
                   ~/.ssh/known_hosts
                 </code>
                 ; SSH will fail closed if that key changes later.
@@ -1497,14 +1494,18 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           {t("settings.sections.privacy")}
         </div>
         <div className="settings-field">
-          <label className="settings-field-label">
-            {t("settings.analytics.label")}
+          <div className="settings-field-label-row">
+            <span className="settings-field-label">
+              {t("settings.analytics.label")}
+            </span>
             <label
-              className="tools-toggle"
-              style={{ marginLeft: 12, verticalAlign: "middle" }}
+              className="tools-toggle settings-toggle-inline"
+              aria-label={t("settings.analytics.label")}
             >
               <input
                 type="checkbox"
+                aria-label={t("settings.analytics.label")}
+                title={t("settings.analytics.label")}
                 checked={analyticsEnabled}
                 onChange={(e) => {
                   const enabled = e.target.checked;
@@ -1514,14 +1515,11 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               />
               <span className="tools-toggle-track" />
             </label>
-          </label>
+          </div>
           <div className="settings-field-hint">
             {t("settings.analytics.hint")}
           </div>
-          <ul
-            className="settings-field-hint"
-            style={{ paddingLeft: "1.25em", marginTop: 4 }}
-          >
+          <ul className="settings-field-hint settings-inline-list">
             <li>{t("settings.analytics.disclosure.uuid")}</li>
             <li>{t("settings.analytics.disclosure.platform")}</li>
             <li>{t("settings.analytics.disclosure.navigation")}</li>
@@ -1535,20 +1533,24 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
         <div className="settings-section-title">
           {t("settings.networkSection")}
           {networkSaved && (
-            <span className="settings-saved" style={{ marginLeft: 8 }}>
+              <span className="settings-saved settings-saved--offset">
               {t("settings.saved")}
             </span>
           )}
         </div>
         <div className="settings-field">
-          <label className="settings-field-label">
-            {t("settings.forceIpv4")}
+            <div className="settings-field-label-row">
+              <span className="settings-field-label">
+                {t("settings.forceIpv4")}
+              </span>
             <label
-              className="tools-toggle"
-              style={{ marginLeft: 12, verticalAlign: "middle" }}
+                className="tools-toggle settings-toggle-inline"
+                aria-label={t("settings.forceIpv4")}
             >
               <input
                 type="checkbox"
+                  aria-label={t("settings.forceIpv4")}
+                  title={t("settings.forceIpv4")}
                 checked={forceIpv4}
                 onChange={async (e) => {
                   const val = e.target.checked;
@@ -1564,7 +1566,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               />
               <span className="tools-toggle-track" />
             </label>
-          </label>
+          </div>
           <div className="settings-field-hint">
             {t("settings.forceIpv4Hint")}
           </div>
@@ -1612,7 +1614,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           {t("settings.dataSection")}
         </div>
         <div className="settings-field">
-          <div className="settings-field-hint" style={{ marginBottom: 10 }}>
+          <div className="settings-field-hint settings-field-hint--spaced-sm">
             {t("settings.dataHint")}
           </div>
           <div className="settings-hermes-actions">
@@ -1621,7 +1623,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               onClick={handleBackup}
               disabled={backingUp}
             >
-              <Download size={14} style={{ marginRight: 6 }} />
+              <Download size={14} className="settings-inline-icon" />
               {backingUp ? t("settings.backingUp") : t("settings.exportBackup")}
             </button>
             <button
@@ -1629,22 +1631,20 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               onClick={handleImport}
               disabled={importing}
             >
-              <Upload size={14} style={{ marginRight: 6 }} />
+              <Upload size={14} className="settings-inline-icon" />
               {importing ? t("settings.importing") : t("settings.importBackup")}
             </button>
           </div>
           {backupResult && (
             <div
-              className={`settings-hermes-result ${backupResult.includes("created") || backupResult.includes("success") ? "success" : "error"}`}
-              style={{ marginTop: 8 }}
+              className={`settings-hermes-result settings-hermes-result--spaced ${backupResult.includes("created") || backupResult.includes("success") ? "success" : "error"}`}
             >
               {backupResult}
             </div>
           )}
           {importResult && (
             <div
-              className={`settings-hermes-result ${importResult.includes("complete") ? "success" : "error"}`}
-              style={{ marginTop: 8 }}
+              className={`settings-hermes-result settings-hermes-result--spaced ${importResult.includes("complete") ? "success" : "error"}`}
             >
               {importResult}
             </div>
@@ -1654,8 +1654,9 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
 
       <div className="settings-section">
         <div className="settings-section-title">
-          <span
-            style={{ cursor: "pointer" }}
+          <button
+            type="button"
+            className="settings-section-toggle"
             onClick={() => {
               const next = !logsExpanded;
               setLogsExpanded(next);
@@ -1664,14 +1665,14 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           >
             <FileText
               size={14}
-              style={{ marginRight: 6, verticalAlign: "middle" }}
+              className="settings-inline-icon"
             />
             {t("settings.logsSection")} {logsExpanded ? "▾" : "▸"}
-          </span>
+          </button>
         </div>
         {logsExpanded && (
           <div className="settings-field">
-            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+            <div className="settings-log-toolbar">
               {["gateway.log", "agent.log", "errors.log"].map((f) => (
                 <button
                   key={f}
@@ -1692,20 +1693,11 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               </button>
             </div>
             {logPath && (
-              <div className="settings-field-hint" style={{ marginBottom: 4 }}>
+              <div className="settings-field-hint settings-field-hint--log-path">
                 {logPath}
               </div>
             )}
-            <pre
-              className="settings-hermes-doctor"
-              style={{
-                maxHeight: 300,
-                overflow: "auto",
-                fontSize: 11,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-all",
-              }}
-            >
+            <pre className="settings-hermes-doctor settings-hermes-doctor--log">
               {logContent || t("settings.emptyLog")}
             </pre>
           </div>
@@ -1736,7 +1728,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               onClick={handleOpenDataFolder}
               disabled={openingFolder || !hermesHome}
             >
-              <Download size={14} style={{ marginRight: 6 }} />
+              <Download size={14} className="settings-inline-icon" />
               {openingFolder
                 ? t("settings.dataLocation.opening")
                 : t("settings.dataLocation.openFolder")}
@@ -1753,8 +1745,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </div>
           {openFolderError && (
             <div
-              className="settings-hermes-result error"
-              style={{ marginTop: 8 }}
+              className="settings-hermes-result settings-hermes-result--spaced error"
             >
               {openFolderError}
             </div>
@@ -1766,7 +1757,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
         <div className="settings-section-title">
           {t("settings.sections.profiles")}
         </div>
-        <div className="settings-field-hint" style={{ marginBottom: 10 }}>
+        <div className="settings-field-hint settings-field-hint--spaced-sm">
           {t("settings.profiles.hint")}
         </div>
         {profiles.length === 0 ? (
@@ -1821,8 +1812,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
         )}
         {profiles.length > 0 && !showNewProfile && (
           <button
-            className="btn btn-secondary"
-            style={{ marginTop: 8 }}
+            className="btn btn-secondary settings-profile-new-trigger"
             onClick={() => {
               setShowNewProfile(true);
               setNewProfileError(null);
@@ -1848,7 +1838,6 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             </div>
             <label
               className="settings-profile-clone"
-              style={{ display: "flex", alignItems: "center", gap: 8 }}
             >
               <input
                 type="checkbox"
@@ -1860,8 +1849,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             </label>
             {newProfileError && (
               <div
-                className="settings-hermes-result error"
-                style={{ marginTop: 4 }}
+                className="settings-hermes-result settings-hermes-result--tight error"
               >
                 {newProfileError}
               </div>
@@ -1903,6 +1891,7 @@ function LanguageSelect({
   onSelect: (l: AppLocale) => void;
 }): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
+  const listboxId = useId();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1925,35 +1914,73 @@ function LanguageSelect({
 
   return (
     <div className="settings-language-select" ref={ref}>
-      <button
-        type="button"
-        className="settings-language-trigger"
-        onClick={() => setIsOpen((v) => !v)}
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-      >
-        <span>{LANGUAGE_NATIVE_NAMES[locale]}</span>
-        <ChevronDown size={14} />
-      </button>
+      {isOpen ? (
+        <button
+          type="button"
+          className="settings-language-trigger"
+          onClick={() => setIsOpen(false)}
+          aria-haspopup="listbox"
+          aria-expanded="true"
+          aria-controls={listboxId}
+          aria-label="Select language"
+        >
+          <span>{LANGUAGE_NATIVE_NAMES[locale]}</span>
+          <ChevronDown size={14} />
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="settings-language-trigger"
+          onClick={() => setIsOpen(true)}
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-controls={listboxId}
+          aria-label="Select language"
+        >
+          <span>{LANGUAGE_NATIVE_NAMES[locale]}</span>
+          <ChevronDown size={14} />
+        </button>
+      )}
       {isOpen && (
-        <div className="settings-language-dropdown" role="listbox">
+        <div
+          id={listboxId}
+          className="settings-language-dropdown"
+          role="listbox"
+          aria-label="Language options"
+        >
           {APP_LOCALES.map((l) => {
             const active = l === locale;
             return (
-              <button
-                key={l}
-                type="button"
-                role="option"
-                aria-selected={active}
-                className={`settings-language-option ${active ? "active" : ""}`}
-                onClick={() => {
-                  onSelect(l);
-                  setIsOpen(false);
-                }}
-              >
-                <span>{LANGUAGE_NATIVE_NAMES[l]}</span>
-                {active && <Check size={14} />}
-              </button>
+              active ? (
+                <button
+                  key={l}
+                  type="button"
+                  role="option"
+                  aria-selected="true"
+                  className="settings-language-option active"
+                  onClick={() => {
+                    onSelect(l);
+                    setIsOpen(false);
+                  }}
+                >
+                  <span>{LANGUAGE_NATIVE_NAMES[l]}</span>
+                  <Check size={14} />
+                </button>
+              ) : (
+                <button
+                  key={l}
+                  type="button"
+                  role="option"
+                  aria-selected="false"
+                  className="settings-language-option"
+                  onClick={() => {
+                    onSelect(l);
+                    setIsOpen(false);
+                  }}
+                >
+                  <span>{LANGUAGE_NATIVE_NAMES[l]}</span>
+                </button>
+              )
             );
           })}
         </div>

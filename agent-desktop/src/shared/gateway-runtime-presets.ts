@@ -5,12 +5,10 @@ import {
   OPENCLAW_LOCAL_GATEWAY_PORT,
 } from "./runtime-defaults";
 
-// V2.10.61 — widened to include IronClaw. IronClaw only supports
-// the remote-gateway connection mode (not SSH tunnel — see
-// RuntimeProviderDefinition.ironclaw.canAttachViaSshTunnel in
-// src/shared/runtime-orchestration.ts), so the SSH-tunnel panel
-// in Settings.tsx / Welcome.tsx hides the IronClaw button while
-// the remote-gateway panel renders it normally.
+// V2.10.61 / V2.10.68 — widened to include IronClaw. IronClaw now
+// supports both remote-gateway attach and forwarded SSH attach. The
+// SSH path still targets the published gateway port (default 3231)
+// and validates the IronClaw-specific /api/health surface.
 export type GatewayRuntimePresetId = "hermes" | "openclaw" | "ironclaw";
 
 export interface GatewayRuntimePreset {
@@ -29,9 +27,8 @@ export interface GatewayRuntimePreset {
   sshRemotePort: number;
   sshSecretLabel: string;
   sshSecretHint: string;
-  // V2.10.61 — explicit flag so the SSH panel can hide the
-  // IronClaw button (ironclaw is gateway-only, not tunnel-able)
-  // without having to re-read the runtime-orchestration layer.
+  // Explicit flag so the Welcome / Settings SSH panels can follow
+  // the preset contract without re-reading runtime-orchestration.
   sshSupported: boolean;
 }
 
@@ -73,9 +70,8 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
       "Use this when OpenClaw gateway auth is enabled. HTTP compatibility must also be enabled on the remote gateway.",
     sshSupported: true,
   },
-  // V2.10.65 — IronClaw ships as a WASM-sandbox container runtime
-  // (no SSH tunnel). The lane lives on the remote-gateway panel
-  // only. Auth is via a Bearer token (GATEWAY_AUTH_TOKEN in the
+  // V2.10.65 / V2.10.68 — IronClaw ships as a WASM-sandbox container
+  // runtime. Auth is via a Bearer token (GATEWAY_AUTH_TOKEN in the
   // container env). The gateway port (container 3000 → host 3231)
   // exposes the OpenAI-compatible /v1/chat/completions and
   // /v1/models surface plus /api/health. The example URL uses
@@ -96,8 +92,8 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
     sshRemotePort: IRONCLAW_DEFAULT_PORT,
     sshSecretLabel: "Bearer token (optional)",
     sshSecretHint:
-      "SSH attach is not supported for IronClaw. Use the remote-gateway panel instead.",
-    sshSupported: false,
+      "Use this when the forwarded IronClaw gateway requires GATEWAY_AUTH_TOKEN.",
+    sshSupported: true,
   },
 };
 
@@ -128,10 +124,8 @@ export function inferGatewayRuntimePreset(args: {
   sshRemotePort?: number | string | null;
 }): GatewayRuntimePresetId {
   const sshRemotePort = Number(args.sshRemotePort);
-  // V2.10.61 — SSH lane no longer pins a port for IronClaw, but
-  // keep the check defensive in case an older profile stored the
-  // container default. The SSH panel will still hide the
-  // IronClaw button via sshSupported=false.
+  // Defensive: older profiles may store the IronClaw gateway port
+  // directly. Keep inferring the preset from that port.
   if (sshRemotePort === IRONCLAW_DEFAULT_PORT) {
     return "ironclaw";
   }

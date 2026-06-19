@@ -45,12 +45,11 @@ export default {
     "Use an existing runtime URL when Agent Desktop should attach to a running {{runtime}} gateway instead of installing locally.",
   connectRemoteSubtitleOpenclaw:
     "Attach to a running {{runtime}} compatibility endpoint instead of installing locally. Agent Desktop expects the OpenClaw HTTP compatibility surface to be enabled.",
-  // V2.10.61 — IronClaw third remote lane. IronClaw ships as a
-  // WASM-sandbox container runtime, so the lane copy names the
-  // operator-facing surface (/health) and points at the container
-  // default port. SSH attach is intentionally not advertised.
+  // IronClaw third remote lane. The live browser-facing gateway is
+  // the published host port 3231 with /api/health as the operator
+  // surface.
   connectRemoteSubtitleIronclaw:
-    "Attach to a running {{runtime}} WASM-sandbox container gateway instead of installing locally. Use the published container port (default 8281) and the operator-facing /health surface.",
+    "Attach to a running {{runtime}} WASM-sandbox container gateway instead of installing locally. Use the published gateway port (default 3231) and the operator-facing /api/health surface.",
   // V2.10.61 — rewritten to drop the false-promise "below" Docker
   // handoff reference (the panel was not actually rendered in
   // Welcome.tsx). The Docker Desktop attach panel is a clean
@@ -75,13 +74,11 @@ export default {
     "{{runtime}} usually listens on {{port}} and requires its HTTP compatibility surface to be enabled before Agent Desktop can attach.",
   sshRuntimeHermesNote:
     "{{runtime}} usually listens on {{port}} for SSH attach.",
-  // V2.10.61 — IronClaw note for the SSH lane. IronClaw is
-  // gateway-only (no SSH attach) so this string is never actually
-  // shown in V2.10.61 (the lane button is hidden in the SSH
-  // panel via sshSupported=false), but we ship the key so future
-  // i18n audits do not flag it as missing.
+  // IronClaw note for the SSH lane.
   sshRuntimeIronclawNote:
-    "{{runtime}} is gateway-only and does not support SSH attach. Use the remote-gateway panel with the published container port (default {{port}}).",
+    "{{runtime}} usually listens on {{port}} for SSH attach and expects the forwarded gateway to expose /api/health plus the OpenAI-compatible /v1 endpoints.",
+  sshSecretIronclawNote:
+    "(optional unless the forwarded IronClaw gateway enforces GATEWAY_AUTH_TOKEN)",
   sshSecretOpenclawNote: "(required when OpenClaw auth is enabled)",
   sshSecretHermesNote: "(optional unless the remote Hermes gateway enforces auth)",
   testingSshConnection: "Testing SSH connection…",

@@ -57,6 +57,7 @@ interface DockerRuntimeTarget {
   name: string;
   keywords: string[];
   preferredPorts: number[];
+  healthPath: string;
 }
 
 const DOCKER_RUNTIME_TARGETS: readonly DockerRuntimeTarget[] =
@@ -65,6 +66,7 @@ const DOCKER_RUNTIME_TARGETS: readonly DockerRuntimeTarget[] =
     name: target.displayName,
     keywords: [...target.keywords],
     preferredPorts: [...target.preferredPorts],
+    healthPath: target.id === "ironclaw" ? "/api/health" : "/health",
   }));
 
 const INFRASTRUCTURE_KEYWORDS = [
@@ -279,11 +281,12 @@ async function buildDockerRuntimeCandidate(
   const probeResults = await Promise.all(
     portBindings.map(async (portBinding) => {
       const endpointUrl = `http://${portBinding.host}:${portBinding.hostPort}`;
+      const healthUrl = `${endpointUrl}${target.healthPath}`;
 
       return {
         portBinding,
         endpointUrl,
-        healthUrl: `${endpointUrl}/health`,
+        healthUrl,
         isReady: await testRemoteConnection(endpointUrl),
       };
     }),
@@ -305,7 +308,7 @@ async function buildDockerRuntimeCandidate(
     status: isReady ? "ready" : "detected",
     detail: isReady
       ? `Health check succeeded at ${healthUrl}.`
-      : `Published ${endpointUrl}, but /health did not return 200 yet. You can still review the endpoint manually.`,
+      : `Published ${endpointUrl}, but ${target.healthPath} did not return 200 yet. You can still review the endpoint manually.`,
     containerStatus: row.Status,
     composeProject,
     composeService,

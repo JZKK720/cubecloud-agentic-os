@@ -263,8 +263,8 @@ operator smoke on every Hermes deployment.
 | Aspect | Hermes (V2.10.63) | IronClaw (V2.10.62) |
 |---|---|---|
 | Credential | `API_SERVER_KEY` (Hermes runtime) | `GATEWAY_AUTH_TOKEN` (IronClaw container) |
-| Default port | 8642 (`DEFAULT_LOCAL_GATEWAY_PORT`) | 8281 (`IRONCLAW_DEFAULT_PORT`) |
-| Default path | `/health` | `/health` |
+| Default port | 8642 (`DEFAULT_LOCAL_GATEWAY_PORT`) | 3231 (`IRONCLAW_DEFAULT_PORT`) |
+| Default path | `/health` | `/api/health` |
 | Env var | `HERMES_TEST_TOKEN` | `IRONCLAW_TEST_TOKEN` |
 | Probe module | `diagnoseRemoteConnection` | `probeLocalModelHealth` |
 | Surface | Local Hermes (the default) | Local IronClaw (the V2.10.61 third lane) |

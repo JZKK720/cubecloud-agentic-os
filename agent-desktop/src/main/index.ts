@@ -158,7 +158,6 @@ import {
   initCodeGraphProject,
   installCodeGraphCli,
   setupCodeGraphHermes,
-  exportUnderstandAnythingGraph,
 } from "./codegraph";
 import {
   closeAllCodeGraphRuntimes,
@@ -2310,15 +2309,6 @@ function setupIPC(): void {
     (_event, projectPath: string, prompt: string) =>
       buildCodeGraphContext(projectPath, prompt),
   );
-  // Understand-Anything compatible graph export. The exported JSON
-  // matches the schema Understand-Anything writes to
-  // `.understand-anything/knowledge-graph.json` so the same
-  // understand-explain / understand-diff / understand-knowledge
-  // skills (and any user-installed UA skills) can read our graph.
-  ipcMain.handle("codegraph-export-ua-graph", (_event, projectPath: string) =>
-    exportUnderstandAnythingGraph(projectPath),
-  );
-
   // CodeGraph runtime (embedded library) — preferred path when
   // @colbymchenry/codegraph is installed; falls back to a structured
   // "unavailable" error so the renderer can branch to the CLI CTA.

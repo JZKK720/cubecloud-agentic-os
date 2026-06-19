@@ -32,7 +32,13 @@ same time.
 The recommended deployment for EverOS today is `pip install everos` on
 the same machine as the desktop and then `everos server start`. The
 HTTP client path assumes the user is willing to start the server
-themselves; the sidecar removes that step. The desktop then:
+themselves; the sidecar removes that step. On this Windows host,
+though, the current `everos` 1.0.1 wheel crashes on import with
+`ModuleNotFoundError: No module named 'fcntl'`, so the managed-local
+sidecar path should be treated as Unix / macOS / WSL-first until the
+upstream wheel ships native Windows compatibility. Windows users can
+still point the existing HTTP client path at a remote or WSL-hosted
+EverOS instance. The desktop then:
 
 - **Survives crashes.** If the Python process dies on a transient
   OOM, the desktop auto-restarts it 1.5s later without the user

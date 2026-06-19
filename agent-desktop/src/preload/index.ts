@@ -1333,51 +1333,6 @@ const hermesAPI = {
     prompt: string,
   ): Promise<{ success: boolean; context?: string; error?: string }> =>
     ipcRenderer.invoke("codegraph-build-context", projectPath, prompt),
-  /** Export the project graph in the Understand-Anything schema:
-   *  `{project, nodes[], edges[], layers[], tour[]}`. Compatible
-   *  with the upstream Understand-Anything skills. */
-  codegraphExportUaGraph: (projectPath: string): Promise<{
-    success: boolean;
-    graph?: {
-      project: {
-        name: string;
-        description: string;
-        languages: string[];
-        analyzedAt: string;
-        gitCommitHash: string | null;
-      };
-      nodes: Array<{
-        id: string;
-        type: string;
-        name: string;
-        filePath?: string;
-        summary: string;
-        tags: string[];
-        complexity: number;
-        languageNotes?: string;
-      }>;
-      edges: Array<{
-        source: string;
-        target: string;
-        type: string;
-        direction: "directed" | "undirected";
-        weight: number;
-      }>;
-      layers: Array<{
-        id: string;
-        name: string;
-        description: string;
-        nodeIds: string[];
-      }>;
-      tour: Array<{
-        order: number;
-        title: string;
-        description: string;
-        nodeIds: string[];
-      }>;
-    };
-    error?: string;
-  }> => ipcRenderer.invoke("codegraph-export-ua-graph", projectPath),
   // CodeGraph runtime (embedded library). When the npm package
   // @colbymchenry/codegraph is installed, these channels talk
   // straight to the SDK without spawning a CLI. When the SDK is

@@ -45,16 +45,15 @@ export interface AutoDiscoveryResult {
 const SCAN_TARGETS: Array<{
   runtime: GatewayRuntimePresetId;
   port: number;
-  healthPath: string;
 }> = [
   // Hermes — multiple known ports (8642 default, 8644 alt, 8789 container)
-  { runtime: "hermes", port: DEFAULT_LOCAL_GATEWAY_PORT, healthPath: "/health" },
-  { runtime: "hermes", port: 8644, healthPath: "/health" },
-  { runtime: "hermes", port: 8789, healthPath: "/health" },
+  { runtime: "hermes", port: DEFAULT_LOCAL_GATEWAY_PORT },
+  { runtime: "hermes", port: 8644 },
+  { runtime: "hermes", port: 8789 },
   // IronClaw — gateway port 3231
-  { runtime: "ironclaw", port: IRONCLAW_DEFAULT_PORT, healthPath: "/api/health" },
+  { runtime: "ironclaw", port: IRONCLAW_DEFAULT_PORT },
   // OpenClaw — port 18789
-  { runtime: "openclaw", port: OPENCLAW_LOCAL_GATEWAY_PORT, healthPath: "/health" },
+  { runtime: "openclaw", port: OPENCLAW_LOCAL_GATEWAY_PORT },
 ];
 
 /**
@@ -66,7 +65,7 @@ export async function scanLocalhostRuntimes(): Promise<AutoDiscoveryResult> {
   const scannedAt = new Date().toISOString();
 
   const probes = SCAN_TARGETS.map(async (target) => {
-    const url = `http://127.0.0.1:${target.port}${target.healthPath}`;
+    const url = `http://127.0.0.1:${target.port}`;
     const startedAt = Date.now();
 
     try {

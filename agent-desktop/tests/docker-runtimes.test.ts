@@ -42,7 +42,7 @@ describe("discoverDockerRuntimes", () => {
     mockState.probedHealthUrls = [];
   });
 
-  it("prefers the IronClaw gateway on port 8281 when multiple published ports exist", async () => {
+  it("prefers the IronClaw gateway on port 3231 and reports the /api/health surface", async () => {
     mockState.dockerPsStdout = [
       JSON.stringify({
         ID: "abc123",
@@ -50,7 +50,7 @@ describe("discoverDockerRuntimes", () => {
         Image: "ghcr.io/cubecloud/ironclaw:latest",
         Status: "Up 5 minutes",
         Ports:
-          "0.0.0.0:3000->3000/tcp, 0.0.0.0:8281->8281/tcp, 0.0.0.0:8644->8644/tcp",
+          "0.0.0.0:3231->3000/tcp, 0.0.0.0:8281->8080/tcp, 0.0.0.0:8644->8644/tcp",
         Labels:
           "com.docker.compose.project=ironclaw,com.docker.compose.service=gateway",
       }),
@@ -63,11 +63,21 @@ describe("discoverDockerRuntimes", () => {
         mockState.probedHealthUrls.push(targetUrl);
         const callback = rest[rest.length - 1] as (response: {
           statusCode: number;
+          on: (event: string, handler: (chunk?: Buffer) => void) => void;
           resume: () => void;
         }) => void;
+        const isIronClawHealth =
+          targetUrl === "http://127.0.0.1:3231/api/health";
         callback({
-          statusCode:
-            targetUrl === "http://127.0.0.1:8281/health" ? 200 : 404,
+          statusCode: isIronClawHealth ? 200 : 404,
+          on: (event, handler) => {
+            if (event === "data" && isIronClawHealth) {
+              handler(Buffer.from('{"status":"healthy","channel":"gateway"}'));
+            }
+            if (event === "end") {
+              handler();
+            }
+          },
           resume: () => {},
         });
 
@@ -86,15 +96,15 @@ describe("discoverDockerRuntimes", () => {
 
       expect(execFilePromisifiedSpy).toHaveBeenCalledTimes(1);
       expect(mockState.probedHealthUrls).toContain(
-        "http://127.0.0.1:8281/health",
+        "http://127.0.0.1:3231/api/health",
       );
       expect(result.status).toBe("ready");
       expect(result.runtimes).toHaveLength(1);
       expect(result.runtimes[0]?.kind).toBe("ironclaw");
-      expect(result.runtimes[0]?.port).toBe(8281);
-      expect(result.runtimes[0]?.endpointUrl).toBe("http://127.0.0.1:8281");
+      expect(result.runtimes[0]?.port).toBe(3231);
+      expect(result.runtimes[0]?.endpointUrl).toBe("http://127.0.0.1:3231");
       expect(result.runtimes[0]?.healthUrl).toBe(
-        "http://127.0.0.1:8281/health",
+        "http://127.0.0.1:3231/api/health",
       );
     } finally {
       requestSpy.mockRestore();

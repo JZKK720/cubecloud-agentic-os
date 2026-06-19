@@ -371,7 +371,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
         <p className="tools-agent-reach-subtitle">
           {t(
             "tools.agentReachSubtitle",
-            { defaultValue: "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: pip install agent-reach" },
+            { defaultValue: "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git" },
           )}
         </p>
         {agentReach?.installed ? (

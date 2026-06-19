@@ -1,5 +1,8 @@
-import "@testing-library/jest-dom/vitest";
+import * as matchers from "@testing-library/jest-dom/matchers";
 import { cleanup } from "@testing-library/react";
+import { expect } from "vitest";
+
+expect.extend(matchers);
 
 // Vitest 4 needs the lifecycle hook to be registered as a global
 // (the project already has `globals: true` in vitest.config.ts);

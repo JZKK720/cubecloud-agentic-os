@@ -18,6 +18,20 @@
 import { spawnSync } from "child_process";
 import { getEnhancedPath } from "./installer";
 
+const LOOKUP_TIMEOUT_MS = 3_000;
+const VERSION_TIMEOUT_MS = 5_000;
+const DOCTOR_TIMEOUT_MS = 30_000;
+
+type AgentReachDoctorJson = Record<
+  string,
+  {
+    status?: "ok" | "warn" | "off";
+    active_backend?: string | null;
+    name?: string;
+    message?: string;
+  }
+>;
+
 export interface AgentReachChannel {
   name: string;
   status: "ok" | "error" | "not-configured";
@@ -46,7 +60,7 @@ export function probeAgentReach(): AgentReachStatus {
   const lookupResult = spawnSync(lookupCommand, ["agent-reach"], {
     encoding: "utf8",
     env: { ...process.env, PATH: envPath },
-    timeout: 3000,
+    timeout: LOOKUP_TIMEOUT_MS,
     windowsHide: true,
   });
 
@@ -69,37 +83,42 @@ export function probeAgentReach(): AgentReachStatus {
     {
       encoding: "utf8",
       env: { ...process.env, PATH: envPath },
-      timeout: 5000,
+      timeout: VERSION_TIMEOUT_MS,
       windowsHide: true,
     },
   );
 
-  const version = versionResult.stdout?.trim() || versionResult.stderr?.trim() || null;
+  const version = normaliseVersion(
+    versionResult.stdout?.trim() || versionResult.stderr?.trim() || null,
+  );
 
   // Run doctor to get channel status
   const doctorResult = spawnSync(
     "agent-reach",
-    ["doctor"],
+    ["doctor", "--json"],
     {
       encoding: "utf8",
       env: { ...process.env, PATH: envPath },
-      timeout: 15000,
+      timeout: DOCTOR_TIMEOUT_MS,
       windowsHide: true,
     },
   );
 
   if (doctorResult.error) {
+    const isTimeout = doctorResult.error.message.includes("ETIMEDOUT");
     return {
       installed: true,
       version,
       detectedCommand,
       channels: [],
-      error: `agent-reach doctor failed: ${doctorResult.error.message}`,
+      error: isTimeout
+        ? `agent-reach doctor timed out after ${Math.floor(DOCTOR_TIMEOUT_MS / 1000)}s`
+        : `agent-reach doctor failed: ${doctorResult.error.message}`,
     };
   }
 
   const output = doctorResult.stdout || "";
-  const channels = parseDoctorOutput(output);
+  const channels = parseDoctorJson(output) ?? parseDoctorOutput(output);
 
   return {
     installed: true,
@@ -108,6 +127,45 @@ export function probeAgentReach(): AgentReachStatus {
     channels,
     error: doctorResult.status !== 0 ? `doctor exited with code ${doctorResult.status}` : null,
   };
+}
+
+function normaliseVersion(raw: string | null): string | null {
+  if (!raw) return null;
+  const match = raw.match(/v?(\d+\.\d+\.\d+(?:[-+._a-z0-9]*)?)/i);
+  return match?.[1] ?? raw;
+}
+
+function parseDoctorJson(output: string): AgentReachChannel[] | null {
+  let parsed: AgentReachDoctorJson;
+  try {
+    parsed = JSON.parse(output) as AgentReachDoctorJson;
+  } catch {
+    return null;
+  }
+
+  const knownChannels = [
+    "web", "youtube", "rss", "exa_search", "github",
+    "twitter", "bilibili", "reddit", "xiaohongshu",
+    "linkedin", "v2ex", "xueqiu", "xiaoyuzhou",
+  ];
+
+  return knownChannels
+    .map((name) => {
+      const item = parsed[name];
+      if (!item) return null;
+      return {
+        name,
+        status:
+          item.status === "ok"
+            ? "ok"
+            : item.status === "warn"
+              ? "error"
+              : "not-configured",
+        backend: item.active_backend ?? null,
+        detail: [item.name, item.message].filter(Boolean).join(" — ") || null,
+      } satisfies AgentReachChannel;
+    })
+    .filter((channel): channel is AgentReachChannel => channel !== null);
 }
 
 /**

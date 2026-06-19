@@ -119,7 +119,7 @@ function installHermesAPI(
             canInstallLocally: false,
             canAttachToExistingLocalGateway: false,
             canAttachToRemoteGateway: true,
-            canAttachViaSshTunnel: false,
+            canAttachViaSshTunnel: true,
             canDiscoverViaDocker: true,
             canImportExistingState: false,
             canDiscoverLocalCli: false,
@@ -191,27 +191,23 @@ function installHermesAPI(
 }
 
 describe("Welcome handoffs", () => {
-  it("uses the default Hermes local install path when the primary CTA is clicked", async () => {
+  it("rechecks for running local agents when the primary CTA is clicked", async () => {
     const api = installHermesAPI();
-    const onStart = vi.fn();
+    const onRecheck = vi.fn();
 
     render(
       <Welcome
         error={null}
         connectionMode="local"
-        onStart={onStart}
-        onRecheck={() => {}}
+        onRecheck={onRecheck}
         onSwitchToLocal={() => {}}
       />,
     );
 
-    // The welcome screen no longer auto-probes Docker / localhost
-    // gateways, so listRuntimeProviders is not awaited as a mount
-    // side-effect. Wait for the dual-OS install lanes to render
-    // (signals the screen has finished its first paint) before
-    // exercising the CTA. The i18n mock resolves the key against
-    // the en locale, so we query against the localized text.
-    const ctaName = translate("welcome.installLocalRuntime");
+    // The welcome screen no longer exposes install-first onboarding.
+    // Wait for the recheck CTA, then assert that it drives the
+    // local discovery path rather than an install flow.
+    const ctaName = translate("welcome.recheck");
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: ctaName }),
@@ -220,7 +216,7 @@ describe("Welcome handoffs", () => {
 
     fireEvent.click(screen.getByRole("button", { name: ctaName }));
 
-    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(onRecheck).toHaveBeenCalledTimes(1);
     // The mount-time `refreshRuntimeProviders` call still runs (it
     // powers the runtime-name labels in the SSH/Remote panels), but
     // the Docker-scan and localhost-probe side effects are gone.
@@ -228,14 +224,13 @@ describe("Welcome handoffs", () => {
     expect(api.runRuntimeProviderAction).not.toHaveBeenCalled();
   });
 
-  it("renders both the WSL bash and PowerShell install copy lanes", async () => {
+  it("does not render WSL or PowerShell install copy lanes on the local welcome surface", async () => {
     installHermesAPI();
 
     render(
       <Welcome
         error={null}
         connectionMode="local"
-        onStart={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -243,16 +238,62 @@ describe("Welcome handoffs", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash"),
+        screen.getByRole("button", { name: translate("welcome.recheck") }),
       ).toBeInTheDocument();
     });
 
-    // The PowerShell one-liner must also be on screen, not just the
-    // bash command — the welcome surface explicitly shows both so
-    // the user always copies the one that matches their environment.
     expect(
-      screen.getByText("iex (irm https://hermes-agent.nousresearch.com/install.ps1)"),
-    ).toBeInTheDocument();
+      screen.queryByText("curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("iex (irm https://hermes-agent.nousresearch.com/install.ps1)"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("welcome-install-cta")).not.toBeInTheDocument();
+  });
+
+  it("hides the local install CTA when runtimes were already discovered", async () => {
+    installHermesAPI();
+    const onConnectDiscovered = vi.fn();
+
+    render(
+      <Welcome
+        error={null}
+        connectionMode="local"
+        discoveredRuntimes={[
+          {
+            url: "http://127.0.0.1:8789",
+            runtime: "hermes",
+            healthy: true,
+            authRequired: false,
+            statusCode: 200,
+            latencyMs: 24,
+          },
+        ]}
+        onConnectDiscovered={onConnectDiscovered}
+        onRecheck={() => {}}
+        onSwitchToLocal={() => {}}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Hermes Agent · 127.0.0.1:8789" }),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.queryByTestId("welcome-install-cta")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: translate("welcome.installLocalRuntime") }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Hermes Agent · 127.0.0.1:8789" }),
+    );
+
+    expect(onConnectDiscovered).toHaveBeenCalledWith(
+      "http://127.0.0.1:8789",
+      "hermes",
+    );
   });
 
   it("passes an SSH gateway token through the SSH attach flow", async () => {
@@ -263,7 +304,6 @@ describe("Welcome handoffs", () => {
       <Welcome
         error={null}
         connectionMode="local"
-        onStart={() => {}}
         onRecheck={onRecheck}
         onSwitchToLocal={() => {}}
       />,
@@ -323,11 +363,14 @@ describe("Welcome handoffs", () => {
         error="OpenClaw compatibility endpoint not ready."
         connectionMode="remote"
         initialGatewayRuntimePreset="openclaw"
-        onStart={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
     );
+
+    await waitFor(() => {
+      expect(api.listRuntimeProviders).toHaveBeenCalledTimes(1);
+    });
 
     // The error-state path no longer spawns a Docker / localhost
     // probe; the welcome surface keeps the focus on the remote
@@ -354,7 +397,6 @@ describe("Welcome handoffs", () => {
       <Welcome
         error={null}
         connectionMode="local"
-        onStart={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -381,7 +423,6 @@ describe("Welcome handoffs", () => {
       <Welcome
         error={null}
         connectionMode="local"
-        onStart={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -395,5 +436,35 @@ describe("Welcome handoffs", () => {
     fireEvent.click(screen.getByRole("button", { name: "OpenClaw" }));
 
     expect(screen.getByDisplayValue("18789")).toBeInTheDocument();
+  });
+
+  it("shows the IronClaw SSH lane and snaps the remote port to the IronClaw gateway port", async () => {
+    const api = installHermesAPI({
+      diagnoseSshConnection: vi.fn().mockResolvedValue({
+        ok: true,
+        code: "ok",
+        transport: "ssh",
+        runtime: "ironclaw",
+        statusCode: 200,
+      }),
+    });
+
+    render(
+      <Welcome
+        error={null}
+        connectionMode="local"
+        onRecheck={() => {}}
+        onSwitchToLocal={() => {}}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(api.listRuntimeProviders).toHaveBeenCalledTimes(1);
+    });
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Connect via SSH" })[0]);
+    fireEvent.click(screen.getByRole("button", { name: "IronClaw" }));
+
+    expect(screen.getByDisplayValue("3231")).toBeInTheDocument();
   });
 });

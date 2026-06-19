@@ -105,6 +105,20 @@ function isOpenClawModelsResponse(body: string): boolean {
   }
 }
 
+function isIronClawHealthResponse(body: string): boolean {
+  if (!body) return false;
+
+  try {
+    const parsed = JSON.parse(body) as {
+      status?: string;
+      channel?: string;
+    };
+    return parsed.channel === "gateway" && typeof parsed.status === "string";
+  } catch {
+    return /"channel"\s*:\s*"gateway"/i.test(body);
+  }
+}
+
 function isAuthStatusCode(statusCode: number): boolean {
   return statusCode === 401 || statusCode === 403;
 }
@@ -114,6 +128,30 @@ export async function diagnoseSshForwardedGateway(
   expectedRuntime?: GatewayRuntimePresetId,
   apiKey?: string,
 ): Promise<ConnectionDiagnostic> {
+  const ironClaw = await requestTunnelEndpoint(port, "/api/health", apiKey);
+  if (
+    ironClaw?.statusCode === 200 &&
+    isIronClawHealthResponse(ironClaw.body)
+  ) {
+    return {
+      ok: true,
+      code: "ok",
+      transport: "ssh",
+      runtime: "ironclaw",
+      statusCode: ironClaw.statusCode,
+    };
+  }
+
+  if (ironClaw && isAuthStatusCode(ironClaw.statusCode)) {
+    return {
+      ok: false,
+      code: "auth",
+      transport: "ssh",
+      runtime: "ironclaw",
+      statusCode: ironClaw.statusCode,
+    };
+  }
+
   const health = await requestTunnelEndpoint(port, "/health", apiKey);
   if (health?.statusCode === 200) {
     return {
@@ -162,7 +200,8 @@ export async function diagnoseSshForwardedGateway(
       code: "openclaw-compat-disabled",
       transport: "ssh",
       runtime: null,
-      statusCode: openClaw?.statusCode ?? health?.statusCode ?? null,
+      statusCode:
+        openClaw?.statusCode ?? ironClaw?.statusCode ?? health?.statusCode ?? null,
     };
   }
 
@@ -171,7 +210,8 @@ export async function diagnoseSshForwardedGateway(
     code: "wrong-port",
     transport: "ssh",
     runtime: null,
-    statusCode: openClaw?.statusCode ?? health?.statusCode ?? null,
+    statusCode:
+      openClaw?.statusCode ?? ironClaw?.statusCode ?? health?.statusCode ?? null,
   };
 }
 

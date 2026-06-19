@@ -85,26 +85,27 @@ auth shape — see "Out of scope" above.
 
 ## Step 2 — point the probe at the live IronClaw
 
-The default URL is `http://127.0.0.1:8281/health` (the
-documented IronClaw operator surface). If your IronClaw
+The default URL is `http://127.0.0.1:3231/api/health` (the
+live browser-facing IronClaw gateway surface). If your IronClaw
 publishes on a different port or path, override via
 `IRONCLAW_TEST_URL`:
 
 ```pwsh
 # pwsh
-$env:IRONCLAW_TEST_URL = "http://gpu-host.lan:9000/health"
+$env:IRONCLAW_TEST_URL = "http://gpu-host.lan:9000/api/health"
 ```
 
 ```bash
 # bash
-export IRONCLAW_TEST_URL="http://gpu-host.lan:9000/health"
+export IRONCLAW_TEST_URL="http://gpu-host.lan:9000/api/health"
 ```
 
-For an OpenAI-compatible IronClaw, the path is usually
-`/v1/models`; for a raw IronClaw operator surface, `/health`;
-for the V2.10.60 probe module's contract, `/models`. The
-script will report the path it probed and the status code it
-got back, so iterate on the path until you see `200`.
+For the live browser/gateway surface, use `/api/health`. The
+same published gateway also exposes `/v1/models`,
+`/v1/chat/completions`, and the SSE endpoint
+`/api/chat/events?token=<token>`. The script reports the path it
+probed and the status code it got back, so iterate on the path
+until you see `200`.
 
 ## Step 3 — run the smoke
 
@@ -121,7 +122,7 @@ node scripts/ironclaw-attach.smoke.cjs
 Expected output (PASS):
 
 ```
-[ironclaw-attach.smoke] URL   : http://127.0.0.1:8281/health
+[ironclaw-attach.smoke] URL   : http://127.0.0.1:3231/api/health
 [ironclaw-attach.smoke] TOKEN : <set, length=64>
 [ironclaw-attach.smoke] token preview (masked): e4c3…ff94
 [ironclaw-attach.smoke] probing...
@@ -134,7 +135,7 @@ The token preview is **always** a 4-char prefix + ellipsis +
 Expected output (FAIL with hint):
 
 ```
-[ironclaw-attach.smoke] URL   : http://127.0.0.1:8281/health
+[ironclaw-attach.smoke] URL   : http://127.0.0.1:3231/api/health
 [ironclaw-attach.smoke] TOKEN : <set, length=64>
 [ironclaw-attach.smoke] token preview (masked): e4c3…ff94
 [ironclaw-attach.smoke] probing...
@@ -149,7 +150,7 @@ in the hint.
 
 1. Launch Agent Desktop.
 2. Settings → Connection → Remote → Runtime lane: **IronClaw**.
-3. URL: `http://<host>:<port>/health` (or the path that
+3. URL: `http://<host>:<port>/api/health` (or the path that
    returned 200 in step 3).
 4. Bearer token: paste the same value you used in
    `IRONCLAW_TEST_TOKEN`.
@@ -163,7 +164,7 @@ in the hint.
 If the dot is red, the negative path is pinned. The most
 common causes are:
 
-- **Wrong port**: the `ironclaw` lane snaps to 8281. If your
+- **Wrong port**: the `ironclaw` lane snaps to 3231. If your
   IronClaw is on a different port, edit the URL field before
   clicking Save.
 - **Wrong token**: the V2.10.61 preset uses `Authorization:
@@ -172,6 +173,45 @@ common causes are:
 - **Container not running**: the 1.5 s probe timeout will
   surface as `error: ECONNREFUSED` in the diagnostic. Start
   the container and re-test.
+
+## Step 4b — attach from the Agent Desktop SSH panel
+
+If the IronClaw gateway is only reachable on the remote host and
+you do not want to expose port `3231` directly, Agent Desktop now
+supports a forwarded SSH attach path.
+
+Prerequisites:
+
+1. The remote host must accept SSH.
+2. The IronClaw browser-facing gateway must already be running on
+  the remote host's published gateway port (default `3231`).
+3. The forwarded gateway must expose `GET /api/health` plus the
+  OpenAI-compatible `/v1/chat/completions` and `/v1/models`
+  endpoints behind the tunnel.
+
+In Agent Desktop:
+
+1. Welcome or Settings → Connection → **SSH**.
+2. Runtime lane: **IronClaw**.
+3. SSH host / port / username: point at the remote host.
+4. Remote runtime port: `3231` unless your operator published a
+  different host port.
+5. Bearer token: paste the same token you used for
+  `IRONCLAW_TEST_TOKEN` if the forwarded gateway enforces auth.
+6. Click **Test connection**. A successful result should resolve
+  `runtime: "ironclaw"` from the forwarded `/api/health` probe.
+7. Click **Save** to persist the SSH attach path.
+
+If the SSH test fails:
+
+- **Tunnel opens but runtime is wrong**: the remote port is likely
+  pointing at Hermes or another HTTP service instead of IronClaw's
+  published gateway.
+- **Tunnel opens but auth fails**: the forwarded gateway rejected the
+  bearer token; verify the same token still works against
+  `http://<host>:3231/api/health`.
+- **Tunnel never opens**: fix the SSH host, port, username, key path,
+  or remote firewall first.
 
 ## Step 5 — clean up the shell env
 

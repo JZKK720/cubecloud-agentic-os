@@ -18,11 +18,11 @@ If you only have 5 minutes: read §1 ("What is this"), §2 ("Why is it this way"
 
 ## §1. What is Cubecloud Agent Desktop?
 
-A native desktop control center for [Cubecloud Agentic-OS](https://github.com/cubecloud-contributors/cubecloud-agentic-os) — the agent operating system that this repo lives inside. The desktop wraps a local or remote agent runtime (Hermes today, OpenClaw and IronClaw next) in a single GUI so the user does not have to manage the CLI by hand.
+A native desktop control center for [Cubecloud Agentic-OS](https://github.com/cubecloud-contributors/cubecloud-agentic-os) — the agent operating system that this repo lives inside. The desktop wraps a local or remote agent runtime (Hermes today, IronClaw as a current gateway-handoff lane, OpenClaw as an optional future lane) in a single GUI so the user does not have to manage the CLI by hand.
 
 It is the **front door** to:
 
-- a local install of an agent runtime (Hermes is the current default; the V2.6 + V2.7 wave adds OpenClaw and IronClaw as optional runtimes),
+- a local install of an agent runtime (Hermes is the current default; IronClaw is a current gateway-handoff lane; OpenClaw is an optional future lane),
 - a local model endpoint (Ollama, vLLM, llama.cpp on loopback) **or** a remote provider (any OpenAI-compatible API),
 - a chat surface, session history, profiles, persona editor, skills, memory, tools, schedules, and 16 messaging gateways,
 - an optional **CodeGraph** semantic code-intelligence surface (MCP) and an optional **EverOS** sidecar (HTTP, memory and harness),
@@ -39,13 +39,13 @@ What it is **not**:
 Three commitments drove the design, in order:
 
 1. **The user should not touch the CLI to use the desktop.** Install, configure, chat, schedule, back up, update — all of it from the GUI.
-2. **The user should not be locked in to one runtime or one provider.** Hermes today, OpenClaw / IronClaw tomorrow; Ollama, vLLM, llama.cpp, OpenRouter, Azure OpenAI today, more tomorrow.
+2. **The user should not be locked in to one runtime or one provider.** Hermes today, IronClaw as a current gateway-handoff lane, OpenClaw as an optional future lane; Ollama, vLLM, llama.cpp, OpenRouter, Azure OpenAI today, more tomorrow.
 3. **The user should not be locked in to a license they cannot use.** Cubecloud-original work is dual-licensed; the inherited framework stays MIT; downstream consumers pick the license that fits their house policy.
 
 Three *consequences* fell out of those commitments:
 
 - The desktop has a **wide IPC surface** (`src/main/index.ts`, `src/preload/index.ts`) that exposes the runtime, the model registry, the provider registry, the skill manifests, the memory plane, the schedule runner, and the gateway layer to the renderer. That surface is the integration boundary; it is also the largest part of the inherited framework code.
-- The desktop has a **multi-runtime plan** (`docs/RUNTIME_ORCHESTRATION_PLAN.md`) that makes Hermes the day-1 lane and adds OpenClaw / IronClaw as additional lanes over the V2.6 → V2.7 window. The V2.4 → V2.5 work made the brand and license posture enforceable so that adding a second runtime did not have to revisit the legal surface.
+- The desktop has a **multi-runtime plan** (`docs/RUNTIME_ORCHESTRATION_PLAN.md`) that makes Hermes the day-1 lane, IronClaw a current gateway-handoff lane, and OpenClaw an optional future lane. The V2.4 → V2.5 work made the brand and license posture enforceable so that adding a second runtime did not have to revisit the legal surface.
 - The desktop has a **34-skill ecosystem** (the `.agents/skills/` tree) that the developer who *builds* the desktop benefits from, not just the user who *runs* it. The skills layer is the bridge between the desktop and the broader agent-runtime ecosystem. See §5 for the deep dive.
 
 ## §3. Architecture
@@ -91,9 +91,9 @@ The desktop is a *client* of agent runtimes, not a runtime itself. The runtime o
 |---|---|---|---|
 | **Hermes** | Day-1, current | Primary assistant runtime. Self-improving, skills-aware, gateway-driven. | Inherited framework; V2.4 + V2.5 add the Cubecloud wrapper. |
 | **OpenClaw** | V2.6 →V2.7, optional | Second assistant runtime. OpenAI-compatible HTTP surface, SSH-tunnel-friendly. | `docs/RUNTIME_ORCHESTRATION_PLAN.md` |
-| **IronClaw** | V2.6 →V2.7, optional | Security-first runtime. WASM sandbox, approval-gated tool execution. | `docs/RUNTIME_ORCHESTRATION_PLAN.md` |
+| **IronClaw** | Current, gateway-handoff | Security-first runtime. WASM sandbox, approval-gated tool execution. Gateway port 3231, `/api/health` surface. | `docs/RUNTIME_ORCHESTRATION_PLAN.md` |
 
-The orchestration is described in detail in `docs/RUNTIME_ORCHESTRATION_PLAN.md`. The headline: Hermes is the day-1 lane; OpenClaw and IronClaw are added as *lanes* the user can pick from a runtime picker, not as *replacements* for Hermes. A user can run more than one runtime on the same machine (Hermes on `127.0.0.1:8642` + OpenClaw on `127.0.0.1:18789` + IronClaw on a Docker-published port), and the desktop's runtime picker routes chat requests to the right one.
+The orchestration is described in detail in `docs/RUNTIME_ORCHESTRATION_PLAN.md`. The headline: Hermes is the day-1 lane; IronClaw is a current gateway-handoff lane; OpenClaw is an optional future lane. A user can run more than one runtime on the same machine (Hermes on `127.0.0.1:8642` + IronClaw on `127.0.0.1:3231` + OpenClaw on `127.0.0.1:18789`), and the desktop's runtime picker routes chat requests to the right one.
 
 ### 4.2 Provider layer
 

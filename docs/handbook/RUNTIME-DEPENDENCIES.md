@@ -60,12 +60,12 @@ to `diagnoseRemoteConnection(url, expectedRuntime, apiKey)` in
 |---|---|
 | **Default URL** | `http://192.168.1.100:3231/api/health` (`IRONCLAW_DEFAULT_PORT = 3231` in [`agent-desktop/src/shared/runtime-defaults.ts:11`](../../agent-desktop/src/shared/runtime-defaults.ts#L11)). The gateway port (container 3000 → host 3231) exposes the OpenAI-compatible `/v1/chat/completions` and `/v1/models` surface. |
 | **Default install** | **Compose-through-upstream-GHCR, no local build.** Image source: `ghcr.io/pewdiepie-archdaemon/odysseus`. Host port remap is expected/desired (e.g. host 3231 → container 3000). |
-| **Probe shape** | IronClaw's `/api/health` returns `{"status":"healthy","channel":"gateway"}` — the `"channel":"gateway"` field distinguishes it from Hermes's `/health`. SSH panel intentionally does **not** cover IronClaw (`sshSupported: false` in [`agent-desktop/src/shared/gateway-runtime-presets.ts`](../../agent-desktop/src/shared/gateway-runtime-presets.ts)). |
+| **Probe shape** | IronClaw's `/api/health` returns `{"status":"healthy","channel":"gateway"}` — the `"channel":"gateway"` field distinguishes it from Hermes's `/health`. SSH attach now reuses the forwarded-gateway path and expects the same `/api/health` surface behind the tunnel. |
 | **Port map** | Port 3231 (container 3000) = HTTP gateway (chat + models + web UI). Port 8281 (container 8080) = internal HTTP channel bus (only `/health`, no REST API). Port 50051 = gRPC (NearAI protocol, not HTTP). |
 | **Operator runbook** | [`docs/ironclaw-attach.smoke.md`](../ironclaw-attach.smoke.md) (V2.10.62) |
 | **What the desktop does** | Attaches to the gateway port. Does **not** install, spawn, or upgrade IronClaw. |
 
-#### 1.3.1 IronClaw native API surface (V2.10.67 — documented, not yet implemented)
+#### 1.3.1 IronClaw native API surface (V2.10.67 — documented; browser SSE bridge not yet implemented)
 
 IronClaw's gateway on port 3231 exposes **two API surfaces**:
 
@@ -88,6 +88,8 @@ IronClaw's gateway on port 3231 exposes **two API surfaces**:
 | `/api/chat` | POST | 404 on this build | Documented but not available in current container version |
 
 **SSE event types** (named events on the `/api/chat/events` stream):
+
+The live browser client uses `EventSource` against `/api/chat/events`, and the gateway responds with `content-type: text/event-stream`. The docs mention WebSocket troubleshooting elsewhere, but WebSocket is not the primary browser chat transport on the current 3231 gateway build.
 
 | Event | Description |
 |---|---|
@@ -141,7 +143,7 @@ OpenAI-compatible non-streaming API to the native SSE + Jobs API for:
 |---|---|---|---|---|---|
 | **Hermes** | 8642 | `pip install hermes-agent` or `hermes-desktop` binary | Yes | Yes | V1 |
 | **OpenClaw** | 18789 | Windows binary or Docker | Yes | Yes | V2.6 → V2.7 |
-| **IronClaw** | 3231 | Docker compose, GHCR `pewdiepie-archdaemon/odysseus` | Yes | **No** (WASM-sandbox container) | V2.10.61 |
+| **IronClaw** | 3231 | Docker compose, GHCR `pewdiepie-archdaemon/odysseus` | Yes | **Yes** (forwarded gateway attach) | V2.10.61 |
 
 ---
 

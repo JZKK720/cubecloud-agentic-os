@@ -2,16 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Refresh,
-  Copy,
   Globe,
   KeyRound,
   Spinner,
 } from "../../assets/icons";
 import cubecloudWordmark from "../../assets/cubecloud-wordmark.svg";
-import {
-  WSL_BASH_INSTALL_CMD,
-  POWERSHELL_INSTALL_CMD,
-} from "../../constants";
 import { useI18n } from "../../components/useI18n";
 import {
   DesignDialsControl,
@@ -39,7 +34,18 @@ interface WelcomeProps {
   error: string | null;
   connectionMode: "local" | "remote" | "ssh";
   initialGatewayRuntimePreset?: GatewayRuntimePresetId;
-  onStart: () => void;
+  discoveredRuntimes?: Array<{
+    url: string;
+    runtime: GatewayRuntimePresetId;
+    healthy: boolean;
+    authRequired: boolean;
+    statusCode: number | null;
+    latencyMs: number;
+  }>;
+  onConnectDiscovered?: (
+    url: string,
+    runtime: GatewayRuntimePresetId,
+  ) => Promise<void> | void;
   onRecheck: () => void;
   onSwitchToLocal: () => void;
 }
@@ -49,39 +55,12 @@ type RuntimeProviderSnapshot = Awaited<
   ReturnType<typeof window.hermesAPI.listRuntimeProviders>
 >[number];
 
-// ── Install command copy lanes ──────────────────────────
-//
-// Two separate surfaces, one per host shell. The dual-OS welcome
-// shows both at once instead of branching on the running
-// platform — the user should always be able to copy whichever
-// command matches their actual environment.
-// V2.10.44 — keep install-lane labels as literals because the
-// INSTALL_LANES const lives at module scope and `t` is only
-// available inside the Welcome function. The locale strings
-// are still added in welcome.ts (installLaneUnixShell /
-// installLaneWindowsShell) so future i18n work has a target.
-const INSTALL_LANES = [
-  {
-    id: "wsl",
-    label: "WSL / macOS / Linux",
-    command: WSL_BASH_INSTALL_CMD,
-    copyKey: "welcome.copyInstallCommand",
-    chip: "bash",
-  },
-  {
-    id: "powershell",
-    label: "Windows PowerShell",
-    command: POWERSHELL_INSTALL_CMD,
-    copyKey: "welcome.copyInstallCommand",
-    chip: "powershell",
-  },
-] as const;
-
 function Welcome({
   error,
   connectionMode,
   initialGatewayRuntimePreset,
-  onStart,
+  discoveredRuntimes = [],
+  onConnectDiscovered,
   onRecheck,
   onSwitchToLocal,
 }: WelcomeProps): React.JSX.Element {
@@ -203,6 +182,11 @@ function Welcome({
     if (presetId === "openclaw") return openclawRuntimeName;
     return hermesRuntimeName;
   }
+
+  const healthyDiscovered = discoveredRuntimes.filter((d) => d.healthy);
+  const authDiscovered = discoveredRuntimes.filter(
+    (d) => !d.healthy && d.authRequired,
+  );
 
   function applyGatewayRuntimePreset(next: GatewayRuntimePresetId): void {
     persistGatewayRuntimePreset(next);
@@ -490,15 +474,16 @@ function Welcome({
         {renderLocaleSwitch()}
         {renderBrandHeader(
           t("welcome.connectSshPanelTitle"),
-          // V2.10.61 — IronClaw is gateway-only and the SSH
-          // panel does not render the IronClaw button. If a
-          // stored config still has ironclaw selected here, we
-          // fall through to the hermes subtitle so the user
-          // sees sensible copy rather than the openclaw one.
           gatewayRuntimePreset === "openclaw"
             ? t("welcome.connectSshSubtitleOpenclaw", {
                 runtime: openclawRuntimeName,
               })
+            : gatewayRuntimePreset === "ironclaw"
+              ? t("welcome.connectSshSubtitleIronclaw", {
+                  runtime: ironclawRuntimeName,
+                  defaultValue:
+                    "Forward an existing {{runtime}} gateway over SSH without exposing the published container port directly.",
+                })
             : t("welcome.connectSshSubtitleHermes", {
                 runtime: hermesRuntimeName,
               }),
@@ -522,13 +507,13 @@ function Welcome({
             >
               {openclawRuntimeName}
             </button>
-            {/* V2.10.61 — IronClaw is gateway-only and does not
-                support SSH attach. The lane is intentionally
-                omitted from the SSH panel. If a stored config
-                is migrated forward with ironclaw selected, the
-                inferGatewayRuntimePreset path falls back to
-                hermes and the runtime-orchestration layer's
-                canAttachViaSshTunnel=false guard takes over. */}
+            <button
+              className={`btn ${gatewayRuntimePreset === "ironclaw" ? "btn-primary" : "btn-secondary"}`}
+              type="button"
+              onClick={() => applyGatewayRuntimePreset("ironclaw")}
+            >
+              {ironclawRuntimeName}
+            </button>
           </div>
           <p className="welcome-remote-hint welcome-lane-hint">
             {t("welcome.lanePickerHint", {
@@ -606,6 +591,13 @@ function Welcome({
                   runtime: openclawRuntimeName,
                   port: OPENCLAW_LOCAL_GATEWAY_PORT,
                 })
+              : gatewayRuntimePreset === "ironclaw"
+                ? t("welcome.sshRuntimeIronclawNote", {
+                    runtime: ironclawRuntimeName,
+                    port: GATEWAY_RUNTIME_PRESETS.ironclaw.sshRemotePort,
+                    defaultValue:
+                      "{{runtime}} usually listens on {{port}} for SSH attach and expects the forwarded gateway to expose /api/health plus the OpenAI-compatible /v1 endpoints.",
+                  })
               : t("welcome.sshRuntimeHermesNote", {
                   runtime: hermesRuntimeName,
                   port: DEFAULT_SSH_REMOTE_PORT,
@@ -617,6 +609,11 @@ function Welcome({
             <span className="welcome-field-note">
               {gatewayRuntimePreset === "openclaw"
                 ? t("welcome.sshSecretOpenclawNote")
+                : gatewayRuntimePreset === "ironclaw"
+                  ? t("welcome.sshSecretIronclawNote", {
+                      defaultValue:
+                        "(optional unless the forwarded IronClaw gateway enforces GATEWAY_AUTH_TOKEN)",
+                    })
                 : t("welcome.sshSecretHermesNote")}
             </span>
           </label>
@@ -680,7 +677,7 @@ function Welcome({
         <>
           {renderBrandHeader(
             connectionMode === "local"
-              ? t("welcome.errorLocalInstallHeader")
+              ? t("welcome.flowTitle")
               : connectionMode === "ssh"
                 ? t("welcome.errorSshHeader", {
                     runtime: runtimeDisplayNameFor(gatewayRuntimePreset),
@@ -695,42 +692,10 @@ function Welcome({
               <div className="welcome-actions">
                 <button
                   className="btn btn-primary welcome-button"
-                  onClick={onStart}
-                >
-                  {t("welcome.retryLocalInstall")}
-                  <Refresh size={16} />
-                </button>
-                <div className="welcome-divider">
-                  <span>{t("welcome.dividerOr")}</span>
-                </div>
-                <div className="welcome-install-grid welcome-install-grid--error">
-                  {INSTALL_LANES.map((lane) => (
-                    <div key={lane.id} className="welcome-install-lane">
-                      <div className="welcome-install-lane-header">
-                        <span>{lane.label}</span>
-                        <span className="welcome-install-lane-chip">{lane.chip}</span>
-                      </div>
-                      <div className="welcome-install-lane-command">
-                        <code>{lane.command}</code>
-                        <button
-                          className="welcome-install-lane-copy"
-                          onClick={() =>
-                            navigator.clipboard.writeText(lane.command)
-                          }
-                          title={t(lane.copyKey)}
-                          aria-label={t(lane.copyKey)}
-                        >
-                          <Copy size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  className="btn btn-secondary welcome-recheck-btn"
                   onClick={onRecheck}
                 >
                   {t("welcome.recheck")}
+                  <Refresh size={16} />
                 </button>
                 <div className="welcome-divider">
                   <span>{t("welcome.dividerOr")}</span>
@@ -779,6 +744,77 @@ function Welcome({
             </div>
           )}
         </>
+      ) : discoveredRuntimes.length > 0 ? (
+        <>
+          {renderBrandHeader(
+            t("welcome.detectedRuntimesTitle", {
+              defaultValue: "We found running agents",
+            }),
+            healthyDiscovered.length > 0
+              ? t("welcome.detectedRuntimesHealthy", {
+                  defaultValue:
+                    "Choose a running runtime to connect now. Installing a local runtime is optional.",
+                })
+              : t("welcome.detectedRuntimesAuth", {
+                  defaultValue:
+                    "We found runtimes that require a key. Pick one to prefill the remote connection form.",
+                }),
+          )}
+          <div className="welcome-remote-card">
+            <div className="welcome-actions">
+              {discoveredRuntimes.map((runtime) => (
+                <button
+                  key={`${runtime.runtime}-${runtime.url}`}
+                  className={`btn ${runtime.healthy ? "btn-primary" : "btn-secondary"} welcome-recheck-btn`}
+                  onClick={() => {
+                    if (runtime.healthy) {
+                      void onConnectDiscovered?.(runtime.url, runtime.runtime);
+                      return;
+                    }
+                    persistGatewayRuntimePreset(runtime.runtime);
+                    setRemoteUrl(runtime.url);
+                    setRemoteApiKey("");
+                    setRemoteError(null);
+                    setPanel("remote");
+                  }}
+                >
+                  {runtimeDisplayNameFor(runtime.runtime)} · {runtime.url.replace(/^https?:\/\//, "")}
+                </button>
+              ))}
+            </div>
+
+            {authDiscovered.length > 0 && healthyDiscovered.length === 0 && (
+              <p className="welcome-remote-hint">
+                {t("welcome.authRequiredHint", {
+                  defaultValue:
+                    "These runtimes are reachable but require an API server key or gateway token before Agent Desktop can attach.",
+                })}
+              </p>
+            )}
+          </div>
+
+          <DesignDialsControl value={dials} onChange={handleDialsChange} />
+
+          <div className="welcome-divider">
+            <span>{t("welcome.dividerOr")}</span>
+          </div>
+
+          <button
+            className="btn btn-secondary welcome-recheck-btn"
+            onClick={() => setPanel("ssh")}
+          >
+            <KeyRound size={16} />
+            {t("welcome.connectViaSshShort")}
+          </button>
+
+          <button
+            className="btn btn-secondary welcome-recheck-btn"
+            onClick={() => setPanel("remote")}
+          >
+            <Globe size={16} />
+            {t("welcome.connectToRemoteGatewayShort")}
+          </button>
+        </>
       ) : (
         <>
           {renderBrandHeader(
@@ -786,83 +822,21 @@ function Welcome({
             t("welcome.subtitle"),
           )}
 
-          <ol className="welcome-step-indicator" aria-label="Welcome steps">
-            <li className="welcome-step-indicator-step welcome-step-indicator-step--current">
-              <span className="welcome-step-indicator-number">1</span>
-              <span className="welcome-step-indicator-label">{t("welcome.flowStepInstall")}</span>
-            </li>
-            <li className="welcome-step-indicator-step">
-              <span className="welcome-step-indicator-number">2</span>
-              <span className="welcome-step-indicator-label">{t("welcome.flowStepConnect")}</span>
-            </li>
-            <li className="welcome-step-indicator-step">
-              <span className="welcome-step-indicator-number">3</span>
-              <span className="welcome-step-indicator-label">{t("welcome.flowStepDone")}</span>
-            </li>
-          </ol>
-
           <DesignDialsControl value={dials} onChange={handleDialsChange} />
 
           <div className="welcome-cta-stack">
-            <span className="welcome-cta-eyebrow">
-              {t("welcome.flowStepInstall")}
-            </span>
             <button
-              className="btn btn-primary welcome-cta-install"
-              onClick={onStart}
-              data-testid="welcome-install-cta"
+              className="btn btn-primary welcome-recheck-btn"
+              onClick={onRecheck}
+              data-testid="welcome-recheck-cta"
             >
-              {t("welcome.installLocalRuntime")}
-              <ArrowRight size={18} />
+              {t("welcome.recheck")}
+              <Refresh size={16} />
             </button>
-            <p className="welcome-note welcome-cta-hint">
-              {t("welcome.installSizeHint")}
-            </p>
             <p className="welcome-note welcome-note--secondary">
               {t("welcome.addOnRuntimesNote")}
             </p>
           </div>
-
-          <div className="welcome-divider">
-            <span>{t("welcome.terminalTitle", { runtime: hermesRuntimeName })}</span>
-          </div>
-
-          {/* Dual-OS install lanes (Fix 3 + Welcome redesign).
-           *
-           *  Instead of switching on the running platform and
-           *  showing a single curl/iex command, we show BOTH the
-           *  bash (WSL / macOS / Linux) and the PowerShell
-           *  variants side by side. The user picks whichever
-           *  matches their actual environment, copies it, and
-           *  pastes it into their terminal. The URL is the
-           *  canonical hermes-agent.nousresearch.com download
-           *  regardless of locale. */}
-          <div className="welcome-install-grid">
-            {INSTALL_LANES.map((lane) => (
-              <div key={lane.id} className="welcome-install-lane">
-                <div className="welcome-install-lane-header">
-                  <span>{lane.label}</span>
-                  <span className="welcome-install-lane-chip">{lane.chip}</span>
-                </div>
-                <div className="welcome-install-lane-command">
-                  <code>{lane.command}</code>
-                  <button
-                    className="welcome-install-lane-copy"
-                    onClick={() =>
-                      navigator.clipboard.writeText(lane.command)
-                    }
-                    title={t(lane.copyKey)}
-                    aria-label={t(lane.copyKey)}
-                  >
-                    <Copy size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="welcome-note welcome-note--secondary welcome-install-footnote">
-            {t("welcome.terminalInstallHint", { runtime: hermesRuntimeName })}
-          </p>
 
           <div className="welcome-divider">
             <span>{t("welcome.dividerOr")}</span>

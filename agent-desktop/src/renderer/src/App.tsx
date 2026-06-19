@@ -16,6 +16,15 @@ import { setCachedGatewayRuntimePreset } from "./utils/gatewayRuntimePresetCache
 
 type Screen = "splash" | "welcome" | "installing" | "setup" | "main";
 
+type DiscoveredRuntime = {
+  url: string;
+  runtime: GatewayRuntimePresetId;
+  healthy: boolean;
+  authRequired: boolean;
+  statusCode: number | null;
+  latencyMs: number;
+};
+
 // Minimum time the splash stays visible so the brand animation plays
 // through. Tracks the splash logo fade-in duration in main.css.
 const SPLASH_MIN_MS = 1300;
@@ -28,6 +37,9 @@ function App(): React.JSX.Element {
   >("local");
   const [gatewayRuntimePreset, setGatewayRuntimePreset] =
     useState<GatewayRuntimePresetId>("hermes");
+  const [discoveredRuntimes, setDiscoveredRuntimes] = useState<
+    DiscoveredRuntime[]
+  >([]);
   // Soft warning: install files exist but the deep `verifyInstall` probe
   // failed (e.g. slow Python startup, restricted network). We surface this
   // as a dismissible banner instead of bouncing the user back to Welcome,
@@ -43,6 +55,7 @@ function App(): React.JSX.Element {
     let isRemote = false;
 
     try {
+      setDiscoveredRuntimes([]);
       const conn = await window.hermesAPI.getConnectionConfig();
       isRemote = conn.mode === "remote" || conn.mode === "ssh";
       setConnectionMode(conn.mode);
@@ -83,49 +96,66 @@ function App(): React.JSX.Element {
           next = "welcome";
         }
       } else {
-        const status = await window.hermesAPI.checkInstall();
-        if (!status.installed) {
-          // V2.10.67 — Auto-discovery: no local install and no
-          // saved remote connection. Scan localhost for running
-          // runtime gateways before falling back to the Welcome
-          // form. If exactly one healthy gateway is found, auto-
-          // connect and go to main. If multiple are found, go to
-          // Welcome with a picker. If none, go to Welcome as
-          // before.
-          try {
-            const scan = await window.hermesAPI.autoDiscoveryScan();
-            if (scan.healthyCount === 1) {
-              const found = scan.discovered.find((d) => d.healthy);
-              if (found) {
-                // Auto-connect: save the connection and go to main
-                await window.hermesAPI.setConnectionConfig(
-                  "remote",
-                  found.url,
-                  "",
-                  found.runtime,
-                );
-                setConnectionMode("remote");
-                setGatewayRuntimePreset(found.runtime);
-                setCachedGatewayRuntimePreset(found.runtime);
-                next = "main";
-              } else {
-                next = "welcome";
-              }
+        // V2.10.67 — Auto-discovery runs FIRST in local mode.
+        // If a runtime container is already running on localhost,
+        // Agent Desktop should connect to it before offering any
+        // local install flow. This is the core "it just works"
+        // behavior for Cubecloud-provisioned machines.
+        try {
+          const scan = await window.hermesAPI.autoDiscoveryScan();
+          if (scan.healthyCount >= 1) {
+            const found =
+              scan.discovered.find(
+                (d) => d.healthy && d.runtime === "hermes",
+              ) ??
+              scan.discovered.find(
+                (d) => d.healthy && d.runtime === "ironclaw",
+              ) ??
+              scan.discovered.find(
+                (d) => d.healthy && d.runtime === "openclaw",
+              ) ??
+              scan.discovered.find((d) => d.healthy);
+            if (found) {
+              await window.hermesAPI.setConnectionConfig(
+                "remote",
+                found.url,
+                "",
+                found.runtime,
+              );
+              setConnectionMode("remote");
+              setGatewayRuntimePreset(found.runtime);
+              setCachedGatewayRuntimePreset(found.runtime);
+              next = "main";
             } else {
-              // 0 or multiple healthy — go to Welcome (picker
-              // or manual form). The scan results are passed
-              // via the installError hint so Welcome can show
-              // "We found N agents" if multiple.
               next = "welcome";
             }
-          } catch {
-            // Auto-scan failed — fall back to Welcome
-            next = "welcome";
+          } else {
+            // No healthy runtimes. Preserve auth-required hits so
+            // Welcome can offer direct remote connect instead of an
+            // install-first flow, then fall back to local install
+            // checks only when discovery found nothing usable.
+            setDiscoveredRuntimes(
+              scan.discovered.filter((d) => d.healthy || d.authRequired),
+            );
+
+            const status = await window.hermesAPI.checkInstall();
+            if (!status.installed) {
+              next = "welcome";
+            } else if (!status.hasApiKey) {
+              next = "setup";
+            } else {
+              next = "main";
+            }
           }
-        } else if (!status.hasApiKey) {
-          next = "setup";
-        } else {
-          next = "main";
+        } catch {
+          const status = await window.hermesAPI.checkInstall();
+          if (!status.installed) {
+            next = "welcome";
+          } else if (!status.hasApiKey) {
+            next = "setup";
+          } else {
+            next = "main";
+          }
         }
       }
     } catch {
@@ -181,11 +211,6 @@ function App(): React.JSX.Element {
     setScreen("welcome");
   }
 
-  function handleRetryInstall(): void {
-    setInstallError(null);
-    setScreen("installing");
-  }
-
   function handleRecheck(): void {
     setInstallError(null);
     setScreen("splash");
@@ -195,6 +220,17 @@ function App(): React.JSX.Element {
   async function handleSwitchToLocal(): Promise<void> {
     await window.hermesAPI.setConnectionConfig("local", "", "");
     setConnectionMode("local");
+    handleRecheck();
+  }
+
+  async function handleConnectDiscovered(
+    url: string,
+    runtime: GatewayRuntimePresetId,
+  ): Promise<void> {
+    await window.hermesAPI.setConnectionConfig("remote", url, "", runtime);
+    setConnectionMode("remote");
+    setGatewayRuntimePreset(runtime);
+    setCachedGatewayRuntimePreset(runtime);
     handleRecheck();
   }
 
@@ -218,7 +254,8 @@ function App(): React.JSX.Element {
             error={installError}
             connectionMode={connectionMode}
             initialGatewayRuntimePreset={gatewayRuntimePreset}
-            onStart={handleRetryInstall}
+            discoveredRuntimes={discoveredRuntimes}
+            onConnectDiscovered={handleConnectDiscovered}
             onRecheck={handleRecheck}
             onSwitchToLocal={handleSwitchToLocal}
           />

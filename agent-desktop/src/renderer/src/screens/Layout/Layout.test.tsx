@@ -112,6 +112,8 @@ const WORK_GROUP_ITEMS = [
   "navigation.plans",
   "navigation.codegraph",
   "navigation.everos",
+  "navigation.headroom",
+  "navigation.sandboxtasks",
 ] as const;
 
 const CONFIGURE_GROUP_ITEMS = [
@@ -217,7 +219,7 @@ describe("Layout sidebar groups", () => {
     }
   });
 
-  it("renders exactly 17 nav items in the sidebar (16 work/configure/platform + MCP)", async () => {
+  it("renders exactly 19 nav items in the sidebar (18 work/configure/platform + MCP)", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
@@ -226,7 +228,7 @@ describe("Layout sidebar groups", () => {
     const navButtons = buttons.filter((b) =>
       b.classList.contains("sidebar-nav-item"),
     );
-    expect(navButtons.length).toBe(17);
+    expect(navButtons.length).toBe(19);
   });
 
   it("renders the MCP nav item in the platform group between Gateway and Settings", async () => {
@@ -427,13 +429,13 @@ describe("Layout sidebar keyboard accessibility", () => {
     const navButtons = Array.from(
       document.querySelectorAll(".sidebar-nav-item"),
     ) as HTMLButtonElement[];
-    expect(navButtons.length).toBe(17);
+    expect(navButtons.length).toBe(19);
     // The order in the DOM should match the order defined by NAV_ITEMS.
     expect(navButtons[0].textContent).toContain("navigation.chat");
     expect(navButtons[6].textContent).toContain("navigation.everos");
-    expect(navButtons[7].textContent).toContain("navigation.models");
-    expect(navButtons[15].textContent).toContain("navigation.mcp");
-    expect(navButtons[16].textContent).toContain("navigation.settings");
+    expect(navButtons[9].textContent).toContain("navigation.models");
+    expect(navButtons[17].textContent).toContain("navigation.mcp");
+    expect(navButtons[18].textContent).toContain("navigation.settings");
   });
 });
 

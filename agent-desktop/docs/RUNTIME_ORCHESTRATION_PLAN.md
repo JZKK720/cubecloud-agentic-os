@@ -16,7 +16,7 @@ This plan intentionally does **not** restore the retired Office screen, Claw3D H
 | Surface | Contract role | Current app boundary | Target direction |
 | --- | --- | --- | --- |
 | Hermes Agent | `RuntimeProvider` + `TaskOrchestrator` | First-class runtime in Welcome; existing gateway owner in main process | Keep as the default runtime and first native orchestrator |
-| IronClaw | `RuntimeProvider` only | Optional Docker or endpoint handoff in Welcome | Keep as a gateway runtime; pair with Hermes or ECC orchestration instead of embedding its own dashboard |
+| IronClaw | `RuntimeProvider` only | Current Docker or endpoint handoff in Welcome; SSH attach via forwarded gateway | Keep as a gateway runtime; pair with Hermes or ECC orchestration instead of embedding its own dashboard |
 | OpenClaw | `RuntimeProvider` today, `TaskOrchestrator` later | Optional migration/import banner in Setup | Promote to optional runtime only after probe, attach, and task adapters exist |
 | ECC | `TaskOrchestrator` only | No current in-app surface | Add as an optional external harness bridge, not an embedded runtime or dashboard |
 
