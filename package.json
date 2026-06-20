@@ -4,13 +4,12 @@
   "version": "2.10.68",
   "description": "Desktop-first agentic operating system shell for Cubecloud",
   "workspaces": [
-    "agent-desktop",
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace agent-desktop",
-    "build": "npm run build --workspace @cubecloud/platform-core && npm run build --workspace agent-desktop",
-    "typecheck": "npm run typecheck --workspace @cubecloud/platform-core && npm run typecheck --workspace agent-desktop",
+    "dev": "cd agent-desktop && npm run dev",
+    "build": "npm run build --workspace @cubecloud/platform-core && cd agent-desktop && npm run build",
+    "typecheck": "npm run typecheck --workspace @cubecloud/platform-core && cd agent-desktop && npm run typecheck",
     "graphify:repo": "node scripts/graphify-repo.cjs run",
     "graphify:update": "node scripts/graphify-repo.cjs update",
     "graphify:query": "node scripts/graphify-repo.cjs query"
