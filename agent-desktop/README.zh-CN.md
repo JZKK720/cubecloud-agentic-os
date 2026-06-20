@@ -24,7 +24,7 @@ Cubecloud Agent Desktop 是一个原生 Electron 桌面应用，为单个操作�
 - **可选 sidecar** — CodeGraph（语义代码智能）、EverOS（记忆 + harness）、Headroom（上下文压缩）— 全部由用户主动启用，不会静默安装。
 - **技能、记忆、计划任务、看板和方案** 面板 — 由用户控制的、可检视的 JSON 注册表支持。
 - **自动更新** — 通过 `electron-updater` 指向本仓库的 GitHub Releases feed。
-- **国际化** — 通过 i18next 支持 8 种语言环境。
+- **国际化** — 通过 i18next 支持 9 种语言环境。
 
 ## 预览
 
@@ -76,6 +76,48 @@ Cubecloud Agent Desktop 是一个原生 Electron 桌面应用，为单个操作�
 <td width="50%" align="center"><b>设置</b><br/><img width="100%" alt="设置" src="previews/settings.png" /></td>
 </tr>
 </table>
+
+## Skills 生态 —— 3 层划分
+
+Skills 表面来自三个相互独立的技能树，各有不同的生命周期。三者之间**不存在重复**——它们面向不同的受众、解决不同的问题。
+
+### 第 1 层 —— 桌面内置（28 个技能，随 asar 打包发布）
+
+这些是首次启动后可在 **Skills → Browse** 标签页看到的技能。它们位于打包后二进制内的 `agent-desktop/.agents/skills/<name>/SKILL.md`，因此从用户安装桌面的那一刻起，就可以在离线状态下使用。
+
+**5 个新增的运维导向技能（V2.10.71）：**
+
+| 技能 | 何时应使用 |
+|---|---|
+| `first-5-minutes` | "我是新手"、"从哪里开始"、"刚装好" —— 引导完成选择运行时、挂载提供者、跑通第一次对话 |
+| `runtime-attach` | "运行时连不上"、"ECONNREFUSED 127.0.0.1:8642" —— attach 失败时排查的 5 件事（Hermes / IronClaw / OpenClaw） |
+| `models-page-scan` | "Models 页面看不到我的 Ollama"、"健康指示灯是红的" —— 回环扫描、健康探针、LAN 显式启用 |
+| `sidecar-setup` | "怎么装 CodeGraph / EverOS / Headroom" —— 3 个可选 sidecar，每个 profile 独立启用 |
+| `session-search` | "找到我关于 X 的对话"、"搜索历史会话" —— SQLite FTS5 模式，能做什么、不能做什么 |
+
+**23 个已有技能（沿袭自运行时集成）：**
+
+| 类别 | 技能 |
+|---|---|
+| 运行时模式 | `hermes-agent`、`hermes-imports`、`openclaw-persona-forge` |
+| 工程实践 | `karpathy-guidelines`、`careful`、`continuous-learning-v2`、`learn`、`eval-harness`、`freeze` |
+| Electron 专属 | `electron-pro`、`windows-desktop-e2e` |
+| 设计与质量 | `design-taste-frontend` |
+| 工作流 | `plan-tune`、`wiki-conventions`、`kanban-task-shape`、`diff-overlay-writer` |
+| 元调度 | `agent-harness-construction`、`autonomous-agent-harness`、`agentic-engineering` |
+| 工具 | `markitdown-mcp`、`office-hours`、`investigate` |
+
+用户可以一键安装任意一项。5 个新增的运维导向技能会在 Browse 标签页上用 `source: "bundled-desktop"` 以及 frontmatter 中的 `source: "cubecloud"` 标记出来，方便运维区分哪些是为桌面写的、哪些是从上游适配的。
+
+### 第 2 层 —— Hermes 内置（安装运行时后引入）
+
+当 Hermes 运行时被安装（首次启动的本地安装）后，桌面会发现在 hermes-agent 仓库内随发行版一起发布的技能，路径为 `<HERMES_REPO>/skills/<category>/<name>/SKILL.md`。它们会与桌面内置的条目一起出现在 Skills → Browse 标签页，标记为 `source: "bundled"`。数量随 Hermes 版本变化；运行时安装完成后通常会有 100+ 条。
+
+### 第 3 层 —— Monorepo 开发者态（{{SKILLS_TOTAL}} 个技能，仅源码）
+
+仓库根的 `.agents/skills/` 目录保存了 {{SKILLS_TOTAL}} 个从 {{SKILLS_REPOS}} 上游仓库适配而来的技能。这些**不会随二进制一起发布**——它们存在于源码树中，供在本 monorepo 内运行 Copilot / Claude Code / 其他 agent 的贡献者使用。桌面看不到它们；它们面向贡献者，而非终端用户。
+
+每个技能的完整明细见 monorepo README 的 ["What ships in this repo"](../README.md#what-ships-in-this-repo)。
 
 ## 安装
 

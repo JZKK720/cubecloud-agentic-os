@@ -84,7 +84,7 @@ without giving up the control surface of a self-directed stack.
 
 | Outcome | How Cubecloud gets there |
 |---|---|
-| Faster first useful session | A prelaunch bundle ships memory seeds, disabled harnesses, a disabled schedule, and a starter kanban board so the first launch is not an empty shell. |
+| Faster first useful session | A prelaunch bundle seeds the desktop with 3 user-visible skills (`cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`), a starter kanban board with 5 example tasks, and a default-models registry. The working tools, agents, skills, schedules, memory, persona, knowledge-graph, and file-management surfaces are all enabled from day one — the user can start operating immediately instead of staring at an empty shell. |
 | Lower operating cost | Local-first lanes handle drafting, retrieval, orchestration, and iteration on already-paid hardware; remote frontier models stay optional. |
 | Lower vendor risk | Runtime choice and provider choice are separate decisions, so a model or vendor change is a reconfiguration event instead of a rewrite event. |
 | More reproducible operator workflows | Skills, schedules, provider definitions, and state live in inspectable files, SQLite, and explicit IPC surfaces rather than in a hosted black box. |
@@ -127,7 +127,7 @@ This monorepo is broader than the desktop binary alone.
 
 - [`agent-desktop/`](agent-desktop/) is the full Electron desktop that ships to end users. This is the active implementation target; all builds come from here.
 - [`packages/platform-core/`](packages/platform-core/) holds shared TypeScript contracts.
-- [`.agents/skills/`](.agents/skills/) contains {{SKILLS_UPSTREAM}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos and mirrored to `~/.agents/skills/`.
+- [`.agents/skills/`](.agents/skills/) contains {{SKILLS_TOTAL}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos. These are the **contributor's surface** — they exist in the source tree for Copilot / Claude Code sessions inside this monorepo and are **not shipped in the desktop binary**. The end user of the desktop sees a different set: the [28 desktop-bundled skills](agent-desktop/.agents/skills/) that ship inside the asar and are visible in the Skills → Browse tab. See [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers) for the full 3-layer breakdown.
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) is a repo-authored Copilot / VS Code workflow layer for the optional Headroom context-compression proxy. The standalone install/use guide lives at [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md).
 - [`docs/`](docs/) holds the handbook, threat model, runtime plans, legal policies, and transition history.
 
@@ -137,7 +137,7 @@ On first launch, the desktop gives the user:
 - A multi-runtime picker: Hermes today, with IronClaw as a current gateway-handoff lane and OpenClaw as an optional future lane.
 - A provider layer that can talk to local providers such as Ollama, vLLM, and llama.cpp or remote OpenAI-compatible APIs.
 - Three user-visible first-launch skills: `cubecloud-persona`, `cubecloud-onboarding`, and `cubegraph-code-intel`.
-- A prelaunch operating context with seeded memories, harness placeholders, a schedule placeholder, and a starter kanban board.
+- A prelaunch operating context with **3 user-visible skills** (`cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`), **a starter kanban board with 5 example tasks**, and a **default-models registry** that lists the providers the agent can talk to out of the box. The Tools, Agents, Skills, Schedules, Memory, Soul (persona), Memory (wiki), Workspace (files), and Settings surfaces are all live and ready to use on first launch.
 - Optional CodeGraph and EverOS integrations that are user-initiated, not silently installed.
 
 What it does **not** do:

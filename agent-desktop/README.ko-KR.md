@@ -24,7 +24,7 @@ Cubecloud Agent Desktop은 단일 운영자에게 **런타임 선택**, **프로
 - **선택적 sidecar** — CodeGraph(시맨틱 코드 인텔리전스), EverOS(메모리 + 하니스), Headroom(컨텍스트 압축) — 모두 사용자 주도 활성화, 자동 설치 없음.
 - **스킬, 메모리, 스케줄, 칸반, 플랜** 화면 — 사용자가 직접 확인 가능한 JSON 레지스트리로 지원.
 - **자동 업데이터** — `electron-updater`가 본 저장소의 GitHub Releases 피드를 참조.
-- **i18n** — i18next로 8개 로케일 지원.
+- **i18n** — i18next로 9개 로케일 지원.
 
 ## 미리보기
 
@@ -76,6 +76,48 @@ Cubecloud Agent Desktop은 단일 운영자에게 **런타임 선택**, **프로
 <td width="50%" align="center"><b>설정</b><br/><img width="100%" alt="설정" src="previews/settings.png" /></td>
 </tr>
 </table>
+
+## Skills 생태계 — 3계층 구성
+
+Skills 화면은 서로 독립적인 세 개의 스킬 트리에서 가져옵니다. 각 트리는 수명 주기가 다르고, **중복은 의도적으로 존재하지 않습니다** — 대상 청중이 다르고 목적도 다릅니다.
+
+### 1계층 — 데스크톱 내장 (28개 스킬, asar에 동봉)
+
+이 스킬들은 첫 실행 시 **Skills → Browse** 탭에서 보입니다. 패키징된 바이너리 내부의 `agent-desktop/.agents/skills/<name>/SKILL.md`에 있어 사용자가 데스크톱을 설치하는 즉시 오프라인에서 사용할 수 있습니다.
+
+**신규 5개 운영자 대상 스킬 (V2.10.71):**
+
+| 스킬 | 운영자가 사용해야 할 때 |
+|---|---|
+| `first-5-minutes` | "처음이에요", "어디서부터 시작하죠", "방금 설치했어요" — 런타임 선택, 프로바이더 연결, 첫 채팅 실행 안내 |
+| `runtime-attach` | "런타임이 연결 안 돼요", "ECONNREFUSED 127.0.0.1:8642" — attach 실패 시 확인할 5가지(Hermes / IronClaw / OpenClaw) |
+| `models-page-scan` | "Models 페이지에서 내 Ollama가 안 보여요", "상태 표시등이 빨강이에요" — 루프백 스캔, 상태 프로브, LAN 옵트인 |
+| `sidecar-setup` | "CodeGraph / EverOS / Headroom 어떻게 설치하나요" — 3개의 선택형 sidecar, 프로필별 옵트인 |
+| `session-search` | "X에 대한 내 채팅 찾기", "과거 세션 검색" — SQLite FTS5 패턴, 할 수 있는 것 / 없는 것 |
+
+**기존 23개 스킬 (런타임 통합에서 유지):**
+
+| 카테고리 | 스킬 |
+|---|---|
+| 런타임 패턴 | `hermes-agent`, `hermes-imports`, `openclaw-persona-forge` |
+| 엔지니어링 관행 | `karpathy-guidelines`, `careful`, `continuous-learning-v2`, `learn`, `eval-harness`, `freeze` |
+| Electron 전용 | `electron-pro`, `windows-desktop-e2e` |
+| 디자인과 품질 | `design-taste-frontend` |
+| 워크플로 | `plan-tune`, `wiki-conventions`, `kanban-task-shape`, `diff-overlay-writer` |
+| 메타 하네스 | `agent-harness-construction`, `autonomous-agent-harness`, `agentic-engineering` |
+| 도구 | `markitdown-mcp`, `office-hours`, `investigate` |
+
+사용자는 이 중 어느 것이든 한 번의 클릭으로 설치할 수 있습니다. 신규 5개 운영자 대상 스킬은 Browse 탭에서 `source: "bundled-desktop"` 플래그와 frontmatter의 `source: "cubecloud"` 태그로 표시되어, 데스크톱을 위해 작성된 것인지 상류에서 가져온 것인지를 운영자가 구분할 수 있습니다.
+
+### 2계층 — Hermes 내장 (런타임 설치 시 추가됨)
+
+Hermes 런타임이 설치되면(첫 실행 로컬 설치), 데스크톱은 hermes-agent 리포지토리에 동봉된 스킬을 발견합니다. 위치는 `<HERMES_REPO>/skills/<category>/<name>/SKILL.md`입니다. 이 스킬들은 Skills → Browse 탭에서 데스크톱 내장 항목과 함께 표시되며 `source: "bundled"` 태그가 붙습니다. 개수는 Hermes 버전에 따라 달라지며, 런타임 설치 후 보통 100개 이상이 됩니다.
+
+### 3계층 — Monorepo 개발자용 ({{SKILLS_TOTAL}}개 스킬, 소스 전용)
+
+루트 `.agents/skills/`에는 {{SKILLS_REPOS}}개 상류 리포지토리에서 적합된 {{SKILLS_TOTAL}}개의 스킬이 있습니다. 이것들은 **바이너리에 동봉되지 않습니다** — 이 monorepo 안에서 Copilot / Claude Code / 다른 에이전트를 돌리는 컨트리뷰터를 위해 소스 트리 안에 존재합니다. 데스크톱은 그것들을 보지 못하며, 이는 엔드 사용자가 아닌 컨트리뷰터 대상입니다.
+
+스킬별 전체 내역은 monorepo README의 ["What ships in this repo"](../README.md#what-ships-in-this-repo)에 있습니다.
 
 ## 설치
 

@@ -71,7 +71,7 @@ Cubecloud 面向那些既想要桌面产品的便利，又不愿放弃对技术�
 
 | 结果 | Cubecloud 如何实现 |
 |---|---|
-| 更快进入第一个有价值的会话 | 预启动包自带记忆种子、默认关闭的 harness、默认关闭的计划任务和入门看板，首次启动不是空壳。 |
+| 更快进入第一个有价值的会话 | 预启动包为桌面预置 3 个面向用户的技能（`cubecloud-persona`、`cubecloud-onboarding`、`cubegraph-code-intel`）、一张包含 5 个示例任务的入门看板，以及一份默认模型注册表。工具、代理、技能、计划任务、记忆、人格、知识图谱和文件管理界面在首日即全部可用——用户可以立即开始操作，而不是面对一个空壳。 |
 | 更低运行成本 | 本地优先链路承担起草、检索、编排与迭代，远程前沿模型保持可选。 |
 | 更低厂商锁定风险 | 运行时选择与提供者选择是两件事，模型或厂商变化是重配置，不是重写系统。 |
 | 更可复现的操作流程 | 技能、计划任务、提供者定义与状态保存在可检查的文件、SQLite 与显式 IPC 表面中，而不是托管黑盒。 |
@@ -110,7 +110,7 @@ Cubecloud 特别适合以下几类团队与操作者：
 
 - [`agent-desktop/`](agent-desktop/) 是面向终端用户交付的完整 Electron 桌面端，也是唯一的活跃实现目标 —— 所有构建产物均来自此目录。
 - [`packages/platform-core/`](packages/platform-core/) 保存共享 TypeScript 契约。
-- [`.agents/skills/`](.agents/skills/) 包含 35 个旗舰级开源技能，来自 8 个上游仓库，镜像到 `~/.agents/skills/`。
+- [`.agents/skills/`](.agents/skills/) 包含 49 个开源技能，来自 {{SKILLS_REPOS}} 上游仓库。这些是**面向贡献者**的技能——存在于源码树中，供在本 monorepo 内运行 Copilot / Claude Code 会话时使用，**不会随桌面二进制发布**。桌面终端用户看到的是另一组：[28 个桌面内置技能](agent-desktop/.agents/skills/)，它们打包进 asar，可见于 Skills → Browse 标签页。完整的 3 层划分见 [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers)。
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) 是仓库自带的 Copilot / VS Code 工作流层，对接可选的 Headroom 上下文压缩代理。完整安装 / 使用指南位于 [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md)。
 - [`docs/`](docs/) 保存手册、威胁模型、运行时规划、法律政策与过渡历史。
 
@@ -120,7 +120,7 @@ Cubecloud 特别适合以下几类团队与操作者：
 - 一个多运行时选择器：当前为 Hermes，后续规划加入 OpenClaw 与 IronClaw。
 - 一个与运行时层分离的提供者层，可连接 Ollama、vLLM、llama.cpp 等本地提供者，也可连接 OpenAI 兼容的远程 API。
 - 3 个首次启动即对用户可见的技能：`cubecloud-persona`、`cubecloud-onboarding`、`cubegraph-code-intel`。
-- 一套预启动操作上下文，内含记忆种子、harness 占位项、计划任务占位项与入门看板。
+- 预启动操作上下文，包含 **3 个面向用户的技能**（`cubecloud-persona`、`cubecloud-onboarding`、`cubegraph-code-intel`）、**一张含 5 个示例任务的入门看板**，以及一份**默认模型注册表**，列出代理开箱即用可对接的提供者。工具、代理、技能、计划任务、记忆、人格（Soul）、记忆（wiki）、工作区（文件）和设置界面均已就绪，首日即可使用。
 - 用户主动启用的可选 CodeGraph 与 EverOS 集成，而非静默自动安装的隐藏依赖。
 
 **不做**的事情：
@@ -210,7 +210,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   安全策略与上报方式
 ├── THREAT_MODEL.md               本地主导威胁模型
 ├── README.i18n.md                译文清单
-├── .agents/                      35 个镜像到 ~/.agents/skills/ 的开源技能
+├── .agents/                      {{SKILLS_TOTAL}} 个镜像到 ~/.agents/skills/ 的开源技能
 ├── .github/                      智能体指令、工作流技能与自动化
 │   └── skills/
 │       └── headroom-workflow/    面向可选 Headroom 代理的 Copilot / VS Code 工作流层

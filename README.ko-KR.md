@@ -71,7 +71,7 @@ Cubecloud는 데스크톱 제품의 편리함을 원하면서도 스택에 대�
 
 | 결과 | Cubecloud의 실현 방법 |
 |---|---|
-| 첫 번째 가치 있는 세션까지의 시간 단축 | 사전 실행 번들에 메모리 시드, 비활성화된 하네스, 비활성화된 스케줄, 스타터 칸반 보드가 포함되어 있어 첫 실행이 빈 셸이 아닙니다. |
+| 첫 번째 가치 있는 세션까지의 시간 단축 | 사전 실행 번들은 3개의 사용자 대상 스킬(`cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`), 5개의 샘플 작업이 담긴 스타터 칸반 보드, 기본 모델 레지스트리를 데스크톱에 미리 채워 둡니다. 도구, 에이전트, 스킬, 스케줄, 메모리, 페르소나, 지식 그래프, 파일 관리 화면이 첫날부터 모두 활성화되어 있어, 사용자는 빈 셸을 마주하는 대신 바로 작업을 시작할 수 있습니다. |
 | 운영 비용 절감 | 로컬-퍼스트 레인이 초안 작성, 검색, 오케스트레이션, 반복을 기존 하드웨어에서 처리하며, 원격 프론티어 모델은 선택 사항으로 유지됩니다. |
 | 벤더 리스크 감소 | 런타임 선택과 프로바이더 선택이 별개의 결정이므로, 모델이나 벤더 변경은 시스템 재작성이 아닌 재구성 이벤트입니다. |
 | 재현 가능한 운영자 워크플로 | 스킬, 스케줄, 프로바이더 정의, 상태가 호스팅 블랙박스가 아닌 검사 가능한 파일, SQLite, 명시적 IPC 표면에 저장됩니다. |
@@ -110,7 +110,7 @@ Cubecloud는 다음과 같은 팀과 운영자에게 특히 적합합니다:
 
 - [`agent-desktop/`](agent-desktop/)은 최종 사용자에게 제공되는 완전한 Electron 데스크톱입니다. 유일한 활성 구현 대상이며 모든 빌드 결과물은 여기에서 생성됩니다.
 - [`packages/platform-core/`](packages/platform-core/)는 공유 TypeScript 계약을 보유합니다.
-- [`.agents/skills/`](.agents/skills/)에는 8개의 업스트림 리포지토리에서 적응된 35개의 일급 오픈소스 스킬이 포함되어 있으며 `~/.agents/skills/`로 미러링됩니다.
+- [`.agents/skills/`](.agents/skills/)에는 {{SKILLS_REPOS}}개 업스트림 리포지토리에서 적응된 49개의 오픈소스 스킬이 들어 있습니다. 이것들은 **컨트리뷰터 대상** 스킬이며, 이 monorepo 안에서 Copilot / Claude Code 세션을 돌리기 위한 소스 트리에 존재합니다. **데스크톱 바이너리에는 포함되지 않습니다**. 데스크톱 최종 사용자가 보는 것은 별개의 묶음입니다: asar 내부에 동봉되는 [28개의 데스크톱 내장 스킬](agent-desktop/.agents/skills/)이며, Skills → Browse 탭에 표시됩니다. 3개 계층의 전체 구분은 [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers)를 참고하세요.
 - [`docs/`](docs/)는 핸드북, 위협 모델, 런타임 계획, 법적 정책, 전환 이력을 보유합니다.
 
 데스크톱 첫 실행 시 사용자는 다음을 얻습니다:
@@ -119,7 +119,7 @@ Cubecloud는 다음과 같은 팀과 운영자에게 특히 적합합니다:
 - 멀티 런타임 피커: 현재는 Hermes, 향후 OpenClaw와 IronClaw가 추가 레인으로 계획됨.
 - 런타임 레이어와 분리된 프로바이더 레이어. Ollama, vLLM, llama.cpp 등의 로컬 프로바이더 또는 OpenAI 호환 원격 API에 연결 가능.
 - 첫 실행부터 사용자에게 표시되는 3개의 스킬: `cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`.
-- 메모리 시드, 하네스 플레이스홀더, 스케줄 플레이스홀더, 스타터 칸반 보드를 포함한 사전 실행 운영 컨텍스트.
+- **3개의 사용자 대상 스킬**(`cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`), **5개의 샘플 작업이 담긴 스타터 칸반 보드**, 에이전트가 첫날부터 바로 연결할 수 있는 공급자를 나열한 **기본 모델 레지스트리**를 포함한 사전 실행 운영 컨텍스트. Tools, Agents, Skills, Schedules, Memory, Soul(페르소나), Memory(wiki), Workspace(파일), Settings 화면이 첫날부터 모두 가동되어 즉시 사용 가능합니다.
 - 사용자가 명시적으로 활성화하는 선택적 CodeGraph 및 EverOS 통합 (자동 설치되지 않음).
 
 **하지 않는** 일:
@@ -190,7 +190,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   보안 정책 및 보고 방법
 ├── THREAT_MODEL.md               로컬-퍼스트 위협 모델
 ├── README.i18n.md                번역 인벤토리 매니페스트
-├── .agents/                      ~/.agents/skills/로 미러링되는 35개의 오픈소스 스킬
+├── .agents/                      ~/.agents/skills/로 미러링되는 {{SKILLS_TOTAL}}개의 오픈소스 스킬
 ├── .github/                      에이전트 지시, 워크플로 스킬, 자동화
 ├── packages/
 │   └── platform-core/            공유 TypeScript 계약

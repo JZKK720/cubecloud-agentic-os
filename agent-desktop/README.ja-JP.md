@@ -24,7 +24,7 @@ Cubecloud Agent Desktop は、ネイティブの Electron デスクトップで�
 - **オプション sidecar** — CodeGraph（セマンティックコード解析）、EverOS（メモリ + ハーネス）、Headroom（コンテキスト圧縮）。いずれもユーザー主導で有効化し、サイレントインストールはしません。
 - **スキル、メモリ、スケジュール、カンバン、プラン**の各画面 — ユーザーが確認できる JSON レジストリで支えられています。
 - **自動アップデータ** — `electron-updater` 経由で本リポジトリの GitHub Releases フィードを参照。
-- **i18n** — i18next により 8 ロケールを配線。
+- **i18n** — i18next により 9 ロケールを配線。
 
 ## プレビュー
 
@@ -76,6 +76,48 @@ Cubecloud Agent Desktop は、ネイティブの Electron デスクトップで�
 <td width="50%" align="center"><b>設定</b><br/><img width="100%" alt="設定" src="previews/settings.png" /></td>
 </tr>
 </table>
+
+## Skills エコシステム —— 3 層構成
+
+Skills サーフェスは、互いに独立した 3 つのスキルツリーから成り立ちます。それぞれライフサイクルが異なり、**重複は意図的に存在しません**。対象読者と目的が異なります。
+
+### 第 1 層 —— デスクトップ内蔵（28 スキル、asar に同梱）
+
+これらは初回起動時に **Skills → Browse** タブに表示されるスキルです。パッケージ済みバイナリ内の `agent-desktop/.agents/skills/<name>/SKILL.md` に置かれているため、ユーザーがデスクトップをインストールした瞬間からオフラインで利用可能です。
+
+**5 件の新規運用者向けスキル（V2.10.71）：**
+
+| スキル | 運用者が使うべき場面 |
+|---|---|
+| `first-5-minutes` | 「初めてです」「どこから始めればいいですか」「インストールしたばかりです」—— ランタイム選択、プロバイダ接続、初回チャットまでの手順 |
+| `runtime-attach` | 「ランタイムが繋がらない」「ECONNREFUSED 127.0.0.1:8642」—— attach 失敗時に確認すべき 5 項目（Hermes / IronClaw / OpenClaw） |
+| `models-page-scan` | 「Models ページに Ollama が出てこない」「ヘルスランプが赤い」—— ループバックスキャン、ヘルスプローブ、LAN オプトイン |
+| `sidecar-setup` | 「CodeGraph / EverOS / Headroom の入れ方」—— 任意の 3 つの sidecar、profile ごとにオプトイン |
+| `session-search` | 「X に関する自分のチャットを探したい」「過去のセッションを検索」—— SQLite FTS5 のパターン、できること／できないこと |
+
+**既存の 23 スキル（ランタイム統合から引き継ぎ）：**
+
+| カテゴリ | スキル |
+|---|---|
+| ランタイムパターン | `hermes-agent`、`hermes-imports`、`openclaw-persona-forge` |
+| エンジニアリング習慣 | `karpathy-guidelines`、`careful`、`continuous-learning-v2`、`learn`、`eval-harness`、`freeze` |
+| Electron 専用 | `electron-pro`、`windows-desktop-e2e` |
+| デザインと品質 | `design-taste-frontend` |
+| ワークフロー | `plan-tune`、`wiki-conventions`、`kanban-task-shape`、`diff-overlay-writer` |
+| メタハーネス | `agent-harness-construction`、`autonomous-agent-harness`、`agentic-engineering` |
+| ツール | `markitdown-mcp`、`office-hours`、`investigate` |
+
+ユーザーはこれらを 1 クリックでインストールできます。新規 5 件の運用者向けスキルは Browse タブで `source: "bundled-desktop"` フラグと frontmatter の `source: "cubecloud"` タグが表示され、デスクトップ向けに新規執筆されたか上流由来かを区別できます。
+
+### 第 2 層 —— Hermes 内蔵（ランタイム導入時に追加）
+
+Hermes ランタイムをインストールすると（初回ローカル導入時）、デスクトップは hermes-agent リポジトリ内に同梱されているスキルを検出します。配置先は `<HERMES_REPO>/skills/<category>/<name>/SKILL.md`。これらは Skills → Browse タブにデスクトップ内蔵分と一緒に表示され、`source: "bundled"` タグが付きます。数は Hermes のバージョンにより変動し、ランタイム導入後は概ね 100+ 件になります。
+
+### 第 3 層 —— Monorepo 開発者向け（{{SKILLS_TOTAL}} スキル、ソースのみ）
+
+ルート `.agents/skills/` には {{SKILLS_REPOS}} 個の上流リポジトリから適合された {{SKILLS_TOTAL}} 件のスキルがあります。これらは**バイナリには同梱されません**。本 monorepo 内で Copilot / Claude Code / 他のエージェントを動かす貢献者向けにソースツリー内に存在します。デスクトップからは見えず、エンドユーザー向けではなく貢献者向けです。
+
+スキルごとの全明細は monorepo README の ["What ships in this repo"](../README.md#what-ships-in-this-repo) を参照してください。
 
 ## インストール
 

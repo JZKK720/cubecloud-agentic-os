@@ -46,9 +46,13 @@ containing 21,291 `node_modules/` entries. `verify:bundle` 7/7 PASS.
   user-initiated, not silently installed.
 - **Skill, memory, schedule, kanban, and plan** surfaces backed by
   inspectable JSON registries under the user's control.
+- **Pre-bundled skills ecosystem** — 28 desktop-targeted skills
+  ship inside the asar (23 + 5 added in V2.10.71). The Skills →
+  Browse tab shows them all. See
+  [Skills ecosystem — 3 layers](#skills-ecosystem--3-layers) below.
 - **Auto-updater** via `electron-updater` pointing at this repo's
   GitHub Releases feed.
-- **i18n** — 8 locales wired through i18next.
+- **i18n** — 9 locales wired through i18next.
 
 ## Preview
 
@@ -102,6 +106,68 @@ major operator surface exposed in the sidebar.
 <td width="50%" align="center"><b>Settings</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
 </tr>
 </table>
+
+## Skills ecosystem — 3 layers
+
+The Skills surface draws from three independent skill trees, each
+with a different lifecycle. None of them are duplicates — they exist
+for different audiences and serve different purposes.
+
+### Layer 1 — Desktop-bundled (28 skills, ships in the asar)
+
+These are the skills visible in the **Skills → Browse** tab on first
+launch. They live at `agent-desktop/.agents/skills/<name>/SKILL.md`
+inside the packaged binary, so they are available offline from the
+moment the user installs the desktop.
+
+**5 new operator-targeted skills (V2.10.71):**
+
+| Skill | When the operator should use it |
+|---|---|
+| `first-5-minutes` | "I'm new", "where do I start", "just installed" — walks through picking a runtime, attaching a provider, running the first chat |
+| `runtime-attach` | "Runtime won't connect", "ECONNREFUSED 127.0.0.1:8642" — the 5 things to check when an attach fails (Hermes / IronClaw / OpenClaw) |
+| `models-page-scan` | "Models page doesn't see my Ollama", "health dot is red" — loopback scan, health probe, LAN opt-in |
+| `sidecar-setup` | "How do I install CodeGraph / EverOS / Headroom" — the 3 optional sidecars, opt-in per profile |
+| `session-search` | "Find my chat about X", "search past sessions" — SQLite FTS5 patterns, what it can and can't do |
+
+**23 existing skills (kept from the runtime integration):**
+
+| Category | Skills |
+|---|---|
+| Runtime patterns | `hermes-agent`, `hermes-imports`, `openclaw-persona-forge` |
+| Engineering practices | `karpathy-guidelines`, `careful`, `continuous-learning-v2`, `learn`, `eval-harness`, `freeze` |
+| Electron-specific | `electron-pro`, `windows-desktop-e2e` |
+| Design and quality | `design-taste-frontend` |
+| Workflow | `plan-tune`, `wiki-conventions`, `kanban-task-shape`, `diff-overlay-writer` |
+| Meta-harnesses | `agent-harness-construction`, `autonomous-agent-harness`, `agentic-engineering` |
+| Tooling | `markitdown-mcp`, `office-hours`, `investigate` |
+
+The user can install any of these with one click. The 5 new
+operator-targeted skills are flagged in the Browse tab with
+`source: "bundled-desktop"` and a `source: "cubecloud"` tag in the
+frontmatter so the operator can tell which ones were written for the
+desktop vs upstream-adapted.
+
+### Layer 2 — Hermes-bundled (installed when the runtime is installed)
+
+When the Hermes runtime is installed (first-run local install), the
+desktop discovers the skills that ship inside the hermes-agent
+repository at `<HERMES_REPO>/skills/<category>/<name>/SKILL.md`.
+These appear in the Skills → Browse tab alongside the desktop-bundled
+entries, tagged `source: "bundled"`. The count varies by Hermes
+version; expect 100+ skills once the runtime is installed.
+
+### Layer 3 — Monorepo developer-time ({{SKILLS_TOTAL}} skills, source-only)
+
+The root `.agents/skills/` tree holds {{SKILLS_TOTAL}} skills adapted
+from {{SKILLS_REPOS}} upstream repos. These are **not shipped in the
+binary** — they exist in the source tree for contributors who run
+Copilot / Claude Code / another agent inside this monorepo. The
+desktop does not see them; they are the contributor's surface, not
+the end user's.
+
+The full per-skill breakdown is in the monorepo README under
+["What ships in this repo"](../README.md#what-ships-in-this-repo).
 
 ## Install
 
