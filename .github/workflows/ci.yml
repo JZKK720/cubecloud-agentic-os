@@ -112,11 +112,17 @@ jobs:
       - name: Typecheck platform-core
         run: npm run typecheck --workspace @cubecloud/platform-core
 
+      - name: Install agent-desktop dependencies
+        working-directory: agent-desktop
+        run: npm ci
+
       - name: Typecheck agent-desktop
-        run: npm run typecheck --workspace cubecloud-agent-desktop
+        working-directory: agent-desktop
+        run: npm run typecheck
 
       - name: Run focused agent-desktop tests
-        run: npm run test --workspace cubecloud-agent-desktop -- App.gateway.dom.test.tsx src/renderer/src/App.kanban.dom.test.tsx src/main/runtimeSessions.test.ts
+        working-directory: agent-desktop
+        run: npm run test -- App.gateway.dom.test.tsx src/renderer/src/App.kanban.dom.test.tsx src/main/runtimeSessions.test.ts
 
   desktop-shell-electron-smoke:
     runs-on: windows-latest
@@ -133,8 +139,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install agent-desktop dependencies
+        working-directory: agent-desktop
+        run: npm ci
+
       - name: Run Electron UI smoke test
-        run: npm run test:electron-smoke --workspace cubecloud-agent-desktop
+        working-directory: agent-desktop
+        run: npm run test:electron-smoke
 
   desktop-shell-windows-packaging:
     runs-on: windows-latest
@@ -151,8 +162,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install agent-desktop dependencies
+        working-directory: agent-desktop
+        run: npm ci
+
       - name: Build Windows package
-        run: npm run build:win --workspace cubecloud-agent-desktop
+        working-directory: agent-desktop
+        run: npm run build:win
 
       - name: Verify packaged Windows app
-        run: npm run verify:bundle --workspace cubecloud-agent-desktop
+        working-directory: agent-desktop
+        run: npm run verify:bundle
