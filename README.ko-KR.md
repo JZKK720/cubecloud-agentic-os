@@ -2,6 +2,28 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
+## 최신 릴리스: **v2.10.71**
+
+Windows 설치 프로그램은
+[v2.10.71 릴리스 페이지](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+에서 다운로드하세요:
+
+- `cubecloud-agent-desktop-2.10.71-setup.exe` (130 MB, NSIS 원클릭 설치 프로그램)
+- `cubecloud-agent-desktop-2.10.71-portable.exe` (109 MB, 단일 파일 포터블)
+- `cubecloud-agent-desktop-2.10.71-setup.exe.blockmap` + `latest.yml` (자동 업데이트 메타데이터)
+
+v2.10.71은 **래퍼 폐기 이후의 첫 빌드**입니다. `agent-desktop/`
+(모노레포 루트가 아닌)에서 빌드되었으며, asar에는 21,291개의
+`node_modules/` 항목(176.92 MB)이 포함되어 있고 `verify:bundle`은
+7/7 PASS입니다. 전체 변경 로그는
+[`agent-desktop/changelogs/2.10.71.md`](agent-desktop/changelogs/2.10.71.md)를
+참조하세요. v0.6.0과 v0.6.1은 GitHub에서 프리릴리스로 표시되어
+있으며, 폐기된 `apps/desktop-shell/` 래퍼 트리에서 빌드되었으므로
+사용하면 안 됩니다.
+
+설치 지침, 런타임 선택기 세부 정보, 프로바이더 설정은
+[`agent-desktop/README.md`](agent-desktop/README.md)를 참조하세요.
+
 # Cubecloud Agentic-OS 한국어 문서（ko-KR）
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · **한국어**

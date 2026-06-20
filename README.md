@@ -10,6 +10,26 @@
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
 
+## Latest release: **v2.10.71**
+
+Download the Windows installer from the
+[v2.10.71 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71):
+
+- `cubecloud-agent-desktop-2.10.71-setup.exe` (130 MB, NSIS one-click installer)
+- `cubecloud-agent-desktop-2.10.71-portable.exe` (109 MB, single-file portable)
+- `cubecloud-agent-desktop-2.10.71-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
+
+v2.10.71 is the **first post-wrapper build** of the inner product. It
+ships from `agent-desktop/` (not the monorepo root), the asar contains
+21,291 `node_modules/` entries (176.92 MB), and `verify:bundle` is
+7/7 PASS. See [`agent-desktop/changelogs/2.10.71.md`](agent-desktop/changelogs/2.10.71.md)
+for the full changelog. v0.6.0 and v0.6.1 are marked pre-release on
+GitHub and should not be used — they were built from the retired
+`apps/desktop-shell/` wrapper tree.
+
+Install instructions, runtime picker details, and provider configuration
+are in [`agent-desktop/README.md`](agent-desktop/README.md).
+
 # Cubecloud Agentic-OS
 
 **[English](README.md)** · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)

@@ -2,355 +2,213 @@
   <img width="360" alt="Cubecloud" src="build/branding/cubecloud-logo.svg" />
 </p>
 
-> **Cubecloud Agent Desktop —— 面向桌面端二进制发行版的说明文档。**
-> Agentic-OS 单仓的 README 在 [`../README.md`](../README.md)，
-> 主索引在 [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)。
-> 许可证、品牌与贡献政策详见 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)。
+# Cubecloud Agent Desktop — 二进制文件
 
+> **这是桌面二进制文件的安装与功能文档。** agentic-OS monorepo 的 README 位于
+> [`../README.md`](../README.md)；关于“这是什么、为什么是这样、下一步看哪里”的总索引位于
+> [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)。
 
-<img width="100%" alt="CUBECLOUD DESKTOP" src="previews/welcome.png" />
+Cubecloud Agent Desktop 是一个原生 Electron 桌面应用，为单个操作者提供统一的控制面板，用于管理**运行时选择**、**提供者选择**、**技能**、**记忆**、**计划任务**和**可选的代码智能**——而不会将工作流绑定到托管包装层或单一供应商 CLI。
 
-<br/>
-<p align="center">
-  <a href="../docs/HANDBOOK.md"><img src="https://img.shields.io/badge/Docs-HANDBOOK-FFD700?style=for-the-badge" alt="文档"></a>
-  <a href="https://t.me/hermes_agent_desktop"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0%20%7C%20Apache--2.0%20%7C%20MIT-blue?style=for-the-badge" alt="许可证: AGPL-3.0 OR Apache-2.0 OR MIT (Cubecloud-original)；MIT (继承的框架)" /></a>
-  <a href="docs/legal/TRADEMARK_POLICY.md"><img src="https://img.shields.io/badge/Trademark-policy-lightgrey?style=for-the-badge" alt="商标政策"></a>
-  <a href="SECURITY.md"><img src="https://img.shields.io/badge/Security-policy-lightgrey?style=for-the-badge" alt="安全政策"></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing-DCO%201.1-lightgrey?style=for-the-badge" alt="贡献: DCO 1.1"></a>
-  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/"><img src="https://img.shields.io/badge/Download-Releases-FF6600?style=for-the-badge" alt="下载"></a>
-<a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/stargazers">
-  <img src="https://img.shields.io/github/stars/cubecloud-contributors/cubecloud-agentic-os?style=for-the-badge&color=FFD700&label=Stars" alt="Stars">
-</a>
-  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/">
-  <img src="https://img.shields.io/github/downloads/cubecloud-contributors/cubecloud-agentic-os/total?style=for-the-badge&color=00B496&label=Total%20Downloads" alt="下载量">
-</a>
-</p>
+**最新版本：[v2.10.71](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)** — wrapper 之后的第一个内部产品构建版本，asar 176.92 MB 包含 21,291 个 `node_modules/` 条目。`verify:bundle` 7/7 通过。
 
-> **本项目处于活跃开发阶段。** 功能可能会发生变化，某些功能也可能会失效。如果您遇到问题或有好的想法，请 [提交 Issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)。欢迎贡献代码！
+## 用户可见内容
 
-## 语言
-
-- English: `README.md`
-- 简体中文: `README.zh-CN.md`
-- 日本語: `README.ja-JP.md`
-- 한국어: `README.ko-KR.md`
-
-Cubecloud Desktop 是一款原生桌面控制中心，用于安装、配置并与 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 进行聊天，同时作为 Cubecloud Agentic-OS 的运营入口。
-
-无需手动管理命令行界面 (CLI)，该应用可在一个统一界面中引导您完成安装、提供商设置以及日常使用。它使用官方的 Hermes 安装脚本，将 Hermes 存储在 `~/.hermes` 目录下，并为您提供涵盖聊天、会话、配置、记忆、技能、工具、计划任务、消息网关等功能的图形界面。
+- 首次启动时的**多运行时选择器** — Hermes（默认，端口 8642）、IronClaw（网关交接，端口 3231）和 OpenClaw（可选，端口 18789）。运行时选择与提供者选择是相互独立的决策。
+- **提供者层** — 与本地提供者（Ollama、LM Studio、vLLM、llama.cpp、任何 OpenAI 兼容端点）和远程 API（OpenAI、Anthropic、Google Gemini、Azure OpenAI、OpenRouter，以及操作者自己的网关）通信。
+- **模型页面** — 扫描 `127.0.0.1` 上的运行中本地服务器，并以单击方式提供 Ollama / LM Studio 建议，每张卡片带 30 秒探测间隔的健康点。
+- **对话界面** — 支持 SSE 流式传输、Markdown 渲染、语法高亮和令牌用量显示。
+- **会话管理** — 全文搜索（SQLite FTS5）、按日期分组的历史记录、跨对话恢复与搜索。
+- **配置文件切换** — 每个配置文件的提供者、会话和状态相互隔离。
+- **Sandbox Tasks 屏幕**（V2.10.65）— 用于 IronClaw WASM 沙盒工作流。
+- **可选 sidecar** — CodeGraph（语义代码智能）、EverOS（记忆 + harness）、Headroom（上下文压缩）— 全部由用户主动启用，不会静默安装。
+- **技能、记忆、计划任务、看板和方案** 面板 — 由用户控制的、可检视的 JSON 注册表支持。
+- **自动更新** — 通过 `electron-updater` 指向本仓库的 GitHub Releases feed。
+- **国际化** — 通过 i18next 支持 8 种语言环境。
 
 ## 预览
 
-以下图片均来自当前桌面构建的整页截图，放在安装说明之前，方便先快速浏览产品表面，再决定如何部署。
+每张图片均为当前桌面构建的全页截图。画廊涵盖首次启动、运行时发现以及侧边栏中暴露的每个主要操作者界面。
 
 <table>
 <tr>
-<td width="50%" align="center"><b>欢迎页</b><br/><img width="100%" alt="Welcome" src="previews/welcome.png" /></td>
-<td width="50%" align="center"><b>远程网关</b><br/><img width="100%" alt="Remote gateway" src="previews/welcome-remote.png" /></td>
+<td width="50%" align="center"><b>欢迎 &amp; 首次启动</b><br/><img width="100%" alt="欢迎" src="previews/welcome.png" /></td>
+<td width="50%" align="center"><b>远程网关接入</b><br/><img width="100%" alt="远程网关" src="previews/welcome-remote.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>SSH 接入</b><br/><img width="100%" alt="SSH handoff" src="previews/welcome-ssh.png" /></td>
-<td width="50%" align="center"><b>运行时发现</b><br/><img width="100%" alt="Runtime detection" src="previews/runtime-detection.png" /></td>
+<td width="50%" align="center"><b>SSH 隧道交接</b><br/><img width="100%" alt="SSH 交接" src="previews/welcome-ssh.png" /></td>
+<td width="50%" align="center"><b>运行时检测</b><br/><img width="100%" alt="运行时检测" src="previews/runtime-detection.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>聊天</b><br/><img width="100%" alt="Chat" src="previews/chat.png" /></td>
-<td width="50%" align="center"><b>会话</b><br/><img width="100%" alt="Sessions" src="previews/sessions.png" /></td>
+<td width="50%" align="center"><b>对话（SSE 流式）</b><br/><img width="100%" alt="对话" src="previews/chat.png" /></td>
+<td width="50%" align="center"><b>会话（SQLite FTS5）</b><br/><img width="100%" alt="会话" src="previews/sessions.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>配置</b><br/><img width="100%" alt="Profiles" src="previews/agents.png" /></td>
-<td width="50%" align="center"><b>人格</b><br/><img width="100%" alt="Persona" src="previews/persona.png" /></td>
+<td width="50%" align="center"><b>配置文件</b><br/><img width="100%" alt="配置文件" src="previews/agents.png" /></td>
+<td width="50%" align="center"><b>角色（遗留）</b><br/><img width="100%" alt="角色" src="previews/persona.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>计划</b><br/><img width="100%" alt="Plans" src="previews/plans.png" /></td>
-<td width="50%" align="center"><b>CodeGraph</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
+<td width="50%" align="center"><b>方案</b><br/><img width="100%" alt="方案" src="previews/plans.png" /></td>
+<td width="50%" align="center"><b>CodeGraph（可选 sidecar）</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>EverOS</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
-<td width="50%" align="center"><b>Headroom</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
+<td width="50%" align="center"><b>EverOS（可选 sidecar）</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
+<td width="50%" align="center"><b>Headroom（可选 sidecar）</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>模型</b><br/><img width="100%" alt="Models" src="previews/models.png" /></td>
-<td width="50%" align="center"><b>提供商</b><br/><img width="100%" alt="Providers" src="previews/providers.png" /></td>
+<td width="50%" align="center"><b>模型（Ollama + LM Studio 扫描）</b><br/><img width="100%" alt="模型" src="previews/models.png" /></td>
+<td width="50%" align="center"><b>提供者</b><br/><img width="100%" alt="提供者" src="previews/providers.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>技能</b><br/><img width="100%" alt="Skills" src="previews/skills.png" /></td>
-<td width="50%" align="center"><b>记忆</b><br/><img width="100%" alt="Memory" src="previews/memory.png" /></td>
+<td width="50%" align="center"><b>技能</b><br/><img width="100%" alt="技能" src="previews/skills.png" /></td>
+<td width="50%" align="center"><b>记忆</b><br/><img width="100%" alt="记忆" src="previews/memory.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>工具</b><br/><img width="100%" alt="Tools" src="previews/tools.png" /></td>
-<td width="50%" align="center"><b>工作区</b><br/><img width="100%" alt="Workspace" src="previews/workspace.png" /></td>
+<td width="50%" align="center"><b>工具</b><br/><img width="100%" alt="工具" src="previews/tools.png" /></td>
+<td width="50%" align="center"><b>工作区</b><br/><img width="100%" alt="工作区" src="previews/workspace.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>计划任务</b><br/><img width="100%" alt="Schedules" src="previews/schedules.png" /></td>
-<td width="50%" align="center"><b>网关</b><br/><img width="100%" alt="Gateway" src="previews/gateway.png" /></td>
+<td width="50%" align="center"><b>计划任务</b><br/><img width="100%" alt="计划任务" src="previews/schedules.png" /></td>
+<td width="50%" align="center"><b>网关</b><br/><img width="100%" alt="网关" src="previews/gateway.png" /></td>
 </tr>
 <tr>
 <td width="50%" align="center"><b>MCP</b><br/><img width="100%" alt="MCP" src="previews/mcp.png" /></td>
-<td width="50%" align="center"><b>设置</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
+<td width="50%" align="center"><b>设置</b><br/><img width="100%" alt="设置" src="previews/settings.png" /></td>
 </tr>
 </table>
 
 ## 安装
 
-下载入口：请从 [Releases 页面](https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/) 获取安装包。
+最新的稳定安装包是 **v2.10.71**，发布地址：
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71>。
+较早的版本列于
+[Releases 页面](https://github.com/JZKK720/cubecloud-agentic-os/releases)。
+v0.6.0 和 v0.6.1 已被标记为预发布版本，因为它们是从现已退役的 `apps/desktop-shell/` wrapper 树构建的；**请使用 v2.10.71 或更新版本**。
 
 ### Windows
 
-> **Windows 用户注意：** 安装程序未进行代码签名。首次启动时 Windows SmartScreen 会弹出警告——请点击“更多信息” → “仍要运行”。
+从
+[v2.10.71 发布](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+下载 `cubecloud-agent-desktop-2.10.71-setup.exe` 并运行。NSIS 安装程序为每用户一键安装，会在 Windows“程序和功能”中注册 `cubecloud-agent-desktop`。
 
-> **WSL 用户注意：** 如果安装程序停滞在 `Switching to root user to install dependencies...`，这说明 Playwright 正在等待输入 sudo 密码，但在没有 TTY 的情况下无法读取。请在安装期间授予无密码的 sudo 权限，完成后再恢复：
->
-> ```bash
-> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hermes-install
-> # …重新运行安装程序；完成后执行：
-> sudo rm /etc/sudoers.d/hermes-install
-> ```
->
-> 这个已知的安装器问题在 Cubecloud 迁移期间仍在持续处理。
+> **Windows 用户提示：** 安装程序未进行代码签名。Windows SmartScreen 在首次启动时会发出警告——点击**更多信息**→**仍要运行**。代码签名是已知的跟进项；OEM 构建路径（含企业证书）详见
+> [`../docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md)。
 
-### Fedora (RPM)
+若不需要安装程序，也可以下载 `cubecloud-agent-desktop-2.10.71-portable.exe` — 单文件便携版，无需安装步骤。
 
-```bash
-sudo dnf install ./agent-desktop-rpm.$2
-```
+### macOS / Linux
 
-> **Fedora 用户注意：** `.rpm` 包没有 GPG 签名。如果您的系统强制检查签名，请在安装命令后添加 `--nogpgcheck`。`.rpm` 构建不支持自动更新（这是 `electron-updater` 的限制）；若要更新，请重新安装新的 `.rpm` 包。
+`electron-builder` 可以生成 macOS（`.dmg`）和 Linux（`.deb`、`.rpm`、`.AppImage`、`.snap`）目标，但本仓库的 CI 构建流水线目前只发布 Windows 产物。多平台 CI 是跟进项，需要在仓库设置中配置 App Store Connect、代码签名和 Linux 应用商店凭据。
 
-## 功能特性
+## 工作原理
 
-- **向导式初次安装**：带有进度跟踪和依赖解析的 Hermes Agent 引导安装。
-- **本地或远程后端**：可在本地 `127.0.0.1:8642` 运行 Hermes，或通过 URL 和 API 密钥将桌面应用连接到远程的 Hermes API 服务器。
-- **多提供商支持**：OpenRouter, Anthropic, OpenAI, Google (Gemini), xAI (Grok), Nous Portal, Qwen, MiniMax, Hugging Face, Groq, 以及本地兼容 OpenAI 格式的端点 (LM Studio, Ollama, vLLM, llama.cpp)。
-- **流式聊天界面**：具有 SSE 流式传输、工具进度指示、Markdown 渲染和语法高亮。
-- **Token 使用情况追踪**：在聊天底部显示实时的 Prompt/补全 Token 计数及预估费用，并可通过 `/usage` 斜杠命令查看。
-- **22 个斜杠命令**：`/new`, `/clear`, `/fast`, `/web`, `/image`, `/browse`, `/code`, `/shell`, `/usage`, `/help`, `/tools`, `/skills`, `/model`, `/memory`, `/persona`, `/version`, `/compact`, `/compress`, `/undo`, `/retry`, `/debug`, `/status` 等等。
-- **会话管理**：全文检索 (SQLite FTS5)、按日期分组的历史记录、在会话之间继续聊天或搜索。
-- **配置切换 (Profile)**：创建、删除并切换不同的 Hermes 环境，配置完全隔离。
-- **14 种工具集**：网络、浏览器、终端、文件、代码执行、视觉识别、图像生成、语音合成 (TTS)、技能、记忆、会话搜索、澄清询问、委托调度、混合专家模型 (MoA) 和任务规划。
-- **记忆系统**：查看/编辑记忆条目和用户资料记忆，追踪容量，并发现不同的记忆提供商（如 Honcho, Hindsight, Mem0, RetainDB, Supermemory, ByteRover）。
-- **人格编辑器**：编辑并重置您的代理 (Agent) 的 `SOUL.md` 人格设定。
-- **已保存模型**：跨不同提供商对模型配置进行增删改查。
-- **计划任务**：支持 15 种推送目标的 Cron 任务构建器（分钟、小时、每日、每周、自定义 Cron）。
-- **16 个消息网关**：Telegram, Discord, Slack, WhatsApp, Signal, Matrix/Element, Mattermost, Email (IMAP/SMTP), SMS (Twilio & Vonage), iMessage (BlueBubbles), 钉钉 (DingTalk), 飞书 (Feishu/Lark), 企业微信 (WeCom), 微信 (WeChat iLink Bot), Webhooks 和 Home Assistant。
-- **Hermes 办公室 (Claw3d)**：具有开发服务器和适配器管理功能的可视化 3D 界面。
-- **备份、导入与诊断导出**：可在设置面板中完成完整的数据备份/恢复，并进行系统诊断。
-- **日志查看器**：直接在设置界面中查看网关和代理的运行日志。
-- **自动更新**：通过 `electron-updater` 检查并安装更新。
-- **国际化 (i18n)**：预置英文语言环境，涵盖所有界面，并已为社区翻译做好框架准备。
-- **测试套件**：涵盖 SSE 解析器、IPC 处理程序、预加载 API、安装程序工具以及常数验证的 Vitest 测试用例。
+首次启动时，应用会：
 
-## 运行原理
+1. 询问是在**本地**运行智能体（桌面在 `127.0.0.1:<port>` 上启动运行时）、通过 HTTPS 连接到**远程**网关，还是通过 SSH 隧道进行**SSH 转发**。
+2. **本地模式：** 检查所选运行时是否已在运行；若未运行，则执行官方安装程序，进行依赖解析与进度跟踪。
+3. **远程 / SSH 模式：** 提示输入网关 URL，通过 HTTPS 验证 `/v1/models` 端点，并跳过本地安装。
+4. 提示输入**提供者**（本地模型端点或远程 API），并将凭据存储于每配置文件的凭据池中。
+5. 设置完成后启动主工作区。
 
-在首次启动时，应用会：
+在本地模式下，对话请求通过 SSE 流式传输走 `http://127.0.0.1:8642`（Hermes）或 `http://127.0.0.1:3231`（IronClaw）。在远程模式下，应用以同样的流式协议与配置的远程 URL 通信。渲染端实时解析流，呈现工具进度、Markdown 内容和令牌用量。
 
-1. 询问您是希望在**本地**运行 Hermes，还是连接到**远程**的 Hermes API 服务器。
-2. **本地模式：** 检查 `~/.hermes` 目录下是否已安装 Hermes；如果未安装，则运行官方 Hermes 安装脚本并解决依赖关系 (Git, uv, Python 3.11+)。
-3. **远程模式：** 提示输入远程 API URL 和 API 密钥，验证连接，并跳过本地安装。
-4. 提示输入 API 提供商或本地模型端点。
-5. 将提供商配置和 API 密钥保存至 Hermes 配置文件。
-6. 设置完成后启动主工作区。
+## 支持的运行时与提供者
 
-在本地模式下，聊天请求会通过带有 SSE 流的 `http://127.0.0.1:8642` 发送。在远程模式下，应用程序通过相同的流协议与您配置的远程 URL 进行通信。桌面应用会实时解析数据流，并在接收时渲染工具进度、Markdown 内容以及 token 消耗。
+### 运行时提供者（3 个）
 
-## 界面说明
+| 运行时 | 角色 | 默认端口 | 集成模式 |
+|---|---|---|---|
+| **Hermes** | 默认核心运行时 | 8642 | `native-core` |
+| **IronClaw** | WASM 沙盒网关交接通道 | 3231 | `optional-bridge` |
+| **OpenClaw** | 可选未来通道 | 18789 | `optional-runtime` |
 
-| 界面 (Screen) | 描述 (Description)                                                                           |
-| ------------- | ------------------------------------------------------------------------------------- |
-| **聊天 (Chat)**      | 支持斜杠命令、工具进度展示和 token 跟踪的流式对话界面                                     |
-| **会话 (Sessions)**  | 浏览、搜索并恢复过去的对话                                         |
-| **代理 (Agents)**    | 创建、删除和在不同的 Hermes 配置 (Profile) 之间切换                                    |
-| **技能 (Skills)**    | 浏览、安装并管理内置及已安装的技能                              |
-| **模型 (Models)**    | 管理并保存各个提供商的模型配置                                        |
-| **记忆 (Memory)**    | 查看/编辑记忆条目、用户配置，并配置记忆提供商                |
-| **灵魂 (Soul)**      | 编辑当前活动配置的代理人格设定 (`SOUL.md`)                                           |
-| **工具 (Tools)**     | 启用或禁用特定的工具集                                                 |
-| **计划 (Schedules)** | 创建并管理定时任务及推送目标                                     |
-| **网关 (Gateway)**   | 配置和控制各类消息平台集成                                 |
-| **办公室 (Office)**    | Claw3d 可视化界面设置及管理                                          |
-| **设置 (Settings)**  | 提供商配置、凭证池、备份/导入、日志查看器、网络设置、主题 |
+Hermes 与 IronClaw 是当前通道。OpenClaw 已接入运行时选择器，但作为可选接入目标提供。
 
-## 支持的提供商
+### 提供者类型（环回与远程）
 
-### 大语言模型 (LLM) 提供商
+- **本地 / 环回：** Ollama、LM Studio、vLLM、llama.cpp，以及用户在 `127.0.0.1` 上运行的任何其他 OpenAI 兼容端点。模型页面（V2.10.60）会扫描这些端点并以单击方式给出建议。
+- **远程（HTTPS）：** OpenAI、Anthropic、Google Gemini、Azure OpenAI、OpenRouter，以及操作者配置的任何其他 OpenAI 兼容 API。
 
-| 提供商 (Provider)   | 备注说明 (Notes)                                    |
-| ------------------- | ---------------------------------------- |
-| **OpenRouter**      | 通过单一 API 访问 200+ 种模型 (推荐使用) |
-| **Anthropic**       | 直接访问 Claude 模型                     |
-| **OpenAI**          | 直接访问 GPT 模型                        |
-| **Google (Gemini)** | Google AI Studio                         |
-| **xAI (Grok)**      | Grok 模型                              |
-| **Nous Portal**     | 提供免费额度                      |
-| **Qwen (通义千问)** | QwenAI 模型                            |
-| **MiniMax**         | 包含全球与中国区端点               |
-| **Hugging Face**    | 通过 HF Inference 访问 20+ 开源模型         |
-| **Groq**            | 快速推理 (支持语音/STT)               |
-| **本地/自定义 (Local/Custom)**    | 任何兼容 OpenAI 格式的端点           |
+本地服务器发现默认仅限环回；LAN 主机需通过渲染端 `scanLocalServers` 调用的 `extraHosts` 参数显式启用。
 
-内置以下本地模型预设：LM Studio, Ollama, vLLM, llama.cpp。
+## 可选 sidecar（由用户主动启用，不内置）
 
-### 消息平台
+- **CodeGraph**（`pip install codegraph` + `codegraph init`）— 语义代码智能路径。详见
+  [`../docs/CODEGRAPH-RUNTIME.md`](../docs/CODEGRAPH-RUNTIME.md)。
+- **EverOS**（`pip install everos`）— 记忆 + harness sidecar。详见
+  [`../docs/EVEROS-SIDECAR.md`](../docs/EVEROS-SIDECAR.md)。
+- **Headroom**（`pip install headroom-ai`）— 上下文压缩代理。详见
+  [`../docs/agent-skills-bundle/HEADROOM.md`](../docs/agent-skills-bundle/HEADROOM.md)
+  及仓库内置的工作流技能
+  [`../.github/skills/headroom-workflow/`](../.github/skills/headroom-workflow/)。
 
-Telegram, Discord, Slack, WhatsApp, Signal, Matrix/Element, Mattermost, 电子邮件 (IMAP/SMTP), 短信 (Twilio & Vonage), iMessage (BlueBubbles), 钉钉 (DingTalk), 飞书 (Feishu/Lark), 企业微信 (WeCom), 微信 (WeChat iLink Bot), Webhooks 和 Home Assistant。
-
-### 工具集成
-
-Exa Search, Parallel API, Tavily, Firecrawl, FAL.ai (图像生成), Honcho, Browserbase, Weights & Biases 和 Tinker。
+以上均为可选。桌面在没有任何 sidecar 的情况下完全可用；集成按用户粒度启用。
 
 ## 开发
 
-### 前置要求
+### 环境要求
 
-- Node.js 和 npm
-- 能够运行 Hermes 安装程序的类 Unix Shell 环境
-- 首次运行安装 Hermes 时需要网络连接
+- Node.js 22（与 `.github/workflows/ci.yml` 中固定的版本一致）
+- npm 10+（随 Node 22 附带）
+- Windows 10/11 — NSIS / 便携版构建目标
+- 类 Unix shell — 开发模式（macOS、Linux、WSL 上均可）
 
 ### 安装依赖
 
 ```bash
+cd agent-desktop
 npm install
 ```
 
-### 在开发模式下启动应用
+安装会填充 `agent-desktop/node_modules/`，包含桌面运行所需的 930 个运行时包。这是**独立安装** — monorepo 根不管理桌面的 `node_modules/`。
+
+### 开发模式启动
 
 ```bash
+cd agent-desktop
 npm run dev
 ```
 
-### 运行检查
+`electron-vite dev` 启动带热更新的 Vite 渲染端、带自动重启的 Electron 主进程，以及 preload 桥。
+
+### 运行聚焦测试套件
 
 ```bash
-npm run lint
-npm run typecheck
-```
-
-### 运行测试
-
-```bash
+cd agent-desktop
 npm run test
-npm run test:watch
 ```
 
-### 构建桌面应用
+完整套件约 95 个 Vitest 文件。CI 运行发布把关的 3 个聚焦测试（`App.gateway.dom.test.tsx`、`App.kanban.dom.test.tsx`、`runtimeSessions.test.ts`）。
+
+### 构建 Windows 安装包
 
 ```bash
-npm run build
-```
-
-各平台打包命令：
-
-```bash
-npm run build:mac
+cd agent-desktop
 npm run build:win
-npm run build:linux
-npm run build:rpm    # 仅适用于 Fedora/RHEL 的 .rpm 格式
 ```
 
-## 首次运行设置
+`electron-builder` 会在 `agent-desktop/dist/` 下生成 NSIS 安装包和便携版可执行文件。需要 Windows。
 
-当应用首次打开时，它会自动检测是否存在已安装的 Hermes 实例，或者提供帮您进行自动安装的选项。
+### 校验打包后的 asar
 
-UI 中支持的设置路径：
+```bash
+cd agent-desktop
+npm run verify:bundle
+```
 
-- `OpenRouter`
-- `Anthropic`
-- `OpenAI`
-- 通过兼容 OpenAI API 基础 URL 接入的 `本地大语言模型 (Local LLM)`
+运行 `release-bundle.test.ts` 套件，断言 asar 包含预期的 `node_modules/`、`out/main/index.js` 与 `out/preload/index.js` 条目，且存在 `BrowserWindow` / `createWindow` / `whenReady` 引用。
 
-内置预设包含：
+## 下一步看哪里
 
-- LM Studio
-- Ollama
-- vLLM
-- llama.cpp
-
-Hermes 的相关文件统一管理于以下目录：
-
-- `~/.hermes`
-- `~/.hermes/.env`
-- `~/.hermes/config.yaml`
-- `~/.hermes/hermes-agent`
-- `~/.hermes/profiles/` — 命名配置文件目录
-- `~/.hermes/state.db` — 会话历史数据库
-- `~/.hermes/cron/jobs.json` — 计划任务
-
-## 技术栈
-
-- **Electron 39** — 跨平台桌面外壳
-- **React 19** — UI 框架
-- **TypeScript 5.9** — 跨主进程和渲染进程的类型安全
-- **Tailwind CSS 4** — 实用优先的样式库
-- **Vite 7 + electron-vite** — 快速开发服务器及构建工具
-- **better-sqlite3** — 带有 FTS5 全文搜索功能的本地会话存储
-- **i18next** — 国际化框架
-- **Vitest** — 测试运行器
-
-## 注意事项
-
-- 此桌面应用依赖上游的 Hermes Agent 项目来处理代理行为和工具执行。
-- 内置安装程序会通过带有 `--skip-setup` 参数的方式运行官方 Hermes 安装脚本，然后在 GUI 界面中完成提供商相关的配置。
-- 本地模型提供商不需要 API 密钥，但您必须确保兼容的服务器已经在运行中。
-- 在网络受限的环境下，支持配置备用的 npm 镜像源路由。
+- **agentic-OS monorepo README** — [`../README.md`](../README.md)
+- **总手册** — [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)（一屏总览）
+- **长篇分主题深入文档** — [`../docs/handbook/`](../docs/handbook/)（架构、开发、运维）
+- **许可证 / 品牌** — [`../LICENSE`](../LICENSE) 与 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
+- **活跃 / 暂存 / 镜像索引** — [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
+- **技能生态** — [`../.agents/skills/README.md`](../.agents/skills/README.md)（{{SKILLS_UPSTREAM}} 个技能，镜像至 `~/.agents/skills/`）
+- **运行时编排深入文档** — [`../docs/handbook/ARCHITECTURE.md`](../docs/handbook/ARCHITECTURE.md#runtime-orchestration-deep)
+- **Hermes / IronClaw / OpenClaw 接入 smoke** — [`../docs/hermes-agent-attach.smoke.md`](../docs/hermes-agent-attach.smoke.md) 与 [`../docs/ironclaw-attach.smoke.md`](../docs/ironclaw-attach.smoke.md)
 
 ## 许可证
 
-自 V2.5 起，本代码库采用 **双重许可证 (dual-license)** 结构：
-
-- **Cubecloud 原创代码**（渲染器重建、Cubecloud 状态层、V2.3
-  新增模块 (`src/main/codegraph-runtime.ts`、
-  `src/main/everos-sidecar.ts`、`src/main/skills-harness.ts`)、
-  `scripts/` 下的烟测 / 截图 / 校验脚本、`docs/` 下的架构
-  文档、以及新增的 Cubecloud 品牌资源）可按您的选择使用
-  **AGPL-3.0 或更高版本**、**Apache-2.0** 或 **MIT** 三种
-  许可证中的任意一种。三种许可证是 **互斥** 的（消费者
-  择其一），并非累加。AGPL-3.0-or-later 为 **主选项**；
-  Apache-2.0 与 MIT 为面向下游使用者的 **兼容性选项**。
-  每个文件的 `SPDX-License-Identifier` 头部均指向上述
-  同一表达式。
-- **继承自 `hermes-desktop` 的框架代码** 仍按上游的 MIT
-  条款保留。我们无法事后对其进行限制，上述双重许可证
-  仅适用于 Cubecloud 原创代码。
-
-三份许可证的完整文本均已随仓库一同提供（位于
-`licenses/`：`licenses/AGPL-3.0.txt`、`licenses/Apache-2.0.txt`、
-`licenses/MIT.txt`），以便下游分发时无需联网拉取。具备
-法律约束力的版本以 [`LICENSE`](LICENSE) 为准；按文件
-路径的拆解细节请见
-[`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md)。
-
-> **商标、托管服务与付费功能不在代码许可证的范围之内。**
-> Cubecloud 名称、徽标、字标、徽标 SVG、启动画面资源、
-> 应用图标集、截图、托管层与付费功能，分别由
-> [`docs/legal/TRADEMARK_POLICY.md`](docs/legal/TRADEMARK_POLICY.md)、
-> [`docs/legal/CUBECLOUD-EULA.md`](docs/legal/CUBECLOUD-EULA.md)、
-> [`docs/legal/PAID_SERVICES_TERMS.md`](docs/legal/PAID_SERVICES_TERMS.md)
-> 和 [`docs/legal/COMMERCIAL_LICENSE.md`](docs/legal/COMMERCIAL_LICENSE.md)
-> 进行规范。三种代码许可证均 **不** 默认授予 Cubecloud
-> 商标的任何权利。
-
-> **商业重授权。** 如果您希望运营一个基于 Cubecloud 衍生
-> 代码的网络服务，但希望规避 AGPL-3.0 第 13 条的网络源
-> 代码披露义务，请参阅
-> [`docs/legal/COMMERCIAL_LICENSE.md`](docs/legal/COMMERCIAL_LICENSE.md)
-> 了解商业重授权路径。
-
-## 致谢
-
-完整的上游贡献致谢（包括 `hermes-desktop`、
-`@colbymchenry/codegraph` SDK、`everos` Python CLI、
-作为设计参考的 Odysseus / opencode / llmfit / Tongyi
-DeepResearch 项目、npm 运行时依赖、字体以及更广泛的开源
-社区贡献）请见 [`ACKNOWLEDGMENTS.md`](ACKNOWLEDGMENTS.md)。
-第三方归因目录（逐包的许可证指向）请见
-[`NOTICE`](NOTICE)。
-
-## 参与贡献
-
-欢迎大家参与贡献！查看 [参与贡献指南 (Contributing Guide)](CONTRIBUTING.md) 以开始。**入库提交遵循 DCO 1.1 签名模型**（每次提交必须包含 `Signed-off-by:` 行，请参阅 `CONTRIBUTING.md` §"Developer Certificate of Origin (DCO)"）。如果您不知从何入手，可以看一看 [开启的 Issues](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)。发现了 Bug 或是对功能有新的需求？[提交一个 Issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new)。**安全问题请遵循 [`SECURITY.md`](SECURITY.md)**，请勿在公开 issue 中张贴密钥、API key 或私有日志。
-
-## 相关项目
-
-如果想了解核心代理功能、详细文档及命令行 (CLI) 的工作流程，请查阅主仓库 Hermes Agent：
-
-- https://github.com/NousResearch/hermes-agent
+Cubecloud 原创工作以 **AGPL-3.0-or-later、Apache-2.0 或 MIT** 三选一方式授权。承载 Cubecloud 原创模块的继承自 `hermes-desktop` 的框架代码保持强 MIT 许可。逐路径拆分与逐版本过渡历史见 [`../LICENSE`](../LICENSE) 与 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)。

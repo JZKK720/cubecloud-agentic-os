@@ -2,371 +2,212 @@
   <img width="360" alt="Cubecloud" src="build/branding/cubecloud-logo.svg" />
 </p>
 
-> **Cubecloud Agent Desktop — デスクトップ版バイナリ向けドキュメント。**
-> Agentic-OS モノレポの README は [`../README.md`](../README.md)、
-> マスター索引は [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md) にあります。
-> ライセンス / ブランド / コントリビューションポリシーは [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) をご覧ください。
+# Cubecloud Agent Desktop — バイナリ
 
+> **これはデスクトップバイナリのインストールと機能のドキュメントです。** agentic-OS モノレポの README は
+> [`../README.md`](../README.md) に、「これは何であるか、なぜこのようになっているか、次に何を見るべきか」の総合インデックスは
+> [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md) にあります。
 
-<img width="100%" alt="CUBECLOUD DESKTOP" src="previews/welcome.png" />
+Cubecloud Agent Desktop は、ネイティブの Electron デスクトップで、単一オペレーターに対し**ランタイム選択**、**プロバイダー選択**、**スキル**、**メモリ**、**スケジュール**、**オプションのコードインテリジェンス**を統合したコントロールプレーンを提供します。ホスト型ラッパーや単一ベンダ CLI にワークフローを縛り付けません。
 
-<br/>
-<p align="center">
-  <a href="../docs/HANDBOOK.md"><img src="https://img.shields.io/badge/Docs-HANDBOOK-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://t.me/hermes_agent_desktop"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0%20%7C%20Apache--2.0%20%7C%20MIT-blue?style=for-the-badge" alt="ライセンス: AGPL-3.0 OR Apache-2.0 OR MIT (Cubecloud 独自)；MIT (継承フレームワーク)" /></a>
-  <a href="docs/legal/TRADEMARK_POLICY.md"><img src="https://img.shields.io/badge/Trademark-policy-lightgrey?style=for-the-badge" alt="商標ポリシー"></a>
-  <a href="SECURITY.md"><img src="https://img.shields.io/badge/Security-policy-lightgrey?style=for-the-badge" alt="セキュリティポリシー"></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing-DCO%201.1-lightgrey?style=for-the-badge" alt="コントリビュート: DCO 1.1"></a>
-  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/"><img src="https://img.shields.io/badge/Download-Releases-FF6600?style=for-the-badge" alt="Releases"></a>
-<a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/stargazers">
-  <img src="https://img.shields.io/github/stars/cubecloud-contributors/cubecloud-agentic-os?style=for-the-badge&color=FFD700&label=Stars" alt="Stars">
-</a>
-  <a href="https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/">
-  <img src="https://img.shields.io/github/downloads/cubecloud-contributors/cubecloud-agentic-os/total?style=for-the-badge&color=00B496&label=Total%20Downloads" alt="Downloads">
-</a>
-</p>
+**最新リリース：[v2.10.71](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)** — ラッパー廃止後の最初の内部製品ビルド。asar は 176.92 MB、21,291 件の `node_modules/` エントリを含み、`verify:bundle` は 7/7 PASS。
 
-> **本プロジェクトは現在も活発に開発中です。** 機能は変更される可能性があり、一部が動作しなくなることもあります。問題に遭遇した場合や、アイデアがある場合は[Issue を作成してください](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)。コントリビューションも歓迎しています！
+## ユーザーに見えるもの
 
-## 言語
-
-- English: `README.md`
-- 简体中文: `README.zh-CN.md`
-- 日本語: `README.ja-JP.md`
-- 한국어: `README.ko-KR.md`
-
-Cubecloud Desktop は、[Hermes Agent](https://github.com/NousResearch/hermes-agent)（ツール使用、マルチプラットフォームメッセージング、クローズドな学習ループを備えた、自己改善型 AI アシスタント）のインストール・設定・チャットを行うためのネイティブデスクトップコントロールセンターです。
-
-CLI を手作業で管理する代わりに、本アプリではインストール、プロバイダのセットアップ、日常的な利用までを一箇所でガイドします。公式の Hermes インストールスクリプトを使用し、Hermes を `~/.hermes` に保存し、チャット、セッション、プロファイル、メモリ、スキル、ツール、スケジューリング、メッセージングゲートウェイなどを GUI で操作できます。
+- 初回起動時の**マルチラuntimeピッカー** — Hermes（デフォルト、ポート 8642）、IronClaw（ゲートウェイ引き渡し、ポート 3231）、OpenClaw（オプション、ポート 18789）。ランタイム選択とプロバイダー選択は独立した決定です。
+- **プロバイダーレイヤー** — ローカルプロバイダー（Ollama、LM Studio、vLLM、llama.cpp、あらゆる OpenAI 互換エンドポイント）とリモート API（OpenAI、Anthropic、Google Gemini、Azure OpenAI、OpenRouter、その他オペレーター独自のゲートウェイ）に接続。
+- **Models ページ** — `127.0.0.1` 上のローカルサーバーをスキャンし、Ollama / LM Studio をワンクリックで提案。各カードに 30 秒間隔のプローブによるヘルスドットを表示。
+- **チャット UI** — SSE ストリーミング、Markdown レンダリング、シンタックスハイライト、トークン使用量のフッター表示。
+- **セッション管理** — 全文検索（SQLite FTS5）、日付グルーピング履歴、会話横断の復元と検索。
+- **プロファイル切替** — プロバイダー、セッション、状態をプロファイルごとに分離。
+- **Sandbox Tasks 画面**（V2.10.65） — IronClaw WASM サンドボックスワークフロー向け。
+- **オプション sidecar** — CodeGraph（セマンティックコード解析）、EverOS（メモリ + ハーネス）、Headroom（コンテキスト圧縮）。いずれもユーザー主導で有効化し、サイレントインストールはしません。
+- **スキル、メモリ、スケジュール、カンバン、プラン**の各画面 — ユーザーが確認できる JSON レジストリで支えられています。
+- **自動アップデータ** — `electron-updater` 経由で本リポジトリの GitHub Releases フィードを参照。
+- **i18n** — i18next により 8 ロケールを配線。
 
 ## プレビュー
 
-以下は現在のデスクトップビルドから取得したフルページキャプチャです。導入前にプロダクトの表面を把握できるよう、インストール手順より先に配置しています。
+以下の各画像は現在のデスクトップビルドの全ページキャプチャです。ギャラリーは初回起動、ランタイム検出、サイドバーで公開されている主要なオペレーター画面を網羅しています。
 
 <table>
 <tr>
-<td width="50%" align="center"><b>Welcome</b><br/><img width="100%" alt="Welcome" src="previews/welcome.png" /></td>
-<td width="50%" align="center"><b>Remote gateway</b><br/><img width="100%" alt="Remote gateway" src="previews/welcome-remote.png" /></td>
+<td width="50%" align="center"><b>ようこそ &amp; 初回起動</b><br/><img width="100%" alt="ようこそ" src="previews/welcome.png" /></td>
+<td width="50%" align="center"><b>リモートゲートウェイ接続</b><br/><img width="100%" alt="リモートゲートウェイ" src="previews/welcome-remote.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>SSH handoff</b><br/><img width="100%" alt="SSH handoff" src="previews/welcome-ssh.png" /></td>
-<td width="50%" align="center"><b>Runtime detection</b><br/><img width="100%" alt="Runtime detection" src="previews/runtime-detection.png" /></td>
+<td width="50%" align="center"><b>SSH トンネル引き渡し</b><br/><img width="100%" alt="SSH 引き渡し" src="previews/welcome-ssh.png" /></td>
+<td width="50%" align="center"><b>ランタイム検出</b><br/><img width="100%" alt="ランタイム検出" src="previews/runtime-detection.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Chat</b><br/><img width="100%" alt="Chat" src="previews/chat.png" /></td>
-<td width="50%" align="center"><b>Sessions</b><br/><img width="100%" alt="Sessions" src="previews/sessions.png" /></td>
+<td width="50%" align="center"><b>チャット（SSE ストリーミング）</b><br/><img width="100%" alt="チャット" src="previews/chat.png" /></td>
+<td width="50%" align="center"><b>セッション（SQLite FTS5）</b><br/><img width="100%" alt="セッション" src="previews/sessions.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Profiles</b><br/><img width="100%" alt="Profiles" src="previews/agents.png" /></td>
-<td width="50%" align="center"><b>Persona</b><br/><img width="100%" alt="Persona" src="previews/persona.png" /></td>
+<td width="50%" align="center"><b>プロファイル</b><br/><img width="100%" alt="プロファイル" src="previews/agents.png" /></td>
+<td width="50%" align="center"><b>ペルソナ（レガシー）</b><br/><img width="100%" alt="ペルソナ" src="previews/persona.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Plans</b><br/><img width="100%" alt="Plans" src="previews/plans.png" /></td>
-<td width="50%" align="center"><b>CodeGraph</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
+<td width="50%" align="center"><b>プラン</b><br/><img width="100%" alt="プラン" src="previews/plans.png" /></td>
+<td width="50%" align="center"><b>CodeGraph（オプション sidecar）</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>EverOS</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
-<td width="50%" align="center"><b>Headroom</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
+<td width="50%" align="center"><b>EverOS（オプション sidecar）</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
+<td width="50%" align="center"><b>Headroom（オプション sidecar）</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Models</b><br/><img width="100%" alt="Models" src="previews/models.png" /></td>
-<td width="50%" align="center"><b>Providers</b><br/><img width="100%" alt="Providers" src="previews/providers.png" /></td>
+<td width="50%" align="center"><b>Models（Ollama + LM Studio スキャン）</b><br/><img width="100%" alt="Models" src="previews/models.png" /></td>
+<td width="50%" align="center"><b>プロバイダー</b><br/><img width="100%" alt="プロバイダー" src="previews/providers.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Skills</b><br/><img width="100%" alt="Skills" src="previews/skills.png" /></td>
-<td width="50%" align="center"><b>Memory</b><br/><img width="100%" alt="Memory" src="previews/memory.png" /></td>
+<td width="50%" align="center"><b>スキル</b><br/><img width="100%" alt="スキル" src="previews/skills.png" /></td>
+<td width="50%" align="center"><b>メモリ</b><br/><img width="100%" alt="メモリ" src="previews/memory.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Tools</b><br/><img width="100%" alt="Tools" src="previews/tools.png" /></td>
-<td width="50%" align="center"><b>Workspace</b><br/><img width="100%" alt="Workspace" src="previews/workspace.png" /></td>
+<td width="50%" align="center"><b>ツール</b><br/><img width="100%" alt="ツール" src="previews/tools.png" /></td>
+<td width="50%" align="center"><b>ワークスペース</b><br/><img width="100%" alt="ワークスペース" src="previews/workspace.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Schedules</b><br/><img width="100%" alt="Schedules" src="previews/schedules.png" /></td>
-<td width="50%" align="center"><b>Gateway</b><br/><img width="100%" alt="Gateway" src="previews/gateway.png" /></td>
+<td width="50%" align="center"><b>スケジュール</b><br/><img width="100%" alt="スケジュール" src="previews/schedules.png" /></td>
+<td width="50%" align="center"><b>ゲートウェイ</b><br/><img width="100%" alt="ゲートウェイ" src="previews/gateway.png" /></td>
 </tr>
 <tr>
 <td width="50%" align="center"><b>MCP</b><br/><img width="100%" alt="MCP" src="previews/mcp.png" /></td>
-<td width="50%" align="center"><b>Settings</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
+<td width="50%" align="center"><b>設定</b><br/><img width="100%" alt="設定" src="previews/settings.png" /></td>
 </tr>
 </table>
 
 ## インストール
 
-ダウンロード: [Releases ページ](https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/) から取得してください。
+最新の安定版インストーラーは **v2.10.71** です。公開先：
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71>。
+過去のリリースは
+[Releases ページ](https://github.com/JZKK720/cubecloud-agentic-os/releases)
+に掲載。v0.6.0 と v0.6.1 は廃止済みの `apps/desktop-shell/` ラッパーツリーからビルドされたため、プレリリースとしてマークされています。**v2.10.71 以降を使用してください**。
 
 ### Windows
 
-> **Windows ユーザーへ:** インストーラはコード署名されていません。初回起動時に Windows SmartScreen の警告が表示されます。「詳細情報」→「実行」をクリックしてください。
+[v2.10.71 リリース](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+から `cubecloud-agent-desktop-2.10.71-setup.exe` をダウンロードして実行してください。NSIS インストーラーはユーザーごとにワンクリックで、Windows の「プログラムと機能」に `cubecloud-agent-desktop` を登録します。
 
-> **WSL ユーザーへ:** インストーラが `Switching to root user to install dependencies...` で停止する場合、Playwright が sudo パスワードを待っていますが、読み取るための TTY がありません。インストール中だけパスワードなしの sudo を許可し、完了後に元へ戻してください。
->
-> ```bash
-> echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hermes-install
-> # …インストーラを再実行し、完了したら:
-> sudo rm /etc/sudoers.d/hermes-install
-> ```
->
-> この既知のインストーラ問題は、Cubecloud への移行中も引き続き調整中です。
+> **Windows ユーザーへ：** インストーラーはコード署名されていません。Windows SmartScreen が初回起動時に警告を表示します。**詳細情報** → **実行** をクリックしてください。コード署名は既知のフォローアップ項目です。企業証明書を含む OEM ビルドパスは
+> [`../docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md) を参照してください。
 
-### Fedora (RPM)
+インストーラーを避けたい場合は `cubecloud-agent-desktop-2.10.71-portable.exe` をダウンロードしてください。インストール不要の単一ファイル版です。
 
-```bash
-sudo dnf install ./agent-desktop-rpm.$2
-```
+### macOS / Linux
 
-> **Fedora ユーザーへ:** `.rpm` は GPG 署名されていません。署名検証を強制する設定の場合は、インストールコマンドに `--nogpgcheck` を追加してください。`.rpm` ビルドは自動アップデートに対応していません（`electron-updater` の制約）。アップデートする場合は新しい `.rpm` を再インストールしてください。
+`electron-builder` は macOS（`.dmg`）と Linux（`.deb`、`.rpm`、`.AppImage`、`.snap`）ターゲットを生成できますが、本リポジトリの CI パイプラインは現時点で Windows アーティファクトのみを出力します。マルチプラットフォーム CI はフォローアップであり、App Store Connect、コード署名、Linux ストアの資格情報をリポジトリ設定に追加する必要があります。
 
-## 機能
+## 仕組み
 
-- **初回起動時のガイド付きインストール** — Hermes Agent のインストールを進捗表示と依存関係解決付きで案内します
-- **ローカル / リモートバックエンド** — Hermes をローカル (`127.0.0.1:8642`) で実行するか、URL + API キーを使ってリモートの Hermes API サーバーに接続できます
-- **マルチプロバイダ対応** — OpenRouter, Anthropic, OpenAI, Google (Gemini), xAI (Grok), Nous Portal, Qwen, MiniMax, Hugging Face, Groq、そしてローカルの OpenAI 互換エンドポイント (LM Studio, Ollama, vLLM, llama.cpp)
-- **ストリーミングチャット UI** — SSE ストリーミング、ツール進捗インジケータ、Markdown レンダリング、シンタックスハイライト対応
-- **トークン使用量のトラッキング** — プロンプト / 出力トークン数とコストをチャットフッターにリアルタイム表示。`/usage` スラッシュコマンドも利用可能
-- **22 種類のスラッシュコマンド** — `/new`, `/clear`, `/fast`, `/web`, `/image`, `/browse`, `/code`, `/shell`, `/usage`, `/help`, `/tools`, `/skills`, `/model`, `/memory`, `/persona`, `/version`, `/compact`, `/compress`, `/undo`, `/retry`, `/debug`, `/status` など
-- **セッション管理** — 全文検索 (SQLite FTS5)、日付別の履歴表示、会話の再開と横断検索
-- **プロファイル切り替え** — Hermes 環境を分離した状態で作成・削除・切り替え可能
-- **14 のツールセット** — Web、ブラウザ、ターミナル、ファイル、コード実行、ビジョン、画像生成、TTS、スキル、メモリ、セッション検索、Clarify、Delegation、MoA、タスクプランニング
-- **メモリシステム** — メモリエントリの閲覧 / 編集、ユーザープロファイルメモリ、容量トラッキング、検出可能なメモリプロバイダ (Honcho, Hindsight, Mem0, RetainDB, Supermemory, ByteRover) に対応
-- **ペルソナエディタ** — エージェントの SOUL.md パーソナリティを編集・リセット可能
-- **保存済みモデル** — プロバイダごとのモデル設定を CRUD で管理
-- **スケジュールタスク** — 分単位 / 時間単位 / 日単位 / 週単位 / カスタム cron に対応する cron ジョブビルダー（15 種類の配信先）
-- **16 種類のメッセージングゲートウェイ** — Telegram, Discord, Slack, WhatsApp, Signal, Matrix, Mattermost, Email (IMAP/SMTP), SMS (Twilio/Vonage), iMessage (BlueBubbles), DingTalk, Feishu/Lark, WeCom, WeChat (iLink Bot), Webhooks, Home Assistant
-- **Hermes Office (Claw3d)** — ビジュアルな 3D インターフェース。開発サーバーとアダプタの管理機能を備える
-- **バックアップ、インポート、デバッグダンプ** — 設定画面からデータの完全なバックアップ / リストアとシステム診断が可能
-- **ログビューア** — ゲートウェイとエージェントのログを設定画面から直接閲覧
-- **自動アップデーター** — electron-updater を使ったアップデートチェックとインストール
-- **i18n 対応** — 全画面に対応する英語ロケールを含む国際化フレームワーク。コミュニティ翻訳の受け入れ準備済み
-- **テストスイート** — SSE パーサ、IPC ハンドラ、preload API サーフェス、インストーラユーティリティ、定数バリデーションを Vitest で検証
+初回起動時に、アプリは次の手順を踏みます：
 
-## 動作の仕組み
+1. エージェントを**ローカル**で実行するか（`127.0.0.1:<port>` でランタイムを起動）、HTTPS 経由で**リモート**ゲートウェイに接続するか、SSH トンネルで**SSH フォワード**するかを尋ねます。
+2. **ローカルモード：** 選択したランタイムが既に動作しているかを確認します。動作していない場合は、依存関係解決と進捗表示付きで公式インストーラーを実行します。
+3. **リモート / SSH モード：** ゲートウェイ URL の入力を求め、HTTPS 経由で `/v1/models` エンドポイントを検証し、ローカルインストールをスキップします。
+4. **プロバイダー**（ローカルモデルエンドポイントまたはリモート API）の入力を求め、認証情報をプロファイル単位の資格情報プールに保存します。
+5. セットアップ完了後にメインワークスペースを起動します。
 
-初回起動時、アプリは次の手順で動作します。
+ローカルモードでは、チャットリクエストは SSE ストリーミングで `http://127.0.0.1:8642`（Hermes）または `http://127.0.0.1:3231`（IronClaw）へ送られます。リモートモードでは、同じストリーミングプロトコルで設定されたリモート URL と通信します。レンダラーはストリームをリアルタイムで解析し、ツールの進捗、Markdown コンテンツ、トークン使用量を順次描画します。
 
-1. Hermes を**ローカル**で動かすか、**リモート**の Hermes API サーバーに接続するかを尋ねます。
-2. **ローカルモード:** `~/.hermes` に Hermes が既にインストールされているかを確認します。なければ、依存関係 (Git, uv, Python 3.11+) を解決しつつ公式インストーラを実行します。
-3. **リモートモード:** リモート API の URL と API キーを入力させ、接続を検証し、ローカルインストールをスキップします。
-4. API プロバイダまたはローカルモデルのエンドポイントを尋ねます。
-5. プロバイダ設定と API キーを Hermes の設定ファイルに保存します。
-6. セットアップが完了するとメインのワークスペースを起動します。
+## サポートされるランタイムとプロバイダー
 
-ローカルモードでは、チャットリクエストは `http://127.0.0.1:8642` 経由で SSE ストリーミングされます。リモートモードでは、設定したリモート URL に対して同じストリーミングプロトコルで通信します。デスクトップアプリはストリームをリアルタイムで解析し、ツール進捗、Markdown コンテンツ、トークン使用量を順次レンダリングします。
+### ランタイムプロバイダー（3 種類）
 
-## 画面構成
+| ランタイム | 役割 | デフォルトポート | 統合モード |
+|---|---|---|---|
+| **Hermes** | デフォルトのコアランタイム | 8642 | `native-core` |
+| **IronClaw** | WASM サンドボックスゲートウェイ引き渡しレーン | 3231 | `optional-bridge` |
+| **OpenClaw** | オプションの将来レーン | 18789 | `optional-runtime` |
 
-| 画面          | 説明                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------ |
-| **Chat**      | ストリーミング会話 UI。スラッシュコマンド、ツール進捗、トークントラッキングに対応         |
-| **Sessions**  | 過去の会話の閲覧、検索、再開                                                               |
-| **Agents**    | Hermes プロファイルの作成、削除、切り替え                                                  |
-| **Skills**    | バンドル済み / インストール済みスキルの閲覧、インストール、管理                            |
-| **Models**    | プロバイダごとに保存されたモデル設定の管理                                                 |
-| **Memory**    | メモリエントリとユーザープロファイルの閲覧 / 編集、メモリプロバイダの設定                  |
-| **Soul**      | アクティブなプロファイルのペルソナ (SOUL.md) を編集                                        |
-| **Tools**     | 個別のツールセットを有効化 / 無効化                                                        |
-| **Schedules** | 配信先付きの cron ジョブを作成・管理                                                       |
-| **Gateway**   | メッセージングプラットフォーム統合の設定と制御                                             |
-| **Office**    | Claw3d ビジュアルインターフェースのセットアップと管理                                      |
-| **Settings**  | プロバイダ設定、認証情報プール、バックアップ / インポート、ログビューア、ネットワーク、テーマ |
+Hermes と IronClaw が現在のレーンです。OpenClaw はランタイムピッカーから選択可能ですが、オプションのアタッチターゲットとして提供されます。
 
-## 対応プロバイダ
+### プロバイダー種別（ループバック / リモート）
 
-### LLM プロバイダ
+- **ローカル / ループバック：** Ollama、LM Studio、vLLM、llama.cpp、および `127.0.0.1` 上で動作するあらゆる OpenAI 互換エンドポイント。Models ページ（V2.10.60）がこれらをスキャンし、ワンクリックで提案します。
+- **リモート（HTTPS）：** OpenAI、Anthropic、Google Gemini、Azure OpenAI、OpenRouter、その他オペレーターが設定する OpenAI 互換 API。
 
-| プロバイダ          | 備考                                            |
-| ------------------- | ----------------------------------------------- |
-| **OpenRouter**      | 単一 API で 200 以上のモデルを利用可能（推奨） |
-| **Anthropic**       | Claude に直接アクセス                           |
-| **OpenAI**          | GPT に直接アクセス                              |
-| **Google (Gemini)** | Google AI Studio                                |
-| **xAI (Grok)**      | Grok モデル                                     |
-| **Nous Portal**     | 無料枠あり                                      |
-| **Qwen**            | QwenAI モデル                                   |
-| **MiniMax**         | グローバル / 中国向けエンドポイント             |
-| **Hugging Face**    | HF Inference 経由で 20 以上のオープンモデル     |
-| **Groq**            | 高速推論 (Voice/STT)                            |
-| **Local/Custom**    | 任意の OpenAI 互換エンドポイント                |
+ローカルサーバー探索はデフォルトでループバックのみです。LAN ホストを含めるには、レンダラーの `scanLocalServers` 呼び出しに `extraHosts` 引数を渡して有効化します。
 
-LM Studio、Ollama、vLLM、llama.cpp 用のローカルプリセットが付属しています。
+## オプション sidecar（ユーザー主導、内蔵なし）
 
-### メッセージングプラットフォーム
+- **CodeGraph**（`pip install codegraph` + `codegraph init`） — セマンティックコード解析パス。詳細は
+  [`../docs/CODEGRAPH-RUNTIME.md`](../docs/CODEGRAPH-RUNTIME.md)。
+- **EverOS**（`pip install everos`） — メモリ + ハーネス sidecar。詳細は
+  [`../docs/EVEROS-SIDECAR.md`](../docs/EVEROS-SIDECAR.md)。
+- **Headroom**（`pip install headroom-ai`） — コンテキスト圧縮プロキシ。詳細は
+  [`../docs/agent-skills-bundle/HEADROOM.md`](../docs/agent-skills-bundle/HEADROOM.md)
+  およびリポジトリ同梱のワークフロースキル
+  [`../.github/skills/headroom-workflow/`](../.github/skills/headroom-workflow/)。
 
-Telegram、Discord、Slack、WhatsApp、Signal、Matrix/Element、Mattermost、Email (IMAP/SMTP)、SMS (Twilio & Vonage)、iMessage (BlueBubbles)、DingTalk、Feishu/Lark、WeCom、WeChat (iLink Bot)、Webhooks、Home Assistant。
-
-### ツール統合
-
-Exa Search、Parallel API、Tavily、Firecrawl、FAL.ai (画像生成)、Honcho、Browserbase、Weights & Biases、Tinker。
+これらはすべて任意です。サイドカーなしでもデスクトップは完全に動作します。統合はユーザー単位で opt-in です。
 
 ## 開発
 
 ### 前提条件
 
-- Node.js と npm
-- Hermes インストーラ用の Unix 系シェル環境
-- 初回起動時に Hermes をダウンロードするためのネットワークアクセス
+- Node.js 22（`.github/workflows/ci.yml` で固定されたバージョン）
+- npm 10+（Node 22 同梱）
+- Windows 10/11 — NSIS / ポータブルビルドターゲット用
+- Unix 系シェル — 開発モード（macOS、Linux、WSL で動作）
 
 ### 依存関係のインストール
 
 ```bash
+cd agent-desktop
 npm install
 ```
 
-### 開発モードでアプリを起動
+インストールは `agent-desktop/node_modules/` に 930 個のランタイムパッケージを配置します。これは**スタンドアロンインストール**であり、モノレポルートはデスクトップの `node_modules/` を管理しません。
+
+### 開発モードでの起動
 
 ```bash
+cd agent-desktop
 npm run dev
 ```
 
-### チェック実行
+`electron-vite dev` が、ホットリロード対応の Vite レンダラー、自動再起動対応の Electron メインプロセス、preload ブリッジを起動します。
+
+### 注目テストの実行
 
 ```bash
-npm run lint
-npm run typecheck
-```
-
-### テスト実行
-
-```bash
+cd agent-desktop
 npm run test
-npm run test:watch
 ```
 
-### デスクトップアプリのビルド
+フルスイートは約 95 個の Vitest ファイルです。CI ではリリースをゲートする 3 件のテスト（`App.gateway.dom.test.tsx`、`App.kanban.dom.test.tsx`、`runtimeSessions.test.ts`）を実行します。
+
+### Windows インストーラーのビルド
 
 ```bash
-npm run build
-```
-
-プラットフォーム別パッケージング:
-
-```bash
-npm run build:mac
+cd agent-desktop
 npm run build:win
-npm run build:linux
-npm run build:rpm    # Fedora/RHEL .rpm のみ
 ```
 
-## 初回セットアップ
+`electron-builder` が `agent-desktop/dist/` 配下に NSIS インストーラーとポータブル版を生成します。Windows が必要です。
 
-アプリを初めて開くと、既存の Hermes インストールを検出するか、インストールを提案します。
+### パッケージ済み asar の検証
 
-UI でサポートされているセットアップパス:
+```bash
+cd agent-desktop
+npm run verify:bundle
+```
 
-- `OpenRouter`
-- `Anthropic`
-- `OpenAI`
-- OpenAI 互換 base URL を使った `Local LLM`
+`release-bundle.test.ts` スイートを実行し、asar に期待される `node_modules/`、`out/main/index.js`、`out/preload/index.js` の各エントリと、`BrowserWindow` / `createWindow` / `whenReady` 参照の存在を検証します。
 
-以下のローカルプリセットが付属しています。
+## 次にどこを見るか
 
-- LM Studio
-- Ollama
-- vLLM
-- llama.cpp
-
-Hermes のファイルは以下の場所で管理されます。
-
-- `~/.hermes`
-- `~/.hermes/.env`
-- `~/.hermes/config.yaml`
-- `~/.hermes/hermes-agent`
-- `~/.hermes/profiles/` — 名前付きプロファイルディレクトリ
-- `~/.hermes/state.db` — セッション履歴データベース
-- `~/.hermes/cron/jobs.json` — スケジュールタスク
-
-## 技術スタック
-
-- **Electron** 39 — クロスプラットフォームのデスクトップシェル
-- **React** 19 — UI フレームワーク
-- **TypeScript** 5.9 — main / renderer プロセス間で型安全性を確保
-- **Tailwind CSS** 4 — ユーティリティファーストのスタイリング
-- **Vite** 7 + electron-vite — 高速な開発サーバーとビルドツール
-- **better-sqlite3** — FTS5 全文検索付きのローカルセッションストレージ
-- **i18next** — 国際化フレームワーク
-- **Vitest** — テストランナー
-
-## 補足
-
-- 本デスクトップアプリはエージェントの動作やツール実行を上流の Hermes Agent プロジェクトに依存しています。
-- 内蔵インストーラは公式の Hermes インストールスクリプトを `--skip-setup` 付きで実行し、その後 GUI でプロバイダ設定を完了します。
-- ローカルモデルプロバイダには API キーは不要ですが、互換サーバーが事前に起動している必要があります。
-- ネットワーク制限のある環境向けに、代替の npm レジストリ経路をサポートしています。
+- **agentic-OS モノレポ README** — [`../README.md`](../README.md)
+- **統合ハンドブック** — [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)（1 画面ツアー）
+- **長編の分野別ドキュメント** — [`../docs/handbook/`](../docs/handbook/)（アーキテクチャ、開発、オペレーション）
+- **ライセンス / ブランド** — [`../LICENSE`](../LICENSE) と [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
+- **ライブ / スクラッチパッド / ミラー索引** — [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
+- **スキルエコシステム** — [`../.agents/skills/README.md`](../.agents/skills/README.md)（{{SKILLS_UPSTREAM}} 個のスキル、`~/.agents/skills/` にミラー）
+- **ランタイムオーケストレーション詳細** — [`../docs/handbook/ARCHITECTURE.md`](../docs/handbook/ARCHITECTURE.md#runtime-orchestration-deep)
+- **Hermes / IronClaw / OpenClaw アタッチ smoke** — [`../docs/hermes-agent-attach.smoke.md`](../docs/hermes-agent-attach.smoke.md) と [`../docs/ironclaw-attach.smoke.md`](../docs/ironclaw-attach.smoke.md)
 
 ## ライセンス
 
-V2.5 以降、本コードベースは **デュアルライセンス (dual-license)** 構成です：
-
-- **Cubecloud 独自のコード**（レンダラーの再構築、Cubecloud
-  ステートレイヤー、V2.3 で追加されたモジュール
-  (`src/main/codegraph-runtime.ts`、
-  `src/main/everos-sidecar.ts`、`src/main/skills-harness.ts`)、
-  `scripts/` 配下のスモーク / キャプチャ / 検証スクリプト、
-  `docs/` 配下のアーキテクチャドキュメント、新規追加された
-  Cubecloud ブランドアセット）は、**AGPL-3.0-or-later**、
-  **Apache-2.0**、**MIT** のいずれかを選択可能な形で提供
-  されます。3 つのライセンスは **択一**（消費者が選ぶ）
-  であり、累積ではありません。AGPL-3.0-or-later が **主
-  選択肢**、Apache-2.0 と MIT が互換性目的の **副選択肢**
-  です。各ファイルには同じ SPDX 式を指す
-  `SPDX-License-Identifier` ヘッダーが付いています。
-- **継承された `hermes-desktop` フレームワークのコード**は
-  上流の MIT 条項のままです。事後的に制限を課すことは
-  できず、上記デュアルライセンスは Cubecloud 独自のコードに
-  のみ適用されます。
-
-3 つのライセンスの本文はリポジトリ内に同梱されています
-（`licenses/` 配下：`licenses/AGPL-3.0.txt`、
-`licenses/Apache-2.0.txt`、`licenses/MIT.txt`）。これにより
-再配布者がネットワークから取得せず同梱できます。法的拘束力を
-持つ本文は [`LICENSE`](LICENSE) を、パスごとの内訳は
-[`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) を参照
-してください。
-
-> **商標、ホスティングサービス、有料機能はコードライセンスの
-> 対象外です。** Cubecloud の名称、ロゴタイプ、ワードマーク、
-> マーク SVG、スプラッシュアセット、アプリアイコンセット、
-> スクリーンショット、ホスティング階層、有料機能は、それぞれ
-> [`docs/legal/TRADEMARK_POLICY.md`](docs/legal/TRADEMARK_POLICY.md)、
-> [`docs/legal/CUBECLOUD-EULA.md`](docs/legal/CUBECLOUD-EULA.md)、
-> [`docs/legal/PAID_SERVICES_TERMS.md`](docs/legal/PAID_SERVICES_TERMS.md)、
-> [`docs/legal/COMMERCIAL_LICENSE.md`](docs/legal/COMMERCIAL_LICENSE.md)
-> に従います。3 つのコードライセンスのいずれも、Cubecloud
-> 商標の権利を黙示的に付与するものでは **ありません**。
-
-> **商用再ライセンス。** AGPL-3.0 §13 のネットワークソース
-> 開示義務を回避した形で Cubecloud 派生のネットワークサービス
-> を運営したい場合は、
-> [`docs/legal/COMMERCIAL_LICENSE.md`](docs/legal/COMMERCIAL_LICENSE.md)
-> を参照してください。
-
-## 謝辞
-
-`hermes-desktop`、`@colbymchenry/codegraph` SDK、`everos`
-Python CLI、デザインリファレンスとして参照した Odysseus /
-opencode / llmfit / Tongyi DeepResearch プロジェクト、npm
-ランタイム依存、フォント、より広範なオープンソースコミュニティ
-への完全な謝辞は [`ACKNOWLEDGMENTS.md`](ACKNOWLEDGMENTS.md) を
-参照してください。パッケージ単位の帰属カタログは
-[`NOTICE`](NOTICE) を参照してください。
-
-## コントリビューション
-
-コントリビューションを歓迎します！始め方は[コントリビューション
-ガイド](CONTRIBUTING.md)をご覧ください。**受け入れるコントリ
-ビューションは DCO 1.1 署名モデル**に従います（各コミットに
-`Signed-off-by:` 行が必須です。詳細は `CONTRIBUTING.md` の
-"Developer Certificate of Origin (DCO)" セクションを参照）。
-どこから手を付ければよいか分からない場合は、
-[Open Issues](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)
-を確認してください。バグを見つけた、または機能要望がある場合は
-[Issue を作成してください](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new)。
-**セキュリティ問題は [`SECURITY.md`](SECURITY.md) に従って
-報告してください**。公開 issue にシークレット、API キー、
-プライベートなログを貼り付けないでください。
-
-## 関連プロジェクト
-
-コアエージェント、ドキュメント、CLI ワークフローについては、Hermes Agent 本体のリポジトリを参照してください。
-
-- https://github.com/NousResearch/hermes-agent
+Cubecloud 独自の成果物は **AGPL-3.0-or-later、Apache-2.0、MIT** のいずれかを任意に選択するデュアルライセンスです。Cubecloud 独自モジュールをホストする継承された `hermes-desktop` フレームワークコードは、ハード MIT のままです。パス単位の内訳とバージョン単位の移行履歴は [`../LICENSE`](../LICENSE) と [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) を参照してください。

@@ -10,66 +10,79 @@
 > why it is the way it is, and where to look next* lives at
 > [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md).
 
-Cubecloud Agent Desktop is the native desktop control center for the
-Cubecloud Agentic-OS monorepo. It wraps a local or remote agent
-runtime in a single GUI so the user does not have to manage the CLI
-by hand.
+Cubecloud Agent Desktop is a native Electron desktop that gives one
+operator a single control plane for **runtime choice**, **provider
+choice**, **skills**, **memory**, **schedules**, and **optional code
+intelligence** — without coupling the workflow to a hosted wrapper or
+a single-vendor CLI.
+
+**Latest release: [v2.10.71](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)** —
+first post-wrapper build of the inner product, asar 176.92 MB
+containing 21,291 `node_modules/` entries. `verify:bundle` 7/7 PASS.
 
 ## What the user sees
 
-- A guided first-run install for the agent runtime with progress tracking and dependency resolution
-- A **multi-provider** provider picker — OpenRouter, Anthropic, OpenAI, Google (Gemini), xAI (Grok), Nous Portal, Qwen, MiniMax, Hugging Face, Groq, and **any OpenAI-compatible endpoint** (LM Studio, Atomic Chat, Ollama, vLLM, llama.cpp)
-- A **streaming chat UI** with SSE streaming, tool progress indicators, markdown rendering, and syntax highlighting
-- **Token usage tracking** — live prompt/completion token counts and cost display in the chat footer, plus a `/usage` slash command
-- **22 slash commands** — `/new`, `/clear`, `/fast`, `/web`, `/image`, `/browse`, `/code`, `/shell`, `/usage`, `/help`, `/tools`, `/skills`, `/model`, `/memory`, `/persona`, `/version`, `/compact`, `/compress`, `/undo`, `/retry`, `/debug`, `/status`, and more
-- **Session management** — full-text search (SQLite FTS5), date-grouped history, resume and search across conversations
-- **Profile switching** — create, delete, and switch between separate agent environments with isolated config
-- **14 toolsets** — web, browser, terminal, file, code execution, vision, image gen, TTS, skills, memory, session search, clarify, delegation, MoA, and task planning
-- **Memory system** — view/edit memory entries, user profile memory, capacity tracking, and discoverable memory providers (Honcho, Hindsight, Mem0, RetainDB, Supermemory, ByteRover)
-- **Persona editor** — edit and reset your agent's SOUL.md personality
-- **Saved models** — CRUD management for model configurations across providers
-- **Scheduled tasks** — cron job builder (minutes, hourly, daily, weekly, custom cron) with 15 delivery targets
-- **16 messaging gateways** — Telegram, Discord, Slack, WhatsApp, Signal, Matrix, Mattermost, Email (IMAP/SMTP), SMS (Twilio/Vonage), iMessage (BlueBubbles), DingTalk, Feishu/Lark, WeCom, WeChat (iLink Bot), Webhooks, Home Assistant
-- **Hermes Office (Claw3d)** — visual 3D interface with dev server and adapter management
-- **Backup, import & debug dump** — full data backup/restore and system diagnostics from Settings
-- **Log viewer** — view gateway and agent logs directly from the Settings screen
-- **Auto-updater** — check for and install updates via `electron-updater`
-- **i18n ready** — internationalization framework with English locale covering all screens, ready for community translations
-- **Test suite** — SSE parser, IPC handlers, preload API surface, installer utilities, and constants validation with Vitest
+- A **multi-runtime picker** on first launch — Hermes (default, port
+  8642), IronClaw (gateway-handoff, port 3231), and OpenClaw
+  (optional, port 18789). Runtime choice and provider choice are
+  separate decisions.
+- A **provider layer** that talks to local providers (Ollama, LM
+  Studio, vLLM, llama.cpp, any OpenAI-compatible endpoint) and remote
+  APIs (OpenAI, Anthropic, Google Gemini, Azure OpenAI, OpenRouter,
+  plus the operator's own gateway).
+- A **Models page** that scans `127.0.0.1` for running local servers
+  and surfaces one-click Ollama / LM Studio suggestions, with a
+  per-card health dot refreshed on a 30-second probe interval.
+- A **chat surface** with SSE streaming, Markdown rendering, syntax
+  highlighting, and a token-usage footer.
+- **Session management** — full-text search (SQLite FTS5), date-grouped
+  history, resume and cross-conversation search.
+- **Profile switching** — isolated per-profile providers, sessions,
+  and state.
+- **Sandbox Tasks** screen (V2.10.65) for IronClaw WASM-sandbox
+  workflows.
+- **Optional sidecars** — CodeGraph (semantic code intelligence),
+  EverOS (memory + harness), Headroom (context compression) — all
+  user-initiated, not silently installed.
+- **Skill, memory, schedule, kanban, and plan** surfaces backed by
+  inspectable JSON registries under the user's control.
+- **Auto-updater** via `electron-updater` pointing at this repo's
+  GitHub Releases feed.
+- **i18n** — 8 locales wired through i18next.
 
 ## Preview
 
-Every image below is a full-page capture from the current desktop build.
-The gallery covers onboarding, runtime discovery, and every major
-operator surface exposed in the sidebar.
+Every image below is a full-page capture from the current desktop
+build. The gallery covers onboarding, runtime discovery, and every
+major operator surface exposed in the sidebar.
 
 <table>
 <tr>
-<td width="50%" align="center"><b>Welcome</b><br/><img width="100%" alt="Welcome" src="previews/welcome.png" /></td>
-<td width="50%" align="center"><b>Remote gateway</b><br/><img width="100%" alt="Remote gateway" src="previews/welcome-remote.png" /></td>
+<td width="50%" align="center"><b>Welcome &amp; first-run</b><br/><img width="100%" alt="Welcome" src="previews/welcome.png" /></td>
+<td width="50%" align="center"><b>Remote gateway attach</b><br/><img width="100%" alt="Remote gateway" src="previews/welcome-remote.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>SSH handoff</b><br/><img width="100%" alt="SSH handoff" src="previews/welcome-ssh.png" /></td>
+<td width="50%" align="center"><b>SSH-tunnel handoff</b><br/><img width="100%" alt="SSH handoff" src="previews/welcome-ssh.png" /></td>
 <td width="50%" align="center"><b>Runtime detection</b><br/><img width="100%" alt="Runtime detection" src="previews/runtime-detection.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Chat</b><br/><img width="100%" alt="Chat" src="previews/chat.png" /></td>
-<td width="50%" align="center"><b>Sessions</b><br/><img width="100%" alt="Sessions" src="previews/sessions.png" /></td>
+<td width="50%" align="center"><b>Chat (SSE streaming)</b><br/><img width="100%" alt="Chat" src="previews/chat.png" /></td>
+<td width="50%" align="center"><b>Sessions (SQLite FTS5)</b><br/><img width="100%" alt="Sessions" src="previews/sessions.png" /></td>
 </tr>
 <tr>
 <td width="50%" align="center"><b>Profiles</b><br/><img width="100%" alt="Profiles" src="previews/agents.png" /></td>
-<td width="50%" align="center"><b>Persona</b><br/><img width="100%" alt="Persona" src="previews/persona.png" /></td>
+<td width="50%" align="center"><b>Persona (legacy)</b><br/><img width="100%" alt="Persona" src="previews/persona.png" /></td>
 </tr>
 <tr>
 <td width="50%" align="center"><b>Plans</b><br/><img width="100%" alt="Plans" src="previews/plans.png" /></td>
-<td width="50%" align="center"><b>CodeGraph</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
+<td width="50%" align="center"><b>CodeGraph (optional sidecar)</b><br/><img width="100%" alt="CodeGraph" src="previews/codegraph.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>EverOS</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
-<td width="50%" align="center"><b>Headroom</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
+<td width="50%" align="center"><b>EverOS (optional sidecar)</b><br/><img width="100%" alt="EverOS" src="previews/everos.png" /></td>
+<td width="50%" align="center"><b>Headroom (optional sidecar)</b><br/><img width="100%" alt="Headroom" src="previews/headroom.png" /></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>Models</b><br/><img width="100%" alt="Models" src="previews/models.png" /></td>
+<td width="50%" align="center"><b>Models (Ollama + LM Studio scan)</b><br/><img width="100%" alt="Models" src="previews/models.png" /></td>
 <td width="50%" align="center"><b>Providers</b><br/><img width="100%" alt="Providers" src="previews/providers.png" /></td>
 </tr>
 <tr>
@@ -92,106 +105,193 @@ operator surface exposed in the sidebar.
 
 ## Install
 
-The install + first-run flow is documented in detail in
-[`../docs/handbook/OPERATIONS.md`](../docs/handbook/OPERATIONS.md). The
-short version:
+The latest stable installer is **v2.10.71**, published at
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71>.
+Older releases are listed on the
+[Releases page](https://github.com/JZKK720/cubecloud-agentic-os/releases).
+v0.6.0 and v0.6.1 are marked pre-release because they were built
+from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.71
+or later**.
 
 ### Windows
 
-> **Windows users:** The installer is not code-signed. Windows SmartScreen
-> will warn on first launch — click "More info" → "Run anyway".
+Download
+`cubecloud-agent-desktop-2.10.71-setup.exe` from the
+[v2.10.71 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+and run it. The NSIS installer is one-click per-user and registers
+`cubecloud-agent-desktop` in Windows Programs and Features.
 
-### Fedora (RPM)
+> **Windows users:** The installer is not code-signed. Windows
+> SmartScreen will warn on first launch — click **More info** →
+> **Run anyway**. Code signing is a known follow-up; see
+> [`../docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md)
+> for the OEM-build path that includes a corporate certificate.
 
-```bash
-sudo dnf install ./agent-desktop-<version>.rpm
-```
+For an installer-free option, download
+`cubecloud-agent-desktop-2.10.71-portable.exe` instead — single-file
+portable that runs without an install step.
 
-> **Fedora users:** The `.rpm` is not GPG-signed. If your system enforces
-> signature checking, append `--nogpgcheck` to the install command.
-> Auto-update is not supported for `.rpm` builds (limitation of
-> `electron-updater`); reinstall the new `.rpm` to update.
+### macOS / Linux
+
+`electron-builder` produces macOS (`.dmg`) and Linux (`.deb`, `.rpm`,
+`.AppImage`, `.snap`) targets, but the CI build pipeline in this
+repo only ships the Windows artifacts today. Multi-platform CI is a
+follow-up that requires App Store Connect, code-signing, and Linux
+store credentials in the repo settings.
 
 ## How it works
 
 On first launch, the app:
 
-1. Asks whether you want to run the agent **locally** or connect to a **remote** API server.
-2. **Local mode:** checks whether the runtime is already installed; if not, runs the official installer with dependency resolution.
-3. **Remote mode:** prompts for the remote API URL and API key, validates the connection, and skips local install.
-4. Prompts for an API provider or local model endpoint.
-5. Saves provider config and API keys through the runtime's config files.
-6. Launches the main workspace once setup is complete.
+1. Asks whether you want to run the agent **locally** (the desktop
+   spawns the runtime on `127.0.0.1:<port>`), connect to a
+   **remote** gateway over HTTPS, or **SSH-tunnel** through a
+   forwarded port.
+2. **Local mode:** checks whether the chosen runtime is already
+   running; if not, runs the official installer with dependency
+   resolution and progress tracking.
+3. **Remote / SSH mode:** prompts for the gateway URL, validates the
+   `/v1/models` endpoint over HTTPS, and skips the local install.
+4. Prompts for the **provider** (local model endpoint or remote API)
+   and stores the credential in the per-profile credential pool.
+5. Launches the main workspace once setup is complete.
 
-In local mode, chat requests go through `http://127.0.0.1:8642` with SSE
-streaming. In remote mode, the app talks to your configured remote URL
-with the same streaming protocol. The desktop app parses the stream in
-real time, rendering tool progress, markdown content, and token usage
-as it arrives.
+In local mode, chat requests go through `http://127.0.0.1:8642`
+(Hermes) or `http://127.0.0.1:3231` (IronClaw) with SSE streaming. In
+remote mode, the app talks to the configured remote URL with the
+same streaming protocol. The renderer parses the stream in real time,
+rendering tool progress, Markdown content, and token usage as it
+arrives.
 
-## Supported providers
+## Supported runtimes and providers
 
-### LLM providers
+### Runtime providers (3)
 
-| Provider            | Notes                                    |
-| ------------------- | ---------------------------------------- |
-| **OpenRouter**      | 200+ models via single API (recommended) |
-| **Anthropic**       | Direct Claude access                     |
-| **OpenAI**          | Direct GPT access                        |
-| **Google (Gemini)** | Google AI Studio                         |
-| **xAI (Grok)**      | Grok models                              |
-| **Nous Portal**     | Free tier available                      |
-| **Qwen**            | QwenAI models                            |
-| **MiniMax**         | Global and China endpoints               |
-| **Hugging Face**    | 20+ open models via HF Inference         |
-| **Groq**            | Fast inference (voice/STT)               |
-| **Local / Custom**  | Any OpenAI-compatible endpoint           |
+| Runtime | Role | Default port | Integration mode |
+|---|---|---|---|
+| **Hermes** | Default core runtime | 8642 | `native-core` |
+| **IronClaw** | WASM-sandbox gateway-handoff lane | 3231 | `optional-bridge` |
+| **OpenClaw** | Optional future lane | 18789 | `optional-runtime` |
 
-Local presets are included for LM Studio, Atomic Chat, Ollama, vLLM,
-and llama.cpp.
+Hermes and IronClaw are the current lanes. OpenClaw is wired through
+the runtime picker but ships as an optional attach target.
 
-### Messaging platforms
+### Provider types (loopback and remote)
 
-Telegram, Discord, Slack, WhatsApp, Signal, Matrix / Element,
-Mattermost, Email (IMAP / SMTP), SMS (Twilio & Vonage), iMessage
-(BlueBubbles), DingTalk, Feishu / Lark, WeCom, WeChat (iLink Bot),
-Webhooks, and Home Assistant.
+- **Local / loopback:** Ollama, LM Studio, vLLM, llama.cpp, and any
+  other OpenAI-compatible endpoint the user runs on
+  `127.0.0.1`. The Models page (V2.10.60) scans for these and
+  surfaces one-click suggestions.
+- **Remote (HTTPS):** OpenAI, Anthropic, Google Gemini, Azure
+  OpenAI, OpenRouter, and any other OpenAI-compatible API the
+  operator configures.
 
-### Tool integrations
+Local server discovery is loopback-only by default; LAN hosts are
+opt-in via the `extraHosts` argument in the renderer's
+`scanLocalServers` call.
 
-Exa Search, Parallel API, Tavily, Firecrawl, FAL.ai (image generation),
-Honcho, Browserbase, Weights & Biases, and Tinker.
+## Optional sidecars (user-initiated, not bundled)
+
+- **CodeGraph** (`pip install codegraph` + `codegraph init`) — semantic
+  code-intelligence path. See
+  [`../docs/CODEGRAPH-RUNTIME.md`](../docs/CODEGRAPH-RUNTIME.md).
+- **EverOS** (`pip install everos`) — memory + harness sidecar. See
+  [`../docs/EVEROS-SIDECAR.md`](../docs/EVEROS-SIDECAR.md).
+- **Headroom** (`pip install headroom-ai`) — context-compression
+  proxy. See
+  [`../docs/agent-skills-bundle/HEADROOM.md`](../docs/agent-skills-bundle/HEADROOM.md)
+  and the repo-authored workflow skill at
+  [`../.github/skills/headroom-workflow/`](../.github/skills/headroom-workflow/).
+
+None of these are required. The desktop is fully functional without
+any of them; the integration is opt-in per user.
 
 ## Development
 
 ### Prerequisites
 
-- Node.js and npm
-- A Unix-like shell environment for the runtime installer
-- Network access for downloading the runtime during first-run install
+- Node.js 22 (matches the version pinned in `.github/workflows/ci.yml`)
+- npm 10+ (ships with Node 22)
+- Windows 10/11 for the NSIS / portable build targets
+- A Unix-like shell for development mode (works on macOS, Linux,
+  WSL)
 
 ### Install dependencies
 
 ```bash
+cd agent-desktop
 npm install
 ```
+
+The install populates `agent-desktop/node_modules/` with the 930
+runtime packages the desktop needs to ship. This is a **standalone
+install** — the monorepo root does not own the desktop's `node_modules/`.
 
 ### Start the app in development mode
 
 ```bash
+cd agent-desktop
 npm run dev
 ```
 
+`electron-vite dev` starts the Vite renderer with hot-reload, the
+Electron main process with auto-restart, and the preload bridge.
+
+### Run the focused test suite
+
+```bash
+cd agent-desktop
+npm run test
+```
+
+The full suite is ~95 Vitest files. CI runs the three focused tests
+that gate releases (`App.gateway.dom.test.tsx`,
+`App.kanban.dom.test.tsx`, `runtimeSessions.test.ts`).
+
+### Build the Windows installer
+
+```bash
+cd agent-desktop
+npm run build:win
+```
+
+`electron-builder` produces the NSIS installer and the portable
+executable in `agent-desktop/dist/`. Requires Windows.
+
+### Verify the packaged asar
+
+```bash
+cd agent-desktop
+npm run verify:bundle
+```
+
+This runs the `release-bundle.test.ts` suite, which asserts the asar
+contains the expected `node_modules/`, `out/main/index.js`, and
+`out/preload/index.js` entries and that the `BrowserWindow` /
+`createWindow` / `whenReady` references are present.
+
 ## Where to look next
 
-- **The agentic-OS monorepo README** — [`../README.md`](../README.md)
-- **The master handbook** — [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md) (one-screen tour)
-- **The long-form per-topic deep dives** — [`../docs/handbook/`](../docs/handbook/) (architecture, development, operations)
-- **The license / brand** — [`../LICENSE`](../LICENSE) and [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
-- **The live / scratch-pad / mirror index** — [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
-- **The skills ecosystem** — [`../.agents/skills/README.md`](../.agents/skills/README.md) ({{SKILLS_UPSTREAM}} skills, mirrored to `~/.agents/skills/`)
-- **The Cubecloud runtime wrappers** — [`../docs/CODEGRAPH-RUNTIME.md`](../docs/CODEGRAPH-RUNTIME.md), [`../docs/EVEROS-SIDECAR.md`](../docs/EVEROS-SIDECAR.md)
-- **The {{SKILLS_UPSTREAM}}-skill ecosystem's per-version history** — [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md) §"V2.6 / V2.7 / V2.8 / V2.9 transitions landed"
+- **The agentic-OS monorepo README** —
+  [`../README.md`](../README.md)
+- **The master handbook** — [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md)
+  (one-screen tour)
+- **The long-form per-topic deep dives** —
+  [`../docs/handbook/`](../docs/handbook/) (architecture, development,
+  operations)
+- **The license / brand** — [`../LICENSE`](../LICENSE) and
+  [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
+- **The live / scratch-pad / mirror index** —
+  [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
+- **The skills ecosystem** —
+  [`../.agents/skills/README.md`](../.agents/skills/README.md)
+  ({{SKILLS_UPSTREAM}} skills, mirrored to `~/.agents/skills/`)
+- **The runtime orchestration deep-dive** —
+  [`../docs/handbook/ARCHITECTURE.md`](../docs/handbook/ARCHITECTURE.md#runtime-orchestration-deep)
+- **The Hermes / IronClaw / OpenClaw attach smokes** —
+  [`../docs/hermes-agent-attach.smoke.md`](../docs/hermes-agent-attach.smoke.md)
+  and
+  [`../docs/ironclaw-attach.smoke.md`](../docs/ironclaw-attach.smoke.md)
 
 ## License
 

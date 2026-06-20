@@ -2,6 +2,28 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
+## 最新リリース：**v2.10.71**
+
+Windows インストーラーは
+[v2.10.71 リリースページ](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+からダウンロードしてください：
+
+- `cubecloud-agent-desktop-2.10.71-setup.exe`（130 MB、NSIS ワンクリックインストーラー）
+- `cubecloud-agent-desktop-2.10.71-portable.exe`（109 MB、シングルファイル版）
+- `cubecloud-agent-desktop-2.10.71-setup.exe.blockmap` + `latest.yml`（自動更新メタデータ）
+
+v2.10.71 は**ラッパー廃止後の最初のビルド**です。`agent-desktop/`
+（モノレポルートではなく）からビルドされ、asar には 21,291 件の
+`node_modules/` エントリ（176.92 MB）が含まれ、`verify:bundle` は
+7/7 PASS。完全な変更履歴は
+[`agent-desktop/changelogs/2.10.71.md`](agent-desktop/changelogs/2.10.71.md) を参照。
+v0.6.0 と v0.6.1 は GitHub 上でプレリリースとしてマークされており、
+使用しないでください。これらは廃止された `apps/desktop-shell/`
+ラッパーツリーからビルドされています。
+
+インストール手順、ランタイムピッカーの詳細、プロバイダー設定は
+[`agent-desktop/README.md`](agent-desktop/README.md) を参照。
+
 # Cubecloud Agentic-OS 日本語ドキュメント（ja-JP）
 
 [English](README.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko-KR.md)
