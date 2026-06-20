@@ -247,21 +247,6 @@ user-global Copilot skills directory is at
 Headroom is **never required**: the desktop is fully functional
 without it.
 
-### Optional: Graphify for repo-local coding support
-
-If you want a local knowledge-graph assist while coding in this repo,
-you can run Graphify as a **developer-side workflow**. This is not an
-agent-desktop runtime integration and does not change shipping product
-behavior.
-
-- `npm run graphify:repo` builds a deep graph for the current repo.
-- `npm run graphify:update` incrementally refreshes changed files.
-- `npm run graphify:query -- "<question>"` runs graph-based queries.
-
-Graphify artifacts are local-only and ignored by git (`graphify-out/`,
-`.review-graphify/`). If the CLI is not installed, use:
-`python -m pip install graphifyy`.
-
 ## Where to start
 
 - **New contributor:** read [`docs/HANDBOOK.md`](docs/HANDBOOK.md) sections 1, 2, 3, and 5.
