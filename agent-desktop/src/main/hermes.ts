@@ -30,6 +30,8 @@ import {
   getConnectionConfig,
   getModelConfig,
   readEnv,
+  setConfigValue,
+  setEnvValue,
 } from "./config";
 import {
   getSshTunnelUrl,
@@ -80,6 +82,11 @@ export function normaliseRemoteUrl(raw: string): string {
   url = url.replace(/\/+$/, "");
   // Strip trailing `/v1` (callers append /v1/<path> themselves)
   url = url.replace(/\/v1$/i, "");
+  // Strip trailing `/api/health` (IronClaw's health endpoint — users
+  // paste the full health URL from the preset's remoteExampleUrl, but
+  // the chat path needs the bare host:port so /v1/chat/completions
+  // resolves correctly).
+  url = url.replace(/\/api\/health$/i, "");
   return url;
 }
 
@@ -481,9 +488,20 @@ function isApiServerReady(): Promise<boolean> {
   return new Promise((resolve) => {
     const url = `${getApiUrl()}/health`;
     const mod = url.startsWith("https") ? https : http;
+    // In local mode, getRemoteAuthHeader() returns {} — but the
+    // gateway may gate /health behind the same API_SERVER_KEY it
+    // requires on /v1/chat/completions. Merge the local key in so the
+    // health probe survives an auth-gated /health endpoint. In remote
+    // mode, getRemoteAuthHeader() already carries the bearer and the
+    // local key is empty, so the merge is a no-op.
+    const localKey = getApiServerKey();
+    const probeHeaders = {
+      ...getRemoteAuthHeader(),
+      ...(localKey ? { Authorization: `Bearer ${localKey}` } : {}),
+    };
     const req = mod.request(
       url,
-      { method: "GET", timeout: 1500, headers: getRemoteAuthHeader() },
+      { method: "GET", timeout: 1500, headers: probeHeaders },
       (res) => {
         resolve(res.statusCode === 200);
         res.resume();
@@ -521,8 +539,8 @@ function ensureApiServerConfig(): void {
     if (!existsSync(configPath)) return;
     const content = readFileSync(configPath, "utf-8");
     // If api_server is already configured, skip
-    if (/api_server/i.test(content)) return;
-    const addition = `
+    if (!/api_server/i.test(content)) {
+      const addition = `
 # Desktop app API server (auto-configured)
 platforms:
   api_server:
@@ -531,7 +549,37 @@ platforms:
       port: ${DEFAULT_LOCAL_GATEWAY_PORT}
       host: "127.0.0.1"
 `;
-    appendFileSync(configPath, addition, "utf-8");
+      appendFileSync(configPath, addition, "utf-8");
+    }
+
+    // Auto-generate the API server shared secret if none of the 6
+    // resolution sources are populated. Without this, a fresh local
+    // install sends no Authorization header and the gateway rejects
+    // every chat request with "Invalid API key" (issue #333 root cause
+    // for the fresh-install case). The desktop-side comment at the old
+    // line 755 claiming it auto-generated API_SERVER_KEY was false; this
+    // is the real implementation.
+    //
+    // We write to .env API_SERVER_KEY (always works — setEnvValue
+    // creates the key if missing) and also attempt
+    // config.yaml api_server.token (only updates if the key already
+    // exists, e.g. after `hermes setup`; setConfigValue silently drops
+    // missing multi-segment paths to avoid corrupting YAML). The .env
+    // write is the reliable path and matches the documented manual
+    // workaround. getApiServerKey() reads .env as source #3/#4.
+    if (!getApiServerKey()) {
+      const generated = `desk-${randomUUID()}`;
+      try {
+        setEnvValue("API_SERVER_KEY", generated);
+      } catch {
+        /* non-fatal — .env write failed, continue */
+      }
+      try {
+        setConfigValue("api_server.token", generated);
+      } catch {
+        /* non-fatal — config.yaml write failed or key absent */
+      }
+    }
   } catch {
     /* non-fatal */
   }
@@ -807,7 +855,10 @@ function sendMessageViaApi(
       model: selectedModel,
       messages,
       stream,
-      ...(runtimeKind === "openclaw"
+      // OpenClaw and IronClaw are both OpenAI-compatible gateways that
+      // accept the `user` field for per-session routing. Hermes uses the
+      // `session_id` body field (and the X-Hermes-Session-Id header).
+      ...(runtimeKind === "openclaw" || runtimeKind === "ironclaw"
         ? sessionId
           ? { user: sessionId }
           : {}
@@ -860,8 +911,13 @@ function sendMessageViaApi(
       }
     }
 
+    // OpenClaw and IronClaw both need a generated session id (sent as the
+    // `user` field in the body) for per-session routing on the gateway
+    // side. Hermes uses the X-Hermes-Session-Id header instead (set below).
     const shouldGenerateSessionId =
-      runtimeKind === "openclaw" || "Authorization" in headers;
+      runtimeKind === "openclaw" ||
+      runtimeKind === "ironclaw" ||
+      "Authorization" in headers;
     sessionId =
       _resumeSessionId ||
       (shouldGenerateSessionId ? `desk-${Date.now()}-${randomUUID()}` : "");

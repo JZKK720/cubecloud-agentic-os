@@ -170,10 +170,10 @@ export const RUNTIME_PROVIDER_CATALOG = [
     role: "gateway-handoff",
     integrationStatus: "current",
     onboardingSurface: "welcome",
-    connectionModes: ["docker-gateway", "remote-gateway", "ssh-tunnel"],
+    connectionModes: ["docker-gateway", "local-gateway", "remote-gateway", "ssh-tunnel"],
     capabilities: {
       canInstallLocally: false,
-      canAttachToExistingLocalGateway: false,
+      canAttachToExistingLocalGateway: true,
       canAttachToRemoteGateway: true,
       canAttachViaSshTunnel: true,
       canDiscoverViaDocker: true,

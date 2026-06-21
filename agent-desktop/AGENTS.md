@@ -21,6 +21,7 @@ These skills live in `.agents/skills/<name>/SKILL.md` or
 | Renderer UI, CSS, onboarding, welcome, setup, empty states | `design-taste-frontend` (`.agents/skills/design-taste-frontend/SKILL.md`) |
 | README translations, screenshot refresh, PDF re-render, i18n sync | `.github/skills/docs-i18n-refresh/SKILL.md` |
 | Headroom, context compression, large logs, CodeGraph bundle compression | `.github/skills/headroom-workflow/SKILL.md` |
+| Full audit / smoke test of agent-desktop runtimes, sub-runtimes, IPC, CI | `.github/skills/agent-desktop-audit/SKILL.md` |
 
 > **Note:** A previous version of this file referenced
 > `electron-pro` and `typescript-expert` skills that do not exist in
@@ -61,7 +62,10 @@ These skills live in `.agents/skills/<name>/SKILL.md` or
 
 ## Validation
 
-Prefer the narrowest relevant check first:
+Prefer the narrowest relevant check first. The full audit ladder
+lives in the [`audit` slash prompt](../.github/prompts/audit.prompt.md)
+and the [`agent-desktop-audit` skill](../.github/skills/agent-desktop-audit/SKILL.md);
+this section is the quick-reference.
 
 - **Single test** (fastest feedback):
   `npm.cmd exec vitest run tests/<slice>.test.ts` (cwd `agent-desktop`)
@@ -72,14 +76,65 @@ Prefer the narrowest relevant check first:
 - **Monorepo typecheck** (only if the change touches
   `packages/platform-core/`):
   `npm run typecheck` (at the repo root)
+- **Asar integrity regression**:
+  `npm run verify:bundle --workspace cubecloud-agent-desktop`
+  (runs `tests/release-bundle.test.ts`)
+- **IPC surface audit** (static, no process needed):
+  `node scripts/audit-smoke-safe.cjs` (cwd `agent-desktop`) —
+  categorizes every `ipcRenderer.invoke("...")` channel and reports
+  uncategorized count.
+- **Operator CLI smokes** (need live gateways, run from repo root):
+  `node scripts/hermes-agent-attach.smoke.cjs` (Hermes 8642) and
+  `node scripts/ironclaw-attach.smoke.cjs` (IronClaw 3231). Both
+  read `HERMES_TEST_TOKEN` / `IRONCLAW_TEST_TOKEN` from env and
+  never echo the key. See `docs/hermes-agent-attach.smoke.md` and
+  `docs/ironclaw-attach.smoke.md` for the runbooks.
+- **CDP / Playwright smokes** (need a running dev electron):
+  start `ENABLE_CDP=1 CDP_PORT=9222 npm run dev` in one terminal,
+  then `npm run smoke` (runs `scripts/smoke-all.js` → 4 child suites:
+  `verify-step3-4-ipc.js`, `verify-everything.js`,
+  `verify-nous-discovery.js`, `preview-mock-gateway.js`).
 - **Windows packaging** (only for build/packaging/installer
   changes): `npm run build:win --workspace cubecloud-agent-desktop`
   followed by `npm run verify:bundle --workspace cubecloud-agent-desktop`
 
-The CI gate (`.github/workflows/ci.yml`) runs 3 focused tests
-(`App.gateway.dom.test.tsx`, `App.kanban.dom.test.tsx`,
-`runtimeSessions.test.ts`) plus a Windows electron-smoke and a
-Windows packaging job on every PR.
+### CI gate (now real)
+
+The root `.github/workflows/ci.yml` `desktop-shell-checks` job runs the
+**full** agent-desktop vitest suite (`npm run test`) on every PR. The
+old `desktop-shell-electron-smoke` job (which referenced a nonexistent
+`test:electron-smoke` script) was removed in V2.10.73 — CDP smokes
+need a running dev electron and are a local/pre-release manual step
+(see the [`audit` slash prompt](../.github/prompts/audit.prompt.md)).
+
+`vitest.config.ts` still has `passWithNoTests: true`, so always assert
+the vitest output reports `Test Files > 0` and `Tests > 0` — a green
+exit with zero tests proves nothing.
+
+### Vitest pin (load-bearing)
+
+`agent-desktop/package.json` pins `vitest: ^3.2.6`. **Do NOT upgrade
+past 3.2.6.** Vitest 4.1.4–4.1.8 has a suite-registration bug on this
+stack (Node v24.14.0, Vite ^7.2.6): even a 6-line
+`describe("foo", () => it("bar", ...))` fails at the `describe` line
+with `TypeError: Cannot read properties of undefined (reading 'config')`.
+The 3.x line is the last one known to work. The comment in
+`src/renderer/src/test/setup.ts` that references "Vitest 4" is stale;
+the real reason for the pin is the 4.x bug, not a 4.x feature.
+
+### Runtime ports (authoritative)
+
+| Runtime | Port | Source of truth |
+|---|---|---|
+| Hermes | 8642 | `scripts/hermes-agent-attach.smoke.cjs`, `docs/hermes-agent-attach.smoke.md` |
+| IronClaw | 3231 | `scripts/ironclaw-attach.smoke.cjs` (defaults to `http://127.0.0.1:3231/api/health`). The "8281" in older docs is legacy. |
+| OpenClaw | 18789 | `agent-desktop/src/shared/runtime-orchestration.ts` |
+
+`RuntimeProviderId` and `TaskOrchestratorId` live in
+`agent-desktop/src/shared/runtime-orchestration.ts`. The 24-entry
+`AGENT_CLI_CATALOG` (tier 4, PATH-discovered via `discoverAgentClis()`)
+lives in `agent-desktop/src/shared/agent-clis.ts` and is **not** a
+runtime lane.
 
 ## Cross-References
 

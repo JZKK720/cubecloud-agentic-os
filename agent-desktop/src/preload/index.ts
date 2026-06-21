@@ -602,14 +602,14 @@ const hermesAPI = {
     status: string;
     latencyMs: number;
     error: string | null;
-  }> => ipcRenderer.invoke("ironclaw:probe", url, token),
+  }> => ipcRenderer.invoke("ironclaw-probe", url, token),
 
   ironclawModels: (
     url: string,
     token?: string,
   ): Promise<
     Array<{ id: string; ownedBy: string; created: number }>
-  > => ipcRenderer.invoke("ironclaw:models", url, token),
+  > => ipcRenderer.invoke("ironclaw-models", url, token),
 
   ironclawDispatch: (
     url: string,
@@ -631,7 +631,7 @@ const hermesAPI = {
     };
     latencyMs: number;
     error?: string;
-  }> => ipcRenderer.invoke("ironclaw:dispatch", url, token, task),
+  }> => ipcRenderer.invoke("ironclaw-dispatch", url, token, task),
 
   // V2.10.66: Agent-Reach internet capability status. Probes
   // whether agent-reach is installed and which channels are
@@ -647,7 +647,7 @@ const hermesAPI = {
       detail: string | null;
     }>;
     error: string | null;
-  }> => ipcRenderer.invoke("agent-reach:probe"),
+  }> => ipcRenderer.invoke("agent-reach-probe"),
 
   // V2.10.67: Auto-discovery — scan localhost for running runtime
   // gateways. Returns discovered runtimes sorted by health.
@@ -663,7 +663,7 @@ const hermesAPI = {
     }>;
     healthyCount: number;
     authRequiredCount: number;
-  }> => ipcRenderer.invoke("auto-discovery:scan"),
+  }> => ipcRenderer.invoke("auto-discovery-scan"),
 
   onChatChunk: (callback: (chunk: string) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, chunk: string): void =>
@@ -1683,6 +1683,75 @@ const hermesAPI = {
   }> => ipcRenderer.invoke("headroom-sidecar-log-tail"),
   headroomSidecarClearLogs: (): Promise<{ success: boolean }> =>
     ipcRenderer.invoke("headroom-sidecar-clear-logs"),
+
+  // Headroom MCP server (local MCP server wrapping the Headroom proxy).
+  // Mirrors the sidecar lifecycle but for the MCP server process.
+  headroomMcpStatus: (): Promise<{
+    state: string;
+    running: boolean;
+    pid: number | null;
+    port: number | null;
+    baseUrl: string;
+    lastError: string | null;
+    crashCount: number;
+    startedAt: number | null;
+    uptimeMs: number | null;
+    reason: string | null;
+    toolNames: string[];
+  }> => ipcRenderer.invoke("headroom-mcp-status"),
+  headroomMcpLogTail: (): Promise<{
+    lines: string[];
+    totalBytes: number;
+  }> => ipcRenderer.invoke("headroom-mcp-log-tail"),
+  headroomMcpClearLogs: (): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke("headroom-mcp-clear-logs"),
+  headroomMcpStart: (options?: {
+    port?: number;
+    host?: string;
+    serverScriptPath?: string;
+  }): Promise<{
+    state: string;
+    running: boolean;
+    pid: number | null;
+    port: number | null;
+    baseUrl: string;
+    lastError: string | null;
+    crashCount: number;
+    startedAt: number | null;
+    uptimeMs: number | null;
+    reason: string | null;
+    toolNames: string[];
+  }> => ipcRenderer.invoke("headroom-mcp-start", options),
+  headroomMcpStop: (): Promise<{
+    state: string;
+    running: boolean;
+    pid: number | null;
+    port: number | null;
+    baseUrl: string;
+    lastError: string | null;
+    crashCount: number;
+    startedAt: number | null;
+    uptimeMs: number | null;
+    reason: string | null;
+    toolNames: string[];
+  }> => ipcRenderer.invoke("headroom-mcp-stop"),
+  headroomMcpRestart: (options?: {
+    port?: number;
+    host?: string;
+    serverScriptPath?: string;
+  }): Promise<{
+    state: string;
+    running: boolean;
+    pid: number | null;
+    port: number | null;
+    baseUrl: string;
+    lastError: string | null;
+    crashCount: number;
+    startedAt: number | null;
+    uptimeMs: number | null;
+    reason: string | null;
+    toolNames: string[];
+  }> => ipcRenderer.invoke("headroom-mcp-restart", options),
 
   // Headroom learn (failure mining via upstream `headroom learn`).
   headroomLearnRun: (options: {

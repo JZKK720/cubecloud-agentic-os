@@ -120,32 +120,18 @@ jobs:
         working-directory: agent-desktop
         run: npm run typecheck
 
-      - name: Run focused agent-desktop tests
+      - name: Run agent-desktop test suite
         working-directory: agent-desktop
-        run: npm run test -- App.gateway.dom.test.tsx src/renderer/src/App.kanban.dom.test.tsx src/main/runtimeSessions.test.ts
+        run: npm run test
 
-  desktop-shell-electron-smoke:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install agent-desktop dependencies
-        working-directory: agent-desktop
-        run: npm ci
-
-      - name: Run Electron UI smoke test
-        working-directory: agent-desktop
-        run: npm run test:electron-smoke
+  # NOTE: The desktop-shell-electron-smoke job was removed in V2.10.73.
+  # It referenced `npm run test:electron-smoke`, which was never defined
+  # in agent-desktop/package.json. The real CDP smoke suite
+  # (`npm run smoke` → scripts/smoke-all.js) requires a running dev
+  # electron with ENABLE_CDP=1 CDP_PORT=9222, which is not suitable for
+  # headless CI without significant setup. CDP smokes are a local /
+  # pre-release manual step — see .github/prompts/audit.prompt.md and
+  # .github/skills/agent-desktop-audit/SKILL.md.
 
   desktop-shell-windows-packaging:
     runs-on: windows-latest

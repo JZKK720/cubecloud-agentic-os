@@ -322,6 +322,29 @@ interface HeadroomSidecarLogTail {
   totalBytes: number;
 }
 
+/** Headroom MCP server lifecycle status. Mirrors HeadroomMcpStatus
+ *  from src/main/mcp/headroom-mcp-server.ts. */
+interface HeadroomMcpStatus {
+  state: string;
+  running: boolean;
+  pid: number | null;
+  port: number | null;
+  baseUrl: string;
+  lastError: string | null;
+  crashCount: number;
+  startedAt: number | null;
+  uptimeMs: number | null;
+  reason: string | null;
+  toolNames: string[];
+}
+
+/** Options for starting the Headroom MCP server. */
+interface HeadroomMcpStartOptions {
+  port?: number;
+  host?: string;
+  serverScriptPath?: string;
+}
+
 /** Headroom proxy health status (GET /health). */
 interface HeadroomHealthStatus {
   reachable: boolean;
@@ -1552,6 +1575,14 @@ interface HermesAPI {
   }) => Promise<HeadroomSidecarStatus>;
   headroomSidecarLogTail: () => Promise<HeadroomSidecarLogTail>;
   headroomSidecarClearLogs: () => Promise<{ success: boolean }>;
+
+  // Headroom MCP server (local MCP server wrapping the Headroom proxy).
+  headroomMcpStatus: () => Promise<HeadroomMcpStatus>;
+  headroomMcpLogTail: () => Promise<HeadroomSidecarLogTail>;
+  headroomMcpClearLogs: () => Promise<{ success: boolean }>;
+  headroomMcpStart: (options?: HeadroomMcpStartOptions) => Promise<HeadroomMcpStatus>;
+  headroomMcpStop: () => Promise<HeadroomMcpStatus>;
+  headroomMcpRestart: (options?: HeadroomMcpStartOptions) => Promise<HeadroomMcpStatus>;
 
   // Headroom learn (failure mining via upstream `headroom learn`
   // CLI). The desktop shells out to the same `headroom` binary

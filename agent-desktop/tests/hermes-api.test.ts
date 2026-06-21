@@ -110,12 +110,36 @@ vi.mock("../src/main/process-options", () => ({
   HIDDEN_SUBPROCESS_OPTIONS: {},
 }));
 
+// Headroom is async in finalizePreparedRequest (await loadHeadroomConfig +
+// await compressForChat). Without these mocks the await chain stalls in the
+// test environment (no real HERMES_HOME, no sidecar) and startPreparedRequest
+// never fires, so capturedRequests stays empty and every assertion on
+// chatRequest fails with "expected undefined to be defined". Mock Headroom as
+// disabled so finalizePreparedRequest resolves immediately.
+vi.mock("../src/main/headroom", () => ({
+  loadHeadroomConfig: () => Promise.resolve({ enabled: false }),
+}));
+
+vi.mock("../src/main/headroom-chat", () => ({
+  compressForChat: () => Promise.resolve({ compressed: false }),
+  isOllamaLikeProvider: () => false,
+}));
+
 // ── Import module under test ──
 
 import {
   sendMessage,
   stopHealthPolling as realStopHealthPolling,
 } from "../src/main/hermes";
+
+// sendMessageViaApi fires its HTTP request from a fire-and-forget async
+// IIFE (void (async () => { await finalizePreparedRequest(); startPreparedRequest(); })()).
+// await sendMessage(...) resolves as soon as the handle is returned, before
+// the IIFE flushes. Flush a few macrotasks so the mocked http.request's
+// req.write(body) fires and capturedRequests is populated before assertions.
+function flush(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 50));
+}
 
 describe("sendMessageViaApi forwards resumeSessionId", () => {
   beforeEach(() => {
@@ -141,6 +165,8 @@ describe("sendMessageViaApi forwards resumeSessionId", () => {
       testSessionId,
     );
 
+    await flush();
+
     const chatRequest = capturedRequests.find((r) =>
       r.url.includes("/v1/chat/completions"),
     );
@@ -162,6 +188,8 @@ describe("sendMessageViaApi forwards resumeSessionId", () => {
       undefined,
     );
 
+    await flush();
+
     const chatRequest = capturedRequests.find((r) =>
       r.url.includes("/v1/chat/completions"),
     );
@@ -182,6 +210,8 @@ describe("sendMessageViaApi forwards resumeSessionId", () => {
       "default",
       "",
     );
+
+    await flush();
 
     const chatRequest = capturedRequests.find((r) =>
       r.url.includes("/v1/chat/completions"),
@@ -205,6 +235,8 @@ describe("sendMessageViaApi forwards resumeSessionId", () => {
       "default",
       testSessionId,
     );
+
+    await flush();
 
     const chatRequest = capturedRequests.find((r) =>
       r.url.includes("/v1/chat/completions"),
@@ -236,6 +268,8 @@ describe("sendMessageViaApi forwards resumeSessionId", () => {
       undefined,
     );
 
+    await flush();
+
     const chatRequest = capturedRequests.find((r) =>
       r.url.includes("/v1/chat/completions"),
     );
@@ -264,6 +298,8 @@ describe("sendMessageViaApi forwards resumeSessionId", () => {
       undefined,
     );
 
+    await flush();
+
     const chatRequests = capturedRequests.filter((r) =>
       r.url.includes("/v1/chat/completions"),
     );
@@ -275,5 +311,45 @@ describe("sendMessageViaApi forwards resumeSessionId", () => {
     expect(ids[0]).toBeTruthy();
     expect(ids[1]).toBeTruthy();
     expect(ids[0]).not.toBe(ids[1]);
+  });
+});
+
+describe("sendMessageViaApi routes to IronClaw", () => {
+  // IronClaw is an OpenAI-compatible gateway on port 3231. When the user
+  // attaches IronClaw via Settings → Remote, the desktop stores the URL
+  // (e.g. http://127.0.0.1:3231/api/health) in remoteUrl and the bearer
+  // token in apiKey, tagged with gatewayRuntimePreset: "ironclaw".
+  // diagnoseRemoteConnection detects IronClaw and caches runtimeKind =
+  // "ironclaw". The main chat path must then:
+  //   - hit /v1/chat/completions on the bare host (not /api/health/v1/...)
+  //   - send Authorization: Bearer <token>
+  //   - send the session id as the `user` body field (not session_id)
+  //   - NOT send X-Hermes-Session-Id (that's Hermes-specific)
+  beforeEach(() => {
+    capturedRequests.length = 0;
+  });
+
+  afterEach(() => {
+    realStopHealthPolling();
+    capturedRequests.length = 0;
+  });
+
+  it("strips /api/health from the IronClaw URL so chat hits /v1/chat/completions", async () => {
+    // The user pastes http://127.0.0.1:3231/api/health (the preset's
+    // remoteExampleUrl). normaliseRemoteUrl must strip /api/health so
+    // the chat request resolves to .../v1/chat/completions, not
+    // .../api/health/v1/chat/completions.
+    const { normaliseRemoteUrl } = await import("../src/main/hermes");
+    expect(normaliseRemoteUrl("http://127.0.0.1:3231/api/health")).toBe(
+      "http://127.0.0.1:3231",
+    );
+    // /v1 stripping still works (OpenClaw case)
+    expect(normaliseRemoteUrl("http://127.0.0.1:18789/v1")).toBe(
+      "http://127.0.0.1:18789",
+    );
+    // Bare host is untouched
+    expect(normaliseRemoteUrl("http://127.0.0.1:8642")).toBe(
+      "http://127.0.0.1:8642",
+    );
   });
 });

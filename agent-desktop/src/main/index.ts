@@ -1275,17 +1275,17 @@ function setupIPC(): void {
   // token is passed from the renderer's connection form and is
   // never persisted or logged.
   ipcMain.handle(
-    "ironclaw:probe",
+    "ironclaw-probe",
     (_event, url: string, token?: string) =>
       probeIronClawGateway(url, token),
   );
   ipcMain.handle(
-    "ironclaw:models",
+    "ironclaw-models",
     (_event, url: string, token?: string) =>
       listIronClawModels(url, token),
   );
   ipcMain.handle(
-    "ironclaw:dispatch",
+    "ironclaw-dispatch",
     (_event, url: string, token: string | undefined, task: { model: string; message: string; contextFolder?: string }) =>
       dispatchSandboxTask(url, token, task),
   );
@@ -1294,13 +1294,13 @@ function setupIPC(): void {
   // Runs `agent-reach doctor` to check which internet channels
   // are configured. Never reads credentials — doctor only
   // reports channel status.
-  ipcMain.handle("agent-reach:probe", () => probeAgentReach());
+  ipcMain.handle("agent-reach-probe", () => probeAgentReach());
 
   // V2.10.67 — Auto-discovery: scan localhost for running runtime
   // gateways (Hermes, IronClaw, OpenClaw). Probes known ports in
   // parallel using the existing diagnoseRemoteConnection function.
   // Never sends credentials — only health-check probes.
-  ipcMain.handle("auto-discovery:scan", () => scanLocalhostRuntimes());
+  ipcMain.handle("auto-discovery-scan", () => scanLocalhostRuntimes());
 
   // Gateway
   ipcMain.handle("start-gateway", async () => {

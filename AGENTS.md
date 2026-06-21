@@ -40,9 +40,11 @@ surface assumptions into Cubecloud-original code paths.
 1. **Core runtime agents** — `RuntimeProviderId` in
    `agent-desktop/src/shared/runtime-orchestration.ts`. HTTP gateways
    the desktop attaches to for chat. Hermes (default, port 8642),
-   IronClaw (WASM-sandbox gateway-handoff, port 8281), OpenClaw
-   (optional, port 18789). The desktop attaches over HTTP; it does
-   not shell out to an interactive TUI for the chat path.
+   IronClaw (WASM-sandbox gateway-handoff, port 3231 — the live source
+   of truth is `scripts/ironclaw-attach.smoke.cjs`; the older "8281"
+   in historical docs is legacy), OpenClaw (optional, port 18789).
+   The desktop attaches over HTTP; it does not shell out to an
+   interactive TUI for the chat path.
 2. **Integrated support surfaces** — CodeGraph, EverOS, Headroom.
    Operator-installed, desktop-spawned sidecars.
 3. **User-managed third-party apps** — anything the operator installs
@@ -151,10 +153,16 @@ installer. The electron-builder pipeline (with
 `agent-desktop/`. Use `--workspace cubecloud-agent-desktop` (npm
 workspaces syntax), not `--project` (pnpm syntax).
 
-Test files live in `agent-desktop/tests/`. There are ~95 Vitest
-files; CI runs 3 focused tests per PR (`App.gateway.dom.test.tsx`,
-`App.kanban.dom.test.tsx`, `runtimeSessions.test.ts`). When in doubt
-about which tests cover a feature, search the test name first.
+Test files live in `agent-desktop/tests/` (89 files) plus 16
+co-located in `src/`. The CI gate (`.github/workflows/ci.yml`
+`desktop-shell-checks` job) runs the **full** vitest suite on every PR
+(fixed in V2.10.73 — previously referenced 3 nonexistent test files
+that `passWithNoTests: true` silently masked). Always assert the
+vitest output reports `Test Files > 0` and `Tests > 0`. For the
+real audit/smoke ladder (typecheck → full suite → asar integrity →
+IPC audit → operator CLI smokes → CDP smokes → doc/i18n checks),
+see [`agent-desktop/AGENTS.md`](agent-desktop/AGENTS.md) Validation
+and the [`audit` slash prompt](.github/prompts/audit.prompt.md).
 
 ## 6. Project-Specific Rules
 
@@ -195,6 +203,7 @@ when the trigger applies:
 | Renderer UI, CSS, onboarding, welcome, setup, empty states | `design-taste-frontend` |
 | Translations, screenshot refresh, PDF re-render, README i18n sync | `.github/skills/docs-i18n-refresh/SKILL.md` |
 | Headroom, context compression, large logs, CodeGraph bundle compression | `.github/skills/headroom-workflow/SKILL.md` |
+| Full audit / smoke test of agent-desktop runtimes, sub-runtimes, IPC, CI | `.github/skills/agent-desktop-audit/SKILL.md` |
 
 **Do not reference skills that are not in this list.** A previous
 version of `agent-desktop/AGENTS.md` referenced `electron-pro` and
@@ -229,6 +238,7 @@ tasks:
 - `security-review.prompt.md` for OWASP-aligned review
 - `build-fix.prompt.md` for failing builds
 - `refactor.prompt.md` for dead-code cleanup
+- `audit.prompt.md` for the full agent-desktop audit/smoke ladder
 - The 5 `taste-*.prompt.md` files for design-led work
 
 ### 6.6 Security floor
