@@ -29,6 +29,11 @@ const readOnly = [
   "everos-sidecar-status", "everos-sidecar-log-tail",
   "headroom-get-config", "headroom-ping", "headroom-stats",
   "headroom-sidecar-status", "headroom-sidecar-log-tail",
+  "headroom-mcp-status", "headroom-mcp-log-tail",
+  "headroom-learn-last-report",
+  "ironclaw-probe", "ironclaw-models",
+  "probe-local-model-health", "scan-local-servers",
+  "agent-reach-probe", "auto-discovery-scan",
   "kanban-list-boards", "kanban-current-board", "kanban-list-tasks", "kanban-get-task",
   "plans-list", "plans-get", "plans-parse",
   "knowledge-list", "knowledge-get", "knowledge-search", "knowledge-sources", "knowledge-tool-manifest",
@@ -50,7 +55,9 @@ const roundTrip = [
 const inStaging = [
   "everos-sidecar-start", "everos-sidecar-stop", "everos-sidecar-restart", "everos-sidecar-clear-logs",
   "headroom-sidecar-start", "headroom-sidecar-stop", "headroom-sidecar-restart", "headroom-sidecar-clear-logs",
+  "headroom-mcp-start", "headroom-mcp-stop", "headroom-mcp-restart", "headroom-mcp-clear-logs",
   "headroom-save-config", "headroom-compress", "headroom-retrieve",
+  "headroom-learn-run", "headroom-learn-stop", "headroom-learn-commit", "headroom-learn-apply", "headroom-learn-revert",
   "codegraph-runtime-open", "codegraph-runtime-close",
 ];
 
@@ -92,6 +99,10 @@ const excluded = [
   "open-file-in-editor", "copy-to-clipboard",
   "adopt-hermes-home", "validate-hermes-home", "inspect-install-target",
   "quit-app", "generate-api-server-key",
+  "ironclaw-dispatch",
+  "run-runtime-provider-action",
+  "schemas-set-active",
+  "sync-session-cache",
   "set-locale",
   ...roundTrip.map((r) => r.setChannel),
   ...inStaging,

@@ -174,7 +174,26 @@ vi.mock("../src/main/process-options", () => ({
   HIDDEN_SUBPROCESS_OPTIONS: {},
 }));
 
+// Headroom is async in finalizePreparedRequest. Without these mocks the
+// await chain stalls in the test environment and startPreparedRequest
+// never fires. Mock Headroom as disabled so it resolves immediately.
+vi.mock("../src/main/headroom", () => ({
+  loadHeadroomConfig: () => Promise.resolve({ enabled: false }),
+}));
+
+vi.mock("../src/main/headroom-chat", () => ({
+  compressForChat: () => Promise.resolve({ compressed: false }),
+  isOllamaLikeProvider: () => false,
+}));
+
 import { sendMessage, testRemoteConnection } from "../src/main/hermes";
+
+// sendMessageViaApi fires its HTTP request from a fire-and-forget async
+// IIFE. await sendMessage(...) resolves before the IIFE flushes. Flush a
+// few macrotasks so capturedRequests is populated before assertions.
+function flush(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 50));
+}
 
 describe("OpenClaw remote adapter", () => {
   beforeEach(() => {
@@ -195,6 +214,8 @@ describe("OpenClaw remote adapter", () => {
       },
       "default",
     );
+
+    await flush();
 
     const chatRequest = capturedRequests.find((request) =>
       request.url.endsWith("/v1/chat/completions"),

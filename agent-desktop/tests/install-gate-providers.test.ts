@@ -92,8 +92,9 @@ describe("expectedEnvKeyForModel — URL fallback for custom/auto providers", ()
   });
 
   it("returns null for unknown provider with unknown URL", () => {
+    // Use a port not in URL_TO_ENV_KEY (1234 is LM Studio, 11434 is Ollama).
     expect(
-      expectedEnvKeyForModel("custom", "http://localhost:1234/v1"),
+      expectedEnvKeyForModel("custom", "http://localhost:9999/v1"),
     ).toBeNull();
     expect(expectedEnvKeyForModel("custom", "")).toBeNull();
     expect(expectedEnvKeyForModel("", "")).toBeNull();

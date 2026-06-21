@@ -90,6 +90,7 @@ export const PROVIDERS = {
     "kimi-coding": "Kimi (Coding Plan)",
     ollama: "Ollama (local)",
     lmstudio: "LM Studio (local)",
+    local: "Local",
     custom: "OpenAI Compatible / Local",
   } as Record<string, string>,
 

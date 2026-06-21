@@ -251,6 +251,7 @@ describe("testRemoteConnection URL probe", () => {
         testRemoteConnection("ws://127.0.0.1:18789/v1"),
       ).resolves.toBe(true);
       expect(capturedTargets).toEqual([
+        "http://127.0.0.1:18789/api/health",
         "http://127.0.0.1:18789/health",
         "http://127.0.0.1:18789/v1/models",
       ]);

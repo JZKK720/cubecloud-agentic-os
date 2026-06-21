@@ -77,7 +77,9 @@ describe("detectProviderFromUrl", () => {
   });
 
   it("excludes 172.x outside the RFC1918 range", () => {
-    expect(detectProviderFromUrl("http://172.15.0.1:11434")).toBe("custom"); // port hits
+    // Port 11434 is Ollama's default — the named-port heuristic
+    // correctly returns "ollama" even on a 172.x address.
+    expect(detectProviderFromUrl("http://172.15.0.1:11434")).toBe("ollama");
     expect(detectProviderFromUrl("http://172.32.0.1:9999")).toBeNull();
   });
 
@@ -92,7 +94,8 @@ describe("detectProviderFromUrl", () => {
   });
 
   it("tolerates bare host:port without a scheme", () => {
-    expect(detectProviderFromUrl("localhost:1234")).toBe("custom");
+    // Port 1234 is LM Studio's default — recognized even without a scheme.
+    expect(detectProviderFromUrl("localhost:1234")).toBe("lmstudio");
     expect(detectProviderFromUrl("192.168.1.10:8080")).toBe("custom");
   });
 });
