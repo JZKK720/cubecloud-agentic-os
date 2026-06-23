@@ -51,6 +51,7 @@ export const PROVIDERS = {
     { value: "google-gemini-cli", label: "Gemini (CLI OAuth)" },
     { value: "minimax-oauth", label: "MiniMax (OAuth)" },
     { value: "kimi-coding", label: "Kimi (Coding Plan)" },
+    { value: "moonshot", label: "Moonshot AI (Kimi)" },
     // Local LLMs — OpenAI-compatible shims that ship with the most
     // common self-hosted runtimes. The named ids give the model
     // card a useful label ("Ollama" / "LM Studio") instead of the
@@ -88,6 +89,7 @@ export const PROVIDERS = {
     "google-gemini-cli": "Gemini (CLI OAuth)",
     "minimax-oauth": "MiniMax (OAuth)",
     "kimi-coding": "Kimi (Coding Plan)",
+    moonshot: "Moonshot AI (Kimi)",
     ollama: "Ollama (local)",
     lmstudio: "LM Studio (local)",
     local: "Local",
@@ -298,10 +300,10 @@ export const PROVIDERS = {
       desc: "Hosted NVIDIA inference endpoints",
       tag: "API Key",
       envKey: "NVIDIA_API_KEY",
-      url: "https://build.nvidia.com/",
+      url: "https://build.nvidia.com/api-keys",
       placeholder: "nvapi-...",
       configProvider: "nvidia",
-      baseUrl: "",
+      baseUrl: "https://integrate.api.nvidia.com/v1",
       needsKey: true,
     },
     {
@@ -310,10 +312,10 @@ export const PROVIDERS = {
       desc: "Hosted GLM inference",
       tag: "API Key",
       envKey: "GLM_API_KEY",
-      url: "https://open.bigmodel.cn/",
+      url: "https://open.bigmodel.cn/usercenter/apikeys",
       placeholder: "...",
       configProvider: "zai",
-      baseUrl: "",
+      baseUrl: "https://open.bigmodel.cn/api/paas/v4",
       needsKey: true,
     },
     {
@@ -325,7 +327,7 @@ export const PROVIDERS = {
       url: "https://bailian.console.aliyun.com/",
       placeholder: "...",
       configProvider: "qwen",
-      baseUrl: "",
+      baseUrl: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
       needsKey: true,
     },
     {
@@ -349,7 +351,7 @@ export const PROVIDERS = {
       url: "https://www.minimax.io/platform/user-center/basic-information/interface-key",
       placeholder: "...",
       configProvider: "minimax",
-      baseUrl: "",
+      baseUrl: "https://api.minimax.chat/v1",
       needsKey: true,
     },
     {
@@ -375,6 +377,18 @@ export const PROVIDERS = {
       configProvider: "kimi-coding",
       baseUrl: "",
       needsKey: false,
+    },
+    {
+      id: "moonshot",
+      name: "Moonshot AI (Kimi)",
+      desc: "Hosted Kimi models via direct API key",
+      tag: "API Key",
+      envKey: "MOONSHOT_API_KEY",
+      url: "https://platform.moonshot.cn/console/api-keys",
+      placeholder: "sk-...",
+      configProvider: "moonshot",
+      baseUrl: "https://api.moonshot.cn/v1",
+      needsKey: true,
     },
     {
       id: "nous",
@@ -614,6 +628,12 @@ export const SETTINGS_SECTIONS: SectionDef[] = [
         label: "constants.kimiApiKey",
         type: "password",
         hint: "constants.kimiHint",
+      },
+      {
+        key: "MOONSHOT_API_KEY",
+        label: "Moonshot AI API Key",
+        type: "password",
+        hint: "For direct API access to Kimi models (api.moonshot.cn)",
       },
       {
         key: "MINIMAX_API_KEY",

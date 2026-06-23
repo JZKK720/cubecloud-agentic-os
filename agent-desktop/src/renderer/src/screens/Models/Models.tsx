@@ -141,6 +141,11 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
     if (/api\.cerebras\.ai/i.test(url)) return "CEREBRAS_API_KEY";
     if (/api\.mistral\.ai/i.test(url)) return "MISTRAL_API_KEY";
     if (/api\.perplexity\.ai/i.test(url)) return "PERPLEXITY_API_KEY";
+    if (/integrate\.api\.nvidia\.com/i.test(url)) return "NVIDIA_API_KEY";
+    if (/open\.bigmodel\.cn/i.test(url)) return "GLM_API_KEY";
+    if (/dashscope(-intl)?\.aliyuncs\.com/i.test(url)) return "QWEN_API_KEY";
+    if (/api\.minimax(i)?\.(chat|com)/i.test(url)) return "MINIMAX_API_KEY";
+    if (/api\.moonshot\.cn/i.test(url)) return "MOONSHOT_API_KEY";
     return "CUSTOM_API_KEY";
   }
 
