@@ -300,6 +300,11 @@ const PROVIDER_ENV_KEYS: Record<string, string> = {
   glm: "GLM_API_KEY",
   kimi: "KIMI_API_KEY",
   moonshot: "MOONSHOT_API_KEY",
+  siliconflow: "SILICONFLOW_API_KEY",
+  novita: "NOVITA_API_KEY",
+  deepinfra: "DEEPINFRA_API_KEY",
+  sambanova: "SAMBANOVA_API_KEY",
+  replicate: "REPLICATE_API_KEY",
   nvidia: "NVIDIA_API_KEY",
   // Local-LLM providers — Ollama and LM Studio both accept an
   // optional static `Authorization: Bearer <anything>` header. We
@@ -330,6 +335,11 @@ const URL_TO_ENV_KEY: Array<[RegExp, string]> = [
   [/dashscope(-intl)?\.aliyuncs\.com/i, "QWEN_API_KEY"],
   [/api\.minimax(i)?\.(chat|com)/i, "MINIMAX_API_KEY"],
   [/api\.moonshot\.cn/i, "MOONSHOT_API_KEY"],
+  [/api\.siliconflow\.com/i, "SILICONFLOW_API_KEY"],
+  [/api\.novita\.ai/i, "NOVITA_API_KEY"],
+  [/api\.deepinfra\.com/i, "DEEPINFRA_API_KEY"],
+  [/api\.sambanova\.ai/i, "SAMBANOVA_API_KEY"],
+  [/api\.replicate\.com/i, "REPLICATE_API_KEY"],
   // Match Ollama's loopback before the generic custom:11434 rule
   // below so a user with both running still gets the named key
   // surfaced in install-gate prompts.

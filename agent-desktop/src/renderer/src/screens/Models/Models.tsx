@@ -146,6 +146,11 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
     if (/dashscope(-intl)?\.aliyuncs\.com/i.test(url)) return "QWEN_API_KEY";
     if (/api\.minimax(i)?\.(chat|com)/i.test(url)) return "MINIMAX_API_KEY";
     if (/api\.moonshot\.cn/i.test(url)) return "MOONSHOT_API_KEY";
+    if (/api\.siliconflow\.com/i.test(url)) return "SILICONFLOW_API_KEY";
+    if (/api\.novita\.ai/i.test(url)) return "NOVITA_API_KEY";
+    if (/api\.deepinfra\.com/i.test(url)) return "DEEPINFRA_API_KEY";
+    if (/api\.sambanova\.ai/i.test(url)) return "SAMBANOVA_API_KEY";
+    if (/api\.replicate\.com/i.test(url)) return "REPLICATE_API_KEY";
     return "CUSTOM_API_KEY";
   }
 

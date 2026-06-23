@@ -23,6 +23,11 @@ export function detectProviderFromUrl(rawUrl: string): string | null {
   if (/api\.moonshot\.cn/.test(url)) return "moonshot";
   if (/open\.bigmodel\.cn/.test(url)) return "zai";
   if (/integrate\.api\.nvidia\.com/.test(url)) return "nvidia";
+  if (/api\.siliconflow\.com/.test(url)) return "siliconflow";
+  if (/api\.novita\.ai/.test(url)) return "novita";
+  if (/api\.deepinfra\.com/.test(url)) return "deepinfra";
+  if (/api\.sambanova\.ai/.test(url)) return "sambanova";
+  if (/api\.replicate\.com/.test(url)) return "replicate";
 
   // Well-known local-LLM ports on any host — Ollama 11434 (default
   // + `/v1` shim port), LM Studio 1234, vLLM 8000, llama.cpp 8080,
