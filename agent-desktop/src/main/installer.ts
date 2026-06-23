@@ -305,6 +305,10 @@ const PROVIDER_ENV_KEYS: Record<string, string> = {
   deepinfra: "DEEPINFRA_API_KEY",
   sambanova: "SAMBANOVA_API_KEY",
   replicate: "REPLICATE_API_KEY",
+  stepfun: "STEPFUN_API_KEY",
+  hunyuan: "HUNYUAN_API_KEY",
+  volcano: "VOLCANO_API_KEY",
+  qianfan: "QIANFAN_API_KEY",
   nvidia: "NVIDIA_API_KEY",
   // Local-LLM providers — Ollama and LM Studio both accept an
   // optional static `Authorization: Bearer <anything>` header. We
@@ -340,6 +344,10 @@ const URL_TO_ENV_KEY: Array<[RegExp, string]> = [
   [/api\.deepinfra\.com/i, "DEEPINFRA_API_KEY"],
   [/api\.sambanova\.ai/i, "SAMBANOVA_API_KEY"],
   [/api\.replicate\.com/i, "REPLICATE_API_KEY"],
+  [/api\.stepfun\.com/i, "STEPFUN_API_KEY"],
+  [/api\.hunyuan\.cloud\.tencent\.com/i, "HUNYUAN_API_KEY"],
+  [/ark\.cn-beijing\.volces\.com/i, "VOLCANO_API_KEY"],
+  [/qianfan\.baidubce\.com/i, "QIANFAN_API_KEY"],
   // Match Ollama's loopback before the generic custom:11434 rule
   // below so a user with both running still gets the named key
   // surfaced in install-gate prompts.

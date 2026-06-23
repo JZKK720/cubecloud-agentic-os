@@ -28,6 +28,10 @@ export function detectProviderFromUrl(rawUrl: string): string | null {
   if (/api\.deepinfra\.com/.test(url)) return "deepinfra";
   if (/api\.sambanova\.ai/.test(url)) return "sambanova";
   if (/api\.replicate\.com/.test(url)) return "replicate";
+  if (/api\.stepfun\.com/.test(url)) return "stepfun";
+  if (/api\.hunyuan\.cloud\.tencent\.com/.test(url)) return "hunyuan";
+  if (/ark\.cn-beijing\.volces\.com/.test(url)) return "volcano";
+  if (/qianfan\.baidubce\.com/.test(url)) return "qianfan";
 
   // Well-known local-LLM ports on any host — Ollama 11434 (default
   // + `/v1` shim port), LM Studio 1234, vLLM 8000, llama.cpp 8080,

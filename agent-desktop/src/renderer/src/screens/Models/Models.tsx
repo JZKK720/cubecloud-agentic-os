@@ -151,6 +151,10 @@ function Models({ visible }: ModelsProps = {}): React.JSX.Element {
     if (/api\.deepinfra\.com/i.test(url)) return "DEEPINFRA_API_KEY";
     if (/api\.sambanova\.ai/i.test(url)) return "SAMBANOVA_API_KEY";
     if (/api\.replicate\.com/i.test(url)) return "REPLICATE_API_KEY";
+    if (/api\.stepfun\.com/i.test(url)) return "STEPFUN_API_KEY";
+    if (/api\.hunyuan\.cloud\.tencent\.com/i.test(url)) return "HUNYUAN_API_KEY";
+    if (/ark\.cn-beijing\.volces\.com/i.test(url)) return "VOLCANO_API_KEY";
+    if (/qianfan\.baidubce\.com/i.test(url)) return "QIANFAN_API_KEY";
     return "CUSTOM_API_KEY";
   }
 
