@@ -51,6 +51,10 @@ import {
 } from "./installer";
 import { updaterLogger } from "./updater-log";
 import { discoverAgentClis } from "./agent-clis";
+import {
+  discoverBrowserHarness,
+  runBrowserHarnessDoctor,
+} from "./browser-harness";
 import { discoverDockerRuntimes } from "./docker-runtimes";
 import {
   loadEverOsConfig,
@@ -928,6 +932,14 @@ function setupIPC(): void {
   ipcMain.handle("discover-docker-runtimes", () => discoverDockerRuntimes());
 
   ipcMain.handle("discover-agent-clis", () => discoverAgentClis());
+
+  ipcMain.handle("discover-browser-harness", () =>
+    discoverBrowserHarness(),
+  );
+
+  ipcMain.handle("browser-harness-doctor", () =>
+    runBrowserHarnessDoctor(),
+  );
 
   ipcMain.handle("list-runtime-providers", () => listRuntimeProviders());
 

@@ -18,10 +18,14 @@ Distilled from:
 
 `cubecloud-agentic-os` is the monorepo for the **Cubecloud Agent Desktop**
 binary and the operating model around it. The desktop ships as
-`agent-desktop/`. The Cubecloud-original control plane lives in
-`apps/desktop-shell/`, the shared TypeScript contracts in
-`packages/platform-core/`, and the 35-skill ecosystem in
-`.agents/skills/`. Legal entity: **Cubecloud Limited Company**;
+`agent-desktop/` — this is where the Cubecloud-original control
+plane, renderer, and electron-builder pipeline all live. The shared
+TypeScript contracts live in `packages/platform-core/`, and the
+35-skill ecosystem in `.agents/skills/`. (The old
+`apps/desktop-shell/` workspace was retired in V2.10.67 — see
+[§6.7](#67-dual-readme-contract-do-not-conflate) and [§7](#7-repo-layout);
+treat references to it as `agent-desktop/`.) Legal entity: **Cubecloud
+Limited Company**;
 Chinese trademark: **智方云**. License: AGPL-3.0-or-later OR
 Apache-2.0 OR MIT, with a path-by-path framework-MIT carve-out
 documented in `BRANDING_AND_LICENSE.md`.

@@ -98,6 +98,20 @@ interface AgentCliDiscovery {
   items: AgentCliDiscoveryItem[];
 }
 
+interface BrowserHarnessDiscovery {
+  scannedAt: string;
+  installed: boolean;
+  detectedCommand: string | null;
+  resolvedPath: string | null;
+}
+
+interface BrowserHarnessDoctorResult {
+  ok: boolean;
+  exitCode: number;
+  output: string;
+  scannedAt: string;
+}
+
 interface CodeGraphCliStatus {
   installed: boolean;
   command: string | null;
@@ -724,6 +738,8 @@ interface HermesAPI {
   testRemoteConnection: (url: string, apiKey?: string) => Promise<boolean>;
   discoverDockerRuntimes: () => Promise<DockerRuntimeDiscovery>;
   discoverAgentClis: () => Promise<AgentCliDiscovery>;
+  discoverBrowserHarness: () => Promise<BrowserHarnessDiscovery>;
+  browserHarnessDoctor: () => Promise<BrowserHarnessDoctorResult>;
   listRuntimeProviders: () => Promise<RuntimeProviderSnapshot[]>;
   runRuntimeProviderAction: (
     providerId: RuntimeProviderId,

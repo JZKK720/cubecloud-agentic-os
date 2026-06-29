@@ -91,6 +91,20 @@ interface AgentCliDiscovery {
   items: AgentCliDiscoveryItem[];
 }
 
+interface BrowserHarnessDiscovery {
+  scannedAt: string;
+  installed: boolean;
+  detectedCommand: string | null;
+  resolvedPath: string | null;
+}
+
+interface BrowserHarnessDoctorResult {
+  ok: boolean;
+  exitCode: number;
+  output: string;
+  scannedAt: string;
+}
+
 interface CodeGraphCliStatus {
   installed: boolean;
   command: string | null;
@@ -393,6 +407,12 @@ const hermesAPI = {
 
   discoverAgentClis: (): Promise<AgentCliDiscovery> =>
     ipcRenderer.invoke("discover-agent-clis"),
+
+  discoverBrowserHarness: (): Promise<BrowserHarnessDiscovery> =>
+    ipcRenderer.invoke("discover-browser-harness"),
+
+  browserHarnessDoctor: (): Promise<BrowserHarnessDoctorResult> =>
+    ipcRenderer.invoke("browser-harness-doctor"),
 
   listRuntimeProviders: (): Promise<RuntimeProviderSnapshot[]> =>
     ipcRenderer.invoke("list-runtime-providers"),

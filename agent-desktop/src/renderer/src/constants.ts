@@ -920,6 +920,24 @@ export const SETTINGS_SECTIONS: SectionDef[] = [
         type: "text",
         hint: "constants.browserbaseProjectHint",
       },
+      {
+        key: "BROWSER_USE_API_KEY",
+        label: "constants.browserHarnessApiKey",
+        type: "password",
+        hint: "constants.browserHarnessHint",
+      },
+      {
+        key: "BU_CDP_URL",
+        label: "constants.browserHarnessCdpUrl",
+        type: "text",
+        hint: "constants.browserHarnessCdpHint",
+      },
+      {
+        key: "BH_DOMAIN_SKILLS",
+        label: "constants.browserHarnessDomainSkills",
+        type: "text",
+        hint: "constants.browserHarnessDomainHint",
+      },
     ],
   },
   {
