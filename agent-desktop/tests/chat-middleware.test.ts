@@ -168,9 +168,7 @@ describe("chat-middleware — headroomCompressMiddleware", () => {
       tokensBefore: 1000,
       tokensAfter: 200,
       savingsPercent: 80,
-      compressMs: 500,
-      skipReason: null,
-      error: null,
+      success: true,
     } as never);
 
     const result = await headroomCompressMiddleware(
@@ -186,7 +184,6 @@ describe("chat-middleware — headroomCompressMiddleware", () => {
       tokensBefore: 1000,
       tokensAfter: 200,
       savingsPercent: 80,
-      compressMs: 500,
     });
   });
 

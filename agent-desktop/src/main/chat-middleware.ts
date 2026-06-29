@@ -175,7 +175,6 @@ export const headroomCompressMiddleware: BeforeModelMiddleware = async (
         tokensBefore: result.tokensBefore,
         tokensAfter: result.tokensAfter,
         savingsPercent: result.savingsPercent,
-        compressMs: result.compressMs,
       },
     };
   } catch {
