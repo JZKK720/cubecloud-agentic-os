@@ -105,6 +105,27 @@ interface BrowserHarnessDoctorResult {
   scannedAt: string;
 }
 
+interface OutputFile {
+  name: string;
+  path: string;
+  extension: string;
+  sizeBytes: number;
+  modifiedAt: string;
+  mimeType: string;
+}
+
+interface ThreadOutputs {
+  threadId: string;
+  dirPath: string;
+  files: OutputFile[];
+}
+
+interface OutputsListing {
+  scannedAt: string;
+  threads: ThreadOutputs[];
+  totalFiles: number;
+}
+
 interface CodeGraphCliStatus {
   installed: boolean;
   command: string | null;
@@ -413,6 +434,15 @@ const hermesAPI = {
 
   browserHarnessDoctor: (): Promise<BrowserHarnessDoctorResult> =>
     ipcRenderer.invoke("browser-harness-doctor"),
+
+  listAllOutputs: (profile?: string): Promise<OutputsListing> =>
+    ipcRenderer.invoke("list-all-outputs", profile),
+  listThreadOutputs: (threadId: string, profile?: string): Promise<ThreadOutputs> =>
+    ipcRenderer.invoke("list-thread-outputs", threadId, profile),
+  ensureThreadOutputDir: (threadId: string, profile?: string): Promise<string> =>
+    ipcRenderer.invoke("ensure-thread-output-dir", threadId, profile),
+  clearThreadOutputs: (threadId: string, profile?: string): Promise<boolean> =>
+    ipcRenderer.invoke("clear-thread-outputs", threadId, profile),
 
   listRuntimeProviders: (): Promise<RuntimeProviderSnapshot[]> =>
     ipcRenderer.invoke("list-runtime-providers"),

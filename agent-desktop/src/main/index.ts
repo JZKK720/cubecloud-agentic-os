@@ -55,6 +55,12 @@ import {
   discoverBrowserHarness,
   runBrowserHarnessDoctor,
 } from "./browser-harness";
+import {
+  listAllOutputs,
+  listThreadOutputs,
+  ensureThreadOutputDir,
+  clearThreadOutputs,
+} from "./output-aggregation";
 import { discoverDockerRuntimes } from "./docker-runtimes";
 import {
   loadEverOsConfig,
@@ -939,6 +945,19 @@ function setupIPC(): void {
 
   ipcMain.handle("browser-harness-doctor", () =>
     runBrowserHarnessDoctor(),
+  );
+
+  ipcMain.handle("list-all-outputs", (_e, profile?: string) =>
+    listAllOutputs(profile),
+  );
+  ipcMain.handle("list-thread-outputs", (_e, threadId: string, profile?: string) =>
+    listThreadOutputs(threadId, profile),
+  );
+  ipcMain.handle("ensure-thread-output-dir", (_e, threadId: string, profile?: string) =>
+    ensureThreadOutputDir(threadId, profile),
+  );
+  ipcMain.handle("clear-thread-outputs", (_e, threadId: string, profile?: string) =>
+    clearThreadOutputs(threadId, profile),
   );
 
   ipcMain.handle("list-runtime-providers", () => listRuntimeProviders());

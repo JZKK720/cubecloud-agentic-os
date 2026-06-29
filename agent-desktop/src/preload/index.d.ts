@@ -112,6 +112,27 @@ interface BrowserHarnessDoctorResult {
   scannedAt: string;
 }
 
+interface OutputFile {
+  name: string;
+  path: string;
+  extension: string;
+  sizeBytes: number;
+  modifiedAt: string;
+  mimeType: string;
+}
+
+interface ThreadOutputs {
+  threadId: string;
+  dirPath: string;
+  files: OutputFile[];
+}
+
+interface OutputsListing {
+  scannedAt: string;
+  threads: ThreadOutputs[];
+  totalFiles: number;
+}
+
 interface CodeGraphCliStatus {
   installed: boolean;
   command: string | null;
@@ -740,6 +761,10 @@ interface HermesAPI {
   discoverAgentClis: () => Promise<AgentCliDiscovery>;
   discoverBrowserHarness: () => Promise<BrowserHarnessDiscovery>;
   browserHarnessDoctor: () => Promise<BrowserHarnessDoctorResult>;
+  listAllOutputs: (profile?: string) => Promise<OutputsListing>;
+  listThreadOutputs: (threadId: string, profile?: string) => Promise<ThreadOutputs>;
+  ensureThreadOutputDir: (threadId: string, profile?: string) => Promise<string>;
+  clearThreadOutputs: (threadId: string, profile?: string) => Promise<boolean>;
   listRuntimeProviders: () => Promise<RuntimeProviderSnapshot[]>;
   runRuntimeProviderAction: (
     providerId: RuntimeProviderId,
