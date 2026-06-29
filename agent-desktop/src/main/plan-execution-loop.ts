@@ -30,7 +30,7 @@
 
 import { join } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { profileHome, safeWriteFile } from "./utils";
+import { profileHome } from "./utils";
 import { type Plan, type PlanStep, getPlan, savePlan } from "./plans";
 import { recordDispatchFailure } from "./autoplan";
 

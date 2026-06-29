@@ -15,7 +15,7 @@
 // The renderer gets an Outputs panel (like CodeGraph/EverOS/Headroom screens)
 // that lists deliverables per conversation with preview + open buttons.
 
-import { existsSync, readdirSync, statSync, mkdirSync } from "fs";
+import { existsSync, readdirSync, statSync, mkdirSync, rmSync } from "fs";
 import { join, extname, basename } from "path";
 import { profileHome } from "./utils";
 
@@ -179,7 +179,6 @@ export function clearThreadOutputs(
   const dir = threadOutputsDir(threadId, profile);
   if (!existsSync(dir)) return false;
   try {
-    const { rmSync } = require("fs");
     rmSync(dir, { recursive: true, force: true });
     return true;
   } catch {

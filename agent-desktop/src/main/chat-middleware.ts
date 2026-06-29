@@ -119,7 +119,7 @@ const MIN_MESSAGES_TO_COMPRESS = 4;
 export const headroomCompressMiddleware: BeforeModelMiddleware = async (
   ctx,
 ) => {
-  const { messages, providerHint } = ctx;
+  const { messages } = ctx;
 
   // Gate 1: no non-text content (Headroom can't handle image arrays).
   const hasNonTextContent = messages.some(
@@ -150,17 +150,15 @@ export const headroomCompressMiddleware: BeforeModelMiddleware = async (
       content: (m.content as string) ?? "",
     }));
 
-    const result = await compressMessages(headroomInput, {
-      model: ctx.model,
-      providerHint,
-      timeoutMs: CHAT_COMPRESS_TIMEOUT_MS,
-    });
+    // compressMessages signature: (cfg: HeadroomConfig, messages, model?)
+    // We already loaded cfg above via loadHeadroomConfig.
+    const result = await compressMessages(cfg, headroomInput, ctx.model);
 
     if (!result.compressed) {
       return {
         messages,
         applied: false,
-        label: `headroom:skip(${result.skipReason ?? "unknown"})`,
+        label: `headroom:skip(${result.error ?? "no-savings"})`,
       };
     }
 
