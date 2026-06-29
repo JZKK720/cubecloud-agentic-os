@@ -229,7 +229,7 @@ describe("chat-middleware — reflection middleware", () => {
     expect(result.label).toContain("disabled");
   });
 
-  it("runs a stub pass when enabled", async () => {
+  it("skips when enabled but no critiqueFn provided", async () => {
     const mw = createReflectionMiddleware({ enabled: true });
     const ctx: AfterModelContext = {
       userContent: "hello",
@@ -239,9 +239,45 @@ describe("chat-middleware — reflection middleware", () => {
       hermesHome: "/tmp",
     };
     const result = await mw(ctx);
+    expect(result.applied).toBe(false);
+    expect(result.label).toBe("reflection:skip(no-critique-fn)");
+  });
+
+  it("runs critique when enabled + critiqueFn provided", async () => {
+    const critiqueFn = vi.fn().mockResolvedValue("PASS: looks good");
+    const mw = createReflectionMiddleware({ enabled: true }, critiqueFn);
+    const ctx: AfterModelContext = {
+      userContent: "what is 2+2?",
+      responseText: "4",
+      model: "test-model",
+      providerHint: "openai",
+      hermesHome: "/tmp",
+    };
+    const result = await mw(ctx);
     expect(result.applied).toBe(true);
-    expect(result.label).toBe("reflection:stub");
-    expect(result.stats).toEqual({ responseLength: 8 });
+    expect(result.label).toBe("reflection:done");
+    expect(result.output).toBe("PASS: looks good");
+    expect(result.stats).toEqual({
+      responseLength: 1,
+      critiqueLength: 16,
+    });
+    expect(critiqueFn).toHaveBeenCalledWith("what is 2+2?", "4", "test-model");
+  });
+
+  it("degrades gracefully when critiqueFn throws", async () => {
+    const critiqueFn = vi.fn().mockRejectedValue(new Error("LLM timeout"));
+    const mw = createReflectionMiddleware({ enabled: true }, critiqueFn);
+    const ctx: AfterModelContext = {
+      userContent: "hello",
+      responseText: "hi",
+      model: "test",
+      providerHint: "openai",
+      hermesHome: "/tmp",
+    };
+    const result = await mw(ctx);
+    expect(result.applied).toBe(false);
+    expect(result.label).toBe("reflection:error");
+    expect(result.stats).toHaveProperty("error", "LLM timeout");
   });
 });
 
@@ -255,6 +291,12 @@ describe("chat-middleware — chain factories", () => {
 
   it("createAfterModelChain returns reflection when enabled", () => {
     const chain = createAfterModelChain({ enabled: true });
+    expect(chain).toHaveLength(1);
+  });
+
+  it("createAfterModelChain accepts critiqueFn", () => {
+    const critiqueFn = vi.fn();
+    const chain = createAfterModelChain({ enabled: true }, critiqueFn);
     expect(chain).toHaveLength(1);
   });
 

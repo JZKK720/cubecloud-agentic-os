@@ -211,30 +211,82 @@ export const runtimeRouteMiddleware: BeforeModelMiddleware = async (ctx) => {
 // completeness, and coherence. Opt-in via the reflectionEnabled
 // setting. Budget: 1 extra LLM call per response.
 //
-// This is a stub for now — the actual LLM call will be wired when
-// the settings toggle is added. The interface is defined here so
-// the chain runner can be tested.
+// The LLM call is injected via `critiqueFn` so tests can mock it.
+// In production, the caller wires it to a non-streaming POST to the
+// active runtime gateway's /v1/chat/completions endpoint with a
+// critique system prompt. The middleware itself is runtime-agnostic;
+// it just calls the injected function and reports the result.
 
 export interface ReflectionConfig {
   enabled: boolean;
 }
 
+/** Injected function: given the user's question and the assistant's
+ *  response, return a critique string. In production this makes a
+ *  non-streaming LLM call with a critique system prompt. */
+export type CritiqueFn = (
+  userContent: string,
+  responseText: string,
+  model: string,
+) => Promise<string>;
+
+/** Default critique system prompt. Instructs the LLM to evaluate
+ *  the response for accuracy, completeness, and coherence, and
+ *  return a concise verdict. */
+export const REFLECTION_SYSTEM_PROMPT = `You are a quality reviewer. Evaluate the assistant's response for:
+1. Accuracy — Are the facts correct?
+2. Completeness — Does it address the user's full question?
+3. Coherence — Is it well-structured and clear?
+
+Return a concise verdict in 2-3 sentences. If the response is good, say "PASS: <reason>". If deficient, say "ISSUE: <what's wrong>". Do not rewrite the response.`;
+
+/** Create a reflection middleware with an injected critique function.
+ *  If no critiqueFn is provided, the middleware runs but produces a
+ *  "no-critique-fn" label — this is the production-safe default when
+ *  the caller hasn't wired the LLM call yet. */
 export function createReflectionMiddleware(
   config: ReflectionConfig,
+  critiqueFn?: CritiqueFn,
 ): AfterModelMiddleware {
   return async (ctx) => {
     if (!config.enabled) {
       return { applied: false, label: "reflection:skip(disabled)" };
     }
 
-    // TODO: wire the actual LLM critique call here.
-    // For now, return a stub that the chain ran.
-    return {
-      applied: true,
-      label: "reflection:stub",
-      output: "(reflection not yet implemented — stub pass)",
-      stats: { responseLength: ctx.responseText.length },
-    };
+    if (!critiqueFn) {
+      return {
+        applied: false,
+        label: "reflection:skip(no-critique-fn)",
+        stats: { responseLength: ctx.responseText.length },
+      };
+    }
+
+    try {
+      const critique = await critiqueFn(
+        ctx.userContent,
+        ctx.responseText,
+        ctx.model,
+      );
+      return {
+        applied: true,
+        label: "reflection:done",
+        output: critique,
+        stats: {
+          responseLength: ctx.responseText.length,
+          critiqueLength: critique.length,
+        },
+      };
+    } catch (err) {
+      // Reflection failure must never break the chat path.
+      return {
+        applied: false,
+        label: "reflection:error",
+        stats: {
+          responseLength: ctx.responseText.length,
+          error: (err as Error).message.slice(0, 200),
+        },
+      };
+    }
   };
 }
 
@@ -295,9 +347,12 @@ export function createBeforeModelChain(): BeforeModelMiddleware[] {
   return [headroomCompressMiddleware, runtimeRouteMiddleware];
 }
 
-/** Build the default after_model chain for the desktop. */
+/** Build the default after_model chain for the desktop.
+ *  The optional `critiqueFn` wires the reflection LLM call. When
+ *  omitted, the reflection middleware self-skips with "no-critique-fn". */
 export function createAfterModelChain(
   reflectionConfig: ReflectionConfig,
+  critiqueFn?: CritiqueFn,
 ): AfterModelMiddleware[] {
-  return [createReflectionMiddleware(reflectionConfig)];
+  return [createReflectionMiddleware(reflectionConfig, critiqueFn)];
 }
