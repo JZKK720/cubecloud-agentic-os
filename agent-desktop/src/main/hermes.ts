@@ -1369,8 +1369,8 @@ function sendMessageViaCli(
     "HF_TOKEN",
     "EXA_API_KEY",
     "PARALLEL_API_KEY",
-    "TAVILY_API_KEY",
     "FIRECRAWL_API_KEY",
+    "FIRECRAWL_API_URL",
     "FAL_KEY",
     "HONCHO_API_KEY",
     "BROWSERBASE_API_KEY",
@@ -1385,6 +1385,8 @@ function sendMessageViaCli(
     "VOICE_TOOLS_OPENAI_KEY",
     "TINKER_API_KEY",
     "WANDB_API_KEY",
+    "SKILLSPECTOR_PROVIDER",
+    "SKILLSPECTOR_MODEL",
   ];
   for (const key of KNOWN_API_KEYS) {
     if (profileEnv[key] && !env[key]) {

@@ -16,9 +16,9 @@ choice**, **skills**, **memory**, **schedules**, and **optional code
 intelligence** — without coupling the workflow to a hosted wrapper or
 a single-vendor CLI.
 
-**Latest release: [v2.10.71](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)** —
-first post-wrapper build of the inner product, asar 176.92 MB
-containing 21,291 `node_modules/` entries. `verify:bundle` 7/7 PASS.
+**Latest release: [v2.10.73](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)** —
+MCP registry overhaul: Firecrawl replaces Tavily (keyless tier, self-hostable),
+SkillSpector + OpenKnowledge added, Qdrant defaults to local Docker (no API key).
 
 ## What the user sees
 
@@ -171,19 +171,38 @@ The full per-skill breakdown is in the monorepo README under
 
 ## Install
 
-The latest stable installer is **v2.10.71**, published at
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71>.
+The latest stable installer is **v2.10.73**, published at
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73>.
 Older releases are listed on the
 [Releases page](https://github.com/JZKK720/cubecloud-agentic-os/releases).
 v0.6.0 and v0.6.1 are marked pre-release because they were built
-from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.71
+from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.73
 or later**.
+
+### Prerequisites
+
+The desktop binary is self-contained — **no prerequisites are required
+to install it.** On first launch, the user picks a connection mode:
+
+| Mode | What the desktop needs | What it installs automatically |
+|---|---|---|
+| **Local** (default) | Nothing pre-installed | Runs the Hermes runtime installer, which bootstraps: Git, uv, Python 3.12+, Node.js, ripgrep, ffmpeg, Playwright + Chromium |
+| **Remote** | Nothing | Just needs the gateway URL — no local install |
+| **SSH tunnel** | Nothing | Just needs SSH credentials + the remote gateway URL |
+
+**Windows:** PowerShell must be available (pre-installed on all modern
+Windows). The installer is not code-signed — SmartScreen will warn on
+first launch; click **More info** → **Run anyway**.
+
+**macOS / Linux (local mode):** The Hermes installer needs `bash` + `curl`
+(both pre-installed). For Playwright browser dependencies, it needs `sudo`
+access — the desktop prompts for the admin password upfront.
 
 ### Windows
 
 Download
-`cubecloud-agent-desktop-2.10.71-setup.exe` from the
-[v2.10.71 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+`cubecloud-agent-desktop-2.10.73-setup.exe` from the
+[v2.10.73 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
 and run it. The NSIS installer is one-click per-user and registers
 `cubecloud-agent-desktop` in Windows Programs and Features.
 
@@ -194,7 +213,7 @@ and run it. The NSIS installer is one-click per-user and registers
 > for the OEM-build path that includes a corporate certificate.
 
 For an installer-free option, download
-`cubecloud-agent-desktop-2.10.71-portable.exe` instead — single-file
+`cubecloud-agent-desktop-2.10.73-portable.exe` instead — single-file
 portable that runs without an install step.
 
 ### macOS / Linux
@@ -204,6 +223,35 @@ portable that runs without an install step.
 repo only ships the Windows artifacts today. Multi-platform CI is a
 follow-up that requires App Store Connect, code-signing, and Linux
 store credentials in the repo settings.
+
+### Optional components (user-installed, desktop discovers)
+
+These are **not** required for a working desktop. The desktop discovers
+them via PATH lookup and degrades gracefully if missing:
+
+| Component | Purpose | Install | Local-first? |
+|---|---|---|---|
+| **Docker** | Discover Hermes/IronClaw/OpenClaw runtime containers | [Docker Desktop](https://docker.com) | ✅ |
+| **IronClaw** | WASM-sandbox gateway runtime (3rd core runtime) | IronClaw's own installer | ✅ |
+| **OpenClaw** | Optional gateway runtime | `npm install -g openclaw@latest` | ✅ |
+| **CodeGraph** | Code-structure graph (optional sidecar) | Install `codegraph` binary on PATH | ✅ |
+| **EverOS** | Memory distill / cost watchdog / skill audit | `pip install everos` | ✅ |
+| **Headroom** | Context compression proxy + MCP | `pip install headroom-ai[proxy]` | ✅ |
+| **Ollama** | Local model server | [ollama.com](https://ollama.com) | ✅ |
+| **LM Studio** | Local model server | [lmstudio.ai](https://lmstudio.ai) | ✅ |
+
+### MCP servers (enable on demand from the MCP screen)
+
+| MCP server | Purpose | Prerequisite | API key needed? |
+|---|---|---|---|
+| **Firecrawl** | Web scrape, crawl, search, extract | `npx -y firecrawl-mcp` (auto-download) | ❌ Keyless tier for scrape/search; key for crawl/extract |
+| **SkillSpector** | Security scanner for AI agent skills | `pip install 'skillspector[mcp]'` | ❌ Static analysis by default; LLM pass is opt-in |
+| **OpenKnowledge** | Markdown knowledge base + link graph | `npx -y @inkeep/open-knowledge mcp` | ❌ No key needed |
+| **Qdrant** | Vector search | `docker run -p 6333:6333 qdrant/qdrant` | ❌ Local Docker needs no key |
+| **Agent Reach** | Headless internet research (13+ platforms) | `pip install agent-reach[mcp]` | ❌ No key needed |
+| **GitHub** | GitHub repos, issues, PRs | `GITHUB_PERSONAL_ACCESS_TOKEN` | ✅ |
+| **Playwright** | Browser automation | `npx -y @playwright/mcp` | ❌ |
+| **Headroom (local)** | Context compression as MCP | Desktop must run Headroom sidecar | ❌ |
 
 ## How it works
 

@@ -103,13 +103,15 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
     detail: "https://mcp.context7.com/mcp",
   },
   {
-    name: "tavily",
-    title: "Tavily",
-    description: "Search and crawl for AI agents with citation support.",
+    name: "firecrawl",
+    title: "Firecrawl",
+    description:
+      "Scrape, crawl, search, and extract web content for AI agents. Keyless tier available for scrape and search.",
     category: "search",
-    transport: "http",
-    detail: "https://mcp.tavily.com/mcp",
-    envKeys: ["TAVILY_API_KEY"],
+    transport: "stdio",
+    detail: "npx -y firecrawl-mcp",
+    envKeys: ["FIRECRAWL_API_KEY"],
+    hint: "No API key required for basic scrape and search (keyless tier, rate-limited per IP). Set FIRECRAWL_API_KEY for crawl/extract, or FIRECRAWL_API_URL for self-hosted instances.",
   },
   {
     name: "kagi-search",
@@ -208,12 +210,11 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
   {
     name: "qdrant",
     title: "Qdrant",
-    description: "Vector search against a Qdrant collection.",
+    description: "Vector search against a Qdrant collection. Local-first: run Qdrant in Docker with no API key.",
     category: "memory",
     transport: "http",
-    detail: "https://qdrant.example/mcp",
-    envKeys: ["QDRANT_URL", "QDRANT_API_KEY"],
-    hint: "Replace the URL with your Qdrant instance endpoint.",
+    detail: "http://127.0.0.1:6333/mcp",
+    hint: "Local: docker run -p 6333:6333 qdrant/qdrant — no API key needed. For Qdrant Cloud, replace the URL and set QDRANT_API_KEY.",
   },
   {
     name: "headroom",
@@ -341,6 +342,31 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
     transport: "stdio",
     detail: "npx -y @modelcontextprotocol/server-sentry",
     envKeys: ["SENTRY_AUTH_TOKEN"],
+  },
+
+  // ── Security / Skill inspection ──────────────────────
+  {
+    name: "skillspector",
+    title: "SkillSpector",
+    description:
+      "Security scanner for AI agent skills. Scans for 68 vulnerability patterns (prompt injection, data exfiltration, privilege escalation, MCP tool poisoning, etc.) before installing a skill. Returns a risk score (0-100) and safe-to-install verdict.",
+    category: "developer",
+    transport: "stdio",
+    detail: "skillspector mcp",
+    envKeys: ["SKILLSPECTOR_PROVIDER", "SKILLSPECTOR_MODEL"],
+    hint: "Install with: pip install 'skillspector[mcp]'. Static analysis runs by default (no API key needed). Set SKILLSPECTOR_PROVIDER + provider credentials for the optional LLM semantic pass.",
+  },
+
+  // ── Knowledge base ───────────────────────────────────
+  {
+    name: "open-knowledge",
+    title: "OpenKnowledge",
+    description:
+      "Markdown knowledge base with backlinks, link graph, and collaborative editing. Exposes write, search, wiki, research, discover, and links tools. Version-controlled via shadow git.",
+    category: "memory",
+    transport: "stdio",
+    detail: "npx -y @inkeep/open-knowledge mcp",
+    hint: "Run 'ok init' in your project first to scaffold the .ok/ directory. The MCP server auto-starts a per-project collaboration server on demand.",
   },
 ];
 

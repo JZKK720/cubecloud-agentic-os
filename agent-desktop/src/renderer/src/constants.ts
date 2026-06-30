@@ -880,16 +880,16 @@ export const SETTINGS_SECTIONS: SectionDef[] = [
         hint: "constants.parallelHint",
       },
       {
-        key: "TAVILY_API_KEY",
-        label: "constants.tavilyApiKey",
-        type: "password",
-        hint: "constants.tavilyHint",
-      },
-      {
         key: "FIRECRAWL_API_KEY",
         label: "constants.firecrawlApiKey",
         type: "password",
         hint: "constants.firecrawlHint",
+      },
+      {
+        key: "FIRECRAWL_API_URL",
+        label: "constants.firecrawlApiUrl",
+        type: "text",
+        hint: "constants.firecrawlUrlHint",
       },
       {
         key: "FAL_KEY",

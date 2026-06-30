@@ -330,7 +330,7 @@ Webhooks, and Home Assistant.
 
 ### Tool integrations
 
-Exa Search, Parallel API, Tavily, Firecrawl, FAL.ai (image generation),
+Exa Search, Parallel API, Firecrawl, FAL.ai (image generation),
 Honcho, Browserbase, Weights & Biases, and Tinker.
 
 ## Development
