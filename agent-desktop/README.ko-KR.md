@@ -10,7 +10,9 @@
 
 Cubecloud Agent Desktop은 단일 운영자에게 **런타임 선택**, **프로바이더 선택**, **스킬**, **메모리**, **스케줄**, 그리고 **선택적 코드 인텔리전스**를 위한 단일 제어 평면을 제공하는 네이티브 Electron 데스크톱입니다. 호스팅 래퍼나 단일 벤더 CLI에 워크플로를 종속시키지 않습니다.
 
-**최신 릴리스: [v2.10.71](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)** — 래퍼 폐기 이후 첫 내부 제품 빌드. asar 176.92 MB, 21,291개의 `node_modules/` 항목 포함, `verify:bundle` 7/7 PASS.
+**최신 릴리스: [v2.10.73](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)** —
+MCP 레지스트리 개편: Firecrawl이 Tavily를 대체(키리스 티어, 셀프 호스팅 가능),
+SkillSpector와 OpenKnowledge 추가, Qdrant는 로컬 Docker가 기본(API 키 불필요).
 
 ## 사용자에게 보이는 것
 
@@ -121,18 +123,18 @@ Hermes 런타임이 설치되면(첫 실행 로컬 설치), 데스크톱은 herm
 
 ## 설치
 
-최신 안정 설치 프로그램은 **v2.10.71**입니다. 게시 위치:
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71>.
+최신 안정 설치 프로그램은 **v2.10.73**입니다. 게시 위치:
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73>.
 이전 릴리스는
 [Releases 페이지](https://github.com/JZKK720/cubecloud-agentic-os/releases)에
 나열되어 있습니다. v0.6.0 및 v0.6.1은 이제 폐기된 `apps/desktop-shell/`
-래퍼 트리에서 빌드되었으므로 프리릴리스로 표시되어 있습니다. **v2.10.71
+래퍼 트리에서 빌드되었으므로 프리릴리스로 표시되어 있습니다. **v2.10.73
 이상을 사용하세요.**
 
 ### Windows
 
-[v2.10.71 릴리스](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)에서
-`cubecloud-agent-desktop-2.10.71-setup.exe`를 다운로드하여 실행하세요.
+[v2.10.73 릴리스](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)에서
+`cubecloud-agent-desktop-2.10.73-setup.exe`를 다운로드하여 실행하세요.
 NSIS 설치 프로그램은 사용자당 원클릭 방식이며, Windows "프로그램 및
 기능"에 `cubecloud-agent-desktop`을 등록합니다.
 
@@ -143,7 +145,7 @@ NSIS 설치 프로그램은 사용자당 원클릭 방식이며, Windows "프로
 > [`../docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md)를
 > 참조하세요.
 
-설치 프로그램이 필요하지 않다면 `cubecloud-agent-desktop-2.10.71-portable.exe`를
+설치 프로그램이 필요하지 않다면 `cubecloud-agent-desktop-2.10.73-portable.exe`를
 다운로드하세요. 설치 단계 없이 실행되는 단일 파일 포터블입니다.
 
 ### macOS / Linux

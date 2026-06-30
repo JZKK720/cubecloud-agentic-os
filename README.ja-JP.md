@@ -2,21 +2,19 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 最新リリース：**v2.10.71**
+## 最新リリース：**v2.10.73**
 
 Windows インストーラーは
-[v2.10.71 リリースページ](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+[v2.10.73 リリースページ](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
 からダウンロードしてください：
 
-- `cubecloud-agent-desktop-2.10.71-setup.exe`（130 MB、NSIS ワンクリックインストーラー）
-- `cubecloud-agent-desktop-2.10.71-portable.exe`（109 MB、シングルファイル版）
-- `cubecloud-agent-desktop-2.10.71-setup.exe.blockmap` + `latest.yml`（自動更新メタデータ）
+- `cubecloud-agent-desktop-2.10.73-setup.exe`（127 MB、NSIS ワンクリックインストーラー）
+- `cubecloud-agent-desktop-2.10.73-portable.exe`（127 MB、シングルファイル版）
+- `cubecloud-agent-desktop-2.10.73-setup.exe.blockmap` + `latest.yml`（自動更新メタデータ）
 
-v2.10.71 は**ラッパー廃止後の最初のビルド**です。`agent-desktop/`
-（モノレポルートではなく）からビルドされ、asar には 21,291 件の
-`node_modules/` エントリ（176.92 MB）が含まれ、`verify:bundle` は
+v2.10.73 は **MCP レジストリ刷新**リリースです。Firecrawl が Tavily を置き換え（キーレス枠、セルフホスト可能）、SkillSpector と OpenKnowledge を追加、Qdrant はローカル Docker がデフォルト（API キー不要）。`verify:bundle` は
 7/7 PASS。完全な変更履歴は
-[`agent-desktop/changelogs/2.10.71.md`](agent-desktop/changelogs/2.10.71.md) を参照。
+[`agent-desktop/changelogs/2.10.73.md`](agent-desktop/changelogs/2.10.73.md) を参照。
 v0.6.0 と v0.6.1 は GitHub 上でプレリリースとしてマークされており、
 使用しないでください。これらは廃止された `apps/desktop-shell/`
 ラッパーツリーからビルドされています。

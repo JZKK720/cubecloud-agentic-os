@@ -2,20 +2,18 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 最新发布：**v2.10.71**
+## 最新发布：**v2.10.73**
 
 从
-[v2.10.71 发布页](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
+[v2.10.73 发布页](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
 下载 Windows 安装包：
 
-- `cubecloud-agent-desktop-2.10.71-setup.exe`（130 MB，NSIS 一键安装）
-- `cubecloud-agent-desktop-2.10.71-portable.exe`（109 MB，单文件便携版）
-- `cubecloud-agent-desktop-2.10.71-setup.exe.blockmap` + `latest.yml`（自动更新元数据）
+- `cubecloud-agent-desktop-2.10.73-setup.exe`（127 MB，NSIS 一键安装）
+- `cubecloud-agent-desktop-2.10.73-portable.exe`（127 MB，单文件便携版）
+- `cubecloud-agent-desktop-2.10.73-setup.exe.blockmap` + `latest.yml`（自动更新元数据）
 
-v2.10.71 是**首个脱离 wrapper 构建**的内部产品版本。构建源为
-`agent-desktop/`（而非 monorepo 根目录），asar 包含 21,291 个
-`node_modules/` 条目（176.92 MB），`verify:bundle` 7/7 通过。完整变更日志见
-[`agent-desktop/changelogs/2.10.71.md`](agent-desktop/changelogs/2.10.71.md)。
+v2.10.73 是 **MCP 注册表大修**版本：Firecrawl 替换 Tavily（无密钥额度，可自托管），新增 SkillSpector 和 OpenKnowledge，Qdrant 默认使用本地 Docker（无需 API 密钥）。`verify:bundle` 7/7 通过。完整变更日志见
+[`agent-desktop/changelogs/2.10.73.md`](agent-desktop/changelogs/2.10.73.md)。
 v0.6.0 和 v0.6.1 已在 GitHub 上标记为预发布版本，不应使用——它们构建自已废弃的
 `apps/desktop-shell/` wrapper 树。
 

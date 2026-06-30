@@ -10,7 +10,9 @@
 
 Cubecloud Agent Desktop は、ネイティブの Electron デスクトップで、単一オペレーターに対し**ランタイム選択**、**プロバイダー選択**、**スキル**、**メモリ**、**スケジュール**、**オプションのコードインテリジェンス**を統合したコントロールプレーンを提供します。ホスト型ラッパーや単一ベンダ CLI にワークフローを縛り付けません。
 
-**最新リリース：[v2.10.71](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)** — ラッパー廃止後の最初の内部製品ビルド。asar は 176.92 MB、21,291 件の `node_modules/` エントリを含み、`verify:bundle` は 7/7 PASS。
+**最新リリース：[v2.10.73](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)** —
+MCP レジストリ刷新：Firecrawl が Tavily を置き換え（キーレス枠、セルフホスト可能）、
+SkillSpector と OpenKnowledge を追加、Qdrant はローカル Docker がデフォルト（API キー不要）。
 
 ## ユーザーに見えるもの
 
@@ -121,21 +123,21 @@ Hermes ランタイムをインストールすると（初回ローカル導入�
 
 ## インストール
 
-最新の安定版インストーラーは **v2.10.71** です。公開先：
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71>。
+最新の安定版インストーラーは **v2.10.73** です。公開先：
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73>。
 過去のリリースは
 [Releases ページ](https://github.com/JZKK720/cubecloud-agentic-os/releases)
-に掲載。v0.6.0 と v0.6.1 は廃止済みの `apps/desktop-shell/` ラッパーツリーからビルドされたため、プレリリースとしてマークされています。**v2.10.71 以降を使用してください**。
+に掲載。v0.6.0 と v0.6.1 は廃止済みの `apps/desktop-shell/` ラッパーツリーからビルドされたため、プレリリースとしてマークされています。**v2.10.73 以降を使用してください**。
 
 ### Windows
 
-[v2.10.71 リリース](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
-から `cubecloud-agent-desktop-2.10.71-setup.exe` をダウンロードして実行してください。NSIS インストーラーはユーザーごとにワンクリックで、Windows の「プログラムと機能」に `cubecloud-agent-desktop` を登録します。
+[v2.10.73 リリース](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
+から `cubecloud-agent-desktop-2.10.73-setup.exe` をダウンロードして実行してください。NSIS インストーラーはユーザーごとにワンクリックで、Windows の「プログラムと機能」に `cubecloud-agent-desktop` を登録します。
 
 > **Windows ユーザーへ：** インストーラーはコード署名されていません。Windows SmartScreen が初回起動時に警告を表示します。**詳細情報** → **実行** をクリックしてください。コード署名は既知のフォローアップ項目です。企業証明書を含む OEM ビルドパスは
 > [`../docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md) を参照してください。
 
-インストーラーを避けたい場合は `cubecloud-agent-desktop-2.10.71-portable.exe` をダウンロードしてください。インストール不要の単一ファイル版です。
+インストーラーを避けたい場合は `cubecloud-agent-desktop-2.10.73-portable.exe` をダウンロードしてください。インストール不要の単一ファイル版です。
 
 ### macOS / Linux
 

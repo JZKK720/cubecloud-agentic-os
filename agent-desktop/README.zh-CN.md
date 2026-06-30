@@ -10,7 +10,9 @@
 
 Cubecloud Agent Desktop 是一个原生 Electron 桌面应用，为单个操作者提供统一的控制面板，用于管理**运行时选择**、**提供者选择**、**技能**、**记忆**、**计划任务**和**可选的代码智能**——而不会将工作流绑定到托管包装层或单一供应商 CLI。
 
-**最新版本：[v2.10.71](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)** — wrapper 之后的第一个内部产品构建版本，asar 176.92 MB 包含 21,291 个 `node_modules/` 条目。`verify:bundle` 7/7 通过。
+**最新版本：[v2.10.73](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)** —
+MCP 注册表大修：Firecrawl 替换 Tavily（无密钥额度，可自托管），
+新增 SkillSpector 和 OpenKnowledge，Qdrant 默认使用本地 Docker（无需 API 密钥）。
 
 ## 用户可见内容
 
@@ -121,22 +123,22 @@ Skills 表面来自三个相互独立的技能树，各有不同的生命周期�
 
 ## 安装
 
-最新的稳定安装包是 **v2.10.71**，发布地址：
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71>。
+最新的稳定安装包是 **v2.10.73**，发布地址：
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73>。
 较早的版本列于
 [Releases 页面](https://github.com/JZKK720/cubecloud-agentic-os/releases)。
-v0.6.0 和 v0.6.1 已被标记为预发布版本，因为它们是从现已退役的 `apps/desktop-shell/` wrapper 树构建的；**请使用 v2.10.71 或更新版本**。
+v0.6.0 和 v0.6.1 已被标记为预发布版本，因为它们是从现已退役的 `apps/desktop-shell/` wrapper 树构建的；**请使用 v2.10.73 或更新版本**。
 
 ### Windows
 
 从
-[v2.10.71 发布](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.71)
-下载 `cubecloud-agent-desktop-2.10.71-setup.exe` 并运行。NSIS 安装程序为每用户一键安装，会在 Windows“程序和功能”中注册 `cubecloud-agent-desktop`。
+[v2.10.73 发布](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
+下载 `cubecloud-agent-desktop-2.10.73-setup.exe` 并运行。NSIS 安装程序为每用户一键安装，会在 Windows“程序和功能”中注册 `cubecloud-agent-desktop`。
 
 > **Windows 用户提示：** 安装程序未进行代码签名。Windows SmartScreen 在首次启动时会发出警告——点击**更多信息**→**仍要运行**。代码签名是已知的跟进项；OEM 构建路径（含企业证书）详见
 > [`../docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md)。
 
-若不需要安装程序，也可以下载 `cubecloud-agent-desktop-2.10.71-portable.exe` — 单文件便携版，无需安装步骤。
+若不需要安装程序，也可以下载 `cubecloud-agent-desktop-2.10.73-portable.exe` — 单文件便携版，无需安装步骤。
 
 ### macOS / Linux
 
