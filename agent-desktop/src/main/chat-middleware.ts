@@ -110,9 +110,6 @@ export type AfterModelMiddleware = (
 
 // ── Middleware 1: Headroom compress (before_model) ─────────
 
-/** Per-call timeout for chat compression. Same as the existing hook. */
-const CHAT_COMPRESS_TIMEOUT_MS = 1_500;
-
 /** Minimum messages before compression is worth attempting. */
 const MIN_MESSAGES_TO_COMPRESS = 4;
 
@@ -141,7 +138,7 @@ export const headroomCompressMiddleware: BeforeModelMiddleware = async (
     }
 
     const sidecar = getHeadroomSidecarStatus();
-    if (sidecar.status !== "running") {
+    if (sidecar.state !== "running") {
       return { messages, applied: false, label: "headroom:skip(no-sidecar)" };
     }
 

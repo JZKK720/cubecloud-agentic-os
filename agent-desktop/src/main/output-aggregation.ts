@@ -16,7 +16,7 @@
 // that lists deliverables per conversation with preview + open buttons.
 
 import { existsSync, readdirSync, statSync, mkdirSync, rmSync } from "fs";
-import { join, extname, basename } from "path";
+import { join, extname } from "path";
 import { profileHome } from "./utils";
 
 // ── Types ─────────────────────────────────────────────────
