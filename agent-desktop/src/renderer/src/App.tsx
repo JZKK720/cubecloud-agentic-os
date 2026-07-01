@@ -144,7 +144,10 @@ function App(): React.JSX.Element {
             } else if (!status.hasApiKey) {
               next = "setup";
             } else {
-              next = "main";
+              // A local install plus API key is not enough to land in chat.
+              // If no runtime was discovered, keep the user in onboarding so
+              // they can wire Hermes or IronClaw before the main surface opens.
+              next = "welcome";
             }
           }
         } catch {
@@ -154,7 +157,7 @@ function App(): React.JSX.Element {
           } else if (!status.hasApiKey) {
             next = "setup";
           } else {
-            next = "main";
+            next = "welcome";
           }
         }
       }
@@ -234,6 +237,11 @@ function App(): React.JSX.Element {
     handleRecheck();
   }
 
+  function handleStartLocalInstall(): void {
+    setInstallError(null);
+    setScreen("installing");
+  }
+
   function handleVerifyReinstall(): void {
     setVerifyWarning(false);
     setInstallError(null);
@@ -256,6 +264,7 @@ function App(): React.JSX.Element {
             initialGatewayRuntimePreset={gatewayRuntimePreset}
             discoveredRuntimes={discoveredRuntimes}
             onConnectDiscovered={handleConnectDiscovered}
+            onInstallLocal={handleStartLocalInstall}
             onRecheck={handleRecheck}
             onSwitchToLocal={handleSwitchToLocal}
           />

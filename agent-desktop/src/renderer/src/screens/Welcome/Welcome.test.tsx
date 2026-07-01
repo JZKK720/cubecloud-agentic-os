@@ -191,23 +191,21 @@ function installHermesAPI(
 }
 
 describe("Welcome handoffs", () => {
-  it("rechecks for running local agents when the primary CTA is clicked", async () => {
+  it("starts local install when the primary CTA is clicked", async () => {
     const api = installHermesAPI();
-    const onRecheck = vi.fn();
+    const onInstallLocal = vi.fn();
 
     render(
       <Welcome
         error={null}
         connectionMode="local"
-        onRecheck={onRecheck}
+        onInstallLocal={onInstallLocal}
+        onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
     );
 
-    // The welcome screen no longer exposes install-first onboarding.
-    // Wait for the recheck CTA, then assert that it drives the
-    // local discovery path rather than an install flow.
-    const ctaName = translate("welcome.recheck");
+    const ctaName = translate("welcome.installLocalRuntime");
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: ctaName }),
@@ -216,7 +214,7 @@ describe("Welcome handoffs", () => {
 
     fireEvent.click(screen.getByRole("button", { name: ctaName }));
 
-    expect(onRecheck).toHaveBeenCalledTimes(1);
+    expect(onInstallLocal).toHaveBeenCalledTimes(1);
     // The mount-time `refreshRuntimeProviders` call still runs (it
     // powers the runtime-name labels in the SSH/Remote panels), but
     // the Docker-scan and localhost-probe side effects are gone.
@@ -224,13 +222,14 @@ describe("Welcome handoffs", () => {
     expect(api.runRuntimeProviderAction).not.toHaveBeenCalled();
   });
 
-  it("does not render WSL or PowerShell install copy lanes on the local welcome surface", async () => {
+  it("renders the install CTA without legacy shell command copy", async () => {
     installHermesAPI();
 
     render(
       <Welcome
         error={null}
         connectionMode="local"
+        onInstallLocal={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -248,7 +247,39 @@ describe("Welcome handoffs", () => {
     expect(
       screen.queryByText("iex (irm https://hermes-agent.nousresearch.com/install.ps1)"),
     ).not.toBeInTheDocument();
-    expect(screen.queryByTestId("welcome-install-cta")).not.toBeInTheDocument();
+    expect(screen.getByTestId("welcome-install-cta")).toBeInTheDocument();
+  });
+
+  it("opens the Hermes and IronClaw wire panels with local defaults", async () => {
+    installHermesAPI();
+
+    render(
+      <Welcome
+        error={null}
+        connectionMode="local"
+        onInstallLocal={() => {}}
+        onRecheck={() => {}}
+        onSwitchToLocal={() => {}}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Wire Hermes API" }),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Wire Hermes API" }));
+
+    expect(screen.getByDisplayValue("http://127.0.0.1:8642")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "IronClaw via SSH" }),
+    );
+
+    expect(screen.getByDisplayValue("3231")).toBeInTheDocument();
   });
 
   it("hides the local install CTA when runtimes were already discovered", async () => {
@@ -270,6 +301,7 @@ describe("Welcome handoffs", () => {
           },
         ]}
         onConnectDiscovered={onConnectDiscovered}
+        onInstallLocal={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -304,6 +336,7 @@ describe("Welcome handoffs", () => {
       <Welcome
         error={null}
         connectionMode="local"
+        onInstallLocal={() => {}}
         onRecheck={onRecheck}
         onSwitchToLocal={() => {}}
       />,
@@ -363,6 +396,7 @@ describe("Welcome handoffs", () => {
         error="OpenClaw compatibility endpoint not ready."
         connectionMode="remote"
         initialGatewayRuntimePreset="openclaw"
+        onInstallLocal={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -397,6 +431,7 @@ describe("Welcome handoffs", () => {
       <Welcome
         error={null}
         connectionMode="local"
+        onInstallLocal={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -423,6 +458,7 @@ describe("Welcome handoffs", () => {
       <Welcome
         error={null}
         connectionMode="local"
+        onInstallLocal={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,
@@ -453,6 +489,7 @@ describe("Welcome handoffs", () => {
       <Welcome
         error={null}
         connectionMode="local"
+        onInstallLocal={() => {}}
         onRecheck={() => {}}
         onSwitchToLocal={() => {}}
       />,

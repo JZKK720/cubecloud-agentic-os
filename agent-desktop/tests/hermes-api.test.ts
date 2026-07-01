@@ -63,6 +63,27 @@ const { TEST_HOME } = vi.hoisted(() => {
   };
 });
 
+const { mockConnectionConfig, mockApiServerKey } = vi.hoisted(() => {
+  return {
+    mockConnectionConfig: {
+      mode: "remote" as const,
+      remoteUrl: "http://test-api.example.com",
+      apiKey: "test-key",
+      ssh: {
+        host: "",
+        port: 22,
+        username: "",
+        keyPath: "",
+        remotePort: 8642,
+        localPort: 18642,
+      },
+    },
+    mockApiServerKey: {
+      value: "",
+    },
+  };
+});
+
 vi.mock("../src/main/installer", () => ({
   HERMES_HOME: TEST_HOME,
   HERMES_PYTHON: "/usr/bin/python3",
@@ -76,19 +97,8 @@ vi.mock("../src/main/config", () => ({
   readEnv: () => ({}),
   readDesktopConfig: () => ({}),
   writeDesktopConfig: () => {},
-  getConnectionConfig: () => ({
-    mode: "remote" as const,
-    remoteUrl: "http://test-api.example.com",
-    apiKey: "test-key",
-    ssh: {
-      host: "",
-      port: 22,
-      username: "",
-      keyPath: "",
-      remotePort: 8642,
-      localPort: 18642,
-    },
-  }),
+  getConnectionConfig: () => mockConnectionConfig,
+  getApiServerKey: () => mockApiServerKey.value,
 }));
 
 vi.mock("../src/main/ssh-tunnel", () => ({
@@ -351,5 +361,69 @@ describe("sendMessageViaApi routes to IronClaw", () => {
     expect(normaliseRemoteUrl("http://127.0.0.1:8642")).toBe(
       "http://127.0.0.1:8642",
     );
+  });
+});
+
+describe("sendMessageViaApi uses the local API key for loopback remote URLs", () => {
+  beforeEach(() => {
+    capturedRequests.length = 0;
+    mockConnectionConfig.mode = "remote";
+    mockConnectionConfig.remoteUrl = "http://127.0.0.1:8642";
+    mockConnectionConfig.apiKey = "";
+    mockApiServerKey.value = "local-api-secret";
+  });
+
+  afterEach(() => {
+    realStopHealthPolling();
+    capturedRequests.length = 0;
+    mockApiServerKey.value = "";
+  });
+
+  it("sends the local API server key when remote mode points at localhost", async () => {
+    await sendMessage(
+      "hello",
+      {
+        onChunk: () => {},
+        onDone: () => {},
+        onError: () => {},
+      },
+      "default",
+      undefined,
+    );
+
+    await flush();
+
+    const chatRequest = capturedRequests.find((r) =>
+      r.url.includes("/v1/chat/completions"),
+    );
+    expect(chatRequest).toBeDefined();
+    const headers = chatRequest!.options.headers as Record<string, string>;
+
+    expect(headers.Authorization).toBe("Bearer local-api-secret");
+  });
+
+  it("sends the local API server key when remote URL is host.docker.internal", async () => {
+    mockConnectionConfig.remoteUrl = "http://host.docker.internal:8642";
+
+    await sendMessage(
+      "hello",
+      {
+        onChunk: () => {},
+        onDone: () => {},
+        onError: () => {},
+      },
+      "default",
+      undefined,
+    );
+
+    await flush();
+
+    const chatRequest = capturedRequests.find((r) =>
+      r.url.includes("/v1/chat/completions"),
+    );
+    expect(chatRequest).toBeDefined();
+    const headers = chatRequest!.options.headers as Record<string, string>;
+
+    expect(headers.Authorization).toBe("Bearer local-api-secret");
   });
 });

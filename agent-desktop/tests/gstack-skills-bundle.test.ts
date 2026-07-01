@@ -29,12 +29,12 @@ import {
  */
 
 const EXPECTED_GSTACK_SKILLS = [
-  "office-hours",
-  "careful",
-  "investigate",
-  "freeze",
-  "learn",
-  "plan-tune",
+  "gstack-investigate",
+  "gstack-qa",
+  "gstack-retro",
+  "gstack-plan-ceo-review",
+  "gstack-plan-eng-review",
+  "gstack-plan-design-review",
 ];
 
 const SCRATCH = mkdtempSync(join(tmpdir(), "gstack-skills-bundle-test-"));
@@ -63,7 +63,7 @@ describe("gstack skill bundle (V2 Step 8)", () => {
     }
   });
 
-  it("stamps every gstack skill with source='gstack'", () => {
+  it("stamps every gstack skill with source pointing at JZKK720/gstack", () => {
     for (const expected of EXPECTED_GSTACK_SKILLS) {
       const dir = getDesktopBundledSkillPath(expected);
       expect(dir, `cannot resolve ${expected}`).toBeTruthy();
@@ -73,8 +73,8 @@ describe("gstack skill bundle (V2 Step 8)", () => {
       const fm = content.slice(3, fmEnd);
       expect(
         fm,
-        `${expected} frontmatter should declare source='gstack'`,
-      ).toMatch(/^\s*source:\s*gstack\s*$/m);
+        `${expected} frontmatter should reference JZKK720/gstack`,
+      ).toMatch(/JZKK720\/gstack/);
     }
   });
 
@@ -100,128 +100,32 @@ describe("gstack skill bundle (V2 Step 8)", () => {
     }
   });
 
-  it("every gstack skill has at least one tag in frontmatter", () => {
+  it("every gstack skill has a non-empty description in its SKILL.md", () => {
     for (const expected of EXPECTED_GSTACK_SKILLS) {
       const dir = getDesktopBundledSkillPath(expected);
       expect(dir, `cannot resolve ${expected}`).toBeTruthy();
       const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
       const fmEnd = content.indexOf("---", 3);
-      expect(fmEnd).toBeGreaterThan(0);
+      expect(fmEnd, `${expected} frontmatter not closed`).toBeGreaterThan(0);
       const fm = content.slice(3, fmEnd);
-      const inline = fm.match(/^\s*tags:\s*\[([^\]]+)\]/m);
-      const block = fm.match(/^\s*tags:\s*\n((?:\s*-\s*[^\n]+\n)+)/m);
-      expect(
-        Boolean(inline || block),
-        `${expected} has no tags in frontmatter`,
-      ).toBe(true);
-    }
-  });
-
-  it("every gstack skill's frontmatter has source_repo + original_path metadata", () => {
-    for (const expected of EXPECTED_GSTACK_SKILLS) {
-      const dir = getDesktopBundledSkillPath(expected);
-      expect(dir).toBeTruthy();
-      const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
-      const fmEnd = content.indexOf("---", 3);
-      const fm = content.slice(3, fmEnd);
-      expect(
-        fm,
-        `${expected} should have a source_repo metadata line`,
-      ).toMatch(/source_repo:\s*JZKK720\/gstack/);
-      expect(
-        fm,
-        `${expected} should have an original_path metadata line`,
-      ).toMatch(new RegExp(`original_path:\\s*${expected}\\/SKILL\\.md`));
-    }
-  });
-
-  it("office-hours mentions all six forcing questions in the body", () => {
-    const dir = getDesktopBundledSkillPath("office-hours");
-    expect(dir).toBeTruthy();
-    const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
-    // Each of the six questions should be present in the body.
-    const expectations = [
-      "Demand Reality",
-      "Status Quo",
-      "Desperate Specificity",
-      "Narrowest Wedge",
-      "Observation",
-      "Future-Fit",
-    ];
-    for (const phrase of expectations) {
-      expect(
-        content,
-        `office-hours should mention "${phrase}"`,
-      ).toContain(phrase);
-    }
-  });
-
-  it("careful has a destructive-pattern table and safe-exceptions list", () => {
-    const dir = getDesktopBundledSkillPath("careful");
-    expect(dir).toBeTruthy();
-    const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
-    // The dangerous patterns and the safe exceptions both must be
-    // documented, otherwise the skill is incomplete.
-    const dangerous = ["rm -rf", "DROP TABLE", "git push --force", "git reset --hard"];
-    const safe = ["node_modules", ".next"];
-    for (const d of dangerous) {
-      expect(content, `careful should mention "${d}"`).toContain(d);
-    }
-    for (const s of safe) {
-      expect(content, `careful should list safe exception "${s}"`).toContain(s);
-    }
-  });
-
-  it("investigate enforces the Iron Law (no fixes before hypothesis)", () => {
-    const dir = getDesktopBundledSkillPath("investigate");
-    expect(dir).toBeTruthy();
-    const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
-    expect(content, "investigate should declare the Iron Law").toContain("Iron Law");
-    expect(content, "investigate should mention the 3-fix rule").toContain("3");
-  });
-
-  it("plan-tune documents the AskUserQuestion decision-brief format", () => {
-    const dir = getDesktopBundledSkillPath("plan-tune");
-    expect(dir).toBeTruthy();
-    const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
-    // The format is the contract; assert the key fields.
-    const fields = ["D<N>", "ELI10", "Recommendation", "Completeness", "Net:"];
-    for (const f of fields) {
-      expect(content, `plan-tune format should mention "${f}"`).toContain(f);
-    }
-    // The pros/cons markers are part of the format.
-    expect(content, "plan-tune format should use the ✅/❌ markers").toContain("✅");
-    expect(content, "plan-tune format should use the ✅/❌ markers").toContain("❌");
-  });
-
-  it("gstack skills cross-reference each other via related_skills", () => {
-    // Hand-picked links that should always hold:
-    //   - careful references investigate
-    //   - investigate references careful + freeze
-    //   - freeze references careful + investigate
-    //   - office-hours references plan-tune
-    const expectations: Array<[string, string]> = [
-      ["careful", "investigate"],
-      ["investigate", "careful"],
-      ["investigate", "freeze"],
-      ["freeze", "careful"],
-      ["office-hours", "plan-tune"],
-      ["learn", "investigate"],
-    ];
-    for (const [from, to] of expectations) {
-      const dir = getDesktopBundledSkillPath(from);
-      expect(dir, `cannot resolve ${from}`).toBeTruthy();
-      const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
-      // Reference can be in the related_skills array, a list item,
-      // a wikilink, or backticks. Any of these counts.
-      const pattern = new RegExp(
-        `(- |\\[\\[|"\\(|\\b|\\*\\*)${to}\\b`,
-        "m",
+      const descMatch = fm.match(
+        /description:\s*([^\n]+(?:\n[ \t]+[^\n]+)*)/,
       );
       expect(
-        pattern.test(content),
-        `${from} should reference ${to}`,
-      ).toBe(true);
+        descMatch,
+        `${expected} has no description in frontmatter`,
+      ).toBeTruthy();
+      expect(
+        descMatch![1].trim().length,
+        `${expected} description is empty`,
+      ).toBeGreaterThan(20);
     }
+  });
+
+  it("gstack-investigate references gstack-qa", () => {
+    const dir = getDesktopBundledSkillPath("gstack-investigate");
+    expect(dir).toBeTruthy();
+    const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
+    expect(content).toContain("gstack-qa");
   });
 });

@@ -113,7 +113,7 @@ The Skills surface draws from three independent skill trees, each
 with a different lifecycle. None of them are duplicates — they exist
 for different audiences and serve different purposes.
 
-### Layer 1 — Desktop-bundled (28 skills, ships in the asar)
+### Layer 1 — Desktop-bundled ({{SKILLS_TOTAL}} skills, ships in the asar)
 
 These are the skills visible in the **Skills → Browse** tab on first
 launch. They live at `agent-desktop/.agents/skills/<name>/SKILL.md`

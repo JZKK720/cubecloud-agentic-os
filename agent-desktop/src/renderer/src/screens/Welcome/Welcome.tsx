@@ -15,6 +15,8 @@ import {
 import {
   DEFAULT_SSH_LOCAL_PORT,
   DEFAULT_SSH_REMOTE_PORT,
+  DEFAULT_LOCAL_GATEWAY_URL,
+  IRONCLAW_LOCAL_GATEWAY_URL,
   OPENCLAW_LOCAL_GATEWAY_PORT,
 } from "../../../../shared/runtime-defaults";
 import {
@@ -46,6 +48,7 @@ interface WelcomeProps {
     url: string,
     runtime: GatewayRuntimePresetId,
   ) => Promise<void> | void;
+  onInstallLocal: () => void;
   onRecheck: () => void;
   onSwitchToLocal: () => void;
 }
@@ -61,6 +64,7 @@ function Welcome({
   initialGatewayRuntimePreset,
   discoveredRuntimes = [],
   onConnectDiscovered,
+  onInstallLocal,
   onRecheck,
   onSwitchToLocal,
 }: WelcomeProps): React.JSX.Element {
@@ -173,6 +177,30 @@ function Welcome({
   function persistGatewayRuntimePreset(next: GatewayRuntimePresetId): void {
     setGatewayRuntimePreset(next);
     setCachedGatewayRuntimePreset(next);
+  }
+
+  function openRemoteWirePreset(presetId: GatewayRuntimePresetId): void {
+    persistGatewayRuntimePreset(presetId);
+    setRemoteError(null);
+    setRemoteApiKey("");
+    setRemoteUrl(
+      presetId === "ironclaw"
+        ? IRONCLAW_LOCAL_GATEWAY_URL
+        : presetId === "openclaw"
+          ? `http://127.0.0.1:${OPENCLAW_LOCAL_GATEWAY_PORT}/v1`
+          : DEFAULT_LOCAL_GATEWAY_URL,
+    );
+    setPanel("remote");
+  }
+
+  function openSshWirePreset(presetId: GatewayRuntimePresetId): void {
+    persistGatewayRuntimePreset(presetId);
+    setSshError(null);
+    setSshApiKey("");
+    setSshRemotePort(
+      String(GATEWAY_RUNTIME_PRESETS[presetId].sshRemotePort),
+    );
+    setPanel("ssh");
   }
 
   function runtimeDisplayNameFor(
@@ -388,9 +416,8 @@ function Welcome({
               {openclawRuntimeName}
             </button>
             {/* V2.10.61 — IronClaw remote-gateway lane. IronClaw
-                only supports remote-gateway attach (not SSH tunnel),
-                so the button is rendered in the remote panel and
-                intentionally omitted from the SSH panel below. */}
+                only supports remote-gateway attach (not SSH tunnel) in older
+                versions, but SSH tunnel was added in V2.10.68. */}
             <button
               className={`btn ${gatewayRuntimePreset === "ironclaw" ? "btn-primary" : "btn-secondary"}`}
               type="button"
@@ -692,14 +719,22 @@ function Welcome({
               <div className="welcome-actions">
                 <button
                   className="btn btn-primary welcome-button"
+                  onClick={onInstallLocal}
+                  data-testid="welcome-install-cta"
+                >
+                  {t("welcome.retryLocalInstall")}
+                  <ArrowRight size={16} />
+                </button>
+                <div className="welcome-divider">
+                  <span>{t("welcome.dividerOr")}</span>
+                </div>
+                <button
+                  className="btn btn-secondary welcome-recheck-btn"
                   onClick={onRecheck}
                 >
                   {t("welcome.recheck")}
                   <Refresh size={16} />
                 </button>
-                <div className="welcome-divider">
-                  <span>{t("welcome.dividerOr")}</span>
-                </div>
                 <button
                   className="btn btn-secondary welcome-recheck-btn"
                   onClick={() => setPanel("ssh")}
@@ -825,8 +860,50 @@ function Welcome({
           <DesignDialsControl value={dials} onChange={handleDialsChange} />
 
           <div className="welcome-cta-stack">
+            <div className="welcome-wire-grid">
+              <button
+                className="btn btn-primary welcome-recheck-btn"
+                onClick={() => openRemoteWirePreset("hermes")}
+              >
+                Wire Hermes API
+                <ArrowRight size={16} />
+              </button>
+              <button
+                className="btn btn-secondary welcome-recheck-btn"
+                onClick={() => openRemoteWirePreset("ironclaw")}
+              >
+                Wire IronClaw gateway
+                <ArrowRight size={16} />
+              </button>
+              <button
+                className="btn btn-secondary welcome-recheck-btn"
+                onClick={() => openSshWirePreset("hermes")}
+              >
+                Hermes via SSH
+              </button>
+              <button
+                className="btn btn-secondary welcome-recheck-btn"
+                onClick={() => openSshWirePreset("ironclaw")}
+              >
+                IronClaw via SSH
+              </button>
+            </div>
+            <p className="welcome-note welcome-note--secondary">
+              Pick the runtime you want to wire, then fill its host and auth fields on the next panel.
+            </p>
+          </div>
+
+          <div className="welcome-cta-stack">
             <button
               className="btn btn-primary welcome-recheck-btn"
+              onClick={onInstallLocal}
+              data-testid="welcome-install-cta"
+            >
+              {t("welcome.installLocalRuntime")}
+              <ArrowRight size={16} />
+            </button>
+            <button
+              className="btn btn-secondary welcome-recheck-btn"
               onClick={onRecheck}
               data-testid="welcome-recheck-cta"
             >

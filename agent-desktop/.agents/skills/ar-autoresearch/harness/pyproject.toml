@@ -1,0 +1,18 @@
+[project]
+name = "autoresearch-harness"
+version = "0.1.0"
+description = "Karpathy-style autonomous research loop harness. Bundle of prepare.py + train.py + analysis.ipynb. The agent edits train.py; prepare.py and the evaluation are read-only."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "numpy",
+    "requests",
+    "pyarrow",
+    "tiktoken",
+    "rustbpe",
+    "kernels",
+    "matplotlib",
+    "pandas",
+    "ipykernel",  # for analysis.ipynb
+]

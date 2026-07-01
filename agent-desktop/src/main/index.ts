@@ -45,6 +45,7 @@ import {
   setMcpServerEnabled,
   addMcpServer,
   removeMcpServer,
+  ensureDefaultMcpServers,
   discoverMemoryProviders,
   readLogs,
   InstallProgress,
@@ -3051,6 +3052,14 @@ app.whenReady().then(() => {
   setupIPC();
   createWindow();
   setupUpdater();
+
+  // Pre-populate default MCP servers on first run so the MCP screen
+  // shows pre-installed servers instead of an empty list.
+  try {
+    ensureDefaultMcpServers();
+  } catch {
+    // best effort — don't crash startup
+  }
 
   // Auto-start SSH tunnel if configured
   const conn = getConnectionConfig();

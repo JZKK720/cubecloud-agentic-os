@@ -32,18 +32,16 @@ import {
  */
 
 const EXPECTED_SKILLS = [
-  "agentic-engineering",
-  "agent-harness-construction",
-  "autonomous-agent-harness",
-  "continuous-learning-v2",
-  "diff-overlay-writer",
-  "eval-harness",
-  "hermes-imports",
-  "kanban-task-shape",
-  "markitdown-mcp",
-  "openclaw-persona-forge",
-  "wiki-conventions",
-  "windows-desktop-e2e",
+  "karpathy-guidelines",
+  "ecc-coding-standards",
+  "sp-brainstorm",
+  "sp-tdd",
+  "sp-plan",
+  "gstack-investigate",
+  "po-tdd",
+  "po-diagnose",
+  "fable-mode",
+  "brandkit",
 ];
 
 // Use a scratch HOME just in case any of the helpers reach for
@@ -70,10 +68,9 @@ describe("ECC meta-skill bundle (Step 6)", () => {
     for (const expected of EXPECTED_SKILLS) {
       expect(names.has(expected), `missing bundled skill: ${expected}`).toBe(true);
     }
-    // Sanity: the desktop also ships the upstream skills (we
-    // added ours on top, not in place of them).
+    // Sanity: the desktop also ships the upstream skills.
     expect(names.has("karpathy-guidelines")).toBe(true);
-    expect(names.has("typescript-expert")).toBe(true);
+    expect(names.has("design-taste-frontend")).toBe(true);
   });
 
   it("stamps every skill with source='bundled-desktop'", () => {
@@ -83,9 +80,7 @@ describe("ECC meta-skill bundle (Step 6)", () => {
   });
 
   it("parses name/source from SKILL.md frontmatter", () => {
-    // `getDesktopBundledSkillPath` returns the *directory*; the
-    // SKILL.md lives inside it.
-    const dir = getDesktopBundledSkillPath("agentic-engineering");
+    const dir = getDesktopBundledSkillPath("karpathy-guidelines");
     expect(dir).toBeTruthy();
     const skillFile = join(dir!, "SKILL.md");
     expect(existsSync(skillFile)).toBe(true);
@@ -94,8 +89,7 @@ describe("ECC meta-skill bundle (Step 6)", () => {
     const fmEnd = content.indexOf("---", 3);
     expect(fmEnd).toBeGreaterThan(0);
     const fm = content.slice(3, fmEnd);
-    expect(fm).toMatch(/^name:\s*agentic-engineering\s*$/m);
-    expect(fm).toMatch(/^source:\s*ecc\s*$/m);
+    expect(fm).toMatch(/^name:\s*karpathy-guidelines\s*$/m);
     expect(fm).toMatch(/^description:/m);
   });
 
@@ -133,41 +127,26 @@ describe("ECC meta-skill bundle (Step 6)", () => {
       expect(dir, `cannot resolve ${expected}`).toBeTruthy();
       const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
       const fmEnd = content.indexOf("---", 3);
+      expect(fmEnd, `${expected} frontmatter not closed`).toBeGreaterThan(0);
       const fm = content.slice(3, fmEnd);
-      // Either a `tags: [a, b]` array or a multi-line `tags:` block.
-      const inline = fm.match(/^\s*tags:\s*\[([^\]]+)\]/m);
-      const block = fm.match(/^\s*tags:\s*\n((?:\s*-\s*[^\n]+\n)+)/m);
+      // Tags are optional in the new 48-skill set — only assert
+      // that the frontmatter has a description (the real contract).
+      const descMatch = fm.match(/description:\s*([^\n]+(?:\n[ \t]+[^\n]+)*)/);
       expect(
-        Boolean(inline || block),
-        `${expected} has no tags in frontmatter`,
-      ).toBe(true);
+        descMatch,
+        `${expected} has no description in frontmatter`,
+      ).toBeTruthy();
     }
   });
 
-  it("expected skills cross-reference each other via related_skills", () => {
-    // A few hand-picked links that should always hold.
-    const expectations: Array<[string, string]> = [
-      ["agentic-engineering", "karpathy-guidelines"],
-      ["agent-harness-construction", "agentic-engineering"],
-      ["continuous-learning-v2", "openclaw-persona-forge"],
-      ["wiki-conventions", "continuous-learning-v2"],
-      ["markitdown-mcp", "agent-harness-construction"],
-    ];
-    for (const [from, to] of expectations) {
-      const dir = getDesktopBundledSkillPath(from);
-      expect(dir, `cannot resolve ${from}`).toBeTruthy();
+  it("every expected skill has a valid SKILL.md with frontmatter", () => {
+    for (const expected of EXPECTED_SKILLS) {
+      const dir = getDesktopBundledSkillPath(expected);
+      expect(dir, `cannot resolve ${expected}`).toBeTruthy();
       const content = readFileSync(join(dir!, "SKILL.md"), "utf-8");
-      // The reference can appear as a list item (- foo), a code
-      // span (`foo`), a wikilink ([[foo]]), or inside the
-      // `related_skills:` array. Any of these counts.
-      const pattern = new RegExp(
-        `(- |\\[\\[|"\\(|\\b)${to}\\b`,
-        "m",
-      );
-      expect(
-        pattern.test(content),
-        `${from} should reference ${to}`,
-      ).toBe(true);
+      expect(content).toMatch(/^---/);
+      const fmEnd = content.indexOf("---", 3);
+      expect(fmEnd, `${expected} frontmatter not closed`).toBeGreaterThan(0);
     }
   });
 });

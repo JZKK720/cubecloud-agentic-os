@@ -44,6 +44,8 @@ const readOnly = [
   "autoplan-build-briefs",
   "convert-file-to-markdown", "is-markitdown-available",
   "discover-memory-providers", "discover-agent-clis", "discover-docker-runtimes",
+  "discover-browser-harness", "browser-harness-doctor",
+  "list-all-outputs", "list-thread-outputs",
   "read-file", "read-directory", "read-image-file", "read-logs",
   "gateway-status",
 ];
@@ -104,6 +106,7 @@ const excluded = [
   "schemas-set-active",
   "sync-session-cache",
   "set-locale",
+  "ensure-thread-output-dir", "clear-thread-outputs",
   ...roundTrip.map((r) => r.setChannel),
   ...inStaging,
 ];

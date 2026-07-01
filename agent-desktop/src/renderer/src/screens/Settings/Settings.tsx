@@ -701,6 +701,18 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     setTimeout(() => setConnStatus(null), 2000);
   }
 
+  function handleQuickWire(
+    mode: "remote" | "ssh",
+    runtime: GatewayRuntimePresetId,
+  ): void {
+    setConnMode(mode);
+    applyGatewayRuntimePreset(runtime);
+    setConnStatus(
+      `Quick preset loaded: ${runtimeDisplayNameFor(runtime)} (${mode === "ssh" ? "SSH tunnel" : "remote gateway"}).`,
+    );
+    setTimeout(() => setConnStatus(null), 2500);
+  }
+
   const connectionModeHint =
     connMode === "local"
       ? t("settings.modeLocalHint")
@@ -1011,6 +1023,36 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
               {connStatus}
             </span>
           )}
+        </div>
+
+        <div className="settings-field">
+          <label className="settings-field-label">Quick wire presets</label>
+          <div className="settings-hermes-actions">
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() => handleQuickWire("remote", "hermes")}
+            >
+              Hermes API (remote)
+            </button>
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() => handleQuickWire("remote", "ironclaw")}
+            >
+              IronClaw gateway (remote)
+            </button>
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() => handleQuickWire("ssh", "ironclaw")}
+            >
+              IronClaw gateway (SSH)
+            </button>
+          </div>
+          <div className="settings-field-hint">
+            Pick a preset to auto-select mode + runtime lane. Then set host URL and token, test, and save.
+          </div>
         </div>
 
         <div className="settings-field">

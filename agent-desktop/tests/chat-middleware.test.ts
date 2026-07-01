@@ -20,7 +20,7 @@ vi.mock("../src/main/headroom", () => ({
 }));
 
 vi.mock("../src/main/headroom-sidecar", () => ({
-  getHeadroomSidecarStatus: vi.fn(() => ({ status: "stopped" })),
+  getHeadroomSidecarStatus: vi.fn(() => ({ state: "stopped" })),
 }));
 
 import { loadHeadroomConfig, compressMessages } from "../src/main/headroom";
@@ -151,7 +151,7 @@ describe("chat-middleware — headroomCompressMiddleware", () => {
 
   it("skips when sidecar is not running", async () => {
     mockLoadHeadroomConfig.mockResolvedValue({ enabled: true } as never);
-    mockGetSidecarStatus.mockReturnValue({ status: "stopped" } as never);
+    mockGetSidecarStatus.mockReturnValue({ state: "stopped" } as never);
     const result = await headroomCompressMiddleware(
       makeCtx(makeMessages(5)),
     );
@@ -161,7 +161,7 @@ describe("chat-middleware — headroomCompressMiddleware", () => {
 
   it("compresses when all gates pass", async () => {
     mockLoadHeadroomConfig.mockResolvedValue({ enabled: true } as never);
-    mockGetSidecarStatus.mockReturnValue({ status: "running" } as never);
+    mockGetSidecarStatus.mockReturnValue({ state: "running" } as never);
     mockCompressMessages.mockResolvedValue({
       compressed: true,
       messages: [{ role: "user", content: "compressed" }],
@@ -189,7 +189,7 @@ describe("chat-middleware — headroomCompressMiddleware", () => {
 
   it("degrades gracefully on compress error", async () => {
     mockLoadHeadroomConfig.mockResolvedValue({ enabled: true } as never);
-    mockGetSidecarStatus.mockReturnValue({ status: "running" } as never);
+    mockGetSidecarStatus.mockReturnValue({ state: "running" } as never);
     mockCompressMessages.mockRejectedValue(new Error("network error") as never);
 
     const msgs = makeMessages(5);

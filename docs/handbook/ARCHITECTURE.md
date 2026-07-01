@@ -16,13 +16,21 @@ The desktop is an Electron app. The process model is the standard Electron three
 └────────────────────┘    └────────────────────┘    └──────────┬─────────────┘
                                                                │
                             ┌──────────────────────────────────┤
-                            │                                  │
-                            ▼                                  ▼
-                  ┌────────────────────┐            ┌────────────────────┐
-                  │  Hermes runtime    │            │  EverOS sidecar    │
-                  │  (process or       │            │  (optional,        │
-                  │   remote HTTP)     │            │   Python HTTP)     │
-                  └────────────────────┘            └────────────────────┘
+                            │                │                 │
+                            ▼                ▼                 ▼
+                  ┌────────────────┐ ┌────────────┐ ┌────────────────┐
+                  │ Hermes runtime │ │ IronClaw   │ │ OpenClaw       │
+                  │ (primary,      │ │ (WASM      │ │ (optional,     │
+                  │  port 8642)    │ │ sandbox,   │ │  port 18789)   │
+                  │                │ │ port 3231) │ │                │
+                  └────────────────┘ └────────────┘ └────────────────┘
+                            │
+                            ▼
+                  ┌────────────────────┐
+                  │  EverOS sidecar    │
+                  │  (optional,        │
+                  │   Python HTTP)     │
+                  └────────────────────┘
 ```
 
 ### Main process
@@ -31,11 +39,18 @@ The main process is `src/main/index.ts` (entry point) and the directories under 
 
 - Spawn the renderer with the right preload bridge.
 - Register every IPC channel and dispatch to the right handler.
-- Own the runtime orchestrator (`src/main/hermes-runtime/`, `src/main/openclaw/`, `src/main/ironclaw/`).
+- Own the runtime orchestrator — flat files in `src/main/`:
+  `hermes.ts` (primary runtime, port 8642), `ironclaw-sandbox.ts`
+  (WASM-sandbox gateway, port 3231), `openclaw-remote-adapter.ts`
+  (optional runtime, port 18789), plus `runtime-registry.ts`,
+  `runtime-provider-actions.ts`, and `task-orchestrators.ts` for
+  the shared orchestration layer.
 - Own the CodeGraph surface (`src/main/codegraph.ts` for the CLI subprocess, `src/main/codegraph-runtime.ts` for the embedded SDK).
 - Own the EverOS sidecar lifecycle (`src/main/everos-sidecar.ts`).
 - Own the skills harness (`src/main/skills-harness.ts`).
-- Own the SQLite state (`src/main/db/`, `apps/desktop-shell/src/state/`).
+- Own the SQLite state via `better-sqlite3` in `src/main/sessions.ts`,
+  `src/main/session-cache.ts`, `src/main/memory.ts`, and
+  `src/main/config.ts`.
 - Drive the auto-updater (`electron-updater`).
 - Drive the system-tray + global shortcuts.
 
@@ -141,26 +156,45 @@ Every channel is an opt-in; the renderer cannot call an unexposed channel. The f
 The state model is a *two-tier* model:
 
 1. **Local UI state** — in the renderer. Driven by React `useState` / `useReducer` for ephemeral form state, and TanStack Query for any data the renderer fetches from the main process. UI state never leaves the renderer.
-2. **Persistent state** — in the main process's SQLite database. Driven by a thin ORM layer in `apps/desktop-shell/src/state/`. Every entity (profile, session, model, provider, skill, memory entry, tool config, schedule, kanban board, kanban task) lives in the SQLite DB. The schema is in `apps/desktop-shell/src/state/schema.sql` (or wherever the current schema migration lives).
+2. **Persistent state** — in the main process's SQLite database via
+   `better-sqlite3`. Every entity (profile, session, model, provider,
+   skill, memory entry, tool config, schedule, kanban board, kanban
+   task) lives in the SQLite DB. The persistence layer is spread across
+   `src/main/sessions.ts`, `src/main/session-cache.ts`,
+   `src/main/memory.ts`, and `src/main/config.ts`.
 
 The bridge between the two is the IPC surface above: the renderer asks, the main reads or writes, the result flows back through the bridge.
 
 ## Runtime orchestration (deep)
 
-The runtime orchestrator lives in `src/main/hermes-runtime/` (Hermes), `src/main/openclaw/` (OpenClaw), and `src/main/ironclaw/` (IronClaw). Each runtime has the same shape:
+The runtime layer is a set of flat files in `src/main/`, not
+subdirectory-based orchestrators. The three runtimes are:
 
-```
-runtime-name/
-├── detect.ts          # Is this runtime installed? Where?
-├── install.ts         # The install flow (or a "not our installer" stub)
-├── start.ts           # Start the runtime (spawn process or open tunnel)
-├── stop.ts            # Stop the runtime gracefully
-├── status.ts          # Health, pid, log tail
-├── config.ts          # Read / write the runtime's config
-└── smoke.ts           # The smoke target registration
-```
+| Runtime | File | Port | Role |
+|---|---|---|---|
+| Hermes | `src/main/hermes.ts` | 8642 | Primary chat runtime |
+| IronClaw | `src/main/ironclaw-sandbox.ts` | 3231 | WASM-sandbox gateway |
+| OpenClaw | `src/main/openclaw-remote-adapter.ts` | 18789 | Optional remote runtime |
 
-The orchestrator is registered in `packages/platform-core/src/index.ts` §"PLATFORM_RUNTIME_PROVIDERS" as a `PlatformRuntimeProviderDescriptor`. The descriptor carries the connection modes (embedded-local, local-gateway, remote-gateway, ssh-tunnel, docker-gateway, migration-import) and the capabilities (canInstallLocally, canAttachToExistingLocalGateway, canAttachViaSshTunnel, etc.). The `runtime:switch` and `runtime:list` IPC channels iterate over the registered providers.
+Shared orchestration lives in `src/main/runtime-registry.ts`,
+`src/main/runtime-provider-actions.ts`, and
+`src/main/task-orchestrators.ts`. The runtime types
+(`PlatformRuntimeProviderId`, `PlatformRuntimeProviderDescriptor`,
+`PlatformRuntimeProviderCapabilities`) are defined in
+`packages/platform-core/src/index.ts` and re-exported through
+`src/shared/runtime-orchestration.ts`.
+
+Each runtime file handles:
+- **Detection:** Is the runtime installed? Where? (e.g., `diagnoseRemoteConnection` in `hermes.ts`)
+- **Health:** HTTP probe on the runtime's port (e.g., `/api/health`)
+- **Chat:** Send messages and stream responses (e.g., `sendMessageViaApi` in `hermes.ts`)
+- **Lifecycle:** Start/stop for local runtimes; attach/detach for remote
+
+The `runtime:switch` and `runtime:list` IPC channels (registered in
+`src/main/index.ts`) iterate over the registered providers. The
+24-entry `AGENT_CLI_CATALOG` in `src/shared/agent-clis.ts` is a
+separate tier (coding-agent CLIs discovered on PATH) and is **not**
+part of the runtime orchestration layer.
 
 ## CodeGraph (deep)
 
@@ -192,7 +226,7 @@ The skills harness (`src/main/skills-harness.ts`) is the resolver that the agent
 - Returns the merged set, with repo-local taking precedence over user-global.
 - Caches the result in memory; reloads on file-system change.
 
-The 20-skill ecosystem that the harness resolves is described in `docs/HANDBOOK.md` §5 and in `.agents/skills/README.md`. The harness is Cubecloud-original; the skills themselves are adapted from upstream MIT-licensed repos (see `NOTICE` §"Adapted dependencies").
+The {{SKILLS_TOTAL}}-skill ecosystem that the harness resolves is described in `docs/HANDBOOK.md` §5 and in `.agents/skills/README.md`. The harness is Cubecloud-original; the skills themselves are adapted from upstream MIT-licensed repos (see `NOTICE` §"Adapted dependencies").
 
 ## Build pipeline
 
@@ -202,7 +236,7 @@ The build is a standard electron-vite pipeline. Three TypeScript projects:
 - `tsconfig.web.json` — the renderer (browser target).
 - `tsconfig.node.json` — build scripts and toolchain (Node 20 target).
 
-The build outputs are `out/main`, `out/preload`, and `out/renderer`. The `electron-builder` pipeline packages the three outputs plus the inherited resources into the three target installers (Windows MSI, Fedora RPM, macOS DMG). The packaged icon set was regenerated in V2.10.31 from the current Cubecloud mark (`build/icon.png`, `build/icon.ico`, `build/icon.icns`, plus the matching PNG copies in `resources/` and the renderer asset tree).
+The build outputs are `out/main`, `out/preload`, and `out/renderer`. The `electron-builder` pipeline packages the three outputs plus the inherited resources into the target installers (Windows NSIS + portable, macOS DMG, Linux AppImage/snap/deb/rpm). The packaged icon set was regenerated in V2.10.31 from the current Cubecloud mark (`build/icon.png`, `build/icon.ico`, `build/icon.icns`, plus the matching PNG copies in `resources/` and the renderer asset tree).
 
 ## Testing
 
@@ -212,16 +246,13 @@ The test suite is Vitest, driven by `vitest.config.ts`. The test files are under
 
 **Where to look next.** [`docs/CODEGRAPH-RUNTIME.md`](CODEGRAPH-RUNTIME.md), [`docs/EVEROS-SIDECAR.md`](EVEROS-SIDECAR.md), [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](RUNTIME_ORCHESTRATION_PLAN.md).
 
-**Recent updates (V2.6 — V2.10).** This file was last
-substantively edited during the V2.4 — V2.6 brand-license
-wave. The V2.7 (superpowers skills), V2.8 (description-trim audit),
-V2.9 (pre-launch bundle, 40/40 smoke), and V2.10 (doc-move, README
-split, i18n cleanup, previews cleanup, provenance cross-link,
-README Translations pointer) transitions are documented in
-[`BRANDING_AND_LICENSE.md`](../../BRANDING_AND_LICENSE.md) under
-the corresponding `## V2.7 / V2.8 / V2.9 / V2.10` sub-sections, and
-each per-version change is recorded in
-[`docs/RETIRED_AND_LEGACY.md`](../RETIRED_AND_LEGACY.md) §
-"How to confirm a surface is live". No content rewrite of this
-handbook file was needed for V2.10.14; the tail pointer is the
-additive update.
+**Recent updates (V2.6 — V2.10.73).** This file was originally written
+during the V2.4–V2.6 brand-license wave and described a planned
+subdirectory-based runtime orchestrator (`hermes-runtime/`,
+`openclaw/`, `ironclaw/`) that was never implemented. The actual
+runtime layer shipped as flat files (`hermes.ts`,
+`ironclaw-sandbox.ts`, `openclaw-remote-adapter.ts`). This file was
+updated in V2.10.73 to match the as-built architecture. The V2.7–V2.10
+transitions are documented in
+[`BRANDING_AND_LICENSE.md`](../../BRANDING_AND_LICENSE.md) and
+[`docs/RETIRED_AND_LEGACY.md`](../RETIRED_AND_LEGACY.md).

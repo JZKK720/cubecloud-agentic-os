@@ -32,7 +32,7 @@ These skills live in `.agents/skills/<name>/SKILL.md` or
 
 - Start from the owning file, symbol, test, or failing behavior
   before editing. Use `grep_search` for cross-file references and
-  `codebase_search` for symbol-level lookups.
+  `semantic_search` for symbol-level lookups.
 - Make the smallest falsifiable change first, then validate
   immediately.
 - Keep onboarding and provider copy truthful to the app's current

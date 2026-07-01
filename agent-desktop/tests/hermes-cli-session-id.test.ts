@@ -130,7 +130,7 @@ vi.mock("child_process", () => ({
 vi.mock("../src/main/installer", () => ({
   HERMES_HOME: TEST_HOME,
   HERMES_PYTHON: process.execPath,
-  HERMES_REPO: "/dev/null",
+  HERMES_REPO: process.cwd(),
   hermesCliArgs: (extra?: string[]) => ["/dev/null", ...(extra || [])],
   getEnhancedPath: () => process.env.PATH || "",
 }));

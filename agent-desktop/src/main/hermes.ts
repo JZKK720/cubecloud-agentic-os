@@ -113,6 +113,26 @@ export function isRemoteOnlyMode(): boolean {
   return getConnectionConfig().mode === "remote";
 }
 
+function isLoopbackHostname(hostname: string): boolean {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    // Docker Desktop maps host.docker.internal to the host loopback on
+    // Windows/macOS. A gateway reachable via this hostname is still a
+    // local runtime, so the local API_SERVER_KEY applies.
+    hostname === "host.docker.internal"
+  );
+}
+
+function isLoopbackRemoteUrl(rawUrl: string): boolean {
+  try {
+    return isLoopbackHostname(new URL(rawUrl).hostname);
+  } catch {
+    return false;
+  }
+}
+
 // Cached gateway auth secret read from the remote environment when an SSH
 // tunnel starts and the user did not supply one explicitly.
 let _sshRemoteApiKey = "";
@@ -131,8 +151,14 @@ export function getRemoteAuthHeader(): Record<string, string> {
     }
     return {};
   }
-  if (conn.mode === "remote" && conn.apiKey) {
-    return { Authorization: `Bearer ${conn.apiKey}` };
+  if (conn.mode === "remote") {
+    if (conn.apiKey) {
+      return { Authorization: `Bearer ${conn.apiKey}` };
+    }
+    if (conn.remoteUrl && isLoopbackRemoteUrl(conn.remoteUrl)) {
+      const localKey = getApiServerKey();
+      return localKey ? { Authorization: `Bearer ${localKey}` } : {};
+    }
   }
   return {};
 }
@@ -141,11 +167,18 @@ function resolveRemoteApiKey(url: string, apiKey?: string): string {
   if (apiKey !== undefined) return apiKey;
 
   const conn = getConnectionConfig();
-  if (conn.mode !== "remote" || !conn.apiKey || !conn.remoteUrl) return "";
-  if (normaliseRemoteUrl(conn.remoteUrl) !== normaliseRemoteUrl(url)) {
-    return "";
+  if (conn.mode !== "remote") return "";
+  if (conn.apiKey) {
+    if (!conn.remoteUrl) return conn.apiKey;
+    if (normaliseRemoteUrl(conn.remoteUrl) !== normaliseRemoteUrl(url)) {
+      return "";
+    }
+    return conn.apiKey;
   }
-  return conn.apiKey;
+  if (conn.remoteUrl && isLoopbackRemoteUrl(conn.remoteUrl)) {
+    return getApiServerKey();
+  }
+  return "";
 }
 
 type GatewayRuntimeKind = GatewayRuntimePresetId;

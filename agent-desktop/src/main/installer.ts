@@ -1702,6 +1702,51 @@ export function addMcpServer(
 }
 
 // ────────────────────────────────────────────────────
+//  Default MCP server pre-population
+// ────────────────────────────────────────────────────
+
+/**
+ * Pre-populate a set of safe, no-API-key-required MCP servers into the
+ * profile's config.yaml when no mcp_servers block exists yet. This makes
+ * the MCP screen show pre-installed servers on first run instead of an
+ * empty list. Only servers that need no external credentials are
+ * included — the user can add more from the bundled registry.
+ *
+ * Idempotent: if the mcp_servers block already exists (even with
+ * different servers), this is a no-op.
+ */
+export function ensureDefaultMcpServers(profile?: string): void {
+  try {
+    const configPath = join(profileHome(profile), "config.yaml");
+    if (!existsSync(configPath)) return;
+    const content = readFileSync(configPath, "utf-8");
+    // If mcp_servers block already exists, don't touch it.
+    if (/^mcp_servers:\s*\n/m.test(content)) return;
+
+    const defaults: Array<{ name: string; type: "http" | "stdio"; enabled: boolean; detail: string }> = [
+      { name: "filesystem", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-filesystem" },
+      { name: "git", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-git" },
+      { name: "fetch", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-fetch" },
+      { name: "memory", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-memory@2026.1.26" },
+      { name: "sequential-thinking", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-sequential-thinking@2025.12.18" },
+      { name: "time", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-time" },
+      { name: "calculator", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-calculator" },
+      { name: "sqlite", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-sqlite" },
+      { name: "playwright", type: "stdio", enabled: true, detail: "npx -y @playwright/mcp@0.0.69" },
+    ];
+
+    let block = "";
+    for (const entry of defaults) {
+      block = appendMcpServerToBlock(block, entry);
+    }
+    const sep = content === "" || content.endsWith("\n") ? "" : "\n";
+    writeFileSync(configPath, content + sep + "mcp_servers:\n" + block, "utf-8");
+  } catch {
+    // best effort — don't crash startup if config.yaml isn't writable
+  }
+}
+
+// ────────────────────────────────────────────────────
 //  Log viewer
 // ────────────────────────────────────────────────────
 
