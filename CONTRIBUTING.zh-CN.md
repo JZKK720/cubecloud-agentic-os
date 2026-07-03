@@ -68,7 +68,7 @@
 
 ## 报告 bug
 
-发现了 bug？[提交 issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new)，附上：
+发现了 bug？[提交 issue](https://github.com/JZKK720/cubecloud-agentic-os/issues/new)，附上：
 
 - 清晰的标题与描述。
 - 复现该问题的步骤。
@@ -77,7 +77,7 @@
 
 ## 提出功能请求
 
-有个创意？[提交 issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new)，描述：
+有个创意？[提交 issue](https://github.com/JZKK720/cubecloud-agentic-os/issues/new)，描述：
 
 - 你想解决的问题。
 - 你期望它如何工作。
@@ -108,7 +108,7 @@ Cubecloud Agentic-OS 是一个单仓，包含以下主要部分：
 
 ## 社区
 
-社区沟通：请先使用 [GitHub Issues](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues)。
+社区沟通：请先使用 [GitHub Issues](https://github.com/JZKK720/cubecloud-agentic-os/issues)。
 
 代码行为准则：举手之劳，对他人质疑前先默认他们是为了一个合理目的。反馈中对人不负责任。
 

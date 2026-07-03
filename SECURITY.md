@@ -118,7 +118,7 @@ issue for suspected vulnerabilities.
 
 | Channel | How |
 |---------|-----|
-| GitHub Security Advisories | <https://github.com/cubecloud-contributors/cubecloud-agentic-os/security/advisories/new> (preferred) |
+| GitHub Security Advisories | <https://github.com/JZKK720/cubecloud-agentic-os/security/advisories/new> (preferred) |
 | Private issue | Open a minimal issue titled `SECURITY: <short description>`; we will convert to an advisory |
 | Email | (Will be filled in once a security contact address is set up) |
 

@@ -208,7 +208,7 @@ ergonomics surface; a new skill goes through the \`gbrain-skillify\` gate
 \`po-write-a-skill\` authoring contract, and the \`sp-write-skill\`
 TDD-for-skills discipline with a red-baseline pressure test.
 
-If you find a bug or have a feature request, [file an issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new).
+If you find a bug or have a feature request, [file an issue](https://github.com/JZKK720/cubecloud-agentic-os/issues/new).
 For security issues, follow [\`SECURITY.md\`](SECURITY.md) ${EM} please do
 not post secrets, API keys, or private logs in public issues.
 `;

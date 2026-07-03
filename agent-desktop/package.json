@@ -30,17 +30,17 @@
       "docs/legal/COMMERCIAL_LICENSE.md"
     ]
   },
-  "homepage": "https://github.com/cubecloud-contributors/cubecloud-agentic-os",
+  "homepage": "https://github.com/JZKK720/cubecloud-agentic-os",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cubecloud-contributors/cubecloud-agentic-os.git"
+    "url": "https://github.com/JZKK720/cubecloud-agentic-os.git"
   },
   "bugs": {
-    "url": "https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues"
+    "url": "https://github.com/JZKK720/cubecloud-agentic-os/issues"
   },
   "funding": {
     "type": "open-collective",
-    "url": "https://opencollective.com/cubecloud-contributors"
+    "url": "https://opencollective.com/JZKK720"
   },
   "scripts": {
     "format": "prettier --write .",

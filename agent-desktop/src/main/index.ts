@@ -2924,7 +2924,7 @@ function buildMenu(): void {
         {
           label: "Agent Desktop Issues",
           click: (): void => {
-            openExternalUrl("https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues");
+            openExternalUrl("https://github.com/JZKK720/cubecloud-agentic-os/issues");
           },
         },
       ],

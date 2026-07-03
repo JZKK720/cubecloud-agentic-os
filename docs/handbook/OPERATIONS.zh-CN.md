@@ -9,7 +9,7 @@
 ```powershell
 # 从 GitHub release 页面下载最新 MSI
 # （Cubecloud-pending: 一旦品牌切换完成，替换为 Cubecloud 自有发布 URL）
-Invoke-WebRequest -Uri https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-setup.msi -OutFile cubecloud-setup.msi
+Invoke-WebRequest -Uri https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-setup.msi -OutFile cubecloud-setup.msi
 
 # 运行安装器（SmartScreen 会告警——点击 “More info” → “Run anyway”）
 msiexec /i cubecloud-setup.msi
@@ -18,7 +18,7 @@ msiexec /i cubecloud-setup.msi
 ### Fedora
 
 ```bash
-curl -L -o cubecloud.rpm https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-x86_64.rpm
+curl -L -o cubecloud.rpm https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x86_64.rpm
 sudo dnf install ./cubecloud.rpm
 # 如果你的系统强制检查签名：sudo dnf install ./cubecloud.rpm --nogpgcheck
 ```
@@ -26,7 +26,7 @@ sudo dnf install ./cubecloud.rpm
 ### macOS
 
 ```bash
-curl -L -o cubecloud.dmg https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-x64.dmg
+curl -L -o cubecloud.dmg https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x64.dmg
 open cubecloud.dmg
 # 将 Cubecloud.app 拖入 /Applications
 ```

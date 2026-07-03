@@ -3,12 +3,12 @@ PackageIdentifier: Cubecloud.CubecloudDesktop
 PackageVersion: { { VERSION } }
 PackageLocale: en-US
 Publisher: Cubecloud
-PublisherUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os
-PublisherSupportUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues
+PublisherUrl: https://github.com/JZKK720/cubecloud-agentic-os
+PublisherSupportUrl: https://github.com/JZKK720/cubecloud-agentic-os/issues
 PackageName: Cubecloud Desktop
-PackageUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os
+PackageUrl: https://github.com/JZKK720/cubecloud-agentic-os
 License: MIT
-LicenseUrl: https://github.com/cubecloud-contributors/cubecloud-agentic-os/blob/main/LICENSE
+LicenseUrl: https://github.com/JZKK720/cubecloud-agentic-os/blob/main/LICENSE
 ShortDescription: Desktop control center for Cubecloud Agentic-OS
 Description: |-
   Cubecloud Desktop is a native desktop shell for orchestrating Cubecloud

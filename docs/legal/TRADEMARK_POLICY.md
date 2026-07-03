@@ -70,7 +70,7 @@ You MAY, without prior approval:
   example: "this fork was derived from Cubecloud v0.6.0", or
   "compatible with the Cubecloud OpenCode agent loop" — provided
   the use is factual and does not imply endorsement.
-- **Link to this repository or to `cubecloud-contributors` GitHub
+- **Link to this repository or to `JZKK720` GitHub
   org pages** for attribution or for the purpose of pointing users
   at the upstream source.
 - **Reproduce the three offered license texts** verbatim when

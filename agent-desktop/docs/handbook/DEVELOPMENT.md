@@ -15,7 +15,7 @@
 
 ```bash
 # Clone
-git clone https://github.com/cubecloud-contributors/cubecloud-agentic-os
+git clone https://github.com/JZKK720/cubecloud-agentic-os
 cd cubecloud-agentic-os/agent-desktop
 
 # Install JS deps

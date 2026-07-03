@@ -220,7 +220,7 @@ AGPL-3.0-or-later가 기본 라이선스입니다. Apache-2.0과 MIT는 조직 �
 스킬 레이어는 주요 기여자 워크플로 표면입니다. 새로운 스킬은 일반적으로 `gbrain-skillify`,
 `ecc-skill-scout`, `po-write-a-skill`, `sp-write-skill`을 거치며, 그 동작이 유지할 가치가 있음을 증명하는 red-baseline 테스트를 동반합니다.
 
-버그나 기능 요청이 있으면 [이슈를 생성](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new)하세요.
+버그나 기능 요청이 있으면 [이슈를 생성](https://github.com/JZKK720/cubecloud-agentic-os/issues/new)하세요.
 보안 문제는 [`SECURITY.md`](SECURITY.md)를 따르고, 공개 이슈에 자격 증명, API 키, 비공개 로그를 게시하지 마세요.
 
 ## 번역

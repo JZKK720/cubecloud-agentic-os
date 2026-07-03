@@ -18,7 +18,7 @@
 
 ## §1. 什么是 Cubecloud Agent Desktop？
 
-它是 [Cubecloud Agentic-OS](https://github.com/cubecloud-contributors/cubecloud-agentic-os) 的一个原生桌面控制中心——也就是这个仓库所在的 agent 操作系统。桌面端把本地或远程 agent 运行时（今天是 Hermes，下一步是 OpenClaw 和 IronClaw）封装进一个统一 GUI，让用户不需要手动操作 CLI。
+它是 [Cubecloud Agentic-OS](https://github.com/JZKK720/cubecloud-agentic-os) 的一个原生桌面控制中心——也就是这个仓库所在的 agent 操作系统。桌面端把本地或远程 agent 运行时（今天是 Hermes，下一步是 OpenClaw 和 IronClaw）封装进一个统一 GUI，让用户不需要手动操作 CLI。
 
 它是以下能力的**前门**：
 

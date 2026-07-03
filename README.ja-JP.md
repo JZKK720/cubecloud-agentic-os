@@ -221,7 +221,7 @@ AGPL-3.0-or-laterがプライマリライセンスです。Apache-2.0とMITは�
 スキルレイヤーは主要なコントリビューターワークフロー面です。新しいスキルは通常 `gbrain-skillify`、
 `ecc-skill-scout`、`po-write-a-skill`、`sp-write-skill` を経て、その振る舞いが保持する価値があることを証明するred-baselineテストを伴います。
 
-バグや機能リクエストがある場合は [issueを作成](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new) してください。
+バグや機能リクエストがある場合は [issueを作成](https://github.com/JZKK720/cubecloud-agentic-os/issues/new) してください。
 セキュリティの問題については [`SECURITY.md`](SECURITY.md) に従い、公開issueに認証情報、APIキー、プライベートログを投稿しないでください。
 
 ## 翻訳

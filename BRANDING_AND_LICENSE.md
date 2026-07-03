@@ -1393,7 +1393,7 @@ After the V2.10.30 cleanup, the binary preview surfaces were current but the pac
 
 **What changed (V2.10.32):**
 
-1. Repointed the remaining live issue and release links away from `JZKK720/cubecloud-agent-desktop` and toward `cubecloud-contributors/cubecloud-agentic-os`.
+1. Repointed the remaining live issue and release links away from `JZKK720/cubecloud-agent-desktop` and toward `JZKK720/cubecloud-agentic-os`.
 2. Updated the desktop updater feed metadata, Winget template/defaults/tests, and release-workflow defaults so packaging and release surfaces resolve against the current monorepo release location.
 3. Cleaned the last visible stale repo coordinates out of the binary Japanese/Chinese README and CONTRIBUTING surfaces, plus the in-app `Agent Desktop Issues` menu action.
 

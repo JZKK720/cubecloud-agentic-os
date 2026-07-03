@@ -10,7 +10,7 @@
 # Download the latest MSI from the GitHub release page
 # (Cubecloud-pending: replace with the Cubecloud-owned release URL once
 #  the brand transition is finalised)
-Invoke-WebRequest -Uri https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-setup.exe -OutFile agent-desktop-setup.exe
+Invoke-WebRequest -Uri https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-setup.exe -OutFile agent-desktop-setup.exe
 
 # Run the installer (SmartScreen will warn —click "More info" →"Run anyway")
 msiexec /i cubecloud-setup.msi
@@ -19,7 +19,7 @@ msiexec /i cubecloud-setup.msi
 ### Fedora
 
 ```bash
-curl -L -o agent-desktop.rpm https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-x86_64.rpm
+curl -L -o agent-desktop.rpm https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x86_64.rpm
 sudo dnf install ./cubecloud.rpm
 # If your system enforces signature checking: sudo dnf install ./cubecloud.rpm --nogpgcheck
 ```
@@ -27,7 +27,7 @@ sudo dnf install ./cubecloud.rpm
 ### macOS
 
 ```bash
-curl -L -o agent-desktop.dmg https://github.com/cubecloud-contributors/cubecloud-agentic-os/releases/latest/download/agent-desktop-x64.dmg
+curl -L -o agent-desktop.dmg https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x64.dmg
 open cubecloud.dmg
 # Drag Cubecloud.app to /Applications
 ```

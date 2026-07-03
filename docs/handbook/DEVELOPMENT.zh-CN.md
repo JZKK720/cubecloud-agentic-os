@@ -15,7 +15,7 @@
 
 ```bash
 # 克隆
-git clone https://github.com/cubecloud-contributors/cubecloud-agentic-os
+git clone https://github.com/JZKK720/cubecloud-agentic-os
 cd cubecloud-agentic-os/agent-desktop
 
 # 安装 JS 依赖

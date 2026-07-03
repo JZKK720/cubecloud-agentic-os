@@ -243,7 +243,7 @@ AGPL-3.0-or-later 是主许可。Apache-2.0 与 MIT 是给下游在机构政策�
 `ecc-skill-scout`、`po-write-a-skill` 与 `sp-write-skill`，并带有一份
 red-baseline 测试来证明这个行为值得保留。
 
-如果你发现 bug 或有功能请求，请 [提交 issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new)。
+如果你发现 bug 或有功能请求，请 [提交 issue](https://github.com/JZKK720/cubecloud-agentic-os/issues/new)。
 安全问题请遵循 [`SECURITY.md`](SECURITY.md)，不要在公开 issue 中发布凭据、API 密钥或私人日志。
 
 ## 译文

@@ -199,7 +199,7 @@ const ZH_LINES = [
   '`ecc-skill-scout` \u5199\u524d\u68c0\u7d22\u3001`po-write-a-skill` \u5199\u4f5c\u5951\u7ea6\uff0c\u4ee5\u53ca `sp-write-skill`',
   '\u7684 TDD-for-skills \u7eaa\u5f8b\uff0c\u5e76\u643a\u5e26 red-baseline \u538b\u529b\u6d4b\u8bd5\u3002',
   '',
-  '\u5982\u679c\u4f60\u53d1\u73b0 bug \u6216\u6709\u529f\u80fd\u8bf7\u6c42\uff0c\u8bf7 [\u63d0\u4ea4 issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new)\u3002',
+  '\u5982\u679c\u4f60\u53d1\u73b0 bug \u6216\u6709\u529f\u80fd\u8bf7\u6c42\uff0c\u8bf7 [\u63d0\u4ea4 issue](https://github.com/JZKK720/cubecloud-agentic-os/issues/new)\u3002',
   '\u5b89\u5168\u95ee\u9898\u8bf7\u9075\u5faa [`SECURITY.md`](SECURITY.md)\uff1a\u8bf7\u52ff\u5728\u516c\u5f00\u95ee\u9898\u4e2d\u53d1\u5e03\u51d1\u4e66\u3001API \u5bc6\u94a5\u6216\u79c1\u4eba\u65e5\u5fd7\u3002',
   '',
   '',

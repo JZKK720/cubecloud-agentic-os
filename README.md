@@ -303,7 +303,7 @@ typically goes through `gbrain-skillify`, `ecc-skill-scout`,
 `po-write-a-skill`, and `sp-write-skill`, with a red-baseline test to
 prove the behavior is worth keeping.
 
-If you find a bug or have a feature request, [file an issue](https://github.com/cubecloud-contributors/cubecloud-agentic-os/issues/new).
+If you find a bug or have a feature request, [file an issue](https://github.com/JZKK720/cubecloud-agentic-os/issues/new).
 For security issues, follow [`SECURITY.md`](SECURITY.md) and do not post
 secrets, API keys, or private logs in public issues.
 

@@ -4,7 +4,7 @@
 // installer URL, and SHA256 of the NSIS installer in dist/, and writes
 // the result under dist/winget/manifests/c/Cubecloud/CubecloudDesktop/<version>/.
 //
-// Run from CLI: VERSION=0.2.3 PUBLISH_OWNER=cubecloud-contributors PUBLISH_REPO=cubecloud-agentic-os node scripts/generate-winget-manifests.mjs
+// Run from CLI: VERSION=0.2.3 PUBLISH_OWNER=JZKK720 PUBLISH_REPO=cubecloud-agentic-os node scripts/generate-winget-manifests.mjs
 // Or import as ESM and call generateWingetManifests({ rootDir, version, name, publishOwner, publishRepo }).
 
 import { createHash } from "node:crypto";
@@ -97,7 +97,7 @@ if (isCli) {
     rootDir,
     version: process.env.VERSION || pkg.version,
     name: pkg.name,
-    publishOwner: process.env.PUBLISH_OWNER || "cubecloud-contributors",
+    publishOwner: process.env.PUBLISH_OWNER || "JZKK720",
     publishRepo: process.env.PUBLISH_REPO || "cubecloud-agentic-os",
   });
   console.log(`Winget manifests generated in ${result.outDir}`);

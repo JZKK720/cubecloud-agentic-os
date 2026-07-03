@@ -18,7 +18,7 @@ If you only have 5 minutes: read §1 ("What is this"), §2 ("Why is it this way"
 
 ## §1. What is Cubecloud Agent Desktop?
 
-A native desktop control center for [Cubecloud Agentic-OS](https://github.com/cubecloud-contributors/cubecloud-agentic-os) — the agent operating system that this repo lives inside. The desktop wraps a local or remote agent runtime (Hermes today, IronClaw as a current gateway-handoff lane, OpenClaw as an optional future lane) in a single GUI so the user does not have to manage the CLI by hand.
+A native desktop control center for [Cubecloud Agentic-OS](https://github.com/JZKK720/cubecloud-agentic-os) — the agent operating system that this repo lives inside. The desktop wraps a local or remote agent runtime (Hermes today, IronClaw as a current gateway-handoff lane, OpenClaw as an optional future lane) in a single GUI so the user does not have to manage the CLI by hand.
 
 It is the **front door** to:
 
