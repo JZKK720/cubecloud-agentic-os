@@ -7,6 +7,14 @@ export default {
   stopped: "Detenido",
   gatewayHint:
     "Conecta Hermes con Telegram, Discord, Slack y otras plataformas",
+  kicker: "Plano de control post-configuración",
+  heroSummary:
+    "Mantén las credenciales del gateway locales en Hermes, habilita solo los puentes de plataforma que necesites y gestiona los mismos carriles de runtime presentados durante el onboarding desde un único plano de control de escritorio.",
+  platformsHint:
+    "El onboarding establece el primer runtime y modelo. Esta pantalla mantiene alineados el servicio del gateway y las entregas de plataforma después.",
+  supportedBridgesHint:
+    "Los puentes compatibles permanecen deshabilitados hasta que optes por ellos. Habilita solo los proveedores y los carriles de mensajería que esta máquina deba exponer.",
+  platformsEnabled: "{{enabled}}/{{total}} plataformas habilitadas",
   group: {
     messaging: "Mensajería",
     eastern: "Plataformas asiáticas",

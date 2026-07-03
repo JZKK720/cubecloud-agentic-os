@@ -6,6 +6,14 @@ export default {
   running: "运行中",
   stopped: "已停止",
   gatewayHint: "将 Hermes 连接到 Telegram、Discord、Slack 等平台",
+  kicker: "设置后的控制平面",
+  heroSummary:
+    "在 Hermes 中本地保存网关凭据，仅启用所需的平台桥接，并从一个桌面控制平面管理初始引导期间所呈现的同一组运行时通道。",
+  platformsHint:
+    "初始引导会设置首个运行时和模型。此界面在之后保持网关服务与平台交接的一致性。",
+  supportedBridgesHint:
+    "受支持的桥接在您主动启用前保持禁用。仅启用此机器应暴露的提供者与消息通道。",
+  platformsEnabled: "{{enabled}}/{{total}} 个平台已启用",
   group: {
     messaging: "即时通讯",
     eastern: "东方平台",

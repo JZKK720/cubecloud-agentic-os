@@ -337,30 +337,37 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       </div>
 
       <div className="tools-grid">
-        {toolsets.map((t) => (
-          <div
-            key={t.key}
-            className={`tools-card ${t.enabled ? "tools-card-enabled" : "tools-card-disabled"}`}
-            onClick={() => handleToggle(t.key, t.enabled)}
-          >
-            <div className="tools-card-top">
-              <ToolIcon toolKey={t.key} />
-              <label
-                className="tools-toggle"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <input
-                  type="checkbox"
-                  checked={t.enabled}
-                  onChange={() => handleToggle(t.key, t.enabled)}
-                />
-                <span className="tools-toggle-track" />
-              </label>
-            </div>
-            <div className="tools-card-label">{t.label}</div>
-            <div className="tools-card-description">{t.description}</div>
+        {toolsets.length === 0 ? (
+          <div className="tools-empty">
+            <p className="tools-empty-text">{t("tools.empty")}</p>
+            <p className="tools-empty-hint">{t("tools.emptyHint")}</p>
           </div>
-        ))}
+        ) : (
+          toolsets.map((t) => (
+            <div
+              key={t.key}
+              className={`tools-card ${t.enabled ? "tools-card-enabled" : "tools-card-disabled"}`}
+              onClick={() => handleToggle(t.key, t.enabled)}
+            >
+              <div className="tools-card-top">
+                <ToolIcon toolKey={t.key} />
+                <label
+                  className="tools-toggle"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="checkbox"
+                    checked={t.enabled}
+                    onChange={() => handleToggle(t.key, t.enabled)}
+                  />
+                  <span className="tools-toggle-track" />
+                </label>
+              </div>
+              <div className="tools-card-label">{t.label}</div>
+              <div className="tools-card-description">{t.description}</div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* V2.10.66 — Agent-Reach internet capability status */}

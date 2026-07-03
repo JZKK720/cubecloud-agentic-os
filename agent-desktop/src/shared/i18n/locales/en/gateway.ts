@@ -7,6 +7,14 @@ export default {
   stopped: "Stopped",
   gatewayHint:
     "Connects Hermes to Telegram, Discord, Slack, and other platforms",
+  kicker: "Post-setup control plane",
+  heroSummary:
+    "Keep gateway credentials local in Hermes, enable only the platform bridges you need, and manage the same runtime lanes surfaced during onboarding from one desktop control plane.",
+  platformsHint:
+    "Onboarding sets the first runtime and model. This screen keeps the gateway service and platform handoffs aligned afterward.",
+  supportedBridgesHint:
+    "Supported bridges stay disabled until you opt in. Enable only the providers and messaging lanes this machine should expose.",
+  platformsEnabled: "{{enabled}}/{{total}} platforms enabled",
   group: {
     messaging: "Messaging",
     eastern: "Eastern platforms",

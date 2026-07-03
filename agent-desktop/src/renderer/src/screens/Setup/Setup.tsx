@@ -382,7 +382,7 @@ function Setup({
                 disabled={installingOpenclawWsl}
               >
                 {installingOpenclawWsl
-                  ? "Launching..."
+                  ? t("setup.launching")
                   : openclawWslInstallAction.label}
               </button>
             )}
@@ -393,7 +393,7 @@ function Setup({
                 disabled={openingOpenclawGuide}
               >
                 {openingOpenclawGuide
-                  ? "Opening..."
+                  ? t("setup.opening")
                   : openclawInstallGuideAction.label}
               </button>
             )}

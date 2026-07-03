@@ -110,11 +110,14 @@ export default function SandboxTasks({
           authToken,
         );
         setModels(modelList);
-        if (modelList.length > 0 && !selectedModel) {
-          setSelectedModel(modelList[0].id);
-        } else if (modelList.length === 0) {
-          setSelectedModel("");
-        }
+        // Use a functional update to avoid depending on selectedModel
+        // in the deps array — this prevents a re-probe loop where
+        // setSelectedModel changes the callback identity.
+        setSelectedModel((prev) => {
+          if (modelList.length > 0 && !prev) return modelList[0].id;
+          if (modelList.length === 0) return "";
+          return prev;
+        });
       } catch (err) {
         setModels([]);
         setSelectedModel("");
@@ -128,7 +131,7 @@ export default function SandboxTasks({
     } finally {
       setProbing(false);
     }
-  }, [gatewayUrl, token, selectedModel]);
+  }, [gatewayUrl, token]);
 
   const dispatchTask = useCallback(async () => {
     if (!taskInput.trim() || !selectedModel) return;

@@ -190,13 +190,19 @@ function Agents({
       )}
 
       <div className="agents-grid">
-        {profiles.map((p) => (
-          <div
-            key={p.name}
-            className={`agents-card ${activeProfile === p.name ? "active" : ""}`}
-            onClick={() => handleSelect(p.name)}
-            role="button"
-            tabIndex={0}
+        {profiles.length === 0 ? (
+          <div className="agents-empty">
+            <p className="agents-empty-text">{t("agents.empty")}</p>
+            <p className="agents-empty-hint">{t("agents.emptyHint")}</p>
+          </div>
+        ) : (
+          profiles.map((p) => (
+            <div
+              key={p.name}
+              className={`agents-card ${activeProfile === p.name ? "active" : ""}`}
+              onClick={() => handleSelect(p.name)}
+              role="button"
+              tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSelect(p.name);
             }}
@@ -280,7 +286,7 @@ function Agents({
                 ))}
             </div>
           </div>
-        ))}
+        )))}
       </div>
     </div>
   );

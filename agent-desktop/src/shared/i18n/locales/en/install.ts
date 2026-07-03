@@ -31,4 +31,5 @@ export default {
   useExistingDone:
     "Existing installation set — quit and reopen Cubecloud Desktop to apply it.",
   useExistingQuitBtn: "Quit Cubecloud Desktop",
+  supportChannel: "Open Support Channel",
 } as const;
