@@ -7,6 +7,14 @@ export default {
   stopped: "停止中",
   gatewayHint:
     "Hermes を Telegram・Discord・Slack などのプラットフォームに接続します",
+  kicker: "セットアップ後のコントロールプレーン",
+  heroSummary:
+    "Hermes にゲートウェイの認証情報をローカルに保持し、必要なプラットフォームブリッジのみを有効化し、オンボーディングで提示されたのと同じランタイムレーンをひとつのデスクトップコントロールプレーンから管理します。",
+  platformsHint:
+    "オンボーディングが最初のランタイムとモデルを設定します。この画面は以降、ゲートウェイサービスとプラットフォームの連携を整合させ続けます。",
+  supportedBridgesHint:
+    "対応ブリッジはオプトインするまで無効のままです。このマシンが公開すべきプロバイダーとメッセージングレーンのみを有効化してください。",
+  platformsEnabled: "{{enabled}}/{{total}} 件のプラットフォームが有効",
   group: {
     messaging: "メッセージング",
     eastern: "東アジアのプラットフォーム",

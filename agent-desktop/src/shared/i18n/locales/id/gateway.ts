@@ -7,6 +7,14 @@ export default {
   stopped: "Berhenti",
   gatewayHint:
     "Menghubungkan Hermes ke Telegram, Discord, Slack, dan platform lainnya",
+  kicker: "Bidang kendali pasca-pengaturan",
+  heroSummary:
+    "Simpan kredensial gateway secara lokal di Hermes, aktifkan hanya jembatan platform yang Anda butuhkan, dan kelola jalur runtime yang sama yang ditampilkan saat onboarding dari satu bidang kendali desktop.",
+  platformsHint:
+    "Onboarding menetapkan runtime dan model pertama. Layar ini menjaga layanan gateway dan serah-terima platform tetap selaras setelahnya.",
+  supportedBridgesHint:
+    "Jembatan yang didukung tetap dinonaktifkan sampai Anda mengaktifkannya. Aktifkan hanya penyedia dan jalur pesan yang harus diekspos oleh mesin ini.",
+  platformsEnabled: "{{enabled}}/{{total}} platform diaktifkan",
   group: {
     messaging: "Pesan",
     eastern: "Platform Asia",

@@ -73,4 +73,6 @@ export default {
   localLlm: "Local LLM",
   modelBaseUrlPlaceholder: "http://localhost:1234/v1",
   modelNamePlaceholder: "e.g. llama-3.1-8b",
+  launching: "Launching...",
+  opening: "Opening...",
 } as const;

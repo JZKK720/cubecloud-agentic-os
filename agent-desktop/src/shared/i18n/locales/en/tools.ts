@@ -2,6 +2,8 @@ export default {
   title: "Tools",
   subtitle:
     "Enable or disable the toolsets your agent can use during conversations",
+  empty: "No toolsets available",
+  emptyHint: "Toolsets will appear here once the gateway is running.",
   web: {
     label: "Web Search",
     description: "Search the web and extract content from URLs",

@@ -255,10 +255,6 @@ function Plans({ profile, visible }: PlansProps): React.JSX.Element {
             const key = `${sb.stepId}::${b.decisionId}`;
             const ans = answers[key];
             if (!ans) continue;
-            const sel = b.recommendation.includes(":")
-              ? null
-              : null;
-            void sel;
             // Simple textual answer: just the selection index label
             // (e.g. "Answer: option 0"). A more elaborate renderer
             // would resolve to a per-brief shape; we keep the

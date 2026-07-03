@@ -271,12 +271,10 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
     <div className="settings-container">
       <div className="settings-gateway-hero">
         <div>
-          <div className="settings-gateway-kicker">Post-setup control plane</div>
-          <h1 className="settings-header">Agent Desktop Gateway</h1>
+          <div className="settings-gateway-kicker">{t("gateway.kicker")}</div>
+          <h1 className="settings-header">{t("gateway.title")}</h1>
           <p className="settings-gateway-summary">
-            Keep gateway credentials local in Hermes, enable only the platform
-            bridges you need, and manage the same runtime lanes surfaced during
-            onboarding from one desktop control plane.
+            {t("gateway.heroSummary")}
           </p>
         </div>
         <div className="settings-gateway-badges">
@@ -284,7 +282,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             {gatewayRunning ? t("gateway.running") : t("gateway.stopped")}
           </span>
           <span className="settings-gateway-badge">
-            {enabledPlatformCount}/{GATEWAY_PLATFORMS.length} platforms enabled
+            {t("gateway.platformsEnabled", { enabled: enabledPlatformCount, total: GATEWAY_PLATFORMS.length })}
           </span>
         </div>
       </div>
@@ -310,8 +308,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
           </div>
           <div className="settings-field-hint">{t("gateway.gatewayHint")}</div>
           <div className="settings-field-hint settings-field-hint--secondary">
-            Onboarding sets the first runtime and model. This screen keeps the
-            gateway service and platform handoffs aligned afterward.
+            {t("gateway.platformsHint")}
           </div>
         </div>
       </div>
@@ -319,8 +316,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
       <div className="settings-section">
         <div className="settings-section-title">{t("gateway.platforms")}</div>
         <div className="settings-field-hint settings-field-hint--secondary">
-          Supported bridges stay disabled until you opt in. Enable only the
-          providers and messaging lanes this machine should expose.
+          {t("gateway.supportedBridgesHint")}
         </div>
         {(["messaging", "eastern", "async", "home"] as const).map(
           (groupKey) => {

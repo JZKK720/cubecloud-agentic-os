@@ -315,7 +315,7 @@ function Install({
               title={TELEGRAM_COMMUNITY_URL}
             >
               <Send size={13} />
-              Open Support Channel
+              {t("install.supportChannel")}
             </button>
           </div>
         </div>
