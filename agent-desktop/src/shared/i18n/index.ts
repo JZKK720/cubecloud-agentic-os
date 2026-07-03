@@ -27,6 +27,7 @@ import installEn from "./locales/en/install";
 import constantsEn from "./locales/en/constants";
 import kanbanEn from "./locales/en/kanban";
 import everosen from "./locales/en/everos";
+import workspaceEn from "./locales/en/workspace";
 import commonEs from "./locales/es/common";
 import navigationEs from "./locales/es/navigation";
 import welcomeEs from "./locales/es/welcome";
@@ -229,6 +230,7 @@ export const resources = {
       constants: constantsEn,
       kanban: kanbanEn,
       everos: everosen,
+      workspace: workspaceEn,
       plans: plansEn,
       mcp: mcpEn,
     },

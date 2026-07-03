@@ -327,12 +327,10 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
     <div className="workspace-shell">
       <section className="workspace-hero">
         <div className="workspace-hero-copy">
-          <div className="workspace-kicker">Code intelligence surface</div>
+          <div className="workspace-kicker">{t("workspace.kicker")}</div>
           <h1 className="workspace-title">{t("navigation.workspace")}</h1>
           <p className="workspace-summary">
-            Index a local repository with CodeGraph, inspect real graph stats,
-            and build context bundles for Hermes workflows without pretending
-            this is the old Office webview.
+            {t("workspace.summary")}
           </p>
         </div>
         <div className="workspace-hero-card">
@@ -341,16 +339,14 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
           </div>
           <div className="workspace-hero-meta">
             <span className="workspace-chip">
-              {cliStatus?.installed ? "CLI detected" : "CLI required"}
+              {cliStatus?.installed ? t("workspace.cliDetected") : t("workspace.cliRequired")}
             </span>
             <span className="workspace-chip workspace-chip-muted">
-              External local process
+              {t("workspace.externalLocalProcess")}
             </span>
           </div>
           <p>
-            The current prototype uses the local CodeGraph CLI over IPC. It
-            does not tunnel over remote HTTP and it does not embed a workspace
-            webview.
+            {t("workspace.prototypeHint")}
           </p>
         </div>
       </section>
@@ -358,21 +354,21 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
       <section className="workspace-grid">
         <div className="workspace-card">
           <div className="workspace-card-header">
-            <h2>Runtime</h2>
+            <h2>{t("workspace.runtime")}</h2>
             <button className="btn btn-secondary btn-sm" onClick={handleRefresh}>
               <Refresh size={14} />
-              <span>{loadingCli || loadingStatus ? "Refreshing" : "Refresh"}</span>
+              <span>{loadingCli || loadingStatus ? t("workspace.refreshing") : t("workspace.refresh")}</span>
             </button>
           </div>
 
           <div className="workspace-row">
-            <span className="workspace-label">Version</span>
+            <span className="workspace-label">{t("workspace.version")}</span>
             <span className="workspace-value">
-              {cliStatus?.version || (loadingCli ? "Checking..." : "Not detected")}
+              {cliStatus?.version || (loadingCli ? t("workspace.checking") : t("workspace.notDetected"))}
             </span>
           </div>
           <div className="workspace-row">
-            <span className="workspace-label">Command</span>
+            <span className="workspace-label">{t("workspace.command")}</span>
             <span className="workspace-value workspace-code">
               {cliStatus?.command || "codegraph"}
             </span>
@@ -385,8 +381,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
                 <span>{t("common.workspace.installCodeGraphLocally")}</span>
               </div>
               <p>
-                Agent Desktop can only drive this surface once the `codegraph`
-                CLI is available on the machine path.
+                {t("workspace.installHint")}
               </p>
               <pre className="workspace-command">{installCommand}</pre>
               <div className="workspace-actions workspace-actions-tight">
@@ -395,7 +390,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
                   onClick={handleInstallCli}
                   disabled={installingCli}
                 >
-                  {installingCli ? "Installing CLI..." : "Install CodeGraph CLI"}
+                  {installingCli ? t("workspace.installingCli") : t("workspace.installCodeGraphCli")}
                 </button>
               </div>
             </div>

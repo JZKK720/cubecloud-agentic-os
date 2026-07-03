@@ -95,7 +95,7 @@ describe("Workspace", () => {
     });
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Install CodeGraph CLI" }),
+      screen.getByRole("button", { name: "workspace.installCodeGraphCli" }),
     );
 
     await waitFor(() => {
