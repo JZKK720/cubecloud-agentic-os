@@ -1,6 +1,6 @@
 {
   "name": "cubecloud-agent-desktop",
-  "version": "2.10.74",
+  "version": "2.10.75",
   "description": "Agent Desktop — desktop shell for Cubecloud Agentic-OS",
   "main": "./out/main/index.js",
   "author": "Cubecloud Contributors",
