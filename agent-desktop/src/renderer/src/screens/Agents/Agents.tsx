@@ -51,9 +51,15 @@ function Agents({
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const loadProfiles = useCallback(async (): Promise<void> => {
-    const list = await window.hermesAPI.listProfiles();
-    setProfiles(list);
-    setLoading(false);
+    try {
+      const list = await window.hermesAPI.listProfiles();
+      setProfiles(list);
+      setError("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -65,30 +71,44 @@ function Agents({
     if (!name) return;
     setCreating(true);
     setError("");
-    const result = await window.hermesAPI.createProfile(name, cloneConfig);
-    setCreating(false);
-    if (result.success) {
-      setShowCreate(false);
-      setNewName("");
-      loadProfiles();
-    } else {
-      setError(result.error || t("agents.createFailed"));
+    try {
+      const result = await window.hermesAPI.createProfile(name, cloneConfig);
+      if (result.success) {
+        setShowCreate(false);
+        setNewName("");
+        loadProfiles();
+      } else {
+        setError(result.error || t("agents.createFailed"));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setCreating(false);
     }
   }
 
   async function handleDelete(name: string): Promise<void> {
-    const result = await window.hermesAPI.deleteProfile(name);
-    if (result.success) {
-      if (activeProfile === name) onSelectProfile("default");
-      loadProfiles();
+    try {
+      const result = await window.hermesAPI.deleteProfile(name);
+      if (result.success) {
+        if (activeProfile === name) onSelectProfile("default");
+        loadProfiles();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setConfirmDelete(null);
     }
-    setConfirmDelete(null);
   }
 
   async function handleSelect(name: string): Promise<void> {
-    await window.hermesAPI.setActiveProfile(name);
-    onSelectProfile(name);
-    loadProfiles();
+    try {
+      await window.hermesAPI.setActiveProfile(name);
+      onSelectProfile(name);
+      loadProfiles();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
   }
 
   function providerLabel(provider: string): string {

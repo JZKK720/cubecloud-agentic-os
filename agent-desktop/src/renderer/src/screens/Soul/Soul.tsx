@@ -12,18 +12,25 @@ function Soul({ profile }: SoulProps): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [showReset, setShowReset] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const loaded = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadSoul = useCallback(async (): Promise<void> => {
     loaded.current = false;
     setLoading(true);
-    const text = await window.hermesAPI.readSoul(profile);
-    setContent(text);
-    setLoading(false);
-    setTimeout(() => {
-      loaded.current = true;
-    }, 300);
+    try {
+      const text = await window.hermesAPI.readSoul(profile);
+      setContent(text);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+      setTimeout(() => {
+        loaded.current = true;
+      }, 300);
+    }
   }, [profile]);
 
   useEffect(() => {
@@ -33,9 +40,14 @@ function Soul({ profile }: SoulProps): React.JSX.Element {
   const saveSoul = useCallback(
     async (text: string) => {
       if (!loaded.current) return;
-      await window.hermesAPI.writeSoul(text, profile);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      try {
+        await window.hermesAPI.writeSoul(text, profile);
+        setSaved(true);
+        setError(null);
+        setTimeout(() => setSaved(false), 2000);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+      }
     },
     [profile],
   );
@@ -52,15 +64,21 @@ function Soul({ profile }: SoulProps): React.JSX.Element {
   }, [content, saveSoul]);
 
   async function handleReset(): Promise<void> {
-    const newContent = await window.hermesAPI.resetSoul(profile);
-    loaded.current = false;
-    setContent(newContent);
-    setShowReset(false);
-    setSaved(true);
-    setTimeout(() => {
-      loaded.current = true;
-      setSaved(false);
-    }, 2000);
+    try {
+      const newContent = await window.hermesAPI.resetSoul(profile);
+      loaded.current = false;
+      setContent(newContent);
+      setShowReset(false);
+      setSaved(true);
+      setError(null);
+      setTimeout(() => {
+        loaded.current = true;
+        setSaved(false);
+      }, 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      setShowReset(false);
+    }
   }
 
   if (loading) {
@@ -75,6 +93,7 @@ function Soul({ profile }: SoulProps): React.JSX.Element {
 
   return (
     <div className="soul-container">
+      {error && <div className="soul-error">{error}</div>}
       <div className="soul-header">
         <div>
           <h2 className="soul-title">

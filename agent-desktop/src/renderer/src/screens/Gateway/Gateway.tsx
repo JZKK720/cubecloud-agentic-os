@@ -26,12 +26,16 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
   );
 
   const loadConfig = useCallback(async (): Promise<void> => {
-    const envData = await window.hermesAPI.getEnv(profile);
-    setEnv(envData);
-    const gwStatus = await window.hermesAPI.gatewayStatus();
-    setGatewayRunning(gwStatus);
-    const platforms = await window.hermesAPI.getPlatformEnabled(profile);
-    setPlatformEnabled(platforms);
+    try {
+      const envData = await window.hermesAPI.getEnv(profile);
+      setEnv(envData);
+      const gwStatus = await window.hermesAPI.gatewayStatus();
+      setGatewayRunning(gwStatus);
+      const platforms = await window.hermesAPI.getPlatformEnabled(profile);
+      setPlatformEnabled(platforms);
+    } catch {
+      // Leave previous state on transient IPC failure
+    }
   }, [profile]);
 
   useEffect(() => {
@@ -41,8 +45,12 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
   // Poll gateway status (10s interval to reduce IPC overhead)
   useEffect(() => {
     const interval = setInterval(async () => {
-      const status = await window.hermesAPI.gatewayStatus();
-      setGatewayRunning(status);
+      try {
+        const status = await window.hermesAPI.gatewayStatus();
+        setGatewayRunning(status);
+      } catch {
+        // Transient IPC failure — leave previous state
+      }
     }, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -52,17 +60,26 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
       clearTimeout(gatewayStatusTimeoutRef.current);
       gatewayStatusTimeoutRef.current = null;
     }
-    if (gatewayRunning) {
-      await window.hermesAPI.stopGateway();
-      setGatewayRunning(false);
-    } else {
-      const started = await window.hermesAPI.startGateway();
-      setGatewayRunning(started);
-      gatewayStatusTimeoutRef.current = setTimeout(async () => {
-        const status = await window.hermesAPI.gatewayStatus();
-        setGatewayRunning(status);
-        gatewayStatusTimeoutRef.current = null;
-      }, 5000);
+    try {
+      if (gatewayRunning) {
+        await window.hermesAPI.stopGateway();
+        setGatewayRunning(false);
+      } else {
+        const started = await window.hermesAPI.startGateway();
+        setGatewayRunning(started);
+        gatewayStatusTimeoutRef.current = setTimeout(async () => {
+          try {
+            const status = await window.hermesAPI.gatewayStatus();
+            setGatewayRunning(status);
+          } catch {
+            /* leave previous state */
+          }
+          gatewayStatusTimeoutRef.current = null;
+        }, 5000);
+      }
+    } catch {
+      // Best-effort: re-sync from backend on failure
+      void loadConfig();
     }
   }
 
@@ -73,19 +90,32 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
     }
     const newValue = !platformEnabled[platform];
     setPlatformEnabled((prev) => ({ ...prev, [platform]: newValue }));
-    await window.hermesAPI.setPlatformEnabled(platform, newValue, profile);
-    platformStatusTimeoutRef.current = setTimeout(async () => {
-      const status = await window.hermesAPI.gatewayStatus();
-      setGatewayRunning(status);
-      platformStatusTimeoutRef.current = null;
-    }, 3000);
+    try {
+      await window.hermesAPI.setPlatformEnabled(platform, newValue, profile);
+      platformStatusTimeoutRef.current = setTimeout(async () => {
+        try {
+          const status = await window.hermesAPI.gatewayStatus();
+          setGatewayRunning(status);
+        } catch {
+          /* leave previous state */
+        }
+        platformStatusTimeoutRef.current = null;
+      }, 3000);
+    } catch {
+      // Rollback on failure
+      setPlatformEnabled((prev) => ({ ...prev, [platform]: !newValue }));
+    }
   }
 
   async function handleBlur(key: string): Promise<void> {
     const value = env[key] || "";
-    await window.hermesAPI.setEnv(key, value, profile);
-    setSavedKey(key);
-    setTimeout(() => setSavedKey(null), 2000);
+    try {
+      await window.hermesAPI.setEnv(key, value, profile);
+      setSavedKey(key);
+      setTimeout(() => setSavedKey(null), 2000);
+    } catch {
+      // Best-effort: don't surface a banner for env save failure
+    }
   }
 
   function handleChange(key: string, value: string): void {

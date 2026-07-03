@@ -1,5 +1,5 @@
 provider: github
 # GitHub release feed for the Cubecloud Agentic-OS monorepo desktop artifacts.
-owner: cubecloud-contributors
+owner: JZKK720
 repo: cubecloud-agentic-os
 updaterCacheDirName: agent-desktop-updater

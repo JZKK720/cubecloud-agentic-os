@@ -16,20 +16,26 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
   const [data, setData] = useState<MemoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<MemoryTab>("entries");
-  const [error] = useState("");
+  const [error, setError] = useState("");
   const [memoryProvider, setMemoryProvider] = useState<string | null>(null);
   const [providers, setProviders] = useState<MemoryProviderInfo[]>([]);
 
   const loadData = useCallback(async () => {
-    const [d, provider, provs] = await Promise.all([
-      window.hermesAPI.readMemory(profile),
-      window.hermesAPI.getConfig("memory.provider", profile),
-      window.hermesAPI.discoverMemoryProviders(profile),
-    ]);
-    setData(d as MemoryData);
-    setMemoryProvider(provider);
-    setProviders(provs);
-    setLoading(false);
+    try {
+      const [d, provider, provs] = await Promise.all([
+        window.hermesAPI.readMemory(profile),
+        window.hermesAPI.getConfig("memory.provider", profile),
+        window.hermesAPI.discoverMemoryProviders(profile),
+      ]);
+      setData(d as MemoryData);
+      setMemoryProvider(provider);
+      setProviders(provs);
+      setError("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
   }, [profile]);
 
   useEffect(() => {

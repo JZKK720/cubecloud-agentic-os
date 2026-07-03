@@ -274,9 +274,14 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
-    const list = await window.hermesAPI.getToolsets(profile);
-    setToolsets(list);
-    setLoading(false);
+    try {
+      const list = await window.hermesAPI.getToolsets(profile);
+      setToolsets(list);
+    } catch {
+      setToolsets([]);
+    } finally {
+      setLoading(false);
+    }
   }, [profile]);
 
   const loadAgentReach = useCallback(async (): Promise<void> => {
@@ -300,10 +305,18 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     key: string,
     currentEnabled: boolean,
   ): Promise<void> {
+    // Optimistic update — rollback on IPC failure so the toggle
+    // doesn't desync from the backend state.
     setToolsets((prev) =>
       prev.map((t) => (t.key === key ? { ...t, enabled: !currentEnabled } : t)),
     );
-    await window.hermesAPI.setToolsetEnabled(key, !currentEnabled, profile);
+    try {
+      await window.hermesAPI.setToolsetEnabled(key, !currentEnabled, profile);
+    } catch {
+      setToolsets((prev) =>
+        prev.map((t) => (t.key === key ? { ...t, enabled: currentEnabled } : t)),
+      );
+    }
   }
 
   if (loading) {
