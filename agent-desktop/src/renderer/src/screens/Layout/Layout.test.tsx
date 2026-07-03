@@ -571,3 +571,51 @@ describe("Layout sidebar content panes", () => {
     expect(screen.queryByText("settings-screen")).not.toBeInTheDocument();
   });
 });
+
+describe("Layout chat session persistence", () => {
+  it("restores the last active session from localStorage on mount", async () => {
+    localStorage.setItem("hermes-active-session", "abc-123");
+    installHermesAPI({
+      listMcpServers: vi.fn().mockResolvedValue([]),
+    });
+    // Override getSessionMessages to return a non-empty array so the
+    // restore effect treats the session as still valid.
+    (window as unknown as { hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> } })
+      .hermesAPI.getSessionMessages = vi
+        .fn()
+        .mockResolvedValue([{ id: 1, role: "user", content: "hello", timestamp: 0 }]);
+
+    render(<Layout />);
+    await waitFor(() => {
+      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
+    });
+
+    // The restore effect should have called getSessionMessages with
+    // the persisted session ID.
+    await waitFor(() => {
+      expect(
+        (window as unknown as { hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> } })
+          .hermesAPI.getSessionMessages,
+      ).toHaveBeenCalledWith("abc-123");
+    });
+  });
+
+  it("clears a stale session ID when the session no longer exists in the DB", async () => {
+    localStorage.setItem("hermes-active-session", "gone-456");
+    installHermesAPI({
+      listMcpServers: vi.fn().mockResolvedValue([]),
+    });
+    (window as unknown as { hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> } })
+      .hermesAPI.getSessionMessages = vi.fn().mockResolvedValue([]);
+
+    render(<Layout />);
+    await waitFor(() => {
+      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
+    });
+
+    // The stale ID should be cleared from localStorage.
+    await waitFor(() => {
+      expect(localStorage.getItem("hermes-active-session")).toBeNull();
+    });
+  });
+});

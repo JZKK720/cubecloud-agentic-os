@@ -821,6 +821,36 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     <div className="settings-container">
       <h1 className="settings-header">{t("settings.title")}</h1>
 
+      {/* Sticky section nav — lets the user jump to a group without
+          scrolling through the entire flat page. Each button scrolls
+          to the matching <section data-group="..."> wrapper. */}
+      <nav className="settings-section-nav" aria-label="Settings sections">
+        {[
+          { id: "engine", label: "Engine" },
+          { id: "connection", label: "Connection" },
+          { id: "appearance", label: "Appearance" },
+          { id: "data", label: "Data" },
+          { id: "privacy", label: "Privacy" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className="settings-section-nav-btn"
+            data-group={tab.id}
+            onClick={() => {
+              const target = document.querySelector(
+                `section[data-group="${tab.id}"]`,
+              );
+              target?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
+
+      {/* ─── Engine group ─── */}
+      <section data-group="engine">
       <div className="settings-section">
         <div className="settings-section-title">
           {t("settings.sections.hermesAgent")}
@@ -1014,7 +1044,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </div>
         ))}
       </div>
+      </section>
 
+      {/* ─── Connection group ─── */}
+      <section data-group="connection">
       <div className="settings-section">
         <div className="settings-section-title">
           {t("settings.connectionSection")}
@@ -1476,7 +1509,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </div>
         </div>
       )}
+      </section>
 
+      {/* ─── Appearance group ─── */}
+      <section data-group="appearance">
       <div className="settings-section">
         <div className="settings-section-title">
           {t("settings.sections.appearance")}
@@ -1570,7 +1606,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </ul>
         </div>
       </div>
+      </section>
 
+      {/* ─── Connection group (continued) — Network ─── */}
+      <section data-group="connection">
       <div className="settings-section">
         <div className="settings-section-title">
           {t("settings.networkSection")}
@@ -1650,7 +1689,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           />
         </div>
       )}
+      </section>
 
+      {/* ─── Data group ─── */}
+      <section data-group="data">
       <div className="settings-section">
         <div className="settings-section-title">
           {t("settings.dataSection")}
@@ -1921,6 +1963,7 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </div>
         )}
       </div>
+      </section>
     </div>
   );
 }

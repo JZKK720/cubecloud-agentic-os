@@ -310,7 +310,7 @@ jobs:
       - name: Generate winget manifests
         env:
           VERSION: ${{ needs.prepare.outputs.version }}
-          PUBLISH_OWNER: cubecloud-contributors
+          PUBLISH_OWNER: JZKK720
           PUBLISH_REPO: cubecloud-agentic-os
         run: node scripts/generate-winget-manifests.mjs
 

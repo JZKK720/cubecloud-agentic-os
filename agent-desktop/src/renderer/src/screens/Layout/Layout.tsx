@@ -128,7 +128,15 @@ function Layout({
   const { t } = useI18n();
   const [view, setView] = useState<View>("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(
+    () => {
+      try {
+        return localStorage.getItem("hermes-active-session") || null;
+      } catch {
+        return null;
+      }
+    },
+  );
   const [activeProfile, setActiveProfile] = useState("default");
   const [workspaceDraft, setWorkspaceDraft] = useState<{
     nonce: string;
@@ -172,6 +180,48 @@ function Layout({
   useEffect(() => {
     void refreshMcpCount();
   }, [refreshMcpCount]);
+
+  // Persist the active session ID so a renderer refresh (Ctrl+R,
+  // devtools reload, or an unexpected crash) restores the same
+  // conversation instead of landing on an empty chat. The transcript
+  // itself is reloaded from state.db via getSessionMessages.
+  useEffect(() => {
+    try {
+      if (currentSessionId) {
+        localStorage.setItem("hermes-active-session", currentSessionId);
+      } else {
+        localStorage.removeItem("hermes-active-session");
+      }
+    } catch {
+      /* localStorage may be unavailable in some sandboxed contexts */
+    }
+  }, [currentSessionId]);
+
+  // Auto-resume the last active session on mount. Guards against
+  // stale IDs (profile switch, DB wipe) by treating an empty DB
+  // return as "session no longer exists" and clearing state.
+  const [restored, setRestored] = useState(false);
+  useEffect(() => {
+    if (restored || !currentSessionId) return;
+    void (async (): Promise<void> => {
+      try {
+        const items = (await window.hermesAPI.getSessionMessages(
+          currentSessionId,
+        )) as DbHistoryItem[];
+        if (items && items.length > 0) {
+          setMessages(dbItemsToChatMessages(items));
+        } else {
+          // Session no longer exists in this profile's DB — clear
+          // the stale ID so the user lands on a clean chat.
+          setCurrentSessionId(null);
+        }
+      } catch {
+        setCurrentSessionId(null);
+      } finally {
+        setRestored(true);
+      }
+    })();
+  }, [restored, currentSessionId]);
 
   // Re-render the nav item label with a small badge if the item is
   // the MCP entry and we have a count. Other items render plain.

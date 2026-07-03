@@ -1,5 +1,13 @@
 appId: io.cubecloud.desktop
 productName: cubecloud-agent-desktop
+# electron-updater feed: the packaged app checks this GitHub repo's
+# releases for latest.yml / latest-mac.yml / latest-linux.yml. Without
+# a publish block, autoUpdater.checkForUpdates() silently fails and
+# the sidebar update button never appears (issue: update button broken).
+publish:
+  provider: github
+  owner: JZKK720
+  repo: cubecloud-agentic-os
 directories:
   buildResources: build
 files:
