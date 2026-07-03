@@ -31,6 +31,7 @@ jobs:
       tag: ${{ steps.version.outputs.tag }}
       tag_exists: ${{ steps.check.outputs.exists }}
       is_dry_run: ${{ steps.mode.outputs.is_dry_run }}
+      should_build: ${{ steps.should_build.outputs.build }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -48,7 +49,7 @@ jobs:
         run: |
           if git ls-remote --tags origin "refs/tags/v${{ steps.version.outputs.version }}" | grep -q .; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Tag v${{ steps.version.outputs.version }} already exists —skipping."
+            echo "Tag v${{ steps.version.outputs.version }} already exists."
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
@@ -64,10 +65,30 @@ jobs:
             echo "Real release: publish will run if tag does not exist."
           fi
 
+      - name: Decide whether to build
+        id: should_build
+        run: |
+          # Build jobs should always run on workflow_dispatch (the user
+          # explicitly triggered it). On tag push, only build if the tag
+          # doesn't exist yet (first push). This prevents the tag-push
+          # trigger from skipping all builds (the tag always exists by
+          # the time the workflow runs) and prevents re-dispatching after
+          # a failed publish from skipping builds (the publish job may
+          # have created the tag before failing on a later step).
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch —builds will run regardless of tag state."
+          elif [ "${{ steps.check.outputs.exists }}" = "false" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "Tag push with existing tag —skipping builds."
+          fi
+
   release_mac:
     name: Build macOS (${{ matrix.arch }})
     needs: prepare
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: macos-latest
     continue-on-error: true
     strategy:
@@ -154,7 +175,7 @@ jobs:
   release_linux:
     name: Build Linux
     needs: prepare
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -195,7 +216,7 @@ jobs:
   release_windows:
     name: Build Windows
     needs: prepare
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: windows-latest
     steps:
       - name: Check out repository
@@ -231,7 +252,7 @@ jobs:
   generate_winget:
     name: Generate winget manifests
     needs: [prepare, release_windows]
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

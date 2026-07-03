@@ -27,6 +27,7 @@ jobs:
       tag: ${{ steps.version.outputs.tag }}
       tag_exists: ${{ steps.check.outputs.exists }}
       is_dry_run: ${{ steps.mode.outputs.is_dry_run }}
+      should_build: ${{ steps.should_build.outputs.build }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -44,7 +45,7 @@ jobs:
         run: |
           if git ls-remote --tags origin "refs/tags/v${{ steps.version.outputs.version }}" | grep -q .; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Tag v${{ steps.version.outputs.version }} already exists — skipping."
+            echo "Tag v${{ steps.version.outputs.version }} already exists."
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
@@ -58,6 +59,19 @@ jobs:
           else
             echo "is_dry_run=false" >> "$GITHUB_OUTPUT"
             echo "Real release: publish will run if tag does not exist."
+          fi
+
+      - name: Decide whether to build
+        id: should_build
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch —builds will run regardless of tag state."
+          elif [ "${{ steps.check.outputs.exists }}" = "false" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "Tag push with existing tag —skipping builds."
           fi
 
   # Fail fast if the macOS code-signing + notarization secrets aren't
@@ -86,7 +100,7 @@ jobs:
   check_macos_secrets:
     name: Verify macOS signing secrets
     needs: prepare
-    if: needs.prepare.outputs.tag_exists == 'false' && needs.prepare.outputs.is_dry_run == 'false'
+    if: needs.prepare.outputs.should_build == 'true' && needs.prepare.outputs.is_dry_run == 'false'
     runs-on: ubuntu-latest
     steps:
       - name: Read required secrets
@@ -114,7 +128,7 @@ jobs:
   release_mac:
     name: Build macOS (${{ matrix.arch }})
     needs: [prepare, check_macos_secrets]
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: macos-latest
     strategy:
       matrix:
@@ -193,7 +207,7 @@ jobs:
   release_linux:
     name: Build Linux
     needs: prepare
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -254,7 +268,7 @@ jobs:
   release_windows:
     name: Build Windows
     needs: prepare
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: windows-latest
     steps:
       - name: Check out repository
@@ -290,7 +304,7 @@ jobs:
   generate_winget:
     name: Generate winget manifests
     needs: [prepare, release_windows]
-    if: needs.prepare.outputs.tag_exists == 'false'
+    if: needs.prepare.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
