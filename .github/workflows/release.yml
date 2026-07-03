@@ -69,20 +69,20 @@ jobs:
         id: should_build
         run: |
           # Build jobs should always run on workflow_dispatch (the user
-          # explicitly triggered it). On tag push, only build if the tag
-          # doesn't exist yet (first push). This prevents the tag-push
-          # trigger from skipping all builds (the tag always exists by
-          # the time the workflow runs) and prevents re-dispatching after
-          # a failed publish from skipping builds (the publish job may
-          # have created the tag before failing on a later step).
+          # explicitly triggered it). On tag push, use github.event.created
+          # to distinguish a new tag creation (created=true → build) from a
+          # re-push/update (created=false → skip). Querying git ls-remote is
+          # unreliable here because the tag always exists on origin by the
+          # time the workflow runs on a push: tags trigger.
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "build=true" >> "$GITHUB_OUTPUT"
             echo "Manual dispatch —builds will run regardless of tag state."
-          elif [ "${{ steps.check.outputs.exists }}" = "false" ]; then
+          elif [ "${{ github.event.created }}" = "true" ]; then
             echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "New tag push —builds will run."
           else
             echo "build=false" >> "$GITHUB_OUTPUT"
-            echo "Tag push with existing tag —skipping builds."
+            echo "Tag re-push or update —skipping builds."
           fi
 
   release_mac:
