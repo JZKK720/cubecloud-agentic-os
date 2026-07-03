@@ -39,7 +39,7 @@
 // .github/copilot-instructions.md security floor — never write
 // secrets, tokens, or PEM blocks into source files.
 
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import {
   createServer,
   type IncomingMessage,
@@ -50,6 +50,27 @@ import {
   type AddressInfo,
   type Server as NetServer,
 } from "node:net";
+
+// Spy on the config module so the probe doesn't read the user's real
+// .env / config.yaml files. Without this spy, getConnectionConfig()
+// and getApiServerKey() return the user's actual API_SERVER_KEY,
+// which causes the "hides the bearer token" test to fail on any
+// machine that has a local Hermes install with a configured key.
+// We use spyOn (not vi.mock) so the rest of the config module stays
+// intact for transitive imports (locale.ts, ssh-remote.ts, etc.).
+import * as configModule from "../src/main/config";
+
+vi.spyOn(configModule, "getConnectionConfig").mockReturnValue({
+  mode: "local",
+  remoteUrl: "",
+  apiKey: "",
+  hasApiKey: false,
+  apiKeyLength: 0,
+  gatewayRuntimePreset: "hermes",
+  ssh: null,
+});
+vi.spyOn(configModule, "getApiServerKey").mockReturnValue("");
+
 import {
   diagnoseRemoteConnection,
   type ConnectionDiagnostic,
