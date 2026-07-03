@@ -308,6 +308,14 @@ jobs:
               return a.localeCompare(b);
             });
 
+          // Skip latest-mac.yml generation when macOS builds are absent
+          // (missing Apple notarization secrets). The Windows + Linux
+          // release proceeds without macOS update metadata.
+          if (zipNames.length === 0) {
+            console.log("No macOS zips found — skipping latest-mac.yml generation.");
+            process.exit(0);
+          }
+
           if (
             zipNames.length < 2 ||
             !zipNames.some((name) => name.includes("-x64-")) ||
