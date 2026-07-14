@@ -182,11 +182,23 @@ function parseDoctorOutput(output: string): AgentReachChannel[] {
     "linkedin", "v2ex", "xueqiu", "podcast",
   ];
 
-  const channels: AgentReachChannel[] = [];
-  const lines = output.split(/\r?\n/);
+  // Single-pass: scan each line once and check it against all
+  // known channels. Avoids the previous O(channels × lines)
+  // double-scan where lines.find() was called once per channel.
+  const found = new Map<string, string>();
+  for (const line of output.split(/\r?\n/)) {
+    if (found.size === knownChannels.length) break;
+    const lower = line.toLowerCase();
+    for (const name of knownChannels) {
+      if (!found.has(name) && lower.includes(name)) {
+        found.set(name, line);
+      }
+    }
+  }
 
+  const channels: AgentReachChannel[] = [];
   for (const name of knownChannels) {
-    const line = lines.find((l) => l.toLowerCase().includes(name.toLowerCase()));
+    const line = found.get(name);
     if (!line) continue;
 
     const lowerLine = line.toLowerCase();

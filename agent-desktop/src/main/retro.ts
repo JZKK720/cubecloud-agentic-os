@@ -110,13 +110,17 @@ function detectProposals(sessions: SessionSummary[]): {
       messageCount: session.messageCount,
     });
     const messages = getSessionMessages(session.id);
-    // Count tool calls
-    const recentTools: string[] = [];
+    // Count tool calls and detect user corrections following a
+    // tool call. We only need the most recent tool name, not the
+    // full history — replacing the previous recentTools[] array
+    // with a single lastTool variable eliminates the per-message
+    // array allocation and the index access.
+    let lastTool: string | null = null;
     for (const m of messages) {
       if (m.kind === "tool_call") {
         toolCounts.set(m.name, (toolCounts.get(m.name) ?? 0) + 1);
-        recentTools.push(m.name);
-      } else if (m.kind === "user" && recentTools.length > 0) {
+        lastTool = m.name;
+      } else if (m.kind === "user" && lastTool) {
         const t = m.content.trim().toLowerCase();
         if (
           t.startsWith("don't") ||
@@ -125,7 +129,7 @@ function detectProposals(sessions: SessionSummary[]): {
           t.includes("rather than")
         ) {
           corrections.push({
-            tool: recentTools[recentTools.length - 1],
+            tool: lastTool,
             text: m.content.trim().slice(0, 200),
           });
         }
