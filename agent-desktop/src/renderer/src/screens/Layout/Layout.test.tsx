@@ -96,6 +96,38 @@ function installHermesAPI(
       addMcpServer: overrides.addMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
       removeMcpServer:
         overrides.removeMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
+      // Codebase Memory (CMM) — probed by the CodeGraph screen on mount
+      discoverCodebaseMemory: vi
+        .fn()
+        .mockResolvedValue({ found: false, path: null, version: null }),
+      listCodebaseMemoryProjects: vi.fn().mockResolvedValue([]),
+      // Moo Tasks sidecar — probed by the Plans screen on mount
+      mooTasksSidecarStatus: vi.fn().mockResolvedValue({
+        state: "stopped",
+        running: false,
+        pid: null,
+        port: null,
+        baseUrl: "http://127.0.0.1:3000",
+        mcpUrl: "http://127.0.0.1:3000/mcp",
+        lastError: null,
+        crashCount: 0,
+        startedAt: null,
+        uptimeMs: null,
+        reason: null,
+      }),
+      // CodeGraph screen probes these on mount
+      codegraphCliStatus: vi.fn().mockResolvedValue({
+        installed: false,
+        version: null,
+        command: null,
+        error: null,
+      }),
+      codegraphRuntimeStatus: vi.fn().mockResolvedValue({
+        available: false,
+        sdkInstalled: false,
+        projectOpen: false,
+        sdkVersion: null,
+      }),
     },
   });
 }

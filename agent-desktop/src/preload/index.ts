@@ -1981,6 +1981,55 @@ const hermesAPI = {
     }>
   > => ipcRenderer.invoke("discover-memory-providers", profile),
 
+  // Codebase Memory binary discovery
+  discoverCodebaseMemory: (): Promise<{
+    found: boolean;
+    path: string | null;
+    version: string | null;
+  }> => ipcRenderer.invoke("discover-codebase-memory"),
+  listCodebaseMemoryProjects: (): Promise<Array<{
+    name: string;
+    rootPath: string;
+    nodes: number;
+    edges: number;
+    sizeBytes: number;
+  }>> => ipcRenderer.invoke("list-codebase-memory-projects"),
+
+  // Moo Tasks sidecar (agent-native kanban board)
+  mooTasksSidecarStatus: (): Promise<{
+    state: string;
+    running: boolean;
+    pid: number | null;
+    port: number | null;
+    baseUrl: string;
+    mcpUrl: string;
+    lastError: string | null;
+    crashCount: number;
+    startedAt: number | null;
+    uptimeMs: number | null;
+    reason: string | null;
+  }> => ipcRenderer.invoke("moo-tasks-sidecar-status"),
+  mooTasksSidecarStart: (options?: {
+    port?: number;
+    host?: string;
+    projectDir?: string;
+  }) =>
+    ipcRenderer.invoke("moo-tasks-sidecar-start", options),
+  mooTasksSidecarStop: () =>
+    ipcRenderer.invoke("moo-tasks-sidecar-stop"),
+  mooTasksSidecarRestart: (options?: {
+    port?: number;
+    host?: string;
+    projectDir?: string;
+  }) =>
+    ipcRenderer.invoke("moo-tasks-sidecar-restart", options),
+  mooTasksSidecarLogTail: (): Promise<{
+    lines: string[];
+    totalBytes: number;
+  }> => ipcRenderer.invoke("moo-tasks-sidecar-log-tail"),
+  mooTasksSidecarClearLogs: () =>
+    ipcRenderer.invoke("moo-tasks-sidecar-clear-logs"),
+
   // MCP servers
   listMcpServers: (
     profile?: string,

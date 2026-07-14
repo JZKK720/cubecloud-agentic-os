@@ -47,6 +47,8 @@ import {
   removeMcpServer,
   ensureDefaultMcpServers,
   discoverMemoryProviders,
+  discoverCodebaseMemory,
+  listCodebaseMemoryProjects,
   readLogs,
   InstallProgress,
 } from "./installer";
@@ -83,6 +85,16 @@ import {
   stopEverOsSidecar,
   type EverOsSidecarStartOptions,
 } from "./everos-sidecar";
+import {
+  clearMooTasksSidecarLogs,
+  getMooTasksSidecarLogTail,
+  getMooTasksSidecarStatus,
+  restartMooTasksSidecar,
+  startMooTasksSidecar,
+  stopMooTasksSidecar,
+  stopAllMooTasksSidecars,
+  type MooTasksSidecarStartOptions,
+} from "./moo-tasks-sidecar";
 import {
   clearHeadroomSidecarLogs,
   getHeadroomSidecarLogTail,
@@ -2822,6 +2834,43 @@ function setupIPC(): void {
     return discoverMemoryProviders(profile);
   });
 
+  // Codebase Memory binary discovery
+  ipcMain.handle("discover-codebase-memory", () =>
+    discoverCodebaseMemory(),
+  );
+  ipcMain.handle("list-codebase-memory-projects", () =>
+    listCodebaseMemoryProjects(),
+  );
+
+  // Moo Tasks sidecar (agent-native kanban board with MCP server).
+  // The desktop spawns the Nuxt server as a child process and
+  // manages its lifecycle. The MCP endpoint at /mcp is added
+  // to config.yaml via the MCP registry so Hermes can use the
+  // 14 task tools (list-tasks, create-task, accept-task, etc.).
+  ipcMain.handle("moo-tasks-sidecar-status", () =>
+    getMooTasksSidecarStatus(),
+  );
+  ipcMain.handle("moo-tasks-sidecar-log-tail", () =>
+    getMooTasksSidecarLogTail(),
+  );
+  ipcMain.handle("moo-tasks-sidecar-clear-logs", () => {
+    clearMooTasksSidecarLogs();
+    return { success: true };
+  });
+  ipcMain.handle(
+    "moo-tasks-sidecar-start",
+    (_event, options?: MooTasksSidecarStartOptions) =>
+      startMooTasksSidecar(options ?? {}),
+  );
+  ipcMain.handle("moo-tasks-sidecar-stop", () =>
+    stopMooTasksSidecar(),
+  );
+  ipcMain.handle(
+    "moo-tasks-sidecar-restart",
+    (_event, options?: MooTasksSidecarStartOptions) =>
+      restartMooTasksSidecar(options ?? {}),
+  );
+
   // Log viewer
   ipcMain.handle("read-logs", (_event, logFile?: string, lines?: number) => {
     const conn = getConnectionConfig();
@@ -3141,5 +3190,12 @@ app.on("before-quit", () => {
     stopHeadroomMcpServer();
   } catch (err) {
     console.error("[headroom-mcp] stop on shutdown failed:", err);
+  }
+
+  // Ask the Moo Tasks sidecar to stop. Same best-effort pattern.
+  try {
+    stopAllMooTasksSidecars();
+  } catch (err) {
+    console.error("[moo-tasks-sidecar] stop on shutdown failed:", err);
   }
 });

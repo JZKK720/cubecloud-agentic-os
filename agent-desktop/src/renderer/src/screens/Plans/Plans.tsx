@@ -63,6 +63,20 @@ interface PlansProps {
   visible?: boolean;
 }
 
+interface MooTasksStatus {
+  state: string;
+  running: boolean;
+  pid: number | null;
+  port: number | null;
+  baseUrl: string;
+  mcpUrl: string;
+  lastError: string | null;
+  crashCount: number;
+  startedAt: number | null;
+  uptimeMs: number | null;
+  reason: string | null;
+}
+
 const SAMPLE_PLAN = `# Welcome plan
 
 This is a starter plan to help you shape ideas into actionable steps. Edit
@@ -109,6 +123,13 @@ function Plans({ profile, visible }: PlansProps): React.JSX.Element {
   const [answers, setAnswers] = useState<Record<string, BriefAnswer>>({});
   const [briefsApplied, setBriefsApplied] = useState(false);
 
+  // Moo Tasks sidecar — agent-native kanban board with 14 MCP
+  // tools. The desktop manages the server lifecycle; the MCP
+  // endpoint is added to config.yaml via the MCP registry so
+  // Hermes (or any MCP client) can use the task tools.
+  const [mooStatus, setMooStatus] = useState<MooTasksStatus | null>(null);
+  const [mooBusy, setMooBusy] = useState(false);
+
   const reload = useCallback(async (): Promise<void> => {
     try {
       const list = await window.hermesAPI.plansList(profile);
@@ -127,6 +148,53 @@ function Plans({ profile, visible }: PlansProps): React.JSX.Element {
   useEffect(() => {
     if (visible) void reload();
   }, [visible, reload]);
+
+  // Probe moo-tasks sidecar status on mount and when the pane
+  // becomes visible. Cheap IPC call — the main process just
+  // returns the cached runtime state.
+  useEffect(() => {
+    if (!visible) return;
+    void window.hermesAPI
+      .mooTasksSidecarStatus()
+      .then((s) => setMooStatus(s))
+      .catch(() => setMooStatus(null));
+  }, [visible]);
+
+  const handleMooStart = useCallback(async (): Promise<void> => {
+    setMooBusy(true);
+    try {
+      const s = await window.hermesAPI.mooTasksSidecarStart();
+      setMooStatus(s as MooTasksStatus);
+    } catch {
+      /* best-effort */
+    } finally {
+      setMooBusy(false);
+    }
+  }, []);
+
+  const handleMooStop = useCallback(async (): Promise<void> => {
+    setMooBusy(true);
+    try {
+      const s = await window.hermesAPI.mooTasksSidecarStop();
+      setMooStatus(s as MooTasksStatus);
+    } catch {
+      /* best-effort */
+    } finally {
+      setMooBusy(false);
+    }
+  }, []);
+
+  const handleMooRestart = useCallback(async (): Promise<void> => {
+    setMooBusy(true);
+    try {
+      const s = await window.hermesAPI.mooTasksSidecarRestart();
+      setMooStatus(s as MooTasksStatus);
+    } catch {
+      /* best-effort */
+    } finally {
+      setMooBusy(false);
+    }
+  }, []);
 
   const handleParse = useCallback(async (): Promise<void> => {
     setBusy(true);
@@ -669,6 +737,110 @@ function Plans({ profile, visible }: PlansProps): React.JSX.Element {
           )}
         </main>
       </div>
+
+      {/* ── Moo Tasks (agent-native kanban) ─────────────────
+          moo-tasks is an MCP-powered kanban board with 14 tools
+          (list-tasks, create-task, accept-task, update-task-status,
+          submit-for-review, request-corrections, generate-changelog,
+          list-plans, apply-plan, etc.). The desktop manages the
+          server lifecycle; the MCP endpoint is added to config.yaml
+          via the MCP registry so Hermes can use the task tools. */}
+      <article className="panel-card moo-tasks-panel">
+        <h2>Task Board (Moo Tasks)</h2>
+        <p className="workspace-copy">
+          Agent-native kanban board with 14 MCP tools. Agents
+          discover, accept, update, and complete tasks via MCP.
+          Board-scoped architecture with per-board tokens, task
+          plans, correction tasks, and AI-powered changelog
+          generation.
+        </p>
+        {mooStatus && (
+          <dl className="operator-field-grid">
+            <div className="operator-field">
+              <span>Server</span>
+              <strong>
+                {mooStatus.running
+                  ? `Running (${Math.round((mooStatus.uptimeMs ?? 0) / 1000)}s)`
+                  : mooStatus.state === "starting"
+                    ? "Starting..."
+                    : mooStatus.state === "crashed"
+                      ? `Crashed (${mooStatus.crashCount}x)`
+                      : "Stopped"}
+              </strong>
+            </div>
+            <div className="operator-field">
+              <span>MCP URL</span>
+              <strong>
+                <code>{mooStatus.mcpUrl}</code>
+              </strong>
+            </div>
+            {mooStatus.reason && (
+              <div className="operator-field">
+                <span>Status</span>
+                <strong>{mooStatus.reason}</strong>
+              </div>
+            )}
+          </dl>
+        )}
+        {mooStatus?.lastError && (
+          <p className="workspace-copy error">{mooStatus.lastError}</p>
+        )}
+        <div className="registry-footer">
+          {mooStatus && !mooStatus.running && (
+            <button
+              className="toggle-button enabled"
+              onClick={() => void handleMooStart()}
+              disabled={mooBusy}
+            >
+              {mooBusy ? "Starting..." : "Start server"}
+            </button>
+          )}
+          {mooStatus?.running && (
+            <>
+              <button
+                className="toggle-button enabled"
+                onClick={() => void handleMooRestart()}
+                disabled={mooBusy}
+              >
+                Restart
+              </button>
+              <button
+                className="ghost-button"
+                onClick={() => void handleMooStop()}
+                disabled={mooBusy}
+              >
+                Stop
+              </button>
+            </>
+          )}
+          {mooStatus?.running && (
+            <a
+              href={mooStatus.baseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ghost-button"
+            >
+              Open board ↗
+            </a>
+          )}
+        </div>
+        {!mooStatus?.running && (
+          <p className="workspace-copy moo-tasks-hint">
+            Install Moo Tasks via Docker:{" "}
+            <code>docker-compose up -d</code>{" "}
+            from the{" "}
+            <a
+              href="https://github.com/dizlexic/moo-tasks"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              moo-tasks repo
+            </a>
+            . Then start the server and add the MCP entry from the
+            MCP screen.
+          </p>
+        )}
+      </article>
     </div>
   );
 }
