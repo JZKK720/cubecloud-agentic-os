@@ -1,4 +1,4 @@
-import { spawn, execFile, execFileSync } from "child_process";
+import { spawn, execFile, execFileSync, spawnSync } from "child_process";
 import {
   existsSync,
   readFileSync,
@@ -20,6 +20,7 @@ import { getActiveProfileNameSync, profileHome, stripAnsi } from "./utils";
 import { setupAskpass, AskpassHandle } from "./askpass";
 import { precacheSudoCredentials } from "./sudoCreds";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";
+import { resolveCommandOnPath } from "./agent-clis";
 
 const IS_WINDOWS = process.platform === "win32";
 
@@ -1490,6 +1491,97 @@ export function getActiveMemoryProvider(profile?: string): string {
     return match?.[1] || "";
   } catch {
     return "";
+  }
+}
+
+// ────────────────────────────────────────────────────
+//  Codebase Memory binary discovery
+// ────────────────────────────────────────────────────
+
+export interface CodebaseMemoryStatus {
+  found: boolean;
+  path: string | null;
+  version: string | null;
+}
+
+/**
+ * Discover whether the `codebase-memory-mcp` binary is installed and
+ * reachable on PATH. Uses the enhanced PATH (same as agent CLI discovery)
+ * so binaries installed via Scoop, Winget, npm global, or the official
+ * install scripts are all detected. When found, runs `--version` to
+ * capture the version string for display in the MCP screen.
+ */
+export function discoverCodebaseMemory(): CodebaseMemoryStatus {
+  const envPath = getEnhancedPath();
+  const resolvedPath = resolveCommandOnPath("codebase-memory-mcp", envPath);
+  if (!resolvedPath) {
+    return { found: false, path: null, version: null };
+  }
+  let version: string | null = null;
+  try {
+    const result = spawnSync(resolvedPath, ["--version"], {
+      encoding: "utf8",
+      env: { ...process.env, PATH: envPath },
+      timeout: 5000,
+      windowsHide: true,
+    });
+    if (result.status === 0 && result.stdout) {
+      version = result.stdout.trim();
+    }
+  } catch {
+    // best effort — version is optional
+  }
+  return { found: true, path: resolvedPath, version };
+}
+
+export interface CodebaseMemoryProject {
+  name: string;
+  rootPath: string;
+  nodes: number;
+  edges: number;
+  sizeBytes: number;
+}
+
+/**
+ * List indexed projects from the running codebase-memory-mcp instance.
+ * Calls the binary's `cli list_projects` subcommand and parses the JSON
+ * output. Returns an empty array when the binary is not found or the
+ * command fails — the caller (CodeGraph screen) treats this as "no
+ * projects indexed yet."
+ */
+export function listCodebaseMemoryProjects(): CodebaseMemoryProject[] {
+  const envPath = getEnhancedPath();
+  const resolvedPath = resolveCommandOnPath("codebase-memory-mcp", envPath);
+  if (!resolvedPath) return [];
+  try {
+    const result = spawnSync(resolvedPath, ["cli", "list_projects"], {
+      encoding: "utf8",
+      env: { ...process.env, PATH: envPath },
+      timeout: 10000,
+      windowsHide: true,
+    });
+    if (result.status !== 0 || !result.stdout) return [];
+    // The CLI may emit log lines (level=info ...) to stderr; the JSON
+    // payload is on stdout. Find the first line that looks like JSON.
+    for (const line of result.stdout.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("{")) continue;
+      const parsed = JSON.parse(trimmed) as { projects?: unknown[] };
+      if (!Array.isArray(parsed.projects)) return [];
+      return parsed.projects.map((p) => {
+        const obj = p as Record<string, unknown>;
+        return {
+          name: String(obj.name ?? ""),
+          rootPath: String(obj.root_path ?? ""),
+          nodes: Number(obj.nodes ?? 0),
+          edges: Number(obj.edges ?? 0),
+          sizeBytes: Number(obj.size_bytes ?? 0),
+        };
+      });
+    }
+    return [];
+  } catch {
+    return [];
   }
 }
 

@@ -448,10 +448,22 @@ function McpSearchPanel({
 }: McpSearchPanelProps): React.JSX.Element {
   const { t } = useI18n();
   const [query, setQuery] = useState("");
+  const [cbmStatus, setCbmStatus] = useState<{
+    found: boolean;
+    version: string | null;
+  } | null>(null);
   const results = useMemo(
     () => searchBundledMcpServers(query).slice(0, 20),
     [query],
   );
+
+  useEffect(() => {
+    void window.hermesAPI
+      .discoverCodebaseMemory()
+      .then((s) => setCbmStatus({ found: s.found, version: s.version }))
+      .catch(() => setCbmStatus(null));
+  }, []);
+
   return (
     <div className="mcp-search-panel">
       <div className="mcp-search-row">
@@ -487,7 +499,11 @@ function McpSearchPanel({
             </div>
           ) : (
             <ul className="mcp-search-list">
-              {results.map((entry) => (
+              {results.map((entry) => {
+                const isCbm = entry.name === "codebase-memory";
+                const cbmInstalled = cbmStatus?.found ?? false;
+                const cbmDisabled = isCbm && cbmStatus !== null && !cbmInstalled;
+                return (
                 <li
                   key={entry.name}
                   className="mcp-search-item"
@@ -499,6 +515,16 @@ function McpSearchPanel({
                       <span className="mcp-search-item-cat">
                         {t(`mcp.category.${entry.category}`)}
                       </span>
+                      {isCbm && cbmStatus && (
+                        <span
+                          className={`mcp-search-item-status ${cbmInstalled ? "mcp-status-on" : "mcp-status-off"}`}
+                        >
+                          <span className="mcp-status-dot" />
+                          {cbmInstalled
+                            ? cbmStatus.version || "installed"
+                            : "not installed"}
+                        </span>
+                      )}
                     </div>
                     <div className="mcp-search-item-desc">
                       {entry.description}
@@ -521,12 +547,14 @@ function McpSearchPanel({
                   <button
                     type="button"
                     className="btn btn-primary btn-sm"
+                    disabled={cbmDisabled}
                     onClick={() => onAddFromRegistry(entry)}
                   >
                     {t("mcp.add")}
                   </button>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>

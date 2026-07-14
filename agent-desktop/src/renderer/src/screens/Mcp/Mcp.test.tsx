@@ -27,6 +27,7 @@ function installHermes(overrides: {
   setMcpServerEnabled?: ReturnType<typeof vi.fn>;
   addMcpServer?: ReturnType<typeof vi.fn>;
   removeMcpServer?: ReturnType<typeof vi.fn>;
+  discoverCodebaseMemory?: ReturnType<typeof vi.fn>;
 } = {}): void {
   Object.defineProperty(window, "hermesAPI", {
     configurable: true,
@@ -39,6 +40,9 @@ function installHermes(overrides: {
         overrides.addMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
       removeMcpServer:
         overrides.removeMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
+      discoverCodebaseMemory:
+        overrides.discoverCodebaseMemory ??
+        vi.fn().mockResolvedValue({ found: false, path: null, version: null }),
     },
   });
 }

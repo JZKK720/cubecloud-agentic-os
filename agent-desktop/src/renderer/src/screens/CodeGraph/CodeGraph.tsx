@@ -53,6 +53,19 @@ interface CodeGraphRuntimeSearchHit {
   snippet: string | null;
 }
 
+interface CmmStatus {
+  found: boolean;
+  version: string | null;
+}
+
+interface CmmProject {
+  name: string;
+  rootPath: string;
+  nodes: number;
+  edges: number;
+  sizeBytes: number;
+}
+
 interface CodeGraphProps {
   visible?: boolean;
 }
@@ -95,6 +108,17 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
+  // Codebase Memory (CMM) — the advanced code-intelligence surface.
+  // Probed on mount alongside the CodeGraph CLI/runtime. CMM is a
+  // separate binary (pure C, 14 MCP tools, Cypher queries, change
+  // detection, 3D graph). It coexists with CodeGraph as a power-user
+  // upgrade — the user opts in by enabling the CMM MCP server entry.
+  const [cmmStatus, setCmmStatus] = useState<CmmStatus | null>(null);
+  const [cmmProjects, setCmmProjects] = useState<CmmProject[]>([]);
+  const [cmmEnabling, setCmmEnabling] = useState(false);
+  const [cmmEnabled, setCmmEnabled] = useState<boolean | null>(null);
+  const [cmmError, setCmmError] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     if (!visible) return;
     setRefreshing(true);
@@ -110,6 +134,29 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
       const runtimeStatus =
         await window.hermesAPI.codegraphRuntimeStatus();
       setRuntime(runtimeStatus);
+
+      // Probe Codebase Memory (CMM) — binary status + indexed projects.
+      try {
+        const cmm = await window.hermesAPI.discoverCodebaseMemory();
+        setCmmStatus({ found: cmm.found, version: cmm.version });
+        if (cmm.found) {
+          const projects = await window.hermesAPI.listCodebaseMemoryProjects();
+          setCmmProjects(projects);
+        } else {
+          setCmmProjects([]);
+        }
+      } catch {
+        setCmmStatus(null);
+        setCmmProjects([]);
+      }
+      // Check whether CMM is already in config.yaml.
+      try {
+        const servers = await window.hermesAPI.listMcpServers();
+        const cmmEntry = servers.find((s) => s.name === "codebase-memory");
+        setCmmEnabled(cmmEntry ? cmmEntry.enabled : false);
+      } catch {
+        setCmmEnabled(null);
+      }
     } catch (err) {
       setCliInstalled(false);
       setCliError((err as Error).message);
@@ -217,6 +264,28 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
       setSearching(false);
     }
   }, [searchQuery, selectedRepo]);
+
+  const enableCmm = useCallback(async (): Promise<void> => {
+    setCmmEnabling(true);
+    setCmmError(null);
+    try {
+      const res = await window.hermesAPI.addMcpServer({
+        name: "codebase-memory",
+        type: "stdio",
+        enabled: true,
+        detail: "npx -y codebase-memory-mcp",
+      });
+      if (res.ok) {
+        setCmmEnabled(true);
+      } else {
+        setCmmError(res.error ?? "Failed to enable CMM MCP server.");
+      }
+    } catch (err) {
+      setCmmError(String(err));
+    } finally {
+      setCmmEnabling(false);
+    }
+  }, []);
 
   return (
     <section className="screen codegraph-screen">
@@ -446,6 +515,106 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
           )}
         </div>
       )}
+
+      {/* ── Codebase Memory (advanced) ──────────────────────
+          CMM is a power-user upgrade over CodeGraph: 14 MCP tools,
+          Cypher queries, change detection, 3D graph visualization,
+          cross-repo intelligence. It coexists with CodeGraph — the
+          user opts in by enabling the CMM MCP server entry, which
+          adds it to config.yaml for Hermes to spawn. */}
+      <article className="panel-card cmm-panel">
+        <h2>Codebase Memory (advanced)</h2>
+        <p className="workspace-copy">
+          Graph-augmented code intelligence with 14 MCP tools, Cypher
+          queries, change detection, and 3D graph visualization. A
+          power-user upgrade over CodeGraph — both can be enabled
+          simultaneously.
+        </p>
+        {cmmError && (
+          <p className="workspace-copy error">{cmmError}</p>
+        )}
+        <dl className="operator-field-grid">
+          <div className="operator-field">
+            <span>Binary</span>
+            <strong>
+              {cmmStatus === null
+                ? "Checking..."
+                : cmmStatus.found
+                  ? `Installed ${cmmStatus.version ?? ""}`.trim()
+                  : "Not installed"}
+            </strong>
+          </div>
+          <div className="operator-field">
+            <span>MCP server</span>
+            <strong>
+              {cmmEnabled === null
+                ? "--"
+                : cmmEnabled
+                  ? "Enabled"
+                  : "Not enabled"}
+            </strong>
+          </div>
+          <div className="operator-field">
+            <span>Indexed projects</span>
+            <strong>{cmmProjects.length}</strong>
+          </div>
+        </dl>
+        {cmmStatus?.found && cmmProjects.length > 0 && (
+          <ul className="codegraph-repo-list cmm-project-list">
+            {cmmProjects.map((p) => (
+              <li key={p.name}>
+                <div className="codegraph-repo-name">
+                  <Search size={14} />{" "}
+                  {p.name.replace(/^C-Users-[^-]*-github-pr-/, "")}
+                </div>
+                <div className="codegraph-repo-meta">
+                  <span>
+                    {formatNumber(p.nodes)} nodes
+                  </span>
+                  <span>
+                    {formatNumber(p.edges)} edges
+                  </span>
+                  <span>{formatBytes(p.sizeBytes)}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {cmmStatus?.found && !cmmEnabled && (
+          <div className="registry-footer">
+            <button
+              className="toggle-button enabled"
+              onClick={() => void enableCmm()}
+              disabled={cmmEnabling}
+            >
+              {cmmEnabling ? "Enabling..." : "Enable CMM MCP server"}
+            </button>
+          </div>
+        )}
+        {cmmStatus?.found && (
+          <p className="workspace-copy cmm-graph-link">
+            3D graph view:{" "}
+            <a
+              href="http://localhost:9749"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              localhost:9749
+            </a>{" "}
+            (run{" "}
+            <code>codebase-memory-mcp --ui=true</code>{" "}
+            to start the visualization server)
+          </p>
+        )}
+        {!cmmStatus?.found && (
+          <p className="workspace-copy cmm-install-hint">
+            Install via{" "}
+            <code>install.sh</code>{" / "}
+            <code>install.ps1</code>, Scoop, Winget, or npm. Then
+            refresh to detect the binary.
+          </p>
+        )}
+      </article>
 
     </section>
   );

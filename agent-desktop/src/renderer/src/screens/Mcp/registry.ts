@@ -231,6 +231,26 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
     envKeys: [],
     hint: "Start the server from the Headroom screen, then enable this entry to expose the same three tools to any MCP client (Claude Code, Codex CLI, etc.) that can reach 127.0.0.1:8788.",
   },
+  {
+    name: "codebase-memory",
+    title: "Codebase Memory",
+    description:
+      "Graph-augmented code intelligence: index repositories into a knowledge graph, then search, trace call paths, query Cypher, and get architecture overviews. 14 MCP tools. Pure C binary, zero runtime dependencies.",
+    category: "memory",
+    transport: "stdio",
+    detail: "npx -y codebase-memory-mcp",
+    hint: "Install via install.sh / install.ps1, Scoop, Winget, or npm. The binary must be on PATH. No API key required — all indexing and queries run locally.",
+  },
+  {
+    name: "moo-tasks",
+    title: "Moo Tasks",
+    description:
+      "Agent-native kanban board with 14 MCP tools. Agents discover, accept, update, and complete tasks via MCP. Board-scoped architecture with per-board tokens, task plans, correction tasks, and AI-powered changelog generation.",
+    category: "productivity",
+    transport: "http",
+    detail: "http://127.0.0.1:3000/mcp",
+    hint: "Self-hosted Moo Tasks server. Run via Docker (docker-compose up) or npm. The desktop can manage the sidecar lifecycle from the Plans screen.",
+  },
 
   // ── Reasoning ────────────────────────────────────────
   {
