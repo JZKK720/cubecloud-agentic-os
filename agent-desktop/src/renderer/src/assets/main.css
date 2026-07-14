@@ -1,5 +1,5 @@
 /* ========================================================================
-   Hermes Agent Desktop â€” Clean Design System
+   Hermes Agent Desktop â€?Clean Design System
    Dark + Light mode, no gradients, flat design
    ======================================================================== */
 
@@ -168,7 +168,7 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* Same as .app â€” without `min-width: 0` flex items default to
+  /* Same as .app â€?without `min-width: 0` flex items default to
    * `min-width: auto` and refuse to shrink below their content's
    * intrinsic size, so the inner content area keeps its old
    * width even after a window resize and the right side gets
@@ -525,7 +525,7 @@ body {
   margin-bottom: 16px;
 }
 
-/* Hero CTA â€” the primary "Install local runtime" action so it
+/* Hero CTA â€?the primary "Install local runtime" action so it
    stands out from the secondary "Retry install" / SSH / Remote
    buttons that follow. Hero treatment includes a larger
    height, prominent shadow, and a gradient that ties the
@@ -1778,7 +1778,7 @@ body {
   /* When vertical space is tight (small screens, narrow windows), let
    * the nav scroll instead of clipping the bottom items (Gateway,
    * Settings). `min-height: 0` is required so the flex child can
-   * shrink below its content size â€” without it, `overflow-y: auto`
+   * shrink below its content size â€?without it, `overflow-y: auto`
    * never activates because the flex item refuses to shrink. #393. */
   min-height: 0;
   overflow-y: auto;
@@ -1898,7 +1898,7 @@ body {
   padding: 0 8px;
 }
 
-/* "Licensing" link inside the sidebar footer â€” replaces the old
+/* "Licensing" link inside the sidebar footer â€?replaces the old
    floating corner-legal-button so the brand chrome stays in the
    sidebar rather than floating over feature surfaces. */
 .sidebar-licensing-link {
@@ -2013,7 +2013,7 @@ body {
 }
 
 .corner-legal-button {
-  /* Floating copyright chip removed â€” replaced by a Licensing link
+  /* Floating copyright chip removed â€?replaced by a Licensing link
    * in the sidebar footer (.sidebar-licensing-link). The selector
    * remains in case any older render still mounts the button; the
    * rule now hides it so it cannot overlap feature surfaces. */
@@ -2769,7 +2769,7 @@ body {
 
 /* Headroom compression line in the chat usage footer.
    Renders next to the cost line, e.g.:
-     "X tokens Â· $Y Â· Headroom âˆ’76% (2.4K â†’ 600 tokens) on local Ollama"
+     "X tokens Â· $Y Â· Headroom âˆ?6% (2.4K â†?600 tokens) on local Ollama"
    The compressed variant uses a green accent so the
    savings stand out at a glance. The skipped/error
    variants fall back to the muted text color so they
@@ -2783,7 +2783,7 @@ body {
   color: var(--accent-success, #4ade80);
 }
 
-/* Headroom learn panel â€” proposal review list. Each
+/* Headroom learn panel â€?proposal review list. Each
    proposal is a checkbox row with the type, key, and
    insight; the evidence is rendered in muted italic so
    the user can quickly see the source of each. */
@@ -2834,7 +2834,7 @@ body {
   padding: 4px 0;
 }
 
-/* Headroom learn â€” apply-to-target-files preview. After
+/* Headroom learn â€?apply-to-target-files preview. After
    the user clicks "Apply to AGENTS.md" the desktop
    captures per-file before/after snapshots; the
    renderer shows a two-column diff so the user can
@@ -3111,7 +3111,7 @@ body {
   background: var(--agent-bubble);
   color: var(--agent-bubble-text);
   border-bottom-left-radius: 4px;
-  /* Agent messages are rendered markdown HTML â€” preserve structure
+  /* Agent messages are rendered markdown HTML â€?preserve structure
      via the elements themselves, not literal whitespace. Overrides
      .chat-bubble's pre-wrap, which would otherwise turn newlines
      between <li> tags into visible blank lines. */
@@ -3691,7 +3691,7 @@ body {
   z-index: 201;
 }
 
-/* Lightbox action buttons â€” light-on-dark so they read on the backdrop. */
+/* Lightbox action buttons â€?light-on-dark so they read on the backdrop. */
 .chat-image-preview-btn {
   display: inline-flex;
   flex-direction: row;
@@ -3847,7 +3847,7 @@ body {
  *
  * Surfaced for resumed sessions: see src/main/sessions.ts
  * `expandRowsToHistory`. These are <details>/<summary> widgets so the
- * default-closed state and toggle behavior are native â€” no JS event
+ * default-closed state and toggle behavior are native â€?no JS event
  * juggling required. The chevron is purely visual; the click target is
  * the whole summary row.
  */
@@ -4130,7 +4130,7 @@ body {
   color: var(--text-primary);
 }
 
-/* Sticky section nav â€” jump-to-group buttons at the top of Settings */
+/* Sticky section nav â€?jump-to-group buttons at the top of Settings */
 .settings-section-nav {
   display: flex;
   gap: 4px;
@@ -4383,7 +4383,7 @@ body {
   margin: 0 0 10px;
 }
 
-/* Prominent outcome banner shown when the sign-in finishes â€” the raw
+/* Prominent outcome banner shown when the sign-in finishes â€?the raw
    CLI log below stays append-only, so the result needs to stand out. */
 .oauth-login-result {
   font-size: 13px;
@@ -4779,7 +4779,7 @@ body {
   margin-top: 8px;
 }
 
-/* Data Location (Settings â†’ Data folder, open + copy) */
+/* Data Location (Settings â†?Data folder, open + copy) */
 .settings-privacy-path {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -5353,7 +5353,7 @@ body {
   color: var(--text-primary);
 }
 
-/* Search bar â€” integrated into header */
+/* Search bar â€?integrated into header */
 .sessions-searchbar {
   display: flex;
   align-items: center;
@@ -5514,7 +5514,7 @@ body {
   flex-wrap: wrap;
 }
 
-/* Delete (trash) button on each session card â€” #408.
+/* Delete (trash) button on each session card â€?#408.
  * Slides into the right side of the tags row so it doesn't fight the
  * card's main click target. Stays subtle until hover so the row doesn't
  * look cluttered when the user is just browsing. */
@@ -6674,29 +6674,6 @@ body {
   font-family: var(--font-sans);
 }
 
-.kanban-folder-picker {
-  display: flex;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.kanban-folder-picker .input {
-  flex: 1;
-  min-width: 0;
-}
-
-.kanban-checkbox-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-weight: 500;
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.kanban-checkbox-label input[type="checkbox"] {
-  margin-top: 2px;
-}
 
 .schedules-freq-pills {
   display: flex;
@@ -8638,412 +8615,6 @@ body {
   background: var(--selection);
   color: var(--text-primary);
 }
-
-/* ========================================================================
-   KANBAN
-   ======================================================================== */
-.kanban-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-  padding: 24px 32px 0;
-}
-
-.kanban-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 14px;
-  flex-shrink: 0;
-}
-
-.kanban-empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 6px;
-}
-
-.kanban-boards-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
-  flex-shrink: 0;
-}
-
-.kanban-board-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-
-.kanban-board-chip:hover:not(:disabled) {
-  color: var(--text-primary);
-  border-color: var(--border-bright);
-}
-
-.kanban-board-chip-active {
-  background: var(--accent-subtle);
-  color: var(--accent-text);
-  border-color: var(--accent-subtle);
-}
-
-.kanban-board-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--accent-text);
-}
-
-.kanban-board-count {
-  font-size: 11px;
-  font-weight: 600;
-  opacity: 0.7;
-  padding: 0 4px;
-}
-
-.kanban-board-chip-add {
-  border-style: dashed;
-}
-
-.kanban-columns {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(220px, 1fr));
-  gap: 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 20px;
-}
-
-.kanban-column {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  min-height: 0;
-}
-
-.kanban-column-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.kanban-column-title {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
-}
-
-.kanban-column-count {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: var(--bg-tertiary);
-  padding: 1px 7px;
-  border-radius: 999px;
-}
-
-.kanban-column-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.kanban-column-empty {
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-muted);
-  padding: 16px 0;
-}
-
-.kanban-card {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  cursor: grab;
-  transition:
-    border-color var(--transition),
-    opacity var(--transition);
-}
-
-.kanban-card:hover {
-  border-color: var(--border-bright);
-}
-
-.kanban-card:active {
-  cursor: grabbing;
-}
-
-.kanban-card-dragging {
-  opacity: 0.4;
-  cursor: grabbing;
-}
-
-.kanban-column-drop {
-  background: var(--accent-subtle);
-  outline: 2px dashed var(--accent);
-  outline-offset: -2px;
-  border-radius: var(--radius-md);
-}
-
-.kanban-card-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-  line-height: 1.3;
-  word-break: break-word;
-}
-
-.kanban-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-}
-
-.kanban-pill {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 7px;
-  border-radius: 999px;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.kanban-pill-prio {
-  background: var(--accent-subtle);
-  color: var(--accent-text);
-}
-
-.kanban-pill-readonly {
-  background: var(--bg-tertiary);
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.kanban-card-readonly {
-  cursor: default;
-}
-
-.kanban-card-readonly:hover {
-  background: var(--bg-tertiary);
-}
-
-.kanban-hq-banner {
-  font-size: 12px;
-  color: var(--text-secondary);
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 8px 12px;
-  margin-bottom: 8px;
-}
-
-.kanban-pill-id {
-  font-family: var(--font-mono, ui-monospace, "SF Mono", monospace);
-  font-weight: 500;
-  text-transform: lowercase;
-}
-
-.kanban-pill-age {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-left: auto;
-}
-
-.kanban-card-actions {
-  display: flex;
-  gap: 2px;
-  justify-content: flex-end;
-  opacity: 0;
-  transition: opacity var(--transition);
-}
-
-.kanban-card:hover .kanban-card-actions {
-  opacity: 1;
-}
-
-.kanban-card-action {
-  position: relative;
-  padding: 2px 6px;
-  font-size: 12px;
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-}
-
-.kanban-card-action:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.kanban-card-action-danger:hover {
-  color: var(--error);
-}
-
-.kanban-card-action[data-tooltip]::after,
-.kanban-header .btn[data-tooltip]::after,
-.kanban-board-chip-add[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 8px;
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  z-index: 10;
-}
-
-.kanban-card-action[data-tooltip]:hover::after,
-.kanban-header .btn[data-tooltip]:hover:not(:disabled)::after,
-.kanban-board-chip-add[data-tooltip]:hover::after {
-  opacity: 1;
-}
-
-/* Header buttons + add-board chip need an anchor for the absolutely-
-   positioned tooltip pseudo-element. The card actions already have
-   position:relative from their main rule. */
-.kanban-header .btn[data-tooltip],
-.kanban-board-chip-add[data-tooltip] {
-  position: relative;
-}
-
-/* The rightmost header button (New task) sits hard against the pane
-   edge, so its centered tooltip clips the viewport. Anchor to the
-   button's right edge instead. */
-.kanban-header .schedules-header-actions .btn[data-tooltip]:last-child::after {
-  left: auto;
-  right: 0;
-  transform: none;
-}
-
-/* Detail modal */
-.kanban-detail-modal {
-  max-width: 720px;
-  width: 90vw;
-}
-
-.kanban-detail-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.kanban-detail-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-
-.kanban-detail-section label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
-}
-
-.kanban-detail-pre {
-  font-size: 12.5px;
-  line-height: 1.5;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin: 0;
-  color: var(--text-primary);
-  max-height: 240px;
-  overflow-y: auto;
-}
-
-.kanban-comment {
-  border-left: 2px solid var(--border);
-  padding-left: 10px;
-  margin-bottom: 8px;
-}
-
-.kanban-comment-author {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 2px;
-}
-
-.kanban-comment-body {
-  font-size: 13px;
-  color: var(--text-primary);
-  white-space: pre-wrap;
-}
-
-.kanban-events {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-height: 180px;
-  overflow-y: auto;
-}
-
-.kanban-event {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.kanban-event:last-child {
-  border-bottom: none;
-}
-
-.kanban-event-time {
-  font-size: 11px;
-  color: var(--text-muted);
-}
 /* Wiki / Knowledge Base surface (Karpathy LLM-wiki pattern) */
 .wiki-container {
   display: flex;
@@ -10071,7 +9642,7 @@ body {
   border-color: #f08080;
 }
 
-/* V2.10.65 â€” Sandbox Tasks screen (IronClaw WASM-sandbox dispatch) */
+/* V2.10.65 â€?Sandbox Tasks screen (IronClaw WASM-sandbox dispatch) */
 .sandbox-tasks-screen {
   display: flex;
   flex-direction: column;
@@ -10234,7 +9805,7 @@ body {
   color: var(--text-muted, #57606a);
 }
 
-/* V2.10.66 â€” Agent-Reach status section on Tools screen */
+/* V2.10.66 â€?Agent-Reach status section on Tools screen */
 .tools-section-divider {
   border-top: 1px solid var(--border, #d0d7de);
   margin: 24px 0 16px 0;
@@ -10327,7 +9898,7 @@ body {
   border-radius: 6px;
 }
 
-/* V2.10.66 â€” Knowledge Graph Tools section on CodeGraph screen */
+/* V2.10.66 â€?Knowledge Graph Tools section on CodeGraph screen */
 .codegraph-extra-tools {
   margin-top: 24px;
   padding-top: 16px;
@@ -10372,7 +9943,7 @@ body {
   font-style: italic;
 }
 
-/* V2.10.75 â€” Codebase Memory (CMM) advanced panel on CodeGraph screen */
+/* V2.10.75 â€?Codebase Memory (CMM) advanced panel on CodeGraph screen */
 .cmm-panel {
   margin-top: 24px;
   border-top: 2px solid var(--accent, #0969da);
@@ -10402,7 +9973,7 @@ body {
   font-size: 0.9em;
 }
 
-/* V2.10.75 â€” Moo Tasks panel on Plans screen */
+/* V2.10.75 â€?Moo Tasks panel on Plans screen */
 .moo-tasks-panel {
   margin-top: 24px;
   border-top: 2px solid var(--accent, #0969da);
@@ -10418,7 +9989,7 @@ body {
   font-size: 0.9em;
 }
 
-/* V2.10.67 â€” Ambient tool suggestions panel in sidebar */
+/* V2.10.67 â€?Ambient tool suggestions panel in sidebar */
 .tool-suggestions-panel {
   padding: 8px 12px;
   border-top: 1px solid var(--border, #2a2a2a);
@@ -10619,7 +10190,7 @@ body {
   font-size: 13px;
 }
 /* ========================================================================
-   /plan-tune â€” Decision-Brief renderer (Step 11 of the V2 rollout)
+   /plan-tune â€?Decision-Brief renderer (Step 11 of the V2 rollout)
    Structured AskUserQuestion brief. Reused by office-hours,
    plan-ceo-review, plan-eng-review, design-taste-frontend, and
    any other host skill that surfaces a multi-option question.
@@ -10879,7 +10450,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€” LEARNINGS (Step 10)
+   V2 â€?LEARNINGS (Step 10)
    ======================================================================== */
 .learnings-root {
   display: flex;
@@ -11236,7 +10807,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€” KNOWLEDGE PANE (Step 14)
+   V2 â€?KNOWLEDGE PANE (Step 14)
    ======================================================================== */
 .knowledge-pane {
   margin-top: 16px;
@@ -11348,7 +10919,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€” SCHEMAS SECTION (Step 13)
+   V2 â€?SCHEMAS SECTION (Step 13)
    ======================================================================== */
 .schemas-pack-list {
   display: flex;
@@ -11556,7 +11127,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€” PLANS (Step 9 + 15: brief + careful)
+   V2 â€?PLANS (Step 9 + 15: brief + careful)
    ======================================================================== */
 .plans-briefs-scan {
   background: var(--bg-secondary);
@@ -11737,7 +11308,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€” CAREFUL TESTER (Step 9)
+   V2 â€?CAREFUL TESTER (Step 9)
    ======================================================================== */
 .careful-tester {
   display: flex;
@@ -11866,7 +11437,7 @@ body {
 }
 
 /* ========================================================================
-   MODELS â€” V2.10.60 (Local-LLM detection)
+   MODELS â€?V2.10.60 (Local-LLM detection)
    Health dot for loopback / private / well-known local-LLM cards, plus
    the "Detect running servers" button + suggestions under the Base URL
    field. These are rendered against the loopback-only IPC and the

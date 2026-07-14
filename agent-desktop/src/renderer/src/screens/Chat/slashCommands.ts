@@ -117,11 +117,6 @@ export const SLASH_COMMANDS: SlashCommand[] = [
     category: "info",
   },
   {
-    name: "/kanban",
-    description: "List or operate on kanban tasks",
-    category: "info",
-  },
-  {
     name: "/curator",
     description: "Show curator status (usage-ranked skills)",
     category: "info",

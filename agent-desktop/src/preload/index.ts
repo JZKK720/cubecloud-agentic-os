@@ -1319,31 +1319,8 @@ const hermesAPI = {
   ): Promise<{ success: boolean; error?: string }> =>
     ipcRenderer.invoke("trigger-cron-job", jobId, profile),
 
-  // Kanban
-  kanbanListBoards: (includeArchived?: boolean, profile?: string) =>
-    ipcRenderer.invoke("kanban-list-boards", includeArchived, profile),
-  kanbanCurrentBoard: (profile?: string) =>
-    ipcRenderer.invoke("kanban-current-board", profile),
-  kanbanSwitchBoard: (slug: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-switch-board", slug, profile),
-  kanbanCreateBoard: (
-    slug: string,
-    name?: string,
-    switchAfter?: boolean,
-    profile?: string,
-  ) =>
-    ipcRenderer.invoke("kanban-create-board", slug, name, switchAfter, profile),
-  kanbanRemoveBoard: (slug: string, hardDelete?: boolean, profile?: string) =>
-    ipcRenderer.invoke("kanban-remove-board", slug, hardDelete, profile),
-  kanbanListTasks: (filters?: {
-    status?: string;
-    assignee?: string;
-    tenant?: string;
-    includeArchived?: boolean;
-    profile?: string;
-  }) => ipcRenderer.invoke("kanban-list-tasks", filters),
-  kanbanGetTask: (taskId: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-get-task", taskId, profile),
+  // Kanban (plan dispatch only — board UI removed, task creation
+  // and dispatch retained for the Plans screen's Dispatch button)
   kanbanCreateTask: (
     input: {
       title: string;
@@ -1358,6 +1335,10 @@ const hermesAPI = {
     },
     profile?: string,
   ) => ipcRenderer.invoke("kanban-create-task", input, profile),
+  kanbanDispatchOnce: (dryRun?: boolean, profile?: string) =>
+    ipcRenderer.invoke("kanban-dispatch-once", dryRun, profile),
+
+  // CodeGraph
   codegraphCliStatus: (): Promise<CodeGraphCliStatus> =>
     ipcRenderer.invoke("codegraph-cli-status"),
   codegraphInstallCli: (): Promise<{
@@ -1473,27 +1454,6 @@ const hermesAPI = {
     ipcRenderer.invoke("open-file-in-editor", filePath),
   readImageFile: (filePath: string): Promise<string | null> =>
     ipcRenderer.invoke("read-image-file", filePath),
-  kanbanAssignTask: (
-    taskId: string,
-    assignee: string | null,
-    profile?: string,
-  ) => ipcRenderer.invoke("kanban-assign-task", taskId, assignee, profile),
-  kanbanCompleteTask: (taskId: string, result?: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-complete-task", taskId, result, profile),
-  kanbanBlockTask: (taskId: string, reason?: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-block-task", taskId, reason, profile),
-  kanbanUnblockTask: (taskId: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-unblock-task", taskId, profile),
-  kanbanArchiveTask: (taskId: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-archive-task", taskId, profile),
-  kanbanSpecifyTask: (taskId: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-specify-task", taskId, profile),
-  kanbanReclaimTask: (taskId: string, reason?: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-reclaim-task", taskId, reason, profile),
-  kanbanCommentTask: (taskId: string, body: string, profile?: string) =>
-    ipcRenderer.invoke("kanban-comment-task", taskId, body, profile),
-  kanbanDispatchOnce: (dryRun?: boolean, profile?: string) =>
-    ipcRenderer.invoke("kanban-dispatch-once", dryRun, profile),
 
   // EverOS — long-term memory harnesses backed by a self-hosted
   // EverCore / EverOS server (https://github.com/JZKK720/EverOS).

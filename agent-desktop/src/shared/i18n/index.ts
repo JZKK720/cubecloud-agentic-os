@@ -25,7 +25,6 @@ import soulEn from "./locales/en/soul";
 import memoryEn from "./locales/en/memory";
 import installEn from "./locales/en/install";
 import constantsEn from "./locales/en/constants";
-import kanbanEn from "./locales/en/kanban";
 import everosen from "./locales/en/everos";
 import workspaceEn from "./locales/en/workspace";
 import commonEs from "./locales/es/common";
@@ -87,7 +86,6 @@ import soulZh from "./locales/zh-CN/soul";
 import memoryZh from "./locales/zh-CN/memory";
 import installZh from "./locales/zh-CN/install";
 import constantsZh from "./locales/zh-CN/constants";
-import kanbanZh from "./locales/zh-CN/kanban";
 import everoszhCN from "./locales/zh-CN/everos";
 import commonZhTw from "./locales/zh-TW/common";
 import navigationZhTw from "./locales/zh-TW/navigation";
@@ -108,7 +106,6 @@ import soulZhTw from "./locales/zh-TW/soul";
 import memoryZhTw from "./locales/zh-TW/memory";
 import installZhTw from "./locales/zh-TW/install";
 import constantsZhTw from "./locales/zh-TW/constants";
-import kanbanZhTw from "./locales/zh-TW/kanban";
 import everoszhTW from "./locales/zh-TW/everos";
 import commonJa from "./locales/ja/common";
 import navigationJa from "./locales/ja/navigation";
@@ -169,7 +166,6 @@ import soulPtPt from "./locales/pt-PT/soul";
 import memoryPtPt from "./locales/pt-PT/memory";
 import installPtPt from "./locales/pt-PT/install";
 import constantsPtPt from "./locales/pt-PT/constants";
-import kanbanPtPt from "./locales/pt-PT/kanban";
 import everosptPT from "./locales/pt-PT/everos";
 import plansEn from "./locales/en/plans";
 import plansEs from "./locales/es/plans";
@@ -228,7 +224,6 @@ export const resources = {
       memory: memoryEn,
       install: installEn,
       constants: constantsEn,
-      kanban: kanbanEn,
       everos: everosen,
       workspace: workspaceEn,
       plans: plansEn,
@@ -312,7 +307,6 @@ export const resources = {
       memory: memoryZh,
       install: installZh,
       constants: constantsZh,
-      kanban: kanbanZh,
       everos: everoszhCN,
       headroom: headroomZhCn,
       sandboxTasks: sandboxTasksZhCn,
@@ -341,7 +335,6 @@ export const resources = {
       memory: memoryZhTw,
       install: installZhTw,
       constants: constantsZhTw,
-      kanban: kanbanZhTw,
       everos: everoszhTW,
       plans: plansZhTw,
       mcp: mcpZhTw,
@@ -398,7 +391,6 @@ export const resources = {
       memory: memoryPtPt,
       install: installPtPt,
       constants: constantsPtPt,
-      kanban: kanbanPtPt,
       everos: everosptPT,
       headroom: headroomPtPt,
       sandboxTasks: sandboxTasksPtPt,

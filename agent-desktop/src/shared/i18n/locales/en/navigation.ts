@@ -11,7 +11,6 @@ export default {
   tools: "Tools",
   workspace: "Workspace",
   schedules: "Schedules",
-  kanban: "Kanban",
   codegraph: "CodeGraph",
   everos: "EverOS",
   headroom: "Headroom",

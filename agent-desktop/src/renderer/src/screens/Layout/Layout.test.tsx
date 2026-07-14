@@ -164,7 +164,7 @@ const PLATFORM_GROUP_ITEMS = [
 ] as const;
 
 describe("Layout navigation", () => {
-  it("does not expose Office or Kanban in the Agent Desktop sidebar", async () => {
+  it("does not expose Office in the Agent Desktop sidebar", async () => {
     installHermesAPI();
 
     render(<Layout />);
@@ -177,7 +177,6 @@ describe("Layout navigation", () => {
     expect(screen.getByText("navigation.gateway")).toBeInTheDocument();
     expect(screen.getByText("navigation.workspace")).toBeInTheDocument();
     expect(screen.queryByText("navigation.office")).not.toBeInTheDocument();
-    expect(screen.queryByText("navigation.kanban")).not.toBeInTheDocument();
   });
 
   it("opens a dedicated legal modal from the pinned footer button", async () => {
@@ -281,13 +280,12 @@ describe("Layout sidebar groups", () => {
     expect(idxMcp).toBeLessThan(idxSettings);
   });
 
-  it("does not expose retired nav items (Office, Kanban)", async () => {
+  it("does not expose retired nav items (Office)", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
     expect(screen.queryByText("navigation.office")).not.toBeInTheDocument();
-    expect(screen.queryByText("navigation.kanban")).not.toBeInTheDocument();
   });
 });
 
