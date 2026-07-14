@@ -22,7 +22,8 @@ export type AgentCliId =
   | "antigravity"
   | "deepseek-reasonix"
   | "openclaw"
-  | "markitdown";
+  | "markitdown"
+  | "raven";
 
 export interface AgentCliCatalogEntry {
   id: AgentCliId;
@@ -247,5 +248,13 @@ export const AGENT_CLI_CATALOG: readonly AgentCliCatalogEntry[] = [
     installUrl: "https://platform.deepseek.com/",
     commands: ["reasonix", "deepseek-reasonix"],
     logoProvider: "deepseek",
+  },
+  {
+    id: "raven",
+    name: "Raven",
+    description: "EverMind self-improving agent harness with EverOS memory, SkillForge skills, Sentinel proactivity, and 12 messaging gateways",
+    docsUrl: "https://github.com/EverMind-AI/Raven",
+    installUrl: "https://raven.evermind.ai/",
+    commands: ["raven"],
   },
 ] as const;

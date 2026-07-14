@@ -86,7 +86,8 @@ interface AgentCliDiscoveryItem {
     | "antigravity"
     | "deepseek-reasonix"
     | "openclaw"
-    | "markitdown";
+    | "markitdown"
+    | "raven";
   installed: boolean;
   detectedCommand: string | null;
   resolvedPath: string | null;
@@ -1698,6 +1699,51 @@ interface HermesAPI {
       envVars: string[];
     }>
   >;
+
+  // Codebase Memory binary discovery
+  discoverCodebaseMemory: () => Promise<{
+    found: boolean;
+    path: string | null;
+    version: string | null;
+  }>;
+  listCodebaseMemoryProjects: () => Promise<Array<{
+    name: string;
+    rootPath: string;
+    nodes: number;
+    edges: number;
+    sizeBytes: number;
+  }>>;
+
+  // Moo Tasks sidecar (agent-native kanban board)
+  mooTasksSidecarStatus: () => Promise<{
+    state: string;
+    running: boolean;
+    pid: number | null;
+    port: number | null;
+    baseUrl: string;
+    mcpUrl: string;
+    lastError: string | null;
+    crashCount: number;
+    startedAt: number | null;
+    uptimeMs: number | null;
+    reason: string | null;
+  }>;
+  mooTasksSidecarStart: (options?: {
+    port?: number;
+    host?: string;
+    projectDir?: string;
+  }) => Promise<unknown>;
+  mooTasksSidecarStop: () => Promise<unknown>;
+  mooTasksSidecarRestart: (options?: {
+    port?: number;
+    host?: string;
+    projectDir?: string;
+  }) => Promise<unknown>;
+  mooTasksSidecarLogTail: () => Promise<{
+    lines: string[];
+    totalBytes: number;
+  }>;
+  mooTasksSidecarClearLogs: () => Promise<unknown>;
 
   // MCP servers
   listMcpServers: (
