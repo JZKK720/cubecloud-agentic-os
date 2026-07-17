@@ -1,5 +1,5 @@
 /* ========================================================================
-   Hermes Agent Desktop â€?Clean Design System
+   Hermes Agent Desktop ï¿½?Clean Design System
    Dark + Light mode, no gradients, flat design
    ======================================================================== */
 
@@ -123,10 +123,10 @@
   --radius-xl: 20px;
   --transition: 150ms ease;
   --font-sans:
-    "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
+    "Fira Sans", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
   --font-mono:
-    "SF Mono", "Fira Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    "Fira Code", "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 }
 
 /* ----- Body ----- */
@@ -137,6 +137,39 @@ body {
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
+}
+
+/* ----- Accessibility: reduced motion ----- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ----- Accessibility: keyboard focus + cursor ----- */
+button,
+[role="button"],
+a,
+select,
+summary,
+label[for],
+.clickable {
+  cursor: pointer;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* ----- App Shell ----- */
@@ -168,7 +201,7 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* Same as .app â€?without `min-width: 0` flex items default to
+  /* Same as .app ï¿½?without `min-width: 0` flex items default to
    * `min-width: auto` and refuse to shrink below their content's
    * intrinsic size, so the inner content area keeps its old
    * width even after a window resize and the right side gets
@@ -525,7 +558,7 @@ body {
   margin-bottom: 16px;
 }
 
-/* Hero CTA â€?the primary "Install local runtime" action so it
+/* Hero CTA ï¿½?the primary "Install local runtime" action so it
    stands out from the secondary "Retry install" / SSH / Remote
    buttons that follow. Hero treatment includes a larger
    height, prominent shadow, and a gradient that ties the
@@ -1778,7 +1811,7 @@ body {
   /* When vertical space is tight (small screens, narrow windows), let
    * the nav scroll instead of clipping the bottom items (Gateway,
    * Settings). `min-height: 0` is required so the flex child can
-   * shrink below its content size â€?without it, `overflow-y: auto`
+   * shrink below its content size ï¿½?without it, `overflow-y: auto`
    * never activates because the flex item refuses to shrink. #393. */
   min-height: 0;
   overflow-y: auto;
@@ -1898,7 +1931,7 @@ body {
   padding: 0 8px;
 }
 
-/* "Licensing" link inside the sidebar footer â€?replaces the old
+/* "Licensing" link inside the sidebar footer ï¿½?replaces the old
    floating corner-legal-button so the brand chrome stays in the
    sidebar rather than floating over feature surfaces. */
 .sidebar-licensing-link {
@@ -2013,7 +2046,7 @@ body {
 }
 
 .corner-legal-button {
-  /* Floating copyright chip removed â€?replaced by a Licensing link
+  /* Floating copyright chip removed ï¿½?replaced by a Licensing link
    * in the sidebar footer (.sidebar-licensing-link). The selector
    * remains in case any older render still mounts the button; the
    * rule now hides it so it cannot overlap feature surfaces. */
@@ -2769,7 +2802,7 @@ body {
 
 /* Headroom compression line in the chat usage footer.
    Renders next to the cost line, e.g.:
-     "X tokens Â· $Y Â· Headroom âˆ?6% (2.4K â†?600 tokens) on local Ollama"
+     "X tokens Â· $Y Â· Headroom ï¿½?6% (2.4K ï¿½?600 tokens) on local Ollama"
    The compressed variant uses a green accent so the
    savings stand out at a glance. The skipped/error
    variants fall back to the muted text color so they
@@ -2783,7 +2816,7 @@ body {
   color: var(--accent-success, #4ade80);
 }
 
-/* Headroom learn panel â€?proposal review list. Each
+/* Headroom learn panel ï¿½?proposal review list. Each
    proposal is a checkbox row with the type, key, and
    insight; the evidence is rendered in muted italic so
    the user can quickly see the source of each. */
@@ -2834,7 +2867,7 @@ body {
   padding: 4px 0;
 }
 
-/* Headroom learn â€?apply-to-target-files preview. After
+/* Headroom learn ï¿½?apply-to-target-files preview. After
    the user clicks "Apply to AGENTS.md" the desktop
    captures per-file before/after snapshots; the
    renderer shows a two-column diff so the user can
@@ -3111,7 +3144,7 @@ body {
   background: var(--agent-bubble);
   color: var(--agent-bubble-text);
   border-bottom-left-radius: 4px;
-  /* Agent messages are rendered markdown HTML â€?preserve structure
+  /* Agent messages are rendered markdown HTML ï¿½?preserve structure
      via the elements themselves, not literal whitespace. Overrides
      .chat-bubble's pre-wrap, which would otherwise turn newlines
      between <li> tags into visible blank lines. */
@@ -3691,7 +3724,7 @@ body {
   z-index: 201;
 }
 
-/* Lightbox action buttons â€?light-on-dark so they read on the backdrop. */
+/* Lightbox action buttons ï¿½?light-on-dark so they read on the backdrop. */
 .chat-image-preview-btn {
   display: inline-flex;
   flex-direction: row;
@@ -3847,7 +3880,7 @@ body {
  *
  * Surfaced for resumed sessions: see src/main/sessions.ts
  * `expandRowsToHistory`. These are <details>/<summary> widgets so the
- * default-closed state and toggle behavior are native â€?no JS event
+ * default-closed state and toggle behavior are native ï¿½?no JS event
  * juggling required. The chevron is purely visual; the click target is
  * the whole summary row.
  */
@@ -4130,7 +4163,7 @@ body {
   color: var(--text-primary);
 }
 
-/* Sticky section nav â€?jump-to-group buttons at the top of Settings */
+/* Sticky section nav ï¿½?jump-to-group buttons at the top of Settings */
 .settings-section-nav {
   display: flex;
   gap: 4px;
@@ -4383,7 +4416,7 @@ body {
   margin: 0 0 10px;
 }
 
-/* Prominent outcome banner shown when the sign-in finishes â€?the raw
+/* Prominent outcome banner shown when the sign-in finishes ï¿½?the raw
    CLI log below stays append-only, so the result needs to stand out. */
 .oauth-login-result {
   font-size: 13px;
@@ -4779,7 +4812,7 @@ body {
   margin-top: 8px;
 }
 
-/* Data Location (Settings â†?Data folder, open + copy) */
+/* Data Location (Settings ï¿½?Data folder, open + copy) */
 .settings-privacy-path {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -5353,7 +5386,7 @@ body {
   color: var(--text-primary);
 }
 
-/* Search bar â€?integrated into header */
+/* Search bar ï¿½?integrated into header */
 .sessions-searchbar {
   display: flex;
   align-items: center;
@@ -5514,7 +5547,7 @@ body {
   flex-wrap: wrap;
 }
 
-/* Delete (trash) button on each session card â€?#408.
+/* Delete (trash) button on each session card ï¿½?#408.
  * Slides into the right side of the tags row so it doesn't fight the
  * card's main click target. Stays subtle until hover so the row doesn't
  * look cluttered when the user is just browsing. */
@@ -9642,7 +9675,7 @@ body {
   border-color: #f08080;
 }
 
-/* V2.10.65 â€?Sandbox Tasks screen (IronClaw WASM-sandbox dispatch) */
+/* V2.10.65 ï¿½?Sandbox Tasks screen (IronClaw WASM-sandbox dispatch) */
 .sandbox-tasks-screen {
   display: flex;
   flex-direction: column;
@@ -9805,7 +9838,7 @@ body {
   color: var(--text-muted, #57606a);
 }
 
-/* V2.10.66 â€?Agent-Reach status section on Tools screen */
+/* V2.10.66 ï¿½?Agent-Reach status section on Tools screen */
 .tools-section-divider {
   border-top: 1px solid var(--border, #d0d7de);
   margin: 24px 0 16px 0;
@@ -9898,7 +9931,7 @@ body {
   border-radius: 6px;
 }
 
-/* V2.10.66 â€?Knowledge Graph Tools section on CodeGraph screen */
+/* V2.10.66 ï¿½?Knowledge Graph Tools section on CodeGraph screen */
 .codegraph-extra-tools {
   margin-top: 24px;
   padding-top: 16px;
@@ -9943,7 +9976,7 @@ body {
   font-style: italic;
 }
 
-/* V2.10.75 â€?Codebase Memory (CMM) advanced panel on CodeGraph screen */
+/* V2.10.75 ï¿½?Codebase Memory (CMM) advanced panel on CodeGraph screen */
 .cmm-panel {
   margin-top: 24px;
   border-top: 2px solid var(--accent, #0969da);
@@ -9973,7 +10006,7 @@ body {
   font-size: 0.9em;
 }
 
-/* V2.10.75 â€?Moo Tasks panel on Plans screen */
+/* V2.10.75 ï¿½?Moo Tasks panel on Plans screen */
 .moo-tasks-panel {
   margin-top: 24px;
   border-top: 2px solid var(--accent, #0969da);
@@ -9989,7 +10022,7 @@ body {
   font-size: 0.9em;
 }
 
-/* V2.10.67 â€?Ambient tool suggestions panel in sidebar */
+/* V2.10.67 ï¿½?Ambient tool suggestions panel in sidebar */
 .tool-suggestions-panel {
   padding: 8px 12px;
   border-top: 1px solid var(--border, #2a2a2a);
@@ -10190,7 +10223,7 @@ body {
   font-size: 13px;
 }
 /* ========================================================================
-   /plan-tune â€?Decision-Brief renderer (Step 11 of the V2 rollout)
+   /plan-tune ï¿½?Decision-Brief renderer (Step 11 of the V2 rollout)
    Structured AskUserQuestion brief. Reused by office-hours,
    plan-ceo-review, plan-eng-review, design-taste-frontend, and
    any other host skill that surfaces a multi-option question.
@@ -10450,7 +10483,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€?LEARNINGS (Step 10)
+   V2 ï¿½?LEARNINGS (Step 10)
    ======================================================================== */
 .learnings-root {
   display: flex;
@@ -10807,7 +10840,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€?KNOWLEDGE PANE (Step 14)
+   V2 ï¿½?KNOWLEDGE PANE (Step 14)
    ======================================================================== */
 .knowledge-pane {
   margin-top: 16px;
@@ -10919,7 +10952,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€?SCHEMAS SECTION (Step 13)
+   V2 ï¿½?SCHEMAS SECTION (Step 13)
    ======================================================================== */
 .schemas-pack-list {
   display: flex;
@@ -11127,7 +11160,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€?PLANS (Step 9 + 15: brief + careful)
+   V2 ï¿½?PLANS (Step 9 + 15: brief + careful)
    ======================================================================== */
 .plans-briefs-scan {
   background: var(--bg-secondary);
@@ -11308,7 +11341,7 @@ body {
 }
 
 /* ========================================================================
-   V2 â€?CAREFUL TESTER (Step 9)
+   V2 ï¿½?CAREFUL TESTER (Step 9)
    ======================================================================== */
 .careful-tester {
   display: flex;
@@ -11437,7 +11470,7 @@ body {
 }
 
 /* ========================================================================
-   MODELS â€?V2.10.60 (Local-LLM detection)
+   MODELS ï¿½?V2.10.60 (Local-LLM detection)
    Health dot for loopback / private / well-known local-LLM cards, plus
    the "Detect running servers" button + suggestions under the Base URL
    field. These are rendered against the loopback-only IPC and the
