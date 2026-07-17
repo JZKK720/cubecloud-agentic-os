@@ -145,6 +145,16 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
     hint: "Install with `pip install agent-reach[mcp]` in the environment that runs your agents. Only exposes a status tool; actual reads use upstream CLIs managed by Agent Reach.",
   },
   {
+    name: "last30days",
+    title: "Last 30 Days",
+    description:
+      "AI-agent-led research engine that aggregates what people are saying about any topic across the last 30 days, scored by engagement. Zero pip dependencies, Python 3.12+ stdlib only. Sources: Reddit, HN, YouTube, GitHub, Polymarket, arXiv, Digg, StockTwits — all keyless.",
+    category: "search",
+    transport: "stdio",
+    detail: "python3 .agents/skills/last30days/scripts/last30days.py",
+    hint: "Clone the last30days-skill repo into .agents/skills/last30days/ and run the setup wizard. Zero API keys needed for core sources. Optional keys for X/Twitter, Perplexity, Brave, Exa.",
+  },
+  {
     name: "puppeteer",
     title: "Puppeteer",
     description: "Browser automation with Chrome DevTools Protocol.",

@@ -101,6 +101,13 @@ function installHermesAPI(
         .fn()
         .mockResolvedValue({ found: false, path: null, version: null }),
       listCodebaseMemoryProjects: vi.fn().mockResolvedValue([]),
+      // Last30Days — probed by the Tools screen on mount
+      discoverLast30Days: vi.fn().mockResolvedValue({
+        found: false,
+        scriptPath: null,
+        cliOnPath: false,
+        version: null,
+      }),
       // Moo Tasks sidecar — probed by the Plans screen on mount
       mooTasksSidecarStatus: vi.fn().mockResolvedValue({
         state: "stopped",

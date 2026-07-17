@@ -271,6 +271,12 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [agentReach, setAgentReach] = useState<AgentReachStatus | null>(null);
   const [agentReachLoading, setAgentReachLoading] = useState(false);
+  const [last30days, setLast30days] = useState<{
+    found: boolean;
+    scriptPath: string | null;
+    cliOnPath: boolean;
+    version: string | null;
+  } | null>(null);
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -299,6 +305,10 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
   useEffect(() => {
     loadToolsets();
     loadAgentReach();
+    void window.hermesAPI
+      .discoverLast30Days()
+      .then((s) => setLast30days(s))
+      .catch(() => setLast30days(null));
   }, [loadToolsets, loadAgentReach]);
 
   async function handleToggle(
@@ -434,6 +444,47 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               "tools.agentReachNotInstalled",
               { defaultValue: "Agent-Reach is not installed. The runtime agent does not have internet capability tools." },
             )}
+          </div>
+        ) : null}
+      </div>
+
+      {/* Last30Days research engine status */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            Last 30 Days (Research Engine)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          AI-agent-led research engine that aggregates what people are
+          saying about any topic across the last 30 days, scored by
+          engagement. Zero pip dependencies, Python 3.12+ stdlib only.
+          Sources: Reddit, HN, YouTube, GitHub, Polymarket, arXiv, Digg,
+          StockTwits — all keyless.
+        </p>
+        {last30days?.found ? (
+          <div className="tools-agent-reach-status">
+            <span className="tools-agent-reach-installed">
+              <CheckCircle size={14} /> Installed
+              {last30days.version && ` (${last30days.version})`}
+            </span>
+            {last30days.scriptPath && (
+              <p className="tools-agent-reach-subtitle">
+                Script: <code>{last30days.scriptPath}</code>
+              </p>
+            )}
+            {last30days.cliOnPath && !last30days.scriptPath && (
+              <p className="tools-agent-reach-subtitle">
+                CLI on PATH
+              </p>
+            )}
+          </div>
+        ) : last30days ? (
+          <div className="tools-agent-reach-not-installed">
+            Last 30 Days is not installed. Clone the repo into
+            <code> .agents/skills/last30days/ </code>
+            or install via pip. Zero API keys needed for core sources.
           </div>
         ) : null}
       </div>

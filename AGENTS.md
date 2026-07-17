@@ -48,14 +48,19 @@ surface assumptions into Cubecloud-original code paths.
    of truth is `scripts/ironclaw-attach.smoke.cjs`; the older "8281"
    in historical docs is legacy), OpenClaw (optional, port 18789).
    The desktop attaches over HTTP; it does not shell out to an
-   interactive TUI for the chat path.
+   interactive TUI for the chat path. Raven (EverMind's self-improving
+   agent harness, port 8855) is reserved as `planned` — the slot
+   exists but is not active until Raven's gateway API stabilizes.
 2. **Integrated support surfaces** — CodeGraph, EverOS, Headroom,
-   Moo Tasks, Codebase Memory. Operator-installed, desktop-spawned
-   sidecars. Moo Tasks (agent-native kanban with 14 MCP tools) lives
-   as a panel on the Plans screen; Codebase Memory (CMM, 14 MCP tools,
-   Cypher queries, 3D graph) lives as a panel on the CodeGraph screen.
-   The dead Kanban screen was removed in V2.10.75 — moo-tasks
-   replaces it.
+   Moo Tasks, Codebase Memory, Agent Reach, Last 30 Days.
+   Operator-installed, desktop-spawned sidecars. Moo Tasks
+   (agent-native kanban with 14 MCP tools) lives as a panel on the
+   Plans screen; Codebase Memory (CMM, 14 MCP tools, Cypher queries,
+   3D graph) lives as a panel on the CodeGraph screen; Agent Reach
+   (15-platform internet capability router) and Last 30 Days
+   (engagement-scored research engine) live as panels on the Tools
+   screen. The dead Kanban screen was removed in V2.10.75 —
+   moo-tasks replaces it.
 3. **User-managed third-party apps** — anything the operator installs
    that is not a coding-agent CLI. Includes local model servers
    (Ollama, LM Studio, vLLM, llama.cpp) and chat/retrieval tools

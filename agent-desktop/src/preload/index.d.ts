@@ -1566,6 +1566,12 @@ interface HermesAPI {
     edges: number;
     sizeBytes: number;
   }>>;
+  discoverLast30Days: () => Promise<{
+    found: boolean;
+    scriptPath: string | null;
+    cliOnPath: boolean;
+    version: string | null;
+  }>;
 
   // Moo Tasks sidecar (agent-native kanban board)
   mooTasksSidecarStatus: () => Promise<{

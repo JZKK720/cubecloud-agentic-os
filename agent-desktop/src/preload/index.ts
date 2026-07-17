@@ -1954,6 +1954,12 @@ const hermesAPI = {
     edges: number;
     sizeBytes: number;
   }>> => ipcRenderer.invoke("list-codebase-memory-projects"),
+  discoverLast30Days: (): Promise<{
+    found: boolean;
+    scriptPath: string | null;
+    cliOnPath: boolean;
+    version: string | null;
+  }> => ipcRenderer.invoke("discover-last30days"),
 
   // Moo Tasks sidecar (agent-native kanban board)
   mooTasksSidecarStatus: (): Promise<{

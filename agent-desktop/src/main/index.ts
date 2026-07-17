@@ -49,6 +49,7 @@ import {
   discoverMemoryProviders,
   discoverCodebaseMemory,
   listCodebaseMemoryProjects,
+  discoverLast30Days,
   readLogs,
   InstallProgress,
 } from "./installer";
@@ -2740,6 +2741,9 @@ function setupIPC(): void {
   );
   ipcMain.handle("list-codebase-memory-projects", () =>
     listCodebaseMemoryProjects(),
+  );
+  ipcMain.handle("discover-last30days", () =>
+    discoverLast30Days(),
   );
 
   // Moo Tasks sidecar (agent-native kanban board with MCP server).

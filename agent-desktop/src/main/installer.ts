@@ -1586,6 +1586,78 @@ export function listCodebaseMemoryProjects(): CodebaseMemoryProject[] {
 }
 
 // ────────────────────────────────────────────────────
+//  Last30Days skill discovery
+// ────────────────────────────────────────────────────
+
+export interface Last30DaysStatus {
+  found: boolean;
+  /** Path to the last30days.py script if found in .agents/skills/ */
+  scriptPath: string | null;
+  /** True if the `last30days` CLI is on PATH (alternative install) */
+  cliOnPath: boolean;
+  version: string | null;
+}
+
+/**
+ * Discover whether the last30days research engine is available.
+ * Checks two locations:
+ * 1. The skill script at .agents/skills/last30days/scripts/last30days.py
+ *    (the recommended install path — clone the repo into the skills dir)
+ * 2. A `last30days` CLI on PATH (alternative install via pip)
+ */
+export function discoverLast30Days(): Last30DaysStatus {
+  const envPath = getEnhancedPath();
+
+  // Check for the skill script in .agents/skills/last30days/
+  const skillScriptPath = join(
+    __dirname,
+    "..",
+    "..",
+    ".agents",
+    "skills",
+    "last30days",
+    "scripts",
+    "last30days.py",
+  );
+  const scriptExists = existsSync(skillScriptPath);
+
+  // Check for a `last30days` CLI on PATH
+  const cliPath = resolveCommandOnPath("last30days", envPath);
+  const cliOnPath = cliPath !== null;
+
+  if (!scriptExists && !cliOnPath) {
+    return { found: false, scriptPath: null, cliOnPath: false, version: null };
+  }
+
+  // Try to get version
+  let version: string | null = null;
+  const binary = cliPath ?? (scriptExists ? "python3" : null);
+  const args = cliPath ? ["--version"] : scriptExists ? [skillScriptPath, "--version"] : [];
+  if (binary) {
+    try {
+      const result = spawnSync(binary, args, {
+        encoding: "utf8",
+        env: { ...process.env, PATH: envPath },
+        timeout: 5000,
+        windowsHide: true,
+      });
+      if (result.status === 0 && result.stdout) {
+        version = result.stdout.trim().split(/\r?\n/)[0];
+      }
+    } catch {
+      // best effort
+    }
+  }
+
+  return {
+    found: true,
+    scriptPath: scriptExists ? skillScriptPath : null,
+    cliOnPath,
+    version,
+  };
+}
+
+// ────────────────────────────────────────────────────
 //  MCP server management
 // ────────────────────────────────────────────────────
 
