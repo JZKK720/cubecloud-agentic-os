@@ -356,7 +356,7 @@ const DOCKER_DISCOVERY_TARGETS: Record<
     id: "raven",
     displayName: "Raven",
     keywords: ["raven", "evermind-raven"],
-    preferredPorts: [8800, 3000, 8080],
+    preferredPorts: [8855, 3000, 8080],
   },
 };
 
