@@ -391,9 +391,9 @@ export interface PlatformMissionCardSummary
   gating: string;
 }
 
-export type PlatformRuntimeProviderId = "hermes" | "ironclaw" | "openclaw";
+export type PlatformRuntimeProviderId = "hermes" | "ironclaw" | "openclaw" | "raven";
 
-export type PlatformTaskOrchestratorId = "hermes" | "openclaw" | "ecc";
+export type PlatformTaskOrchestratorId = "hermes" | "openclaw";
 
 export type PlatformRuntimeProviderRole =
   | "primary-runtime"
@@ -1120,12 +1120,12 @@ const PLATFORM_RUNTIME_PROVIDER_IDS: readonly PlatformRuntimeProviderId[] = [
   "hermes",
   "ironclaw",
   "openclaw",
+  "raven",
 ] as const;
 
 const PLATFORM_TASK_ORCHESTRATOR_IDS: readonly PlatformTaskOrchestratorId[] = [
   "hermes",
   "openclaw",
-  "ecc",
 ] as const;
 
 const PLATFORM_SURFACE_PROTOCOLS: readonly PlatformSurfaceProtocol[] = [
@@ -1223,7 +1223,7 @@ export const PLATFORM_RUNTIME_PROVIDERS: readonly PlatformRuntimeProviderDescrip
       ],
       remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:8642/health`,
       sshRemotePort: 8642,
-      preferredTaskOrchestratorIds: ["hermes", "ecc"],
+      preferredTaskOrchestratorIds: ["hermes"],
       capabilities: {
         canInstallLocally: true,
         canAttachToExistingLocalGateway: true,
@@ -1251,7 +1251,7 @@ export const PLATFORM_RUNTIME_PROVIDERS: readonly PlatformRuntimeProviderDescrip
       connectionModes: ["docker-gateway", "remote-gateway"],
       remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:8281/health`,
       sshRemotePort: null,
-      preferredTaskOrchestratorIds: ["hermes", "ecc"],
+      preferredTaskOrchestratorIds: ["hermes"],
       capabilities: {
         canInstallLocally: false,
         canAttachToExistingLocalGateway: false,
@@ -1284,7 +1284,7 @@ export const PLATFORM_RUNTIME_PROVIDERS: readonly PlatformRuntimeProviderDescrip
       ],
       remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:18789/v1/models`,
       sshRemotePort: 18789,
-      preferredTaskOrchestratorIds: ["openclaw", "ecc"],
+      preferredTaskOrchestratorIds: ["openclaw"],
       capabilities: {
         canInstallLocally: true,
         canAttachToExistingLocalGateway: true,
@@ -1302,13 +1302,46 @@ export const PLATFORM_RUNTIME_PROVIDERS: readonly PlatformRuntimeProviderDescrip
         "The shell can stage remote and SSH smoke targets even before a dedicated OpenClaw shell surface exists.",
       ],
     },
+    {
+      id: "raven",
+      displayName: "Raven",
+      role: "primary-runtime",
+      integrationStatus: "planned",
+      linkedAppId: null,
+      linkedRuntimeSurfaceAppId: null,
+      connectionModes: [
+        "local-gateway",
+        "remote-gateway",
+        "ssh-tunnel",
+      ],
+      remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:8000`,
+      sshRemotePort: 8000,
+      preferredTaskOrchestratorIds: ["hermes"],
+      capabilities: {
+        canInstallLocally: true,
+        canAttachToExistingLocalGateway: true,
+        canAttachToRemoteGateway: true,
+        canAttachViaSshTunnel: true,
+        canDiscoverViaDocker: false,
+        canImportExistingState: false,
+        canDiscoverLocalCli: true,
+        exposesChatGateway: true,
+        supportsTaskExecution: true,
+        supportsWorkflowDispatch: true,
+      },
+      notes: [
+        "Raven is EverMind's self-improving agent harness built on EverOS.",
+        "Pre-alpha (v0.1.x). The runtime slot is reserved as 'planned' until Raven's gateway API stabilizes.",
+        "EverOS (already integrated as a Tier 2 support surface) is Raven's memory backend.",
+      ],
+    },
   ] as const;
 
 export const PLATFORM_TASK_ORCHESTRATORS: readonly PlatformTaskOrchestratorDescriptor[] =
   [
     {
       id: "hermes",
-      displayName: "Hermes Kanban and Dispatch",
+      displayName: "Hermes Task Dispatch",
       integrationStatus: "current",
       integrationMode: "native-core",
       compatibleRuntimeProviderIds: ["hermes", "ironclaw"],
@@ -1321,8 +1354,8 @@ export const PLATFORM_TASK_ORCHESTRATORS: readonly PlatformTaskOrchestratorDescr
         canReuseExistingRuntimeConnections: true,
       },
       notes: [
-        "Best first orchestration lane while Cubecloud Desktop remains Hermes-backed.",
-        "Reuse the existing runtime attach flows instead of rebuilding orchestration around static shell menus.",
+        "Hermes is the native task dispatch backend. The Plans screen's Dispatch button creates tasks via the Hermes CLI kanban subcommand.",
+        "The board UI is provided by moo-tasks (agent-native kanban with 14 MCP tools).",
       ],
     },
     {
@@ -1342,25 +1375,6 @@ export const PLATFORM_TASK_ORCHESTRATORS: readonly PlatformTaskOrchestratorDescr
       notes: [
         "Keep OpenClaw orchestration behind an explicit runtime lane instead of reviving removed legacy surfaces.",
         "Use the smoke harness to validate compatibility and auth before treating this as the active orchestration lane.",
-      ],
-    },
-    {
-      id: "ecc",
-      displayName: "ECC external bridge",
-      integrationStatus: "optional",
-      integrationMode: "optional-bridge",
-      compatibleRuntimeProviderIds: ["hermes", "ironclaw", "openclaw"],
-      capabilities: {
-        canManageAgents: false,
-        canAssignTasks: true,
-        canDispatchWorkflows: true,
-        canMirrorExternalBacklogs: true,
-        canBridgeExternalHarness: true,
-        canReuseExistingRuntimeConnections: true,
-      },
-      notes: [
-        "Treat ECC as an optional external harness bridge, not the default shell runtime owner.",
-        "Use it when you need a backlog or workflow bridge without changing the active runtime lane.",
       ],
     },
   ] as const;
@@ -1491,6 +1505,42 @@ const DEFAULT_SMOKE_TARGETS: readonly PlatformSmokeTargetState[] = [
     sshKeyPath: "",
     sshRemotePort: 18789,
     notes: "Validate SSH access to the host that exposes OpenClaw compatibility on the remote port.",
+    status: "draft",
+    lastRunAt: null,
+    lastRunDetail: null,
+  },
+  {
+    id: "raven-remote",
+    label: "Raven remote smoke",
+    runtimeProviderId: "raven",
+    transport: "remote",
+    remoteUrl: "",
+    tcpHost: "",
+    tcpPort: null,
+    sshHost: "",
+    sshPort: 22,
+    sshUsername: "",
+    sshKeyPath: "",
+    sshRemotePort: 8000,
+    notes: "Probe the Raven gateway directly, usually /v1/models on the remote host.",
+    status: "draft",
+    lastRunAt: null,
+    lastRunDetail: null,
+  },
+  {
+    id: "raven-ssh",
+    label: "Raven SSH smoke",
+    runtimeProviderId: "raven",
+    transport: "ssh",
+    remoteUrl: "",
+    tcpHost: "",
+    tcpPort: null,
+    sshHost: "",
+    sshPort: 22,
+    sshUsername: "",
+    sshKeyPath: "",
+    sshRemotePort: 8000,
+    notes: "Validate SSH access to the host that exposes the Raven gateway on the remote port.",
     status: "draft",
     lastRunAt: null,
     lastRunDetail: null,

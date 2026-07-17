@@ -1,5 +1,4 @@
-import { checkOpenClawExists, getEnhancedPath } from "./installer";
-import { resolveCommandOnPath } from "./agent-clis";
+import { checkOpenClawExists } from "./installer";
 import {
   TASK_ORCHESTRATOR_CATALOG,
   type TaskOrchestratorSnapshot,
@@ -25,9 +24,9 @@ const adapters: readonly TaskOrchestratorAdapter[] = [
         enabled: true,
         detectedCommand: null,
         summary:
-          "Hermes is the native task orchestrator scaffold for Agent Desktop and remains the default path for agent, task, and workflow coordination.",
+          "Hermes is the native task dispatch backend. The Plans screen's Dispatch button creates tasks via the Hermes CLI kanban subcommand.",
         detail:
-          "This adapter is intentionally first because the repo already contains the task and dispatch primitives. Future UI work should mount a new operations surface rather than restoring Office.",
+          "The board UI is provided by moo-tasks (agent-native kanban with 14 MCP tools). Hermes dispatch creates the tasks; moo-tasks provides the visual board.",
       };
     },
   },
@@ -50,28 +49,6 @@ const adapters: readonly TaskOrchestratorAdapter[] = [
           : "OpenClaw orchestration stays disabled until the optional runtime adapter lands.",
         detail:
           "Migration support exists today, but task orchestration will only be enabled after probe, attach, and workflow adapter work is complete.",
-      };
-    },
-  },
-  {
-    id: "ecc",
-    async getSnapshot(): Promise<TaskOrchestratorSnapshot> {
-      const definition = TASK_ORCHESTRATOR_CATALOG.find(
-        (candidate) => candidate.id === "ecc",
-      )!;
-      const detectedCommand = resolveCommandOnPath("ecc", getEnhancedPath());
-      return {
-        definition,
-        status: detectedCommand ? "optional" : "planned",
-        available: Boolean(detectedCommand),
-        detected: Boolean(detectedCommand),
-        enabled: false,
-        detectedCommand,
-        summary: detectedCommand
-          ? `ECC was detected at ${detectedCommand}. It can be surfaced later as an optional external harness bridge.`
-          : "ECC is scaffolded as an optional external harness bridge, but no ECC CLI was detected on the current PATH.",
-        detail:
-          "The bridge is intentionally external-facing only. Agent Desktop will not embed ECC's full dashboard or operator shell into the app core.",
       };
     },
   },

@@ -140,6 +140,23 @@ export async function listRuntimeProviders(): Promise<
             : "OpenClaw stays behind the guided install and migration/import lane until a separate runtime and task adapter exists. The retired Office or HQ surfaces are not coming back.",
         } satisfies RuntimeProviderSnapshot;
       }
+      case "raven": {
+        return {
+          definition,
+          status: "planned" as const,
+          available: false,
+          detected: false,
+          detectedCount: 0,
+          detectedPath: null,
+          detectedCommand: null,
+          currentConnectionMode: null,
+          actions: [],
+          summary:
+            "Raven is EverMind's self-improving agent harness. The runtime slot is reserved as 'planned' until Raven's gateway API stabilizes.",
+          detail:
+            "Raven is pre-alpha (v0.1.x). The desktop already discovers the 'raven' binary on PATH via the AGENT_CLI_CATALOG. EverOS (already integrated as a Tier 2 support surface) is Raven's memory backend.",
+        } satisfies RuntimeProviderSnapshot;
+      }
     }
   });
 }

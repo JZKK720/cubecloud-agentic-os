@@ -1,6 +1,6 @@
-export type RuntimeProviderId = "hermes" | "ironclaw" | "openclaw";
+export type RuntimeProviderId = "hermes" | "ironclaw" | "openclaw" | "raven";
 
-export type TaskOrchestratorId = "hermes" | "openclaw" | "ecc";
+export type TaskOrchestratorId = "hermes" | "openclaw";
 
 export type RuntimeProviderRole =
   | "primary-runtime"
@@ -158,7 +158,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
       supportsTaskExecution: true,
       supportsWorkflowDispatch: true,
     },
-    preferredTaskOrchestratorIds: ["hermes", "ecc"],
+    preferredTaskOrchestratorIds: ["hermes"],
     notes: [
       "Default Agent Desktop runtime and gateway owner.",
       "Already has truthful onboarding for local install, existing localhost gateway attach, remote endpoint attach, and SSH tunnel attach.",
@@ -183,7 +183,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
       supportsTaskExecution: false,
       supportsWorkflowDispatch: false,
     },
-    preferredTaskOrchestratorIds: ["hermes", "ecc"],
+    preferredTaskOrchestratorIds: ["hermes"],
     notes: [
       "Treat as an attached gateway runtime, not a native Agent Desktop dashboard or scheduler.",
       "Keep Docker discovery scoped to truthful handoff of an already-running IronClaw gateway container.",
@@ -210,7 +210,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
       supportsTaskExecution: true,
       supportsWorkflowDispatch: true,
     },
-    preferredTaskOrchestratorIds: ["openclaw", "ecc"],
+    preferredTaskOrchestratorIds: ["openclaw"],
     notes: [
       "OpenClaw can be attached through its HTTP compatibility surface when the gateway exposes chat completions and models endpoints.",
       "Agent Desktop can also attach to a remote OpenClaw gateway through the existing SSH tunnel flow when the compatibility endpoint is exposed on the tunneled port.",
@@ -218,12 +218,39 @@ export const RUNTIME_PROVIDER_CATALOG = [
       "Do not restore the removed Office or HQ mirror surfaces; keep OpenClaw integration focused on truthful gateway attach, migration, and task adapters.",
     ],
   },
+  {
+    id: "raven",
+    displayName: "Raven",
+    role: "primary-runtime",
+    integrationStatus: "planned",
+    onboardingSurface: "setup",
+    connectionModes: ["local-gateway", "remote-gateway", "ssh-tunnel"],
+    capabilities: {
+      canInstallLocally: true,
+      canAttachToExistingLocalGateway: true,
+      canAttachToRemoteGateway: true,
+      canAttachViaSshTunnel: true,
+      canDiscoverViaDocker: false,
+      canImportExistingState: false,
+      canDiscoverLocalCli: true,
+      exposesChatGateway: true,
+      supportsTaskExecution: true,
+      supportsWorkflowDispatch: true,
+    },
+    preferredTaskOrchestratorIds: ["hermes"],
+    notes: [
+      "Raven is EverMind's self-improving agent harness built on EverOS. It provides memory, SkillForge skills, Sentinel proactivity, and 12 messaging gateways.",
+      "The desktop attaches to Raven's OpenAI-compatible HTTP gateway. The chat path is the same unified /v1/chat/completions contract used by Hermes, IronClaw, and OpenClaw.",
+      "Raven is pre-alpha (v0.1.x). The runtime slot is reserved as 'planned' until Raven's gateway API stabilizes. The desktop already discovers the 'raven' binary on PATH via the AGENT_CLI_CATALOG (tier 4).",
+      "EverOS (already integrated as a Tier 2 support surface) is Raven's memory backend — the two are complementary, not redundant.",
+    ],
+  },
 ] as const satisfies readonly RuntimeProviderDefinition[];
 
 export const TASK_ORCHESTRATOR_CATALOG = [
   {
     id: "hermes",
-    displayName: "Hermes Kanban and Dispatch",
+    displayName: "Hermes Task Dispatch",
     integrationStatus: "current",
     integrationMode: "native-core",
     compatibleRuntimeProviderIds: ["hermes", "ironclaw"],
@@ -236,8 +263,8 @@ export const TASK_ORCHESTRATOR_CATALOG = [
       canReuseExistingRuntimeConnections: true,
     },
     notes: [
-      "Best first orchestrator to surface because the runtime, gateway, and task primitives already live in the repo.",
-      "If task orchestration returns to the UI, mount it as a new runtime or operations surface rather than the retired Office shell.",
+      "Hermes is the native task dispatch backend. The Plans screen's Dispatch button creates tasks via the Hermes CLI kanban subcommand.",
+      "The board UI is provided by moo-tasks (agent-native kanban with 14 MCP tools). Hermes dispatch creates the tasks; moo-tasks provides the visual board.",
     ],
   },
   {
@@ -257,25 +284,6 @@ export const TASK_ORCHESTRATOR_CATALOG = [
     notes: [
       "Keep this behind an explicit adapter instead of reviving the legacy Office or HQ implementation.",
       "Only enable it after OpenClaw graduates from migration-only to an optional attachable runtime.",
-    ],
-  },
-  {
-    id: "ecc",
-    displayName: "ECC harness bridge",
-    integrationStatus: "planned",
-    integrationMode: "optional-bridge",
-    compatibleRuntimeProviderIds: ["hermes", "ironclaw", "openclaw"],
-    capabilities: {
-      canManageAgents: true,
-      canAssignTasks: true,
-      canDispatchWorkflows: true,
-      canMirrorExternalBacklogs: true,
-      canBridgeExternalHarness: true,
-      canReuseExistingRuntimeConnections: true,
-    },
-    notes: [
-      "ECC should remain an optional external harness backend instead of an embedded runtime dashboard.",
-      "Surface it through CLI detection, orchestrator settings, and bridge commands once a stable adapter contract exists.",
     ],
   },
 ] as const satisfies readonly TaskOrchestratorDefinition[];
@@ -343,6 +351,12 @@ const DOCKER_DISCOVERY_TARGETS: Record<
     displayName: "OpenClaw",
     keywords: ["openclaw", "open-claw"],
     preferredPorts: [18789, 3000, 8080, 8789],
+  },
+  raven: {
+    id: "raven",
+    displayName: "Raven",
+    keywords: ["raven", "evermind-raven"],
+    preferredPorts: [8000, 3000, 8080],
   },
 };
 

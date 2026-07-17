@@ -9,6 +9,7 @@ describe("runtime orchestration contract", () => {
     const hermes = getRuntimeProviderDefinition("hermes");
     const ironclaw = getRuntimeProviderDefinition("ironclaw");
     const openclaw = getRuntimeProviderDefinition("openclaw");
+    const raven = getRuntimeProviderDefinition("raven");
 
     expect(hermes.onboardingSurface).toBe("welcome");
     expect(hermes.capabilities.canInstallLocally).toBe(true);
@@ -18,7 +19,7 @@ describe("runtime orchestration contract", () => {
     expect(ironclaw.capabilities.canDiscoverViaDocker).toBe(true);
     expect(ironclaw.capabilities.canAttachViaSshTunnel).toBe(true);
     expect(ironclaw.connectionModes).toContain("ssh-tunnel");
-    expect(ironclaw.preferredTaskOrchestratorIds).toEqual(["hermes", "ecc"]);
+    expect(ironclaw.preferredTaskOrchestratorIds).toEqual(["hermes"]);
 
     expect(openclaw.onboardingSurface).toBe("setup");
     expect(openclaw.role).toBe("gateway-handoff");
@@ -32,19 +33,25 @@ describe("runtime orchestration contract", () => {
     expect(openclaw.connectionModes).toContain("ssh-tunnel");
     expect(openclaw.notes.join(" ")).toMatch(/onboard|wsl/i);
     expect(openclaw.notes.join(" ")).toMatch(/attach|gateway|ssh/i);
+
+    expect(raven.onboardingSurface).toBe("setup");
+    expect(raven.role).toBe("primary-runtime");
+    expect(raven.integrationStatus).toBe("planned");
+    expect(raven.capabilities.canInstallLocally).toBe(true);
+    expect(raven.capabilities.exposesChatGateway).toBe(true);
+    expect(raven.notes.join(" ")).toMatch(/EverMind|EverOS/i);
   });
 
-  it("keeps ecc as an optional external orchestrator bridge", () => {
-    const ecc = getTaskOrchestratorDefinition("ecc");
+  it("has Hermes and OpenClaw task orchestrators (ECC removed)", () => {
+    const hermes = getTaskOrchestratorDefinition("hermes");
     const openclaw = getTaskOrchestratorDefinition("openclaw");
 
-    expect(ecc.integrationMode).toBe("optional-bridge");
-    expect(ecc.compatibleRuntimeProviderIds).toEqual([
+    expect(hermes.displayName).toBe("Hermes Task Dispatch");
+    expect(hermes.integrationMode).toBe("native-core");
+    expect(hermes.compatibleRuntimeProviderIds).toEqual([
       "hermes",
       "ironclaw",
-      "openclaw",
     ]);
-    expect(ecc.notes.join(" ")).toMatch(/optional external harness backend/i);
 
     expect(openclaw.integrationMode).toBe("optional-runtime");
     expect(openclaw.notes.join(" ")).toMatch(/do not|instead of reviving/i);
