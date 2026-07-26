@@ -521,14 +521,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
             disabled={isLoading || isTranscribing}
             title={
               isTranscribing
-                ? "Transcribing…"
+                ? t("chat.voiceTranscribing")
                 : isRecording
-                  ? "Stop recording"
+                  ? t("chat.voiceRecording")
                   : handyAvailable
-                    ? "Voice input (Handy — local, offline)"
-                    : "Voice input (cloud STT)"
+                    ? t("chat.voiceHandy")
+                    : t("chat.voiceCloud")
             }
-            aria-label={t("chat.voiceInput", { defaultValue: "Voice input" })}
+            aria-label={t("chat.voiceInput")}
             type="button"
           >
             {isTranscribing ? (

@@ -199,12 +199,12 @@ export const MessageRow = memo(function MessageRow({
           disabled={ttsLoading}
           title={
             isSpeaking
-              ? "Stop speaking"
+              ? t("chat.stopSpeaking")
               : ttsLoading
-                ? "Generating speech…"
-                : "Speak aloud"
+                ? t("chat.generatingSpeech")
+                : t("chat.speakAloud")
           }
-          aria-label="Speak aloud"
+          aria-label={t("chat.speakAloud")}
           type="button"
         >
           {ttsLoading ? (
