@@ -3,13 +3,21 @@ import {
   DEFAULT_SSH_REMOTE_PORT,
   IRONCLAW_DEFAULT_PORT,
   OPENCLAW_LOCAL_GATEWAY_PORT,
+  RAVEN_DEFAULT_PORT,
 } from "./runtime-defaults";
 
 // V2.10.61 / V2.10.68 — widened to include IronClaw. IronClaw now
 // supports both remote-gateway attach and forwarded SSH attach. The
 // SSH path still targets the published gateway port (default 3231)
 // and validates the IronClaw-specific /api/health surface.
-export type GatewayRuntimePresetId = "hermes" | "openclaw" | "ironclaw";
+// V2.10.76 — widened to include Raven. Raven is EverMind's self-
+// improving agent harness. Its OpenAI-compatible HTTP gateway runs
+// on port 8855 by default and exposes /health + /v1/chat/completions.
+export type GatewayRuntimePresetId =
+  | "hermes"
+  | "openclaw"
+  | "ironclaw"
+  | "raven";
 
 export interface GatewayRuntimePreset {
   id: GatewayRuntimePresetId;
@@ -95,12 +103,39 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
       "Use this when the forwarded IronClaw gateway requires GATEWAY_AUTH_TOKEN.",
     sshSupported: true,
   },
+  // V2.10.76 — Raven is EverMind's self-improving agent harness
+  // built on EverOS. Its OpenAI-compatible HTTP gateway runs on
+  // port 8855 by default. Auth is via an optional Bearer token.
+  // The gateway exposes /health (returns {"status":"ok",...
+  // "runtime":"raven"}) and /v1/chat/completions. The desktop
+  // attaches the same way as Hermes/IronClaw/OpenClaw — the chat
+  // path is the unified /v1/chat/completions contract.
+  raven: {
+    id: "raven",
+    displayName: "Raven (EverMind)",
+    remoteExampleUrl: `http://${REMOTE_GATEWAY_EXAMPLE_HOST}:${RAVEN_DEFAULT_PORT}`,
+    remoteSecretLabel: "Bearer token (optional)",
+    remoteSecretPlaceholder:
+      "Paste the Raven gateway token if auth is enabled",
+    remoteSecretHint:
+      "Leave this empty if the Raven gateway accepts unauthenticated requests.",
+    remoteHint:
+      "Use the Raven gateway base URL (default port 8855). Raven is EverMind's self-improving agent harness with EverOS memory, SkillForge skills, and Sentinel proactivity.",
+    sshRemotePort: RAVEN_DEFAULT_PORT,
+    sshSecretLabel: "Bearer token (optional)",
+    sshSecretHint:
+      "Use this when the forwarded Raven gateway requires auth.",
+    sshSupported: true,
+  },
 };
 
 export function coerceGatewayRuntimePreset(
   value: unknown,
 ): GatewayRuntimePresetId | null {
-  return value === "openclaw" || value === "hermes" || value === "ironclaw"
+  return value === "openclaw" ||
+    value === "hermes" ||
+    value === "ironclaw" ||
+    value === "raven"
     ? value
     : null;
 }
@@ -132,6 +167,9 @@ export function inferGatewayRuntimePreset(args: {
   if (sshRemotePort === OPENCLAW_LOCAL_GATEWAY_PORT) {
     return "openclaw";
   }
+  if (sshRemotePort === RAVEN_DEFAULT_PORT) {
+    return "raven";
+  }
 
   const remoteUrl = (args.remoteUrl || "").trim();
   if (!remoteUrl) {
@@ -154,6 +192,9 @@ export function inferGatewayRuntimePreset(args: {
     }
     if (Number(parsed.port) === OPENCLAW_LOCAL_GATEWAY_PORT) {
       return "openclaw";
+    }
+    if (Number(parsed.port) === RAVEN_DEFAULT_PORT) {
+      return "raven";
     }
     if (/^\/v1(?:\/|$)/i.test(parsed.pathname)) {
       return "openclaw";

@@ -277,6 +277,29 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     cliOnPath: boolean;
     version: string | null;
   } | null>(null);
+  const [gbrain, setGbrain] = useState<{
+    installed: boolean;
+    healthy: boolean;
+    version: string | null;
+    failingChecks: number;
+    totalChecks: number;
+    summary: string;
+  } | null>(null);
+  const [browserHarness, setBrowserHarness] = useState<{
+    installed: boolean;
+    detectedCommand: string | null;
+    doctorOk: boolean | null;
+    doctorOutput: string | null;
+  } | null>(null);
+  const [officecli, setOfficecli] = useState<{
+    installed: boolean;
+    detectedCommand: string | null;
+  } | null>(null);
+  const [graphify, setGraphify] = useState<{
+    installed: boolean;
+    detectedCommand: string | null;
+    version: string | null;
+  } | null>(null);
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -309,6 +332,78 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       .discoverLast30Days()
       .then((s) => setLast30days(s))
       .catch(() => setLast30days(null));
+    void window.hermesAPI
+      .gbrainProbe()
+      .then((s) => setGbrain(s))
+      .catch(() => setGbrain(null));
+    void window.hermesAPI
+      .discoverBrowserHarness()
+      .then(async (disc) => {
+        if (disc.installed) {
+          try {
+            const doc = await window.hermesAPI.browserHarnessDoctor();
+            setBrowserHarness({
+              installed: true,
+              detectedCommand: disc.detectedCommand,
+              doctorOk: doc.ok,
+              doctorOutput: doc.output.slice(0, 300),
+            });
+          } catch {
+            setBrowserHarness({
+              installed: true,
+              detectedCommand: disc.detectedCommand,
+              doctorOk: null,
+              doctorOutput: null,
+            });
+          }
+        } else {
+          setBrowserHarness({
+            installed: false,
+            detectedCommand: null,
+            doctorOk: null,
+            doctorOutput: null,
+          });
+        }
+      })
+      .catch(() => setBrowserHarness(null));
+    void window.hermesAPI
+      .discoverAgentClis()
+      .then((disc) => {
+        const oc = disc.items.find((i) => i.id === "officecli");
+        setOfficecli(
+          oc
+            ? { installed: oc.installed, detectedCommand: oc.detectedCommand }
+            : { installed: false, detectedCommand: null },
+        );
+      })
+      .catch(() => setOfficecli(null));
+    void window.hermesAPI
+      .graphifyDiscover()
+      .then(async (disc) => {
+        if (disc.installed) {
+          try {
+            const ver = await window.hermesAPI.graphifyVersion();
+            setGraphify({
+              installed: true,
+              detectedCommand: disc.detectedCommand,
+              version: ver.version,
+            });
+          } catch {
+            setGraphify({
+              installed: true,
+              detectedCommand: disc.detectedCommand,
+              version: null,
+            });
+          }
+        } else {
+          setGraphify({
+            installed: false,
+            detectedCommand: null,
+            version: null,
+          });
+        }
+      })
+      .catch(() => setGraphify(null));
   }, [loadToolsets, loadAgentReach]);
 
   async function handleToggle(
@@ -485,6 +580,230 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
             Last 30 Days is not installed. Clone the repo into
             <code> .agents/skills/last30days/ </code>
             or install via pip. Zero API keys needed for core sources.
+          </div>
+        ) : null}
+      </div>
+
+      {/* GBrain persistent memory status */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            GBrain (Persistent Memory)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          Postgres-native personal knowledge brain with 30+ MCP tools —
+          hybrid search, synthesis, knowledge graph, and the dream cycle.
+          Local-first via PGLite (zero-config, no Docker). The memory layer
+          your agent stops being amnesiac with.
+        </p>
+        {gbrain?.installed ? (
+          <div className="tools-agent-reach-status">
+            <span
+              className={
+                gbrain.healthy
+                  ? "tools-agent-reach-installed"
+                  : "tools-agent-reach-error"
+              }
+            >
+              {gbrain.healthy ? (
+                <CheckCircle size={14} />
+              ) : (
+                <XCircle size={14} />
+              )}
+              {gbrain.healthy ? "Healthy" : "Unhealthy"}
+              {gbrain.version && ` (${gbrain.version})`}
+            </span>
+            <p className="tools-agent-reach-subtitle">{gbrain.summary}</p>
+          </div>
+        ) : gbrain ? (
+          <div className="tools-agent-reach-not-installed">
+            GBrain is not installed. Install with:{" "}
+            <code>bun install -g github:garrytan/gbrain</code>
+            {" "}then initialize with{" "}
+            <code>gbrain init --pglite --no-embedding</code>.
+          </div>
+        ) : null}
+      </div>
+
+      {/* Wigolo local-first web intelligence */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            Wigolo (Local Web Intelligence)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          Local-first web intelligence — search, fetch, crawl, extract, and
+          research. 10 MCP tools, no API keys needed for core tools. A free
+          local complement to Firecrawl (paid). Available as an MCP server
+          in the MCP screen.
+        </p>
+        <div className="tools-agent-reach-status">
+          <span className="tools-agent-reach-subtitle">
+            Add via the MCP screen: search for "wigolo". No install needed —
+            npx fetches on first run.
+          </span>
+        </div>
+      </div>
+
+      {/* Watch-Skill video intelligence */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            Watch-Skill (Video Intelligence)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          Video intelligence for agents — watch, remember, verify. 23 MCP
+          tools for video analysis, transcription, OCR, and THE LOOP
+          (browser/UI verification). Available as an MCP server in the MCP
+          screen.
+        </p>
+        <div className="tools-agent-reach-status">
+          <span className="tools-agent-reach-subtitle">
+            Add via the MCP screen: search for "watch-skill". Install with:{" "}
+            <code>uv tool install watch-skill</code> (Python 3.13+).
+          </span>
+        </div>
+      </div>
+
+      {/* Browser Harness + Browser Use */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            Browser Harness + Browser Use
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          LLM-driven browser automation via Chrome DevTools Protocol. The
+          agent opens pages, clicks, types, fills forms, extracts data, and
+          QA-tests websites. browser-harness is the thin CDP connector;
+          browser-use is the agent brain. Pairs with agent-reach (research)
+          and watch-skill (video verification) for full web capability.
+        </p>
+        {browserHarness?.installed ? (
+          <div className="tools-agent-reach-status">
+            <span
+              className={
+                browserHarness.doctorOk === false
+                  ? "tools-agent-reach-error"
+                  : "tools-agent-reach-installed"
+              }
+            >
+              {browserHarness.doctorOk === false ? (
+                <XCircle size={14} />
+              ) : (
+                <CheckCircle size={14} />
+              )}
+              Installed
+              {browserHarness.detectedCommand &&
+                ` (${browserHarness.detectedCommand})`}
+              {browserHarness.doctorOk === false
+                ? " — doctor: issues found"
+                : browserHarness.doctorOk === true
+                  ? " — doctor: OK"
+                  : " — doctor: not run"}
+            </span>
+            {browserHarness.doctorOutput && (
+              <p className="tools-agent-reach-subtitle">
+                <code>{browserHarness.doctorOutput}</code>
+              </p>
+            )}
+            <p className="tools-agent-reach-subtitle">
+              Add browser-use as an MCP server: search "browser-use" in the
+              MCP screen. Set BU_CDP_URL in Settings to connect to your
+              Chrome via CDP.
+            </p>
+          </div>
+        ) : browserHarness ? (
+          <div className="tools-agent-reach-not-installed">
+            Browser Harness is not installed. Install with:{" "}
+            <code>uv tool install browser-harness</code> (Python 3.12+).
+            Then enable remote debugging in Chrome via{" "}
+            <code>chrome://inspect/#remote-debugging</code>.
+          </div>
+        ) : null}
+      </div>
+
+      {/* OfficeCLI — Office document creation/editing */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            OfficeCLI (Office Document Automation)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          Create, read, edit, and render Word (.docx), Excel (.xlsx), and
+          PowerPoint (.pptx) documents — no Office installation required.
+          Single binary with built-in HTML/PNG rendering, 350+ Excel formulas,
+          template merge, and pivot tables. The write-side complement to
+          markitdown's read-side conversion. Available as an MCP server in the
+          MCP screen.
+        </p>
+        {officecli?.installed ? (
+          <div className="tools-agent-reach-status">
+            <span className="tools-agent-reach-installed">
+              <CheckCircle size={14} /> Installed
+              {officecli.detectedCommand &&
+                ` (${officecli.detectedCommand})`}
+            </span>
+            <p className="tools-agent-reach-subtitle">
+              Add as an MCP server: search "officecli" in the MCP screen. The
+              agent can create, edit, and render Office documents via CLI or
+              MCP.
+            </p>
+          </div>
+        ) : officecli ? (
+          <div className="tools-agent-reach-not-installed">
+            OfficeCLI is not installed. Install with:{" "}
+            <code>npm install -g @officecli/officecli</code> or download from{" "}
+            <code>https://github.com/iOfficeAI/OfficeCLI</code>. Single binary,
+            no .NET runtime needed.
+          </div>
+        ) : null}
+      </div>
+
+      {/* Graphify — concept knowledge graph */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            Graphify (Concept Knowledge Graph)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          Turn any folder (code, docs, papers, images) into a navigable
+          concept knowledge graph with community detection. Finds
+          cross-document connections you'd never think to ask about.
+          Complements CodeGraph (code AST structure) with semantic concept
+          graphs across documents. Outputs: interactive HTML, GraphRAG JSON,
+          audit report. Available as an MCP server for agent-accessible graph
+          queries.
+        </p>
+        {graphify?.installed ? (
+          <div className="tools-agent-reach-status">
+            <span className="tools-agent-reach-installed">
+              <CheckCircle size={14} /> Installed
+              {graphify.detectedCommand &&
+                ` (${graphify.detectedCommand})`}
+              {graphify.version && ` v${graphify.version}`}
+            </span>
+            <p className="tools-agent-reach-subtitle">
+              Add as an MCP server: search "graphify" in the MCP screen. Run{" "}
+              <code>graphify &lt;path&gt;</code> to build a graph, then query
+              with <code>graphify query "&lt;question&gt;"</code>.
+            </p>
+          </div>
+        ) : graphify ? (
+          <div className="tools-agent-reach-not-installed">
+            Graphify is not installed. Install with:{" "}
+            <code>uv tool install 'graphifyy[mcp]'</code> (Python 3.12+).
           </div>
         ) : null}
       </div>

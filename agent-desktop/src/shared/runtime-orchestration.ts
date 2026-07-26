@@ -222,7 +222,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
     id: "raven",
     displayName: "Raven",
     role: "primary-runtime",
-    integrationStatus: "planned",
+    integrationStatus: "optional",
     onboardingSurface: "setup",
     connectionModes: ["local-gateway", "remote-gateway", "ssh-tunnel"],
     capabilities: {
@@ -241,7 +241,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
     notes: [
       "Raven is EverMind's self-improving agent harness built on EverOS. It provides memory, SkillForge skills, Sentinel proactivity, and 12 messaging gateways.",
       "The desktop attaches to Raven's OpenAI-compatible HTTP gateway. The chat path is the same unified /v1/chat/completions contract used by Hermes, IronClaw, and OpenClaw.",
-      "Raven is pre-alpha (v0.1.x). The runtime slot is reserved as 'planned' until Raven's gateway API stabilizes. The desktop already discovers the 'raven' binary on PATH via the AGENT_CLI_CATALOG (tier 4).",
+      "Raven is pre-alpha (v0.1.x). The runtime slot is activated as 'optional' — the desktop probes for Raven on port 8855 and auto-detects it when the gateway is running. Users choose Raven when they want self-evolving memory; Hermes remains the default.",
       "EverOS (already integrated as a Tier 2 support surface) is Raven's memory backend — the two are complementary, not redundant.",
     ],
   },

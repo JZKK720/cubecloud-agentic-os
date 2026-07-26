@@ -79,7 +79,9 @@ interface AgentCliDiscoveryItem {
     | "antigravity"
     | "deepseek-reasonix"
     | "openclaw"
-    | "markitdown";
+    | "markitdown"
+    | "officecli"
+    | "graphify";
   installed: boolean;
   detectedCommand: string | null;
   resolvedPath: string | null;
@@ -1693,6 +1695,73 @@ const hermesAPI = {
   }> => ipcRenderer.invoke("headroom-sidecar-log-tail"),
   headroomSidecarClearLogs: (): Promise<{ success: boolean }> =>
     ipcRenderer.invoke("headroom-sidecar-clear-logs"),
+
+  // GBrain health probe. GBrain's local mode is stdio MCP (no HTTP
+  // port to probe), so we call `gbrain doctor --json` and parse the
+  // result. Returns { installed: false } when gbrain is not on PATH.
+  gbrainProbe: (): Promise<{
+    installed: boolean;
+    healthy: boolean;
+    version: string | null;
+    failingChecks: number;
+    totalChecks: number;
+    summary: string;
+    raw: unknown;
+  }> => ipcRenderer.invoke("gbrain-probe"),
+
+  // Voice STT transcription. The renderer captures audio via
+  // MediaRecorder and sends the buffer to the main process, which
+  // forwards it to the configured STT provider (Groq or OpenAI
+  // Whisper). Audio never touches disk. Returns transcribed text.
+  voiceTranscribe: (
+    audioBuffer: Buffer,
+  ): Promise<{
+    success: boolean;
+    text: string;
+    error: string | null;
+    provider: "groq" | "openai" | null;
+  }> => ipcRenderer.invoke("voice-transcribe", audioBuffer),
+
+  // Voice TTS synthesis. Sends text + optional voice to the main
+  // process, which calls OpenAI TTS (hardcoded tts-1). Returns an
+  // MP3 buffer the renderer plays. Same VOICE_TOOLS_OPENAI_KEY.
+  voiceSynthesize: (
+    text: string,
+    voice?: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
+  ): Promise<{
+    success: boolean;
+    audio: Buffer | null;
+    error: string | null;
+  }> => ipcRenderer.invoke("voice-synthesize", text, voice),
+
+  // Handy local-first STT. Detect whether the Handy app is on PATH.
+  // Toggle/cancel control a running Handy instance. Text is pasted
+  // into the focused textarea by Handy —no audio crosses IPC.
+  handyDetect: (): Promise<boolean> => ipcRenderer.invoke("handy-detect"),
+  handyToggle: (): Promise<{
+    success: boolean;
+    error: string | null;
+  }> => ipcRenderer.invoke("handy-toggle"),
+  handyCancel: (): Promise<{
+    success: boolean;
+    error: string | null;
+  }> => ipcRenderer.invoke("handy-cancel"),
+
+  // Graphify discovery + version probe. Graphify builds a concept
+  // knowledge graph from any folder (code, docs, papers).
+  graphifyDiscover: (): Promise<{
+    scannedAt: string;
+    installed: boolean;
+    detectedCommand: string | null;
+    resolvedPath: string | null;
+  }> => ipcRenderer.invoke("graphify-discover"),
+  graphifyVersion: (): Promise<{
+    ok: boolean;
+    exitCode: number;
+    version: string | null;
+    output: string;
+    scannedAt: string;
+  }> => ipcRenderer.invoke("graphify-version"),
 
   // Headroom MCP server (local MCP server wrapping the Headroom proxy).
   // Mirrors the sidecar lifecycle but for the MCP server process.

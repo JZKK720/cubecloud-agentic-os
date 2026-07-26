@@ -23,7 +23,9 @@ export type AgentCliId =
   | "deepseek-reasonix"
   | "openclaw"
   | "markitdown"
-  | "raven";
+  | "raven"
+  | "officecli"
+  | "graphify";
 
 export interface AgentCliCatalogEntry {
   id: AgentCliId;
@@ -119,6 +121,24 @@ export const AGENT_CLI_CATALOG: readonly AgentCliCatalogEntry[] = [
     docsUrl: "https://github.com/microsoft/markitdown",
     installUrl: "https://github.com/microsoft/markitdown#installation",
     commands: ["markitdown"],
+  },
+  {
+    id: "officecli",
+    name: "OfficeCLI",
+    description:
+      "OfficeCLI — create, read, edit, and render Word/Excel/PowerPoint documents. Single binary, no Office required. The write-side complement to markitdown.",
+    docsUrl: "https://github.com/iOfficeAI/OfficeCLI",
+    installUrl: "https://github.com/iOfficeAI/OfficeCLI#installation",
+    commands: ["officecli"],
+  },
+  {
+    id: "graphify",
+    name: "Graphify",
+    description:
+      "Graphify — turn any folder (code, docs, papers) into a concept knowledge graph with community detection. Cross-document semantic connections. Complements CodeGraph.",
+    docsUrl: "https://github.com/cubecloud-agentic-os/graphify",
+    installUrl: "https://pypi.org/project/graphifyy/",
+    commands: ["graphify", "graphifyy"],
   },
   {
     id: "trae-cli",

@@ -1,4 +1,5 @@
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useState, useRef, useCallback } from "react";
+import { Volume2 } from "lucide-react";
 import cubecloudMark from "../../assets/cubecloud-mark.svg";
 import { AgentMarkdown } from "../../components/AgentMarkdown";
 import { AttachmentChip } from "../../components/AttachmentChip";
@@ -49,6 +50,53 @@ export const MessageRow = memo(function MessageRow({
   const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(
     null,
   );
+
+  // ── TTS playback state ────────────────────────────────
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [ttsLoading, setTtsLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleSpeak = useCallback(async () => {
+    if (isSpeaking) {
+      // Stop playback.
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setIsSpeaking(false);
+      return;
+    }
+    // Only bubble messages (user/agent) have content.
+    if (!isChatBubbleMessage(msg)) return;
+    const content = (msg as ChatBubbleMessage).content;
+    if (!content?.trim()) return;
+    setTtsLoading(true);
+    try {
+      const result = await window.hermesAPI.voiceSynthesize(
+        content.slice(0, 4096),
+      );
+      if (result.success && result.audio) {
+        const blob = new Blob([new Uint8Array(result.audio)], {
+          type: "audio/mp3",
+        });
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.onended = () => {
+          setIsSpeaking(false);
+          URL.revokeObjectURL(url);
+        };
+        audio.onerror = () => {
+          setIsSpeaking(false);
+          URL.revokeObjectURL(url);
+        };
+        audioRef.current = audio;
+        await audio.play();
+        setIsSpeaking(true);
+      }
+    } catch {
+      // best-effort —TTS is a convenience, not critical path
+    } finally {
+      setTtsLoading(false);
+    }
+  }, [isChatBubbleMessage(msg) ? (msg as ChatBubbleMessage).content : null, isSpeaking]);
 
   // MessageRow is wrapped in memo() but still re-renders on any prop change
   // (e.g. isLoading toggling at the end of a stream), and `parseMediaTokens`
@@ -143,6 +191,28 @@ export const MessageRow = memo(function MessageRow({
             {t("chat.deny")}
           </button>
         </div>
+      )}
+      {msg.role === "agent" && isChatBubbleMessage(msg) && (msg as ChatBubbleMessage).content?.trim() && (
+        <button
+          className={`chat-tts-btn ${isSpeaking ? "speaking" : ""} ${ttsLoading ? "loading" : ""}`}
+          onClick={handleSpeak}
+          disabled={ttsLoading}
+          title={
+            isSpeaking
+              ? "Stop speaking"
+              : ttsLoading
+                ? "Generating speech…"
+                : "Speak aloud"
+          }
+          aria-label="Speak aloud"
+          type="button"
+        >
+          {ttsLoading ? (
+            <span className="voice-spinner" />
+          ) : (
+            <Volume2 size={14} />
+          )}
+        </button>
       )}
       {previewAttachment && previewAttachment.dataUrl && (
         <div

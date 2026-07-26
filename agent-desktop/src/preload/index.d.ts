@@ -87,7 +87,9 @@ interface AgentCliDiscoveryItem {
     | "deepseek-reasonix"
     | "openclaw"
     | "markitdown"
-    | "raven";
+    | "raven"
+    | "officecli"
+    | "graphify";
   installed: boolean;
   detectedCommand: string | null;
   resolvedPath: string | null;
@@ -356,6 +358,61 @@ interface HeadroomSidecarStatus {
 interface HeadroomSidecarLogTail {
   lines: string[];
   totalBytes: number;
+}
+
+/** GBrain health probe result. Mirrors GbrainProbeResult from
+ *  src/main/gbrain-probe.ts. */
+interface GbrainProbeResult {
+  installed: boolean;
+  healthy: boolean;
+  version: string | null;
+  failingChecks: number;
+  totalChecks: number;
+  summary: string;
+  raw: unknown;
+}
+
+/** Voice TTS result. Mirrors VoiceTtsResult from
+ *  src/main/voice-tts.ts. */
+interface VoiceTtsResult {
+  success: boolean;
+  audio: Buffer | null;
+  error: string | null;
+}
+
+/** Voice STT result. Mirrors VoiceTranscriptionResult from
+ *  src/main/voice-stt.ts. */
+interface VoiceTranscriptionResult {
+  success: boolean;
+  text: string;
+  error: string | null;
+  provider: "groq" | "openai" | null;
+}
+
+/** Handy toggle/cancel result. Mirrors HandyToggleResult from
+ *  src/main/handy-stt.ts. */
+interface HandyToggleResult {
+  success: boolean;
+  error: string | null;
+}
+
+/** Graphify discovery result. Mirrors GraphifyDiscovery from
+ *  src/main/graphify-probe.ts. */
+interface GraphifyDiscovery {
+  scannedAt: string;
+  installed: boolean;
+  detectedCommand: string | null;
+  resolvedPath: string | null;
+}
+
+/** Graphify version probe result. Mirrors GraphifyVersionResult
+ *  from src/main/graphify-probe.ts. */
+interface GraphifyVersionResult {
+  ok: boolean;
+  exitCode: number;
+  version: string | null;
+  output: string;
+  scannedAt: string;
 }
 
 /** Headroom MCP server lifecycle status. Mirrors HeadroomMcpStatus
@@ -1470,6 +1527,34 @@ interface HermesAPI {
   }) => Promise<HeadroomSidecarStatus>;
   headroomSidecarLogTail: () => Promise<HeadroomSidecarLogTail>;
   headroomSidecarClearLogs: () => Promise<{ success: boolean }>;
+
+  // GBrain health probe. GBrain's local mode is stdio MCP (no HTTP
+  // port), so we probe via `gbrain doctor --json`. Returns
+  // { installed: false } when gbrain is not on PATH.
+  gbrainProbe: () => Promise<GbrainProbeResult>;
+
+  // Voice STT transcription. The renderer captures audio via
+  // MediaRecorder and sends the buffer to the main process, which
+  // forwards it to the configured STT provider (Groq or OpenAI
+  // Whisper). Audio never touches disk.
+  voiceTranscribe: (audioBuffer: Buffer) => Promise<VoiceTranscriptionResult>;
+
+  // Voice TTS synthesis. Sends text to the main process, which calls
+  // OpenAI TTS (hardcoded tts-1 model). Returns an MP3 buffer.
+  voiceSynthesize: (
+    text: string,
+    voice?: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
+  ) => Promise<VoiceTtsResult>;
+
+  // Handy local-first STT. Detect + toggle/cancel a running Handy
+  // instance. Text is pasted into the focused textarea by Handy.
+  handyDetect: () => Promise<boolean>;
+  handyToggle: () => Promise<HandyToggleResult>;
+  handyCancel: () => Promise<HandyToggleResult>;
+
+  // Graphify discovery + version probe.
+  graphifyDiscover: () => Promise<GraphifyDiscovery>;
+  graphifyVersion: () => Promise<GraphifyVersionResult>;
 
   // Headroom MCP server (local MCP server wrapping the Headroom proxy).
   headroomMcpStatus: () => Promise<HeadroomMcpStatus>;

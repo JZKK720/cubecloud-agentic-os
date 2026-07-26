@@ -7,7 +7,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { Send, Square as Stop, Slash, Paperclip } from "lucide-react";
+import { Send, Square as Stop, Slash, Paperclip, Mic } from "lucide-react";
 import { isImeComposing } from "./keyboard";
 import { useI18n } from "../../components/useI18n";
 import { SLASH_COMMANDS, type SlashCommand } from "./slashCommands";
@@ -62,6 +62,20 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const slashMenuRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // ── Voice STT state ──────────────────────────────────
+    // Handy (local-first) is primary; cloud STT (Groq/OpenAI) is
+    // the fallback when Handy isn't installed.
+    const [handyAvailable, setHandyAvailable] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [isTranscribing, setIsTranscribing] = useState(false);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+
+    // Detect Handy on mount (cached in main process).
+    useEffect(() => {
+      window.hermesAPI.handyDetect().then(setHandyAvailable).catch(() => {});
+    }, []);
 
     const autoResize = useCallback((): void => {
       const el = inputRef.current;
@@ -355,6 +369,93 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 
     const canSend = input.trim().length > 0 || attachments.length > 0;
 
+    // ── Voice mic button handler ─────────────────────────
+    // Handy path: toggle recording on/off. Handy handles audio
+    // capture + local Whisper transcription + paste into focused
+    // textarea. We just toggle and update the button state.
+    //
+    // Cloud fallback: MediaRecorder captures audio, then we send
+    // the buffer to the main process for Groq/OpenAI Whisper.
+    const handleMicClick = useCallback(async () => {
+      if (isTranscribing) return;
+
+      if (handyAvailable) {
+        // ── Handy path (local-first, offline) ──────────────
+        if (isRecording) {
+          // Stop: Handy transcribes + pastes into focused textarea.
+          await window.hermesAPI.handyToggle();
+          setIsRecording(false);
+        } else {
+          // Start: ensure textarea has focus so Handy pastes here.
+          inputRef.current?.focus();
+          await window.hermesAPI.handyToggle();
+          setIsRecording(true);
+        }
+        return;
+      }
+
+      // ── Cloud STT fallback (Groq/OpenAI Whisper) ─────────
+      if (isRecording) {
+        // Stop recording → transcribe.
+        const recorder = mediaRecorderRef.current;
+        if (recorder && recorder.state !== "inactive") {
+          recorder.stop();
+        }
+        setIsRecording(false);
+        setIsTranscribing(true);
+      } else {
+        // Start recording via MediaRecorder.
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          const recorder = new MediaRecorder(stream);
+          audioChunksRef.current = [];
+          recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) audioChunksRef.current.push(e.data);
+          };
+          recorder.onstop = async () => {
+            stream.getTracks().forEach((track) => track.stop());
+            const blob = new Blob(audioChunksRef.current, {
+              type: "audio/webm",
+            });
+            const arrayBuffer = await blob.arrayBuffer();
+            const result = await window.hermesAPI.voiceTranscribe(
+              Buffer.from(arrayBuffer),
+            );
+            setIsTranscribing(false);
+            if (result.success && result.text) {
+              // Insert transcribed text at cursor position.
+              const el = inputRef.current;
+              if (el) {
+                const start = el.selectionStart ?? input.length;
+                const end = el.selectionEnd ?? input.length;
+                const newText =
+                  input.slice(0, start) + result.text + input.slice(end);
+                setInput(newText);
+                requestAnimationFrame(() => {
+                  const pos = start + result.text.length;
+                  el.setSelectionRange(pos, pos);
+                  autoResize();
+                });
+              } else {
+                setInput((prev) => prev + result.text);
+              }
+            } else if (result.error) {
+              setAttachmentError(result.error);
+            }
+          };
+          recorder.start();
+          mediaRecorderRef.current = recorder;
+          setIsRecording(true);
+        } catch (err) {
+          setAttachmentError(
+            `Microphone access failed: ${(err as Error).message?.slice(0, 120)}`,
+          );
+        }
+      }
+    }, [handyAvailable, isRecording, isTranscribing, input, autoResize]);
+
     return (
       <>
         {slashMenuOpen && filteredSlashCommands.length > 0 && (
@@ -413,6 +514,28 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
             type="button"
           >
             <Paperclip size={16} />
+          </button>
+          <button
+            className={`chat-voice-btn ${isRecording ? "recording" : ""} ${isTranscribing ? "transcribing" : ""}`}
+            onClick={handleMicClick}
+            disabled={isLoading || isTranscribing}
+            title={
+              isTranscribing
+                ? "Transcribing…"
+                : isRecording
+                  ? "Stop recording"
+                  : handyAvailable
+                    ? "Voice input (Handy — local, offline)"
+                    : "Voice input (cloud STT)"
+            }
+            aria-label={t("chat.voiceInput", { defaultValue: "Voice input" })}
+            type="button"
+          >
+            {isTranscribing ? (
+              <span className="voice-spinner" />
+            ) : (
+              <Mic size={16} />
+            )}
           </button>
           <textarea
             ref={inputRef}

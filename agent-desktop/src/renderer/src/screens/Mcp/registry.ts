@@ -398,6 +398,93 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
     detail: "npx -y @inkeep/open-knowledge mcp",
     hint: "Run 'ok init' in your project first to scaffold the .ok/ directory. The MCP server auto-starts a per-project collaboration server on demand.",
   },
+
+  // ── Persistent agent memory (gbrain) ─────────────────
+  {
+    name: "gbrain",
+    title: "GBrain",
+    description:
+      "Postgres-native personal knowledge brain with 30+ MCP tools — hybrid search, synthesis, knowledge graph, cron-driven enrichment, and the dream cycle. Local-first via PGLite (zero-config, no Docker). The memory layer your agent stops being amnesiac with.",
+    category: "memory",
+    transport: "stdio",
+    detail: "gbrain serve",
+    hint: "Install with: bun install -g github:garrytan/gbrain. Initialize a local brain with: gbrain init --pglite --no-embedding. Verify with: gbrain doctor.",
+  },
+
+  // ── Local-first web intelligence (wigolo) ────────────
+  {
+    name: "wigolo",
+    title: "Wigolo",
+    description:
+      "Local-first web intelligence — search, fetch, crawl, extract, and research. 10 MCP tools, no API keys needed for core tools. A free local complement to Firecrawl (paid).",
+    category: "search",
+    transport: "stdio",
+    detail: "npx -y wigolo",
+    hint: "No install needed — npx fetches on first run. No API keys required for core search/fetch tools.",
+  },
+
+  // ── Video intelligence (watch-skill) ─────────────────
+  {
+    name: "watch-skill",
+    title: "Watch-Skill",
+    description:
+      "Video intelligence for agents — watch, remember, verify. 23 MCP tools for video analysis, transcription, OCR, and THE LOOP (browser/UI verification).",
+    category: "media",
+    transport: "stdio",
+    detail: "watch-skill serve",
+    envKeys: ["PYTHONUTF8"],
+    hint: "Install with: uv tool install watch-skill. Requires Python 3.13+.",
+  },
+
+  // ── Agent loop infrastructure (loop-engineering) ────
+  {
+    name: "loop-engineering",
+    title: "Loop Engineering",
+    description:
+      "Agent loop infrastructure — triage, constraints, budget, verification, minimal-fix. MCP server for designing, scaffolding, auditing, and operating repeatable agent loops. Complements loopy (loop content) with loop infrastructure.",
+    category: "productivity",
+    transport: "stdio",
+    detail: "npx -y @cobusgreyling/loop-mcp-server",
+    hint: "No install needed — npx fetches on first run. Pairs with the loopy skill for loop content authoring.",
+  },
+
+  // ── Browser automation (browser-use) ─────────────────
+  {
+    name: "browser-use",
+    title: "Browser Use",
+    description:
+      "Control a real Chrome browser to complete any task — fill forms, extract data, book flights, QA test. LLM-driven browser agent via CDP. Pairs with browser-harness for the thin CDP connector. #1 on the Odysseys leaderboard (87.4%).",
+    category: "browser",
+    transport: "stdio",
+    detail: "uvx browser-use --cli-mcp",
+    envKeys: ["BROWSER_USE_API_KEY", "BU_CDP_URL", "BU_CDP_WS"],
+    hint: "Install with: uv add browser-use (Python 3.11+). Set BU_CDP_URL to connect to your Chrome via CDP, or use Browser Use Cloud. Enable BH_DOMAIN_SKILLS for site-specific skills.",
+  },
+
+  // ── Office document automation (OfficeCLI) ──────────
+  {
+    name: "officecli",
+    title: "OfficeCLI",
+    description:
+      "Create, read, edit, and render Word (.docx), Excel (.xlsx), and PowerPoint (.pptx) documents — no Office installation required. Single binary with built-in HTML/PNG rendering engine, 350+ Excel formulas, template merge, pivot tables, and live preview. The write-side complement to markitdown's read-side conversion.",
+    category: "productivity",
+    transport: "stdio",
+    detail: "officecli mcp",
+    envKeys: ["OFFICECLI_BIN"],
+    hint: "Install from https://github.com/iOfficeAI/OfficeCLI or: npm install -g @officecli/officecli. Self-contained binary, no .NET runtime needed.",
+  },
+
+  // ── Knowledge graph (graphify) ───────────────────────
+  {
+    name: "graphify",
+    title: "Graphify",
+    description:
+      "Turn any folder (code, docs, papers, images) into a navigable concept knowledge graph with community detection. Finds cross-document connections you'd never think to ask about. Outputs: interactive HTML, GraphRAG JSON, GRAPH_REPORT.md, COPILOT_CONTEXT.md. Complements CodeGraph (code AST) with semantic concept graphs.",
+    category: "data",
+    transport: "stdio",
+    detail: "graphify . --mcp",
+    hint: "Install with: uv tool install 'graphifyy[mcp]'. Then run 'graphify <path>' to build a graph, or add as MCP server for agent-accessible graph queries.",
+  },
 ];
 
 /** Filter the bundled registry against a free-text query. Matches

@@ -138,6 +138,21 @@ import {
   type HeadroomLearnProposal,
 } from "./headroom-learn";
 import { listRuntimeProviders } from "./runtime-registry";
+import { probeGbrain, type GbrainProbeResult } from "./gbrain-probe";
+import { transcribeAudio, type VoiceTranscriptionResult } from "./voice-stt";
+import { synthesizeSpeech, type VoiceTtsResult } from "./voice-tts";
+import {
+  detectHandy,
+  toggleHandyTranscription,
+  cancelHandyTranscription,
+  type HandyToggleResult,
+} from "./handy-stt";
+import {
+  discoverGraphify,
+  runGraphifyVersion,
+  type GraphifyDiscovery,
+  type GraphifyVersionResult,
+} from "./graphify-probe";
 import { runRuntimeProviderAction } from "./runtime-provider-actions";
 import { listTaskOrchestrators } from "./task-orchestrators";
 import {
@@ -2546,6 +2561,63 @@ function setupIPC(): void {
     "headroom-sidecar-restart",
     (_event, options?: HeadroomSidecarStartOptions) =>
       restartHeadroomSidecar(options ?? {}),
+  );
+
+  // GBrain health probe. GBrain's local mode is stdio MCP (no HTTP
+  // port), so we probe via `gbrain doctor --json` instead of an HTTP
+  // health endpoint. Returns `{ installed: false }` when gbrain is not
+  // on PATH —never throws.
+  ipcMain.handle("gbrain-probe", (): GbrainProbeResult => probeGbrain());
+
+  // Voice STT transcription. The renderer captures audio via
+  // MediaRecorder and sends the buffer here. The main process
+  // forwards it to the configured STT provider (Groq or OpenAI
+  // Whisper). Audio never touches disk. Never throws — degrades to
+  // { success: false, error }.
+  ipcMain.handle(
+    "voice-transcribe",
+    async (_event, audioBuffer: Buffer): Promise<VoiceTranscriptionResult> =>
+      transcribeAudio(audioBuffer),
+  );
+
+  // Voice TTS synthesis. The renderer sends text + optional voice
+  // selection; the main process calls OpenAI TTS (hardcoded tts-1
+  // model, same VOICE_TOOLS_OPENAI_KEY as STT). Returns an MP3
+  // buffer the renderer plays via <audio>. Never throws.
+  ipcMain.handle(
+    "voice-synthesize",
+    async (
+      _event,
+      text: string,
+      voice?: "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
+    ): Promise<VoiceTtsResult> => synthesizeSpeech(text, voice),
+  );
+
+  // Handy local-first STT. Detect whether the Handy app is installed
+  // (cached PATH lookup). Toggle/cancel control a running Handy
+  // instance via CLI flags. Text is pasted into the focused textarea
+  // by Handy itself —no audio crosses the IPC boundary.
+  ipcMain.handle("handy-detect", (): boolean => detectHandy());
+  ipcMain.handle(
+    "handy-toggle",
+    async (): Promise<HandyToggleResult> => toggleHandyTranscription(),
+  );
+  ipcMain.handle(
+    "handy-cancel",
+    async (): Promise<HandyToggleResult> => cancelHandyTranscription(),
+  );
+
+  // Graphify discovery + version probe. Graphify turns any folder
+  // (code, docs, papers) into a concept knowledge graph with
+  // community detection. Complements CodeGraph (code AST) with
+  // cross-document semantic connections.
+  ipcMain.handle(
+    "graphify-discover",
+    (): GraphifyDiscovery => discoverGraphify(),
+  );
+  ipcMain.handle(
+    "graphify-version",
+    (): GraphifyVersionResult => runGraphifyVersion(),
   );
 
   // Headroom HTTP client channels. These work against any

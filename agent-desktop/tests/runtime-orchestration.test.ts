@@ -36,7 +36,7 @@ describe("runtime orchestration contract", () => {
 
     expect(raven.onboardingSurface).toBe("setup");
     expect(raven.role).toBe("primary-runtime");
-    expect(raven.integrationStatus).toBe("planned");
+    expect(raven.integrationStatus).toBe("optional");
     expect(raven.capabilities.canInstallLocally).toBe(true);
     expect(raven.capabilities.exposesChatGateway).toBe(true);
     expect(raven.notes.join(" ")).toMatch(/EverMind|EverOS/i);

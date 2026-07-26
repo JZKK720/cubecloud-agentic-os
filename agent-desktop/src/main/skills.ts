@@ -394,6 +394,152 @@ export function classifySkillCliOutput(
   return { success: true };
 }
 
+/**
+ * SkillSpector scan result. Mirrors the tool's exit-code contract:
+ *   0 → safe (pass)
+ *   1 → do_not_install (hard block)
+ *   2 → error (investigate before retrying —also blocks)
+ */
+export interface SkillScanResult {
+  /** true when the skill passed the scan (exit 0). */
+  safe: boolean;
+  /** Human-readable verdict from the scanner output, if parseable. */
+  summary?: string;
+  /** Exit code from the `skillspector scan` subprocess. */
+  exitCode: number;
+}
+
+/**
+ * Run `skillspector scan --no-llm` on a skill directory and classify the
+ * exit code. This is the security hard-gate that the cubecloud-skilldbundle
+ * setup proved out: every skill is scanned before it is allowed to stay on
+ * the machine. Exit 1 = do_not_install (hard block). Exit 2 = error (also
+ * blocks —investigate before retrying). Exit 0 = safe.
+ *
+ * `scanSkillWithSkillspector` is the I/O wrapper (spawns the subprocess);
+ * `classifySkillScanExitCode` is the pure classifier (unit-testable without
+ * a real `skillspector` binary on PATH).
+ *
+ * When `skillspector` is not on PATH (ENOENT), the scan is skipped with
+ * `safe: true` and a summary noting the tool was unavailable. This keeps
+ * the desktop functional on machines that haven't installed the scanner —
+ * the gate is a defense-in-depth layer, not a hard prerequisite for using
+ * the Skills surface. Operators who want the gate enforced should install
+ * `skillspector` (it is already in the bundled MCP registry).
+ */
+export function classifySkillScanExitCode(
+  exitCode: number,
+  stdout: string,
+  stderr: string,
+): SkillScanResult {
+  void stderr; // captured for completeness; verdict is exit-code driven
+  const summary = extractSkillScanSummary(stdout);
+  if (exitCode === 0) return { safe: true, summary, exitCode };
+  // Exit 1 = do_not_install, exit 2 = error. Both block.
+  return {
+    safe: false,
+    summary:
+      summary ||
+      (exitCode === 1
+        ? "SkillSpector verdict: do_not_install"
+        : `SkillSpector error (exit ${exitCode})`),
+    exitCode,
+  };
+}
+
+/**
+ * Extract the last meaningful line(s) from `skillspector scan` stdout as a
+ * human-readable summary. The tool prints a verdict table; the last 1-3
+ * non-empty lines are the actionable summary.
+ */
+function extractSkillScanSummary(stdout: string): string | undefined {
+  const lines = stdout
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+  if (lines.length === 0) return undefined;
+  // Keep the last 3 lines —enough for the verdict + risk score + note.
+  return lines.slice(-3).join("\n");
+}
+
+/**
+ * Resolve the on-disk directory of a freshly-installed skill so the
+ * SkillSpector gate can scan it. Hermes installs skills under
+ * `<profileHome>/skills/<category>/<skill-name>/`. We search the skills
+ * tree for a directory whose name matches the `identifier` (last path
+ * segment) and return the first match. Returns null if not found.
+ *
+ * Pure-ish: reads the filesystem but does not mutate it. Exported for unit
+ * testing.
+ */
+export function findInstalledSkillDir(
+  identifier: string,
+  profile?: string,
+): string | null {
+  const skillsDir = join(profileHome(profile), "skills");
+  if (!existsSync(skillsDir)) return null;
+  // The identifier may be a simple name ("demo") or a category/name
+  // ("creative/concept-diagrams"). We match on the last segment.
+  const lastSeg = identifier.split("/").pop()?.trim() || identifier;
+  try {
+    for (const category of readdirSync(skillsDir)) {
+      const categoryPath = join(skillsDir, category);
+      if (!statSync(categoryPath).isDirectory()) continue;
+      for (const entry of readdirSync(categoryPath)) {
+        const entryPath = join(categoryPath, entry);
+        if (!statSync(entryPath).isDirectory()) continue;
+        if (entry === lastSeg) return entryPath;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+/**
+ * Run `skillspector scan --no-llm <dir>` and return the classified result.
+ * If `skillspector` is not on PATH, returns `{ safe: true, skipped: true }`
+ * so the install proceeds without a hard failure (defense-in-depth, not a
+ * prerequisite). Exported for unit testing with a stubbed exec.
+ */
+export function scanSkillWithSkillspector(
+  skillDir: string,
+): SkillScanResult {
+  try {
+    const stdout = execFileSync(
+      "skillspector",
+      ["scan", skillDir, "--no-llm"],
+      {
+        stdio: ["ignore", "pipe", "pipe"],
+        timeout: 30000,
+        env: { ...process.env, PYTHONUTF8: "1" },
+        ...HIDDEN_SUBPROCESS_OPTIONS,
+      },
+    );
+    return classifySkillScanExitCode(0, stdout?.toString() ?? "", "");
+  } catch (err) {
+    const e = err as {
+      status?: number;
+      stdout?: Buffer;
+      stderr?: Buffer;
+      code?: string;
+    };
+    // ENOENT —skillspector not installed. Skip the gate (defense-in-depth).
+    if (e.code === "ENOENT") {
+      return {
+        safe: true,
+        summary: "SkillSpector not found on PATH —scan skipped",
+        exitCode: -1,
+      };
+    }
+    const exitCode = typeof e.status === "number" ? e.status : 2;
+    const out = e.stdout?.toString() ?? "";
+    const errText = e.stderr?.toString() ?? "";
+    return classifySkillScanExitCode(exitCode, out, errText);
+  }
+}
+
 function extractSkillCliMessage(output: string): string {
   // Strip the leading "Resolving '<name>'..." progress line —pure noise
   // for the user. Keep the rest verbatim so suggestions like
@@ -430,7 +576,35 @@ export function installSkill(
     // Exit 0 alone is not proof of success —the CLI exits 0 on resolution
     // failure too. Inspect the captured stdout for known failure markers
     // (issue #310).
-    return classifySkillCliOutput(stdout?.toString() ?? "");
+    const cliResult = classifySkillCliOutput(stdout?.toString() ?? "");
+    if (!cliResult.success) return cliResult;
+
+    // ── SkillSpector hard gate (post-install) ──────────────────────
+    // The Hermes CLI has copied the skill to disk. Before we declare
+    // success, scan the installed directory with SkillSpector. If the
+    // verdict is do_not_install (exit 1) or error (exit 2), uninstall
+    // the skill and return failure. This mirrors the security gate
+    // proven in the cubecloud-skilldbundle-setup installer: no skill
+    // lands without a passing scan.
+    const skillDir = findInstalledSkillDir(identifier, profile);
+    if (skillDir) {
+      const scan = scanSkillWithSkillspector(skillDir);
+      if (!scan.safe) {
+        // Block: uninstall the skill we just installed so the machine
+        // is not left with a known-malicious skill on disk.
+        uninstallSkill(identifier, profile);
+        return {
+          success: false,
+          error:
+            scan.summary ||
+            `SkillSpector blocked this skill (exit ${scan.exitCode}). It has been uninstalled.`,
+        };
+      }
+    }
+    // If skillDir is null (Hermes installed somewhere we didn't find) or
+    // skillspector is not on PATH (scan.safe=true with exitCode -1), we
+    // proceed —the gate is defense-in-depth, not a hard prerequisite.
+    return { success: true };
   } catch (err) {
     const e = err as { stdout?: Buffer; stderr?: Buffer; message?: string };
     const msg = (e.stderr?.toString() || e.message || "").trim();

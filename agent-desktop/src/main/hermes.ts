@@ -55,6 +55,7 @@ import type { GatewayRuntimePresetId } from "../shared/gateway-runtime-presets";
 import {
   DEFAULT_LOCAL_GATEWAY_PORT,
   DEFAULT_LOCAL_GATEWAY_URL,
+  RAVEN_DEFAULT_PORT,
 } from "../shared/runtime-defaults";
 
 const LOCAL_API_URL = DEFAULT_LOCAL_GATEWAY_URL;
@@ -338,6 +339,53 @@ export async function diagnoseRemoteConnection(
         statusCode: ironClawResponse.statusCode,
       };
     }
+  }
+
+  // V2.10.76 — Raven detection. Raven is EverMind's self-improving
+  // agent harness. Its HTTP gateway exposes /health and returns a
+  // distinctive shape that includes "runtime":"raven" (or
+  // "runtime":"evermind"). Probe this BEFORE the Hermes /health
+  // check because both Raven and Hermes return 200 on /health —
+  // without this branch, Raven gets misclassified as Hermes.
+  //
+  // Only run when the caller explicitly expects Raven
+  // (expectedRuntime === "raven") or when auto-detecting AND the URL
+  // port matches Raven's default (8855). This avoids an extra
+  // round-trip for Hermes/OpenClaw/IronClaw URLs that can't be Raven.
+  // On auth failures (401/403), do NOT return early — both Raven
+  // and Hermes use /health, so the auth failure is ambiguous. Let
+  // the Hermes probe handle it (it runs next on the same endpoint).
+  const isRavenPort = (() => {
+    try {
+      return new URL(baseUrl).port === String(RAVEN_DEFAULT_PORT);
+    } catch {
+      return false;
+    }
+  })();
+  if (expectedRuntime === "raven" || (useCache && isRavenPort)) {
+    const ravenResponse = await requestText(
+      `${baseUrl}/health`,
+      headers,
+    );
+    if (
+      ravenResponse?.statusCode === 200 &&
+      (ravenResponse.body.includes('"runtime":"raven"') ||
+        ravenResponse.body.includes('"runtime":"evermind"') ||
+        ravenResponse.body.includes('"evermind"'))
+    ) {
+      if (useCache) {
+        cacheGatewayRuntime(url, "raven");
+      }
+      return {
+        ok: true,
+        code: "ok",
+        transport: "remote",
+        runtime: "raven",
+        statusCode: ravenResponse.statusCode,
+      };
+    }
+    // On auth or non-200, fall through to the Hermes probe — both
+    // use /health, so we can't distinguish them on a non-200 response.
   }
 
   const hermesResponse = await requestText(`${baseUrl}/health`, headers);
@@ -1420,6 +1468,8 @@ function sendMessageViaCli(
     "WANDB_API_KEY",
     "SKILLSPECTOR_PROVIDER",
     "SKILLSPECTOR_MODEL",
+    "OFFICECLI_BIN",
+    "GRAPHIFY_BIN",
   ];
   for (const key of KNOWN_API_KEYS) {
     if (profileEnv[key] && !env[key]) {

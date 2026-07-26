@@ -3272,6 +3272,51 @@ select:focus-visible {
   margin-left: 42px;
 }
 
+.chat-tts-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 4px;
+  margin-left: 42px;
+  opacity: 0;
+  transition:
+    opacity var(--transition),
+    color var(--transition),
+    background var(--transition);
+}
+
+.chat-message:hover .chat-tts-btn {
+  opacity: 0.7;
+}
+
+.chat-tts-btn:hover:not(:disabled) {
+  opacity: 1;
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.chat-tts-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chat-tts-btn.speaking {
+  opacity: 1;
+  color: var(--accent-primary, #4a9eff);
+}
+
+.chat-tts-btn.loading {
+  opacity: 0.5;
+}
+
 .chat-approval-btn {
   padding: 5px 16px;
   border: none;
@@ -3576,6 +3621,69 @@ select:focus-visible {
 .chat-attach-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.chat-voice-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+.chat-voice-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.chat-voice-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chat-voice-btn.recording {
+  color: #e53935;
+  background: rgba(229, 57, 53, 0.08);
+  animation: voice-pulse 1.2s ease-in-out infinite;
+}
+
+.chat-voice-btn.transcribing {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.voice-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--text-muted);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: voice-spin 0.8s linear infinite;
+}
+
+@keyframes voice-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes voice-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .chat-attachment-strip {
