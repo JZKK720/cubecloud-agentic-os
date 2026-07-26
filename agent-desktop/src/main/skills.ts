@@ -1,7 +1,15 @@
-import { execFileSync } from "child_process";
-import { existsSync, readdirSync, readFileSync, statSync } from "fs";
-import { join, resolve } from "path";
-import { homedir } from "os";
+import { execFileSync, execSync } from "child_process";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  mkdirSync,
+  cpSync,
+  rmSync,
+} from "fs";
+import { join, resolve, basename } from "path";
+import { homedir, tmpdir } from "os";
 import {
   HERMES_HOME,
   HERMES_PYTHON,
@@ -613,6 +621,121 @@ export function installSkill(
       error: msg || e.stdout?.toString()?.trim() || "Install failed.",
     };
   }
+}
+
+/**
+ * Install a skill from a git URL. Clones the repo to a temp dir,
+ * finds the SKILL.md, runs the SkillSpector hard gate, and copies
+ * the skill to the profile skills directory.
+ *
+ * This extends the skill-install path beyond Hermes's built-in
+ * registry — users can paste any git URL (e.g.
+ * "https://github.com/obra/superpowers") and the desktop will
+ * clone, scan, and install the skill.
+ *
+ * @param gitUrl  The git URL to clone (https://, git://, or
+ *                owner/repo shorthand).
+ * @param skillName  The skill folder name to install. If omitted,
+ *                   the repo name is used.
+ * @param skillRelPath  Relative path inside the repo to the skill
+ *                      folder containing SKILL.md. Default:
+ *                      "skills/<name>".
+ * @param profile  Optional Hermes profile name.
+ */
+export function installSkillFromGitUrl(
+  gitUrl: string,
+  skillName?: string,
+  skillRelPath?: string,
+  profile?: string,
+): SkillCliResult {
+  // Normalize the URL: owner/repo → https://github.com/owner/repo.git
+  let url = gitUrl.trim();
+  if (!url.startsWith("http") && !url.startsWith("git@")) {
+    url = `https://github.com/${url}.git`;
+  }
+
+  // Derive the skill name from the URL if not provided.
+  const name =
+    skillName?.trim() ||
+    basename(url.replace(/\.git$/, ""));
+
+  // Derive the relative path if not provided.
+  const relPath = skillRelPath?.trim() || `skills/${name}`;
+
+  // Clone to a temp dir.
+  const tmpClone = join(
+    tmpdir(),
+    `skill_install_${Date.now()}_${name}`,
+  );
+
+  try {
+    execSync(`git clone --depth 1 "${url}" "${tmpClone}"`, {
+      encoding: "utf8",
+      timeout: 60_000,
+      stdio: "pipe",
+      env: { ...process.env, PATH: getEnhancedPath() },
+      ...HIDDEN_SUBPROCESS_OPTIONS,
+    });
+  } catch (err) {
+    const e = err as { stderr?: Buffer; message?: string };
+    return {
+      success: false,
+      error: `git clone failed: ${(e.stderr?.toString() || e.message || "").slice(0, 200)}`,
+    };
+  }
+
+  // Find the skill folder.
+  const skillDir = join(tmpClone, relPath);
+  if (!existsSync(join(skillDir, "SKILL.md"))) {
+    // Try the repo root as fallback.
+    const rootSkill = join(tmpClone, "SKILL.md");
+    if (existsSync(rootSkill)) {
+      // The skill is at the repo root.
+    } else {
+      rmSync(tmpClone, { recursive: true, force: true });
+      return {
+        success: false,
+        error: `SKILL.md not found at ${relPath} or repo root. Use the skillRelPath parameter to specify the correct path.`,
+      };
+    }
+  }
+
+  const actualSkillDir = existsSync(join(skillDir, "SKILL.md"))
+    ? skillDir
+    : tmpClone;
+
+  // ── SkillSpector hard gate ──────────────────────────
+  const scan = scanSkillWithSkillspector(actualSkillDir);
+  if (!scan.safe) {
+    rmSync(tmpClone, { recursive: true, force: true });
+    return {
+      success: false,
+      error:
+        scan.summary ||
+        `SkillSpector blocked this skill (exit ${scan.exitCode}). The clone has been removed.`,
+    };
+  }
+
+  // Copy to the profile skills directory.
+  const destDir = join(profileHome(profile), "skills", name);
+  try {
+    if (existsSync(destDir)) {
+      rmSync(destDir, { recursive: true, force: true });
+    }
+    mkdirSync(destDir, { recursive: true });
+    cpSync(actualSkillDir, destDir, { recursive: true });
+  } catch (err) {
+    rmSync(tmpClone, { recursive: true, force: true });
+    return {
+      success: false,
+      error: `Failed to copy skill: ${(err as Error).message?.slice(0, 200)}`,
+    };
+  }
+
+  // Cleanup the temp clone.
+  rmSync(tmpClone, { recursive: true, force: true });
+
+  return { success: true };
 }
 
 export function uninstallSkill(name: string, profile?: string): SkillCliResult {
