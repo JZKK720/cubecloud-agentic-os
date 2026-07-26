@@ -153,6 +153,12 @@ import {
   type GraphifyDiscovery,
   type GraphifyVersionResult,
 } from "./graphify-probe";
+import {
+  runEvalSuite,
+  DEFAULT_EVAL_CASES,
+  type EvalReport,
+  type EvalOptions,
+} from "./eval-harness";
 import { runRuntimeProviderAction } from "./runtime-provider-actions";
 import { listTaskOrchestrators } from "./task-orchestrators";
 import {
@@ -2618,6 +2624,17 @@ function setupIPC(): void {
   ipcMain.handle(
     "graphify-version",
     (): GraphifyVersionResult => runGraphifyVersion(),
+  );
+
+  // Agent eval framework. Runs a set of task fixtures against the
+  // gateway and scores the responses. Returns a structured report.
+  ipcMain.handle(
+    "eval-run",
+    async (
+      _event,
+      options: EvalOptions,
+    ): Promise<EvalReport> =>
+      runEvalSuite(DEFAULT_EVAL_CASES, options),
   );
 
   // Headroom HTTP client channels. These work against any

@@ -415,6 +415,29 @@ interface GraphifyVersionResult {
   scannedAt: string;
 }
 
+/** Agent eval report. Mirrors EvalReport from
+ *  src/main/eval-harness.ts. */
+interface EvalReport {
+  totalCases: number;
+  passed: number;
+  failed: number;
+  errored: number;
+  passRate: number;
+  avgLatencyMs: number;
+  results: {
+    caseId: string;
+    description: string;
+    passed: boolean;
+    response: string;
+    matchedKeywords: string[];
+    violatedKeywords: string[];
+    error: string | null;
+    latencyMs: number;
+  }[];
+  timestamp: string;
+  summary: string;
+}
+
 /** Headroom MCP server lifecycle status. Mirrors HeadroomMcpStatus
  *  from src/main/mcp/headroom-mcp-server.ts. */
 interface HeadroomMcpStatus {
@@ -1555,6 +1578,13 @@ interface HermesAPI {
   // Graphify discovery + version probe.
   graphifyDiscover: () => Promise<GraphifyDiscovery>;
   graphifyVersion: () => Promise<GraphifyVersionResult>;
+
+  // Agent eval framework — run task fixtures against the gateway.
+  evalRun: (options: {
+    gatewayUrl: string;
+    apiKey?: string;
+    model?: string;
+  }) => Promise<EvalReport>;
 
   // Headroom MCP server (local MCP server wrapping the Headroom proxy).
   headroomMcpStatus: () => Promise<HeadroomMcpStatus>;

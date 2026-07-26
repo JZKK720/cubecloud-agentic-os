@@ -1763,6 +1763,35 @@ const hermesAPI = {
     scannedAt: string;
   }> => ipcRenderer.invoke("graphify-version"),
 
+  // Agent eval framework. Runs task fixtures against the gateway
+  // and returns a pass/fail report.
+  evalRun: (
+    options: {
+      gatewayUrl: string;
+      apiKey?: string;
+      model?: string;
+    },
+  ): Promise<{
+    totalCases: number;
+    passed: number;
+    failed: number;
+    errored: number;
+    passRate: number;
+    avgLatencyMs: number;
+    results: {
+      caseId: string;
+      description: string;
+      passed: boolean;
+      response: string;
+      matchedKeywords: string[];
+      violatedKeywords: string[];
+      error: string | null;
+      latencyMs: number;
+    }[];
+    timestamp: string;
+    summary: string;
+  }> => ipcRenderer.invoke("eval-run", options),
+
   // Headroom MCP server (local MCP server wrapping the Headroom proxy).
   // Mirrors the sidecar lifecycle but for the MCP server process.
   headroomMcpStatus: (): Promise<{
