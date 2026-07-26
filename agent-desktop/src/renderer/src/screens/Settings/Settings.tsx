@@ -985,6 +985,18 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       </div>
 
       <div className="settings-section">
+        <div className="settings-section-title">Agent Evaluation</div>
+        <div className="settings-field">
+          <div className="settings-field-hint settings-field-hint--spaced-sm">
+            Run a set of task fixtures against the agent gateway to verify
+            it responds correctly. Tests basic capabilities (echo, math,
+            code-awareness, safety-refusal, tool-awareness).
+          </div>
+          <AgentEvalPanel />
+        </div>
+      </div>
+
+      <div className="settings-section">
         <div className="settings-section-title">Community</div>
         <div className="settings-field">
           <div className="settings-field-hint settings-field-hint--spaced-sm">
@@ -2068,6 +2080,119 @@ function LanguageSelect({
               )
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Agent Eval Panel ─────────────────────────────────
+// A lightweight panel that runs the eval suite against the
+// current gateway and displays pass/fail results.
+function AgentEvalPanel(): React.JSX.Element {
+  const [running, setRunning] = useState(false);
+  const [report, setReport] = useState<{
+    totalCases: number;
+    passed: number;
+    failed: number;
+    errored: number;
+    passRate: number;
+    avgLatencyMs: number;
+    summary: string;
+    results: {
+      caseId: string;
+      description: string;
+      passed: boolean;
+      response: string;
+      error: string | null;
+      latencyMs: number;
+    }[];
+  } | null>(null);
+
+  async function handleRunEval(): Promise<void> {
+    setRunning(true);
+    setReport(null);
+    try {
+      // Use the default local gateway URL. In a real deployment,
+      // this would come from the active connection config.
+      const result = await window.hermesAPI.evalRun({
+        gatewayUrl: "http://127.0.0.1:8642",
+      });
+      setReport(result);
+    } catch (err) {
+      setReport({
+        totalCases: 0,
+        passed: 0,
+        failed: 0,
+        errored: 1,
+        passRate: 0,
+        avgLatencyMs: 0,
+        summary: `Eval failed: ${(err as Error).message?.slice(0, 200)}`,
+        results: [],
+      });
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className="settings-hermes-actions">
+        <button
+          className="btn btn-secondary"
+          onClick={handleRunEval}
+          disabled={running}
+          type="button"
+        >
+          {running ? "Running eval…" : "Run Agent Eval"}
+        </button>
+      </div>
+      {report && (
+        <div className="settings-field-hint settings-field-hint--spaced-sm">
+          <p>
+            <strong>{report.summary}</strong>
+          </p>
+          {report.results.length > 0 && (
+            <table
+              style={{
+                width: "100%",
+                fontSize: "0.85em",
+                borderCollapse: "collapse",
+                marginTop: "8px",
+              }}
+            >
+              <thead>
+                <tr style={{ textAlign: "left", borderBottom: "1px solid var(--border)" }}>
+                  <th style={{ padding: "4px 8px" }}>Case</th>
+                  <th style={{ padding: "4px 8px" }}>Result</th>
+                  <th style={{ padding: "4px 8px" }}>Latency</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.results.map((r) => (
+                  <tr
+                    key={r.caseId}
+                    style={{ borderBottom: "1px solid var(--border)" }}
+                  >
+                    <td style={{ padding: "4px 8px" }}>{r.description}</td>
+                    <td
+                      style={{
+                        padding: "4px 8px",
+                        color: r.passed
+                          ? "var(--text-success, #22c55e)"
+                          : r.error
+                            ? "var(--text-warning, #eab308)"
+                            : "var(--text-error, #ef4444)",
+                      }}
+                    >
+                      {r.passed ? "✓ PASS" : r.error ? "⚠ ERROR" : "✗ FAIL"}
+                    </td>
+                    <td style={{ padding: "4px 8px" }}>{r.latencyMs}ms</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>

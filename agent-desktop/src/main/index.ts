@@ -159,6 +159,7 @@ import {
   type EvalReport,
   type EvalOptions,
 } from "./eval-harness";
+import { installSkillFromGitUrl, type SkillCliResult } from "./skills";
 import { runRuntimeProviderAction } from "./runtime-provider-actions";
 import { listTaskOrchestrators } from "./task-orchestrators";
 import {
@@ -2635,6 +2636,19 @@ function setupIPC(): void {
       options: EvalOptions,
     ): Promise<EvalReport> =>
       runEvalSuite(DEFAULT_EVAL_CASES, options),
+  );
+
+  // Skill sharing via git URL. Clones, scans with SkillSpector,
+  // copies to the profile skills directory.
+  ipcMain.handle(
+    "skill-install-git",
+    async (
+      _event,
+      gitUrl: string,
+      skillName?: string,
+      skillRelPath?: string,
+    ): Promise<SkillCliResult> =>
+      installSkillFromGitUrl(gitUrl, skillName, skillRelPath),
   );
 
   // Headroom HTTP client channels. These work against any

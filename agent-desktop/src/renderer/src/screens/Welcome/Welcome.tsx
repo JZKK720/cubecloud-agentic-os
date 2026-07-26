@@ -153,6 +153,11 @@ function Welcome({
     null;
   const openclawRuntimeName =
     openclawProvider?.definition.displayName ?? GATEWAY_RUNTIME_PRESETS.openclaw.displayName;
+  const ravenProvider =
+    runtimeProviders.find((provider) => provider.definition.id === "raven") ??
+    null;
+  const ravenRuntimeName =
+    ravenProvider?.definition.displayName ?? GATEWAY_RUNTIME_PRESETS.raven.displayName;
   const ironclawRuntimeName =
     ironclawProvider?.definition.displayName ?? "IronClaw";
   const selectedGatewayRuntime = (() => {
@@ -166,6 +171,12 @@ function Welcome({
       return {
         ...GATEWAY_RUNTIME_PRESETS.ironclaw,
         displayName: ironclawRuntimeName,
+      };
+    }
+    if (gatewayRuntimePreset === "raven") {
+      return {
+        ...GATEWAY_RUNTIME_PRESETS.raven,
+        displayName: ravenRuntimeName,
       };
     }
     return {
@@ -424,6 +435,16 @@ function Welcome({
               onClick={() => applyGatewayRuntimePreset("ironclaw")}
             >
               {ironclawRuntimeName}
+            </button>
+            {/* V2.10.76 — Raven (EverMind) remote-gateway lane.
+                Raven is EverMind's self-improving agent harness with
+                EverOS memory, SkillForge skills, and Sentinel proactivity. */}
+            <button
+              className={`btn ${gatewayRuntimePreset === "raven" ? "btn-primary" : "btn-secondary"}`}
+              type="button"
+              onClick={() => applyGatewayRuntimePreset("raven")}
+            >
+              {ravenRuntimeName}
             </button>
           </div>
           <p className="welcome-remote-hint welcome-lane-hint">

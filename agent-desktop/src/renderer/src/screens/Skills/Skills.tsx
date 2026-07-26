@@ -89,6 +89,33 @@ function Skills({ profile }: SkillsProps): React.JSX.Element {
     }
   }
 
+  // ── Git URL skill install ────────────────────────────
+  // Users can paste a git URL (e.g. https://github.com/obra/superpowers)
+  // or owner/repo shorthand. The main process clones, scans with
+  // SkillSpector, and copies to the profile skills directory.
+  const [gitUrl, setGitUrl] = useState("");
+  const [gitInstalling, setGitInstalling] = useState(false);
+
+  async function handleInstallFromGit(): Promise<void> {
+    const url = gitUrl.trim();
+    if (!url) return;
+    setGitInstalling(true);
+    setError("");
+    try {
+      const result = await window.hermesAPI.skillInstallGit(url);
+      if (result.success) {
+        setGitUrl("");
+        await loadInstalled();
+      } else {
+        setError(result.error || t("skills.installFailed"));
+      }
+    } catch (err) {
+      setError((err as Error).message?.slice(0, 200) || "Git install failed.");
+    } finally {
+      setGitInstalling(false);
+    }
+  }
+
   const installedNames = new Set(
     installedSkills.map((s) => s.name.toLowerCase()),
   );
@@ -270,6 +297,29 @@ function Skills({ profile }: SkillsProps): React.JSX.Element {
             <X size={14} />
           </button>
         )}
+      </div>
+
+      {/* Git URL install */}
+      <div className="skills-search">
+        <input
+          className="skills-search-input"
+          type="text"
+          placeholder="Install from git URL (e.g. owner/repo or https://github.com/...)"
+          value={gitUrl}
+          onChange={(e) => setGitUrl(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !gitInstalling) handleInstallFromGit();
+          }}
+          disabled={gitInstalling}
+        />
+        <button
+          className="btn btn-secondary"
+          onClick={handleInstallFromGit}
+          disabled={gitInstalling || !gitUrl.trim()}
+          type="button"
+        >
+          {gitInstalling ? "Installing…" : "Install from Git"}
+        </button>
       </div>
 
       {/* Category filter pills (browse tab only) */}

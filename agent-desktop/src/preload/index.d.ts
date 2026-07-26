@@ -1586,6 +1586,13 @@ interface HermesAPI {
     model?: string;
   }) => Promise<EvalReport>;
 
+  // Skill sharing via git URL — clone, scan, install.
+  skillInstallGit: (
+    gitUrl: string,
+    skillName?: string,
+    skillRelPath?: string,
+  ) => Promise<{ success: boolean; error?: string }>;
+
   // Headroom MCP server (local MCP server wrapping the Headroom proxy).
   headroomMcpStatus: () => Promise<HeadroomMcpStatus>;
   headroomMcpLogTail: () => Promise<HeadroomSidecarLogTail>;

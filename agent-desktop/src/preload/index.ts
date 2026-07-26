@@ -1792,6 +1792,18 @@ const hermesAPI = {
     summary: string;
   }> => ipcRenderer.invoke("eval-run", options),
 
+  // Skill sharing via git URL. Clones the repo, scans with
+  // SkillSpector, copies to the profile skills directory.
+  skillInstallGit: (
+    gitUrl: string,
+    skillName?: string,
+    skillRelPath?: string,
+  ): Promise<{
+    success: boolean;
+    error?: string;
+  }> =>
+    ipcRenderer.invoke("skill-install-git", gitUrl, skillName, skillRelPath),
+
   // Headroom MCP server (local MCP server wrapping the Headroom proxy).
   // Mirrors the sidecar lifecycle but for the MCP server process.
   headroomMcpStatus: (): Promise<{
