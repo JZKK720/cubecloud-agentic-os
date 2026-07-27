@@ -57,6 +57,12 @@ const DESKTOP_BUNDLED_SKILL_ROOTS: { path: string; source: string }[] = (() => {
       out.push({ path, source: "bundled-desktop" });
     }
   }
+  // User-global skills installed via the skillsbundle-setup or manually.
+  // These live at ~/.agents/skills/ and should appear in the Browse tab.
+  const userSkills = resolve(homedir(), ".agents", "skills");
+  if (existsSync(userSkills) && !seen.has(userSkills)) {
+    out.push({ path: userSkills, source: "user-global" });
+  }
   return out;
 })();
 
@@ -345,8 +351,15 @@ export function listBundledSkills(): SkillSearchResult[] {
   }
 
   // 2) desktop-bundled skills: <workspace>/.agents/skills/<skill>/SKILL.md
+  // Dedup by skill name — the repo root and agent-desktop/.agents/skills/
+  // can both exist on disk with the same skills. Keep the first occurrence.
+  const seenNames = new Set<string>();
   for (const root of DESKTOP_BUNDLED_SKILL_ROOTS) {
-    skills.push(...readFlatBundledRoot(root.path, root.source));
+    for (const skill of readFlatBundledRoot(root.path, root.source)) {
+      if (seenNames.has(skill.name)) continue;
+      seenNames.add(skill.name);
+      skills.push(skill);
+    }
   }
 
   return skills.sort(
