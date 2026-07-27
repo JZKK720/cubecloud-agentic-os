@@ -820,8 +820,15 @@ select:focus-visible {
 
 .welcome-remote-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+}
+
+.welcome-remote-row .btn {
+  font-size: 12px;
+  padding: 6px 12px;
+  white-space: nowrap;
 }
 
 .welcome-remote-row--spaced {
