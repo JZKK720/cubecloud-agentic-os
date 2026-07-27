@@ -56,7 +56,15 @@ export default {
     densityLabel: "Density",
     densityHint:
       "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
-    reset: "Reset to defaults",
-    saved: "Saved.",
+    reset: "Restaurar predefinições",
+    saved: "Guardado.",
   },
+  // V2.10.77 — Título + subtítulos do painel SSH
+  connectSshPanelTitle: "Ligar via SSH",
+  connectSshSubtitleHermes:
+    "Encaminhe um gateway {{runtime}} existente via SSH sem expor a porta publicada diretamente.",
+  connectSshSubtitleOpenclaw:
+    "Encaminhe um gateway {{runtime}} existente via SSH. A compatibilidade HTTP tem de estar ativada no gateway remoto.",
+  connectSshSubtitleIronclaw:
+    "Encaminhe um gateway {{runtime}} existente via SSH sem expor a porta do contentor publicada diretamente.",
 } as const;

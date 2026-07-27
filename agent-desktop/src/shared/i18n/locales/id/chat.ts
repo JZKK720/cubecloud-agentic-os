@@ -85,4 +85,13 @@ export default {
     emptyFolder: "Folder kosong",
     errorLoading: "Gagal memuat konten folder",
   },
+  // V2.10.77 — Voice STT/TTS
+  voiceInput: "Input suara",
+  voiceRecording: "Hentikan rekam",
+  voiceTranscribing: "Mentranskripsi…",
+  voiceHandy: "Input suara (Handy — lokal, luring)",
+  voiceCloud: "Input suara (STT awan)",
+  speakAloud: "Bacakan dengan suara",
+  stopSpeaking: "Hentikan pembacaan",
+  generatingSpeech: "Menghasilkan suara…",
 } as const;

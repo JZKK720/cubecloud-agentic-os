@@ -53,7 +53,15 @@ export default {
     densityLabel: "Density",
     densityHint:
       "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
-    reset: "Reset to defaults",
-    saved: "Saved.",
+    reset: "デフォルトにリセット",
+    saved: "保存しました。",
   },
+  // V2.10.77 — SSHパネルのタイトルとサブタイトル
+  connectSshPanelTitle: "SSHで接続",
+  connectSshSubtitleHermes:
+    "公開ポートを直接公開せずに、既存の{{runtime}}ゲートウェイをSSH経由で転送します。",
+  connectSshSubtitleOpenclaw:
+    "既存の{{runtime}}ゲートウェイをSSH経由で転送します。HTTP互換機能がリモートゲートウェイで有効になっている必要があります。",
+  connectSshSubtitleIronclaw:
+    "公開されたコンテナポートを直接公開せずに、既存の{{runtime}}ゲートウェイをSSH経由で転送します。",
 } as const;

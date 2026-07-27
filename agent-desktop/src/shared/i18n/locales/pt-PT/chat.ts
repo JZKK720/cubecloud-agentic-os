@@ -87,4 +87,13 @@ export default {
     emptyFolder: "Pasta vazia",
     errorLoading: "Falha ao carregar conteúdo da pasta",
   },
+  // V2.10.77 — Voz STT/TTS
+  voiceInput: "Entrada de voz",
+  voiceRecording: "Parar gravação",
+  voiceTranscribing: "A transcrever…",
+  voiceHandy: "Entrada de voz (Handy — local, offline)",
+  voiceCloud: "Entrada de voz (STT na nuvem)",
+  speakAloud: "Ler em voz alta",
+  stopSpeaking: "Parar leitura",
+  generatingSpeech: "A gerar voz…",
 } as const;

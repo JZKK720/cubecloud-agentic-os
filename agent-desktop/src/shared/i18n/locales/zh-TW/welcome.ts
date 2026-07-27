@@ -54,7 +54,15 @@ export default {
     densityLabel: "Density",
     densityHint:
       "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
-    reset: "Reset to defaults",
-    saved: "Saved.",
+    reset: "重設為預設值",
+    saved: "已儲存。",
   },
+  // V2.10.77 — SSH 面板標題與副標題
+  connectSshPanelTitle: "透過 SSH 連線",
+  connectSshSubtitleHermes:
+    "透過 SSH 轉發現有的 {{runtime}} 閘道，無需直接公開已發佈的連接埠。",
+  connectSshSubtitleOpenclaw:
+    "透過 SSH 轉發現有的 {{runtime}} 閘道。遠端閘道必須啟用 HTTP 相容性。",
+  connectSshSubtitleIronclaw:
+    "透過 SSH 轉發現有的 {{runtime}} 閘道，無需直接公開已發佈的容器連接埠。",
 } as const;

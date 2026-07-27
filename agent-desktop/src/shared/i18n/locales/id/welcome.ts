@@ -56,7 +56,15 @@ export default {
     densityLabel: "Density",
     densityHint:
       "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
-    reset: "Reset to defaults",
-    saved: "Saved.",
+    reset: "Setel ulang ke default",
+    saved: "Tersimpan.",
   },
+  // V2.10.77 — Judul + subjudul panel SSH
+  connectSshPanelTitle: "Hubungkan via SSH",
+  connectSshSubtitleHermes:
+    "Teruskan gateway {{runtime}} yang ada via SSH tanpa mengekspos port yang dipublikasikan secara langsung.",
+  connectSshSubtitleOpenclaw:
+    "Teruskan gateway {{runtime}} yang ada via SSH. Kompatibilitas HTTP harus diaktifkan di gateway jarak jauh.",
+  connectSshSubtitleIronclaw:
+    "Teruskan gateway {{runtime}} yang ada via SSH tanpa mengekspos port kontainer yang dipublikasikan secara langsung.",
 } as const;

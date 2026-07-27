@@ -70,4 +70,13 @@ export default {
     emptyFolder: "空資料夾",
     errorLoading: "無法載入資料夾內容",
   },
+  // V2.10.77 — 語音 STT/TTS
+  voiceInput: "語音輸入",
+  voiceRecording: "停止錄音",
+  voiceTranscribing: "轉錄中…",
+  voiceHandy: "語音輸入（Handy — 本地、離線）",
+  voiceCloud: "語音輸入（雲端 STT）",
+  speakAloud: "朗讀",
+  stopSpeaking: "停止朗讀",
+  generatingSpeech: "產生語音中…",
 } as const;

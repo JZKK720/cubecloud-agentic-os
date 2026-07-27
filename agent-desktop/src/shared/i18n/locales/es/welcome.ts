@@ -56,7 +56,15 @@ export default {
     densityLabel: "Density",
     densityHint:
       "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
-    reset: "Reset to defaults",
-    saved: "Saved.",
+    reset: "Restablecer a valores predeterminados",
+    saved: "Guardado.",
   },
+  // V2.10.77 — SSH panel title + subtitles
+  connectSshPanelTitle: "Conectar por SSH",
+  connectSshSubtitleHermes:
+    "Reenvía una pasarela de {{runtime}} existente por SSH sin exponer el puerto publicado directamente.",
+  connectSshSubtitleOpenclaw:
+    "Reenvía una pasarela de {{runtime}} existente por SSH. La compatibilidad HTTP debe estar habilitada en la pasarela remota.",
+  connectSshSubtitleIronclaw:
+    "Reenvía una pasarela de {{runtime}} existente por SSH sin exponer el puerto del contenedor publicado directamente.",
 } as const;

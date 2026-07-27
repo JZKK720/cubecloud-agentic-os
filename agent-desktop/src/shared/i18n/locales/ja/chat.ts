@@ -84,4 +84,13 @@ export default {
     emptyFolder: "空のフォルダ",
     errorLoading: "フォルダの読み込みに失敗しました",
   },
+  // V2.10.77 — 音声STT/TTS
+  voiceInput: "音声入力",
+  voiceRecording: "録音を停止",
+  voiceTranscribing: "文字起こし中…",
+  voiceHandy: "音声入力（Handy — ローカル、オフライン）",
+  voiceCloud: "音声入力（クラウドSTT）",
+  speakAloud: "読み上げ",
+  stopSpeaking: "読み上げを停止",
+  generatingSpeech: "音声を生成中…",
 } as const;
