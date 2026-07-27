@@ -22,4 +22,9 @@ export default {
   installedBadge: "Terinstal",
   installing: "Menginstal...",
   install: "Instal",
+  view: "Lihat",
+  sourceDesktop: "Desktop",
+  sourceUserGlobal: "Global pengguna",
+  sourceHermes: "Hermes",
+  sourceRegistry: "Registri",
 } as const;

@@ -21,4 +21,9 @@ export default {
   installedBadge: "Installed",
   installing: "Installing...",
   install: "Install",
+  view: "View",
+  sourceDesktop: "Desktop",
+  sourceUserGlobal: "User Global",
+  sourceHermes: "Hermes",
+  sourceRegistry: "Registry",
 } as const;

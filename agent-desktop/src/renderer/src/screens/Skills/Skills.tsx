@@ -142,6 +142,7 @@ function Skills({ profile }: SkillsProps): React.JSX.Element {
 
   function sourceLabel(source: string): string {
     if (source === "bundled-desktop") return t("skills.sourceDesktop");
+    if (source === "user-global") return t("skills.sourceUserGlobal");
     if (source === "bundled") return t("skills.sourceHermes");
     return t("skills.sourceRegistry");
   }
@@ -389,7 +390,9 @@ function Skills({ profile }: SkillsProps): React.JSX.Element {
           {filteredBundled.map((skill) => {
             const isInstalled = installedNames.has(skill.name.toLowerCase());
             const isActioning = actionInProgress === skill.name;
-            const isDesktop = skill.source === "bundled-desktop";
+            const isDesktop =
+              skill.source === "bundled-desktop" ||
+              skill.source === "user-global";
             return (
               <div
                 key={`${skill.category}/${skill.name}`}

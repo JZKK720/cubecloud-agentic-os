@@ -19,9 +19,11 @@ export default {
   uninstall: "解除安裝",
   installedBadge: "已安裝",
   installing: "安裝中...",
-  install: "安裝",  view: "查看",
+  install: "安裝",
+  view: "查看",
 
   sourceDesktop: "桌面技能",
+  sourceUserGlobal: "使用者全域",
   sourceHermes: "Hermes 技能",
   sourceRegistry: "登錄表技能",
 } as const;

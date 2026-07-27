@@ -20,4 +20,9 @@ export default {
   installedBadge: "已安装",
   installing: "安装中...",
   install: "安装",
+  view: "查看",
+  sourceDesktop: "桌面技能",
+  sourceUserGlobal: "用户全局",
+  sourceHermes: "Hermes 技能",
+  sourceRegistry: "注册表技能",
 } as const;

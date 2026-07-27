@@ -21,4 +21,9 @@ export default {
   installedBadge: "インストール済み",
   installing: "インストール中...",
   install: "インストール",
+  view: "表示",
+  sourceDesktop: "デスクトップ",
+  sourceUserGlobal: "ユーザーグローバル",
+  sourceHermes: "Hermes",
+  sourceRegistry: "レジストリ",
 } as const;
