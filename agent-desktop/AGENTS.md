@@ -129,9 +129,10 @@ the real reason for the pin is the 4.x bug, not a 4.x feature.
 | Hermes | 8642 | `scripts/hermes-agent-attach.smoke.cjs`, `docs/hermes-agent-attach.smoke.md` |
 | IronClaw | 3231 | `scripts/ironclaw-attach.smoke.cjs` (defaults to `http://127.0.0.1:3231/api/health`). The "8281" in older docs is legacy. |
 | OpenClaw | 18789 | `agent-desktop/src/shared/runtime-orchestration.ts` |
+| Raven | 8855 | `agent-desktop/src/shared/runtime-defaults.ts` (`RAVEN_DEFAULT_PORT`). Probe in `hermes.ts` checks `/health` for `"runtime":"raven"` body. Auto-detected on port 8855. |
 
 `RuntimeProviderId` and `TaskOrchestratorId` live in
-`agent-desktop/src/shared/runtime-orchestration.ts`. The 24-entry
+`agent-desktop/src/shared/runtime-orchestration.ts`. The 35-entry
 `AGENT_CLI_CATALOG` (tier 4, PATH-discovered via `discoverAgentClis()`)
 lives in `agent-desktop/src/shared/agent-clis.ts` and is **not** a
 runtime lane.

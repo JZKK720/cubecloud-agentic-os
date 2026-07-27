@@ -46,28 +46,38 @@ surface assumptions into Cubecloud-original code paths.
    the desktop attaches to for chat. Hermes (default, port 8642),
    IronClaw (WASM-sandbox gateway-handoff, port 3231 — the live source
    of truth is `scripts/ironclaw-attach.smoke.cjs`; the older "8281"
-   in historical docs is legacy), OpenClaw (optional, port 18789).
-   The desktop attaches over HTTP; it does not shell out to an
-   interactive TUI for the chat path. Raven (EverMind's self-improving
-   agent harness, port 8855) is reserved as `planned` — the slot
-   exists but is not active until Raven's gateway API stabilizes.
+   in historical docs is legacy), OpenClaw (optional, port 18789),
+   Raven (EverMind's self-improving agent harness, port 8855,
+   `integrationStatus: "optional"` as of V2.10.76). The desktop
+   attaches over HTTP; it does not shell out to an
+   interactive TUI for the chat path. Raven provides self-evolving
+   memory (EverOS), SkillForge skills, and Sentinel proactivity.
+   The desktop auto-detects Raven on port 8855 and surfaces it as
+   a 4th runtime choice on the Welcome screen.
 2. **Integrated support surfaces** — CodeGraph, EverOS, Headroom,
-   Moo Tasks, Codebase Memory, Agent Reach, Last 30 Days.
+   Moo Tasks, Codebase Memory, Agent Reach, Last 30 Days,
+   Voice STT/TTS, Handy, GBrain, Graphify, OfficeCLI, Browser Use,
+   Agent Eval Framework.
    Operator-installed, desktop-spawned sidecars. Moo Tasks
    (agent-native kanban with 14 MCP tools) lives as a panel on the
    Plans screen; Codebase Memory (CMM, 14 MCP tools, Cypher queries,
    3D graph) lives as a panel on the CodeGraph screen; Agent Reach
    (15-platform internet capability router) and Last 30 Days
    (engagement-scored research engine) live as panels on the Tools
-   screen. The dead Kanban screen was removed in V2.10.75 —
-   moo-tasks replaces it.
+   screen. Voice STT (Handy local-first primary + Groq/OpenAI cloud
+   fallback) and TTS (OpenAI tts-1) are wired in the Chat composer
+   (mic button) and agent messages (speaker button). GBrain health
+   probe, Graphify discovery, Browser Harness, OfficeCLI, and
+   Watch-Skill have status panels on the Tools screen. The Agent
+   Eval Framework (5 starter cases) is in Settings. The dead Kanban
+   screen was removed in V2.10.75 — moo-tasks replaces it.
 3. **User-managed third-party apps** — anything the operator installs
    that is not a coding-agent CLI. Includes local model servers
    (Ollama, LM Studio, vLLM, llama.cpp) and chat/retrieval tools
    (Open WebUI, OpenCode, Warp ADE). The desktop *discovers* these
    via local scan or manual attach; it does not treat them as chat
    gateways.
-4. **Coding-agent CLIs** — a 25-entry `AGENT_CLI_CATALOG` in
+4. **Coding-agent CLIs** — a 35-entry `AGENT_CLI_CATALOG` in
    `agent-desktop/src/shared/agent-clis.ts` (Claude Code, Codex CLI,
    GitHub Copilot CLI, Gemini CLI, OpenCode, Aider, Kimi CLI, Qwen
    Code, Raven, etc.). The desktop *discovers* these on PATH via
