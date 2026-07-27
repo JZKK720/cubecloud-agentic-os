@@ -45,6 +45,8 @@ const readOnly = [
   "convert-file-to-markdown", "is-markitdown-available",
   "discover-memory-providers", "discover-agent-clis", "discover-docker-runtimes",
   "discover-browser-harness", "browser-harness-doctor",
+  "gbrain-probe", "graphify-discover", "graphify-version",
+  "handy-detect", "eval-run",
   "list-all-outputs", "list-thread-outputs",
   "read-file", "read-directory", "read-image-file", "read-logs",
   "gateway-status",
@@ -61,6 +63,12 @@ const inStaging = [
   "headroom-save-config", "headroom-compress", "headroom-retrieve",
   "headroom-learn-run", "headroom-learn-stop", "headroom-learn-commit", "headroom-learn-apply", "headroom-learn-revert",
   "codegraph-runtime-open", "codegraph-runtime-close",
+  "handy-toggle", "handy-cancel",
+  "voice-transcribe", "voice-synthesize",
+  "skill-install-git",
+  "moo-tasks-sidecar-start", "moo-tasks-sidecar-stop", "moo-tasks-sidecar-restart",
+  "moo-tasks-sidecar-clear-logs", "moo-tasks-sidecar-log-tail", "moo-tasks-sidecar-status",
+  "discover-codebase-memory", "discover-last30days", "list-codebase-memory-projects",
 ];
 
 const seen = new Set(readOnly);
