@@ -50,6 +50,15 @@ export default {
   // surface.
   connectRemoteSubtitleIronclaw:
     "Attach to a running {{runtime}} WASM-sandbox container gateway instead of installing locally. Use the published gateway port (default 3231) and the operator-facing /api/health surface.",
+  // V2.10.77 — SSH panel title + subtitles (were missing, causing
+  // raw i18n keys to display in the UI).
+  connectSshPanelTitle: "Connect via SSH",
+  connectSshSubtitleHermes:
+    "Forward an existing {{runtime}} gateway over SSH without exposing the published port directly.",
+  connectSshSubtitleOpenclaw:
+    "Forward an existing {{runtime}} gateway over SSH. HTTP compatibility must be enabled on the remote gateway.",
+  connectSshSubtitleIronclaw:
+    "Forward an existing {{runtime}} gateway over SSH without exposing the published container port directly.",
   // V2.10.61 — rewritten to drop the false-promise "below" Docker
   // handoff reference (the panel was not actually rendered in
   // Welcome.tsx). The Docker Desktop attach panel is a clean
