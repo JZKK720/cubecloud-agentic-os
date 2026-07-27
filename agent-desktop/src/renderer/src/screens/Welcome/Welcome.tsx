@@ -18,6 +18,7 @@ import {
   DEFAULT_LOCAL_GATEWAY_URL,
   IRONCLAW_LOCAL_GATEWAY_URL,
   OPENCLAW_LOCAL_GATEWAY_PORT,
+  RAVEN_DEFAULT_PORT,
 } from "../../../../shared/runtime-defaults";
 import {
   formatConnectionDiagnosticDetail,
@@ -199,7 +200,9 @@ function Welcome({
         ? IRONCLAW_LOCAL_GATEWAY_URL
         : presetId === "openclaw"
           ? `http://127.0.0.1:${OPENCLAW_LOCAL_GATEWAY_PORT}/v1`
-          : DEFAULT_LOCAL_GATEWAY_URL,
+          : presetId === "raven"
+            ? `http://127.0.0.1:${RAVEN_DEFAULT_PORT}`
+            : DEFAULT_LOCAL_GATEWAY_URL,
     );
     setPanel("remote");
   }
@@ -219,6 +222,7 @@ function Welcome({
   ): string {
     if (presetId === "ironclaw") return ironclawRuntimeName;
     if (presetId === "openclaw") return openclawRuntimeName;
+    if (presetId === "raven") return ravenRuntimeName;
     return hermesRuntimeName;
   }
 
@@ -403,9 +407,14 @@ function Welcome({
               ? t("welcome.connectRemoteSubtitleIronclaw", {
                   runtime: ironclawRuntimeName,
                 })
-              : t("welcome.connectRemoteSubtitleHermes", {
-                  runtime: hermesRuntimeName,
-                }),
+              : gatewayRuntimePreset === "raven"
+                ? t("welcome.connectRemoteSubtitleHermes", {
+                    runtime: ravenRuntimeName,
+                    defaultValue: "Connect to a running {{runtime}} gateway.",
+                  })
+                : t("welcome.connectRemoteSubtitleHermes", {
+                    runtime: hermesRuntimeName,
+                  }),
           true,
         )}
 
@@ -532,9 +541,14 @@ function Welcome({
                   defaultValue:
                     "Forward an existing {{runtime}} gateway over SSH without exposing the published container port directly.",
                 })
-            : t("welcome.connectSshSubtitleHermes", {
-                runtime: hermesRuntimeName,
-              }),
+              : gatewayRuntimePreset === "raven"
+                ? t("welcome.connectSshSubtitleHermes", {
+                    runtime: ravenRuntimeName,
+                    defaultValue: "Forward an existing {{runtime}} gateway over SSH.",
+                  })
+                : t("welcome.connectSshSubtitleHermes", {
+                    runtime: hermesRuntimeName,
+                  }),
           true,
         )}
 
@@ -561,6 +575,13 @@ function Welcome({
               onClick={() => applyGatewayRuntimePreset("ironclaw")}
             >
               {ironclawRuntimeName}
+            </button>
+            <button
+              className={`btn ${gatewayRuntimePreset === "raven" ? "btn-primary" : "btn-secondary"}`}
+              type="button"
+              onClick={() => applyGatewayRuntimePreset("raven")}
+            >
+              {ravenRuntimeName}
             </button>
           </div>
           <p className="welcome-remote-hint welcome-lane-hint">
@@ -882,6 +903,9 @@ function Welcome({
 
           <div className="welcome-cta-stack">
             <div className="welcome-wire-grid">
+              {/* V2.10.77 — Primary line-up: Hermes (default) + Raven.
+                  These are the two primary runtimes the desktop
+                  recommends for initial onboarding. */}
               <button
                 className="btn btn-primary welcome-recheck-btn"
                 onClick={() => openRemoteWirePreset("hermes")}
@@ -891,9 +915,9 @@ function Welcome({
               </button>
               <button
                 className="btn btn-secondary welcome-recheck-btn"
-                onClick={() => openRemoteWirePreset("ironclaw")}
+                onClick={() => openRemoteWirePreset("raven")}
               >
-                Wire IronClaw gateway
+                Wire Raven (EverMind)
                 <ArrowRight size={16} />
               </button>
               <button
@@ -904,9 +928,9 @@ function Welcome({
               </button>
               <button
                 className="btn btn-secondary welcome-recheck-btn"
-                onClick={() => openSshWirePreset("ironclaw")}
+                onClick={() => openSshWirePreset("raven")}
               >
-                IronClaw via SSH
+                Raven via SSH
               </button>
             </div>
             <p className="welcome-note welcome-note--secondary">

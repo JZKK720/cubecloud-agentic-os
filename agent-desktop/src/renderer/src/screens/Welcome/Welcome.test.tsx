@@ -250,7 +250,7 @@ describe("Welcome handoffs", () => {
     expect(screen.getByTestId("welcome-install-cta")).toBeInTheDocument();
   });
 
-  it("opens the Hermes and IronClaw wire panels with local defaults", async () => {
+  it("opens the Hermes and Raven wire panels with local defaults", async () => {
     installHermesAPI();
 
     render(
@@ -275,11 +275,13 @@ describe("Welcome handoffs", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
 
+    // V2.10.77 — IronClaw demoted from primary onboarding; Raven
+    // is now the second primary runtime alongside Hermes.
     fireEvent.click(
-      screen.getByRole("button", { name: "IronClaw via SSH" }),
+      screen.getByRole("button", { name: "Raven via SSH" }),
     );
 
-    expect(screen.getByDisplayValue("3231")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("8855")).toBeInTheDocument();
   });
 
   it("hides the local install CTA when runtimes were already discovered", async () => {
