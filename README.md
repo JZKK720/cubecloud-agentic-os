@@ -10,19 +10,22 @@
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
 
-## Latest release: **v2.10.73**
+## Latest release: **v2.10.77**
 
 Download the Windows installer from the
-[v2.10.73 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73):
+[v2.10.77 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77):
 
-- `cubecloud-agent-desktop-2.10.73-setup.exe` (127 MB, NSIS one-click installer)
-- `cubecloud-agent-desktop-2.10.73-portable.exe` (127 MB, single-file portable)
-- `cubecloud-agent-desktop-2.10.73-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
+- `cubecloud-agent-desktop-2.10.77-setup.exe` (127 MB, NSIS one-click installer)
+- `cubecloud-agent-desktop-2.10.77-portable.exe` (127 MB, single-file portable)
+- `cubecloud-agent-desktop-2.10.77-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
 
-v2.10.73 is the **MCP registry overhaul** release: Firecrawl replaces
-Tavily (keyless tier, self-hostable), SkillSpector and OpenKnowledge
-added, Qdrant defaults to local Docker (no API key). `verify:bundle`
-7/7 PASS. See [`agent-desktop/changelogs/2.10.73.md`](agent-desktop/changelogs/2.10.73.md)
+v2.10.77 is the **Tier 1 add-on + onboarding restructure** release: voice
+STT/TTS (Handy local-first + cloud fallback), Raven runtime activation
+(port 8855, 4th runtime), agent eval framework (5 starter cases), skill
+sharing via git URL, SkillSpector hard gate, 140 user-global skills now
+visible in Browse tab, full i18n parity across 8 locales (25/25 files, 0
+drift). `verify:bundle` 7/7 PASS. See
+[`agent-desktop/changelogs/2.10.77.md`](agent-desktop/changelogs/2.10.77.md)
 for the full changelog. v0.6.0 and v0.6.1 are marked pre-release on
 GitHub and should not be used — they were built from the retired
 `apps/desktop-shell/` wrapper tree.

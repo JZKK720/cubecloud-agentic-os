@@ -16,7 +16,7 @@ choice**, **skills**, **memory**, **schedules**, and **optional code
 intelligence** — without coupling the workflow to a hosted wrapper or
 a single-vendor CLI.
 
-**Latest release: [v2.10.73](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)** —
+**Latest release: [v2.10.77](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77)** —
 MCP registry overhaul: Firecrawl replaces Tavily (keyless tier, self-hostable),
 SkillSpector + OpenKnowledge added, Qdrant defaults to local Docker (no API key).
 
@@ -171,12 +171,12 @@ The full per-skill breakdown is in the monorepo README under
 
 ## Install
 
-The latest stable installer is **v2.10.73**, published at
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73>.
+The latest stable installer is **v2.10.77**, published at
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77>.
 Older releases are listed on the
 [Releases page](https://github.com/JZKK720/cubecloud-agentic-os/releases).
 v0.6.0 and v0.6.1 are marked pre-release because they were built
-from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.73
+from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.77
 or later**.
 
 ### Prerequisites
@@ -201,8 +201,8 @@ access — the desktop prompts for the admin password upfront.
 ### Windows
 
 Download
-`cubecloud-agent-desktop-2.10.73-setup.exe` from the
-[v2.10.73 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
+`cubecloud-agent-desktop-2.10.77-setup.exe` from the
+[v2.10.77 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77)
 and run it. The NSIS installer is one-click per-user and registers
 `cubecloud-agent-desktop` in Windows Programs and Features.
 
@@ -213,7 +213,7 @@ and run it. The NSIS installer is one-click per-user and registers
 > for the OEM-build path that includes a corporate certificate.
 
 For an installer-free option, download
-`cubecloud-agent-desktop-2.10.73-portable.exe` instead — single-file
+`cubecloud-agent-desktop-2.10.77-portable.exe` instead — single-file
 portable that runs without an install step.
 
 ### macOS / Linux

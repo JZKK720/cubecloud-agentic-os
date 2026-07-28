@@ -84,6 +84,11 @@ function walk(dir, out = []) {
     if (entry.isDirectory() && entry.name === "archive") {
       continue;
     }
+    // Skip prompt reference files — they contain presentation deck
+    // sizes (e.g. "20-40 attendees") that trip the skill-count regex.
+    if (entry.isDirectory() && entry.name === "references") {
+      continue;
+    }
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       if (skipDirs.has(entry.name)) continue;
