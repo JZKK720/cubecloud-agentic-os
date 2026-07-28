@@ -199,6 +199,13 @@ import sandboxTasksPtBr from "./locales/pt-BR/sandboxTasks";
 import sandboxTasksPtPt from "./locales/pt-PT/sandboxTasks";
 import sandboxTasksZhCn from "./locales/zh-CN/sandboxTasks";
 import sandboxTasksZhTw from "./locales/zh-TW/sandboxTasks";
+import workspaceEs from "./locales/es/workspace";
+import workspaceId from "./locales/id/workspace";
+import workspaceJa from "./locales/ja/workspace";
+import workspacePtBr from "./locales/pt-BR/workspace";
+import workspacePtPt from "./locales/pt-PT/workspace";
+import workspaceZhCn from "./locales/zh-CN/workspace";
+import workspaceZhTw from "./locales/zh-TW/workspace";
 
 export const resources = {
   en: {
@@ -253,8 +260,7 @@ export const resources = {
       memory: memoryEs,
       install: installEs,
       constants: constantsEs,
-      everos: everoses,
-      plans: plansEs,
+      everos: everoses,      workspace: workspaceEs,      plans: plansEs,
       mcp: mcpEs,
     },
   },
@@ -280,6 +286,7 @@ export const resources = {
       install: installId,
       constants: constantsId,
       everos: everosid,
+      workspace: workspaceId,
       headroom: headroomId,
       sandboxTasks: sandboxTasksId,
       plans: plansId,
@@ -308,6 +315,7 @@ export const resources = {
       install: installZh,
       constants: constantsZh,
       everos: everoszhCN,
+      workspace: workspaceZhCn,
       headroom: headroomZhCn,
       sandboxTasks: sandboxTasksZhCn,
       plans: plansZhCn,
@@ -336,6 +344,7 @@ export const resources = {
       install: installZhTw,
       constants: constantsZhTw,
       everos: everoszhTW,
+      workspace: workspaceZhTw,
       plans: plansZhTw,
       mcp: mcpZhTw,
       headroom: headroomZhTw,
@@ -364,6 +373,7 @@ export const resources = {
       install: installPt,
       constants: constantsPt,
       everos: everosptBR,
+      workspace: workspacePtBr,
       plans: plansPtBr,
       mcp: mcpPtBr,
       headroom: headroomPtBr,
@@ -392,6 +402,7 @@ export const resources = {
       install: installPtPt,
       constants: constantsPtPt,
       everos: everosptPT,
+      workspace: workspacePtPt,
       headroom: headroomPtPt,
       sandboxTasks: sandboxTasksPtPt,
       plans: plansPtPt,
@@ -420,6 +431,7 @@ export const resources = {
       install: installJa,
       constants: constantsJa,
       everos: everosja,
+      workspace: workspaceJa,
       plans: plansJa,
       mcp: mcpJa,
       headroom: headroomJa,
