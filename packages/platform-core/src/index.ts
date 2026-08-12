@@ -85,6 +85,18 @@ export {
   runSubagent,
 } from "./subagent";
 
+// ── IM Channel interface (G1) ──────────────────────────────────────────────
+export {
+  type ChannelMessage,
+  type NormalizedMessage,
+  type ChannelInfo,
+  type ChannelConfig,
+  type Channel,
+  type ChannelRouter,
+  normalizeMessage,
+  createChannelRouter,
+} from "./channel";
+
 // ── Platform views ──────────────────────────────────────────────────────────
 
 export type PlatformView =
