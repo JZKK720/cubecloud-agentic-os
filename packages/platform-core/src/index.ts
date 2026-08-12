@@ -97,6 +97,16 @@ export {
   createChannelRouter,
 } from "./channel";
 
+// ── Agent Swarm (G2) ────────────────────────────────────────────────────────
+export {
+  type SwarmAgentStatus,
+  type SwarmAgent,
+  type SwarmMessage,
+  type SwarmManager,
+  MAX_CONCURRENT_SUBAGENTS,
+  createSwarmManager,
+} from "./swarm";
+
 // ── Platform views ──────────────────────────────────────────────────────────
 
 export type PlatformView =
