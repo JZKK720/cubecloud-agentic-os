@@ -15,6 +15,11 @@ export default {
   supportedBridgesHint:
     "Supported bridges stay disabled until you opt in. Enable only the providers and messaging lanes this machine should expose.",
   platformsEnabled: "{{enabled}}/{{total}} platforms enabled",
+  imChannels: {
+    title: "IM Channels",
+    summary:
+      "Connect the agent to enterprise IM platforms. Messages from IM clients are routed to the active runtime; replies are sent back to the conversation.",
+  },
   group: {
     messaging: "Messaging",
     eastern: "Eastern platforms",

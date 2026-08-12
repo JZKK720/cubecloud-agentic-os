@@ -174,15 +174,13 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
         id: "existing-local",
         name: "Existing localhost gateway",
         endpointUrl: buildLocalGatewayUrl(LOCAL_GATEWAY_CANDIDATE_PORTS[1]),
-        detail:
-          `Custom or already-running gateway on ${LOCAL_GATEWAY_CANDIDATE_PORTS[1]}. Use it directly if this is your intended runtime.`,
+        detail: `Custom or already-running gateway on ${LOCAL_GATEWAY_CANDIDATE_PORTS[1]}. Use it directly if this is your intended runtime.`,
       },
       {
         id: "openclaw-local",
         name: "OpenClaw localhost gateway",
         endpointUrl: buildLocalGatewayUrl(OPENCLAW_LOCAL_GATEWAY_PORT),
-        detail:
-          `OpenClaw gateway on ${OPENCLAW_LOCAL_GATEWAY_PORT}. Agent Desktop can attach here when OpenClaw's HTTP compatibility surface is enabled.`,
+        detail: `OpenClaw gateway on ${OPENCLAW_LOCAL_GATEWAY_PORT}. Agent Desktop can attach here when OpenClaw's HTTP compatibility surface is enabled.`,
       },
     ],
     [],
@@ -211,8 +209,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
       );
       setLocalGatewayProbes(
         results.filter(
-          (candidate): candidate is LocalGatewayCandidate =>
-            candidate !== null,
+          (candidate): candidate is LocalGatewayCandidate => candidate !== null,
         ),
       );
     } catch (scanError) {
@@ -273,16 +270,17 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
         <div>
           <div className="settings-gateway-kicker">{t("gateway.kicker")}</div>
           <h1 className="settings-header">{t("gateway.title")}</h1>
-          <p className="settings-gateway-summary">
-            {t("gateway.heroSummary")}
-          </p>
+          <p className="settings-gateway-summary">{t("gateway.heroSummary")}</p>
         </div>
         <div className="settings-gateway-badges">
           <span className="settings-gateway-badge">
             {gatewayRunning ? t("gateway.running") : t("gateway.stopped")}
           </span>
           <span className="settings-gateway-badge">
-            {t("gateway.platformsEnabled", { enabled: enabledPlatformCount, total: GATEWAY_PLATFORMS.length })}
+            {t("gateway.platformsEnabled", {
+              enabled: enabledPlatformCount,
+              total: GATEWAY_PLATFORMS.length,
+            })}
           </span>
         </div>
       </div>
@@ -363,10 +361,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
                           const field = fieldDefs.get(fieldKey);
                           if (!field) return null;
                           return (
-                            <div
-                              key={field.key}
-                              className="settings-field"
-                            >
+                            <div key={field.key} className="settings-field">
                               <label className="settings-field-label">
                                 {t(field.label)}
                                 {savedKey === field.key && (
@@ -416,6 +411,145 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             );
           },
         )}
+      </div>
+
+      {/* IM Channels (G1 — WeCom, DingTalk, Feishu) */}
+      <div className="settings-section">
+        <div className="settings-section-title">
+          {t("gateway.imChannels.title")}
+        </div>
+        <div className="settings-field-hint settings-field-hint--secondary">
+          {t("gateway.imChannels.summary")}
+        </div>
+        {(
+          [
+            {
+              key: "feishu",
+              label: "Feishu (飞书)",
+              desc: "Lark Suite — WebSocket long-connection",
+              configFields: [
+                {
+                  key: "IM_FEISHU_APP_ID",
+                  label: "App ID",
+                  type: "text" as const,
+                },
+                {
+                  key: "IM_FEISHU_APP_SECRET",
+                  label: "App Secret",
+                  type: "password" as const,
+                },
+              ],
+            },
+            {
+              key: "dingtalk",
+              label: "DingTalk (钉钉)",
+              desc: "Stream Mode — WebSocket long-connection",
+              configFields: [
+                {
+                  key: "IM_DINGTALK_APP_KEY",
+                  label: "App Key",
+                  type: "text" as const,
+                },
+                {
+                  key: "IM_DINGTALK_APP_SECRET",
+                  label: "App Secret",
+                  type: "password" as const,
+                },
+              ],
+            },
+            {
+              key: "wecom",
+              label: "WeCom (企业微信)",
+              desc: "HTTP callback — webhook + AES decrypt",
+              configFields: [
+                {
+                  key: "IM_WECOM_CORP_ID",
+                  label: "Corp ID",
+                  type: "text" as const,
+                },
+                {
+                  key: "IM_WECOM_AGENT_ID",
+                  label: "Agent ID",
+                  type: "text" as const,
+                },
+                {
+                  key: "IM_WECOM_SECRET",
+                  label: "Secret",
+                  type: "password" as const,
+                },
+              ],
+            },
+          ] as const
+        ).map((channel) => (
+          <div
+            key={channel.key}
+            className="settings-platform-card"
+            data-im-channel={channel.key}
+          >
+            <div className="settings-platform-header">
+              <div className="settings-platform-left">
+                <div className="settings-platform-info">
+                  <span className="settings-platform-label">
+                    {channel.label}
+                  </span>
+                  <span className="settings-platform-desc">{channel.desc}</span>
+                </div>
+              </div>
+              <label className="tools-toggle">
+                <input
+                  type="checkbox"
+                  aria-label={channel.label}
+                  checked={!!platformEnabled[channel.key]}
+                  onChange={() => togglePlatform(channel.key)}
+                />
+                <span className="tools-toggle-track" />
+              </label>
+            </div>
+            {platformEnabled[channel.key] && (
+              <div className="settings-platform-fields">
+                {channel.configFields.map((field) => (
+                  <div key={field.key} className="settings-field">
+                    <label className="settings-field-label">
+                      {field.label}
+                      {savedKey === field.key && (
+                        <span className="settings-saved">
+                          {t("common.saved")}
+                        </span>
+                      )}
+                    </label>
+                    <div className="settings-input-row">
+                      <input
+                        className="input"
+                        type={
+                          field.type === "password" &&
+                          !visibleKeys.has(field.key)
+                            ? "password"
+                            : "text"
+                        }
+                        value={env[field.key] || ""}
+                        onChange={(e) =>
+                          handleChange(field.key, e.target.value)
+                        }
+                        onBlur={() => handleBlur(field.key)}
+                        placeholder={field.label}
+                      />
+                      {field.type === "password" && (
+                        <button
+                          className="btn-ghost settings-toggle-btn"
+                          onClick={() => toggleVisibility(field.key)}
+                        >
+                          {visibleKeys.has(field.key)
+                            ? t("common.hide")
+                            : t("common.show")}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       <div className="settings-section">
@@ -601,8 +735,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             </div>
           )}
         </div>
-        {!dockerDiscovery ||
-        dockerDiscovery.runtimes.length === 0 ? (
+        {!dockerDiscovery || dockerDiscovery.runtimes.length === 0 ? (
           <div className="settings-field-hint">
             {t("gateway.container.empty")}
           </div>
