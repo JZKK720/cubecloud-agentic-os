@@ -107,6 +107,15 @@ export {
   createSwarmManager,
 } from "./swarm";
 
+// ── Knowledge Vault (G3) ───────────────────────────────────────────────────
+export {
+  type VaultFile,
+  type SearchResult,
+  type KnowledgeVault,
+  tokenize,
+  createKnowledgeVault,
+} from "./knowledge-vault";
+
 // ── Platform views ──────────────────────────────────────────────────────────
 
 export type PlatformView =
