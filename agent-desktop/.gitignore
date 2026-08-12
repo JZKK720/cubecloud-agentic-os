@@ -48,3 +48,4 @@ previews/*
 # Local launcher scripts (user-specific, do not commit)
 /*.bat
 /*.ps1
+docs/plans/external-repos/

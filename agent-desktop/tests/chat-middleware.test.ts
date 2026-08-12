@@ -279,11 +279,20 @@ describe("chat-middleware — reflection middleware", () => {
 });
 
 describe("chat-middleware — chain factories", () => {
-  it("createBeforeModelChain returns headroom + route", () => {
+  it("createBeforeModelChain returns headroom + route", async () => {
     const chain = createBeforeModelChain();
     expect(chain).toHaveLength(2);
     expect(chain[0]).toBe(headroomCompressMiddleware);
-    expect(chain[1]).toBe(runtimeRouteMiddleware);
+    // chain[1] is now created by createRuntimeRouteMiddleware() —
+    // verify it behaves like the no-op pass-through when no registry.
+    const result = await chain[1]({
+      messages: [{ role: "user", content: "test" }],
+      model: "test",
+      providerHint: "openai",
+      hermesHome: "/tmp",
+    });
+    expect(result.label).toBe("route:pass");
+    expect(result.applied).toBe(false);
   });
 
   it("createAfterModelChain returns reflection when enabled", () => {

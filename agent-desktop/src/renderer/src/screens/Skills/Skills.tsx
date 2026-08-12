@@ -126,9 +126,7 @@ function Skills({ profile }: SkillsProps): React.JSX.Element {
   // main process for the absolute path of a desktop-bundled skill and
   // then read its content.
   async function handleViewBundled(skill: BundledSkill): Promise<void> {
-    const path = await window.hermesAPI.getDesktopBundledSkillPath(
-      skill.name,
-    );
+    const path = await window.hermesAPI.getDesktopBundledSkillPath(skill.name);
     if (!path) return;
     const content = await window.hermesAPI.getSkillContent(path);
     setDetailSkill({
@@ -253,6 +251,17 @@ function Skills({ profile }: SkillsProps): React.JSX.Element {
           <button className="btn-ghost" onClick={() => setError("")}>
             <X size={14} />
           </button>
+        </div>
+      )}
+
+      {/* Progressive-disclosure catalog status (P6) */}
+      {installedSkills.length > 0 && (
+        <div className="skills-catalog-status">
+          <span className="skills-catalog-status-dot" />
+          <span className="skills-catalog-status-text">
+            {installedSkills.length} skills in catalog · full bodies load on
+            demand
+          </span>
         </div>
       )}
 

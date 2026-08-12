@@ -182,22 +182,58 @@ export const headroomCompressMiddleware: BeforeModelMiddleware = async (
 
 // ── Middleware 2: Runtime routing (before_model) ───────────
 //
-// This middleware inspects the message and sets a routing hint.
-// It does NOT change the runtime — the actual routing decision
-// is made by hermes.ts based on the active runtime provider. This
-// middleware just annotates the context so downstream code (and
-// the renderer) can show "routed to IronClaw for sandboxed execution"
-// when the message contains code-execution intent.
+// This middleware inspects the message and resolves the active
+// runtime provider via the harness registry. It annotates the
+// context with the routing decision so downstream code (and the
+// renderer) can show "routed to IronClaw for sandboxed execution"
+// when the provider changes.
 //
-// For now this is a no-op annotation pass; the actual routing
-// logic will be wired when the TaskOrchestrator engine is built.
+// The actual turn dispatch still goes through hermes.ts — this
+// middleware just surfaces the routing decision in the middleware
+// stats. When P1 is fully wired, the HarnessRouter will be the
+// actual dispatch layer.
 
-export const runtimeRouteMiddleware: BeforeModelMiddleware = async (ctx) => {
-  // No transformation — just pass through. The routing hint is
-  // computed but not yet consumed. This is the insertion point
-  // for future capability-based routing.
-  return { messages: ctx.messages, applied: false, label: "route:pass" };
-};
+import type { HarnessRegistry } from "./harnesses/registry";
+
+/** Create a runtime routing middleware that uses the harness registry.
+ *  When no registry is provided, falls back to the no-op pass-through. */
+export function createRuntimeRouteMiddleware(
+  registry?: HarnessRegistry,
+): BeforeModelMiddleware {
+  return async (ctx) => {
+    if (!registry) {
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "route:pass",
+      };
+    }
+
+    try {
+      // Resolve the active provider for a synthetic session id.
+      // In the middleware context we don't have the real session id,
+      // but the resolver reads from config (not per-session), so any
+      // id works.
+      const providerId = await registry.resolve("middleware");
+      return {
+        messages: ctx.messages,
+        applied: true,
+        label: `route:${providerId}`,
+        stats: { routedTo: providerId },
+      };
+    } catch {
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "route:error",
+      };
+    }
+  };
+}
+
+/** The default no-op middleware (backward compatibility). */
+export const runtimeRouteMiddleware: BeforeModelMiddleware =
+  createRuntimeRouteMiddleware();
 
 // ── Middleware 3: Reflection (after_model) ─────────────────
 //
@@ -336,9 +372,16 @@ export async function runAfterModelChain(
 
 // ── Default chain factory ───────────────────────────────────
 
-/** Build the default before_model chain for the desktop. */
-export function createBeforeModelChain(): BeforeModelMiddleware[] {
-  return [headroomCompressMiddleware, runtimeRouteMiddleware];
+/** Build the default before_model chain for the desktop.
+ *  When a harness registry is provided, the runtimeRoute middleware
+ *  resolves the active provider and annotates the context. */
+export function createBeforeModelChain(
+  registry?: HarnessRegistry,
+): BeforeModelMiddleware[] {
+  return [
+    headroomCompressMiddleware,
+    createRuntimeRouteMiddleware(registry),
+  ];
 }
 
 /** Build the default after_model chain for the desktop.

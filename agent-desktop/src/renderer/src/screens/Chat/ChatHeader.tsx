@@ -22,6 +22,8 @@ interface ChatHeaderProps {
   showContextFolder: boolean;
   /** Whether the worktree panel is visible (when contextFolder is set). */
   worktreeVisible: boolean;
+  /** Number of pending approvals in the inbox (P8). */
+  pendingApprovals?: number;
   onPickFolder: () => void;
   onClearFolder: () => void;
   onToggleFast: () => void;
@@ -174,6 +176,15 @@ export const ChatHeader = memo(function ChatHeader({
             : t("chat.title")}
         </div>
         {usage && <UsageBadge usage={usage} />}
+        {pendingApprovals > 0 && (
+          <div
+            className="chat-approval-badge"
+            title={`${pendingApprovals} pending approval${pendingApprovals > 1 ? "s" : ""}`}
+          >
+            <span className="chat-approval-badge-dot" />
+            {pendingApprovals}
+          </div>
+        )}
       </div>
       <div className="chat-header-actions">
         {showContextFolder &&

@@ -1,3 +1,92 @@
+// ── Harness interface (P1) ──────────────────────────────────────────────────
+export {
+  type Harness,
+  type HarnessAdapterProfile,
+  type HarnessTurnInput,
+  type HarnessTurnDelta,
+  type HarnessTurnController,
+  type HarnessModelUtilities,
+  type HarnessToolPresentation,
+  type CompactionResult,
+  type HarnessResolver,
+  type HarnessRouter,
+  type HarnessTransport,
+  createHarnessRouter,
+} from "./harness";
+
+// ── Provider routing (P2) ──────────────────────────────────────────────────
+export {
+  type ProviderClient,
+  type ProviderFactory,
+  type ProviderRouter,
+  createProviderRouter,
+  parseProviderPrefix,
+} from "./provider-router";
+
+// ── Tool policy (P3) ────────────────────────────────────────────────────────
+export {
+  type CommandDecision,
+  type CommandPolicyRule,
+  type CommandPolicyResult,
+  type CommandPolicy,
+  createCommandPolicy,
+  scannableCommand,
+  type SecurityPostureLevel,
+  type SecurityPosture,
+  composeSecurityPosture,
+  type ToolLedgerEntry,
+  type ToolLedger,
+  createToolLedger,
+} from "./tool-policy";
+
+// ── Scoped memory (P4) ──────────────────────────────────────────────────────
+export {
+  type MemoryEntry,
+  type MemoryPolicy,
+  type MemoryStrategy,
+  type MemoryServiceConfig,
+  type MemoryService,
+  createMemoryService,
+  foldCapture,
+  normalizeEntryText,
+} from "./memory-service";
+
+// ── Auto-compaction (P5) ────────────────────────────────────────────────────
+export {
+  type TurnEntry,
+  type WorkingState,
+  type CompactionSummaryFn,
+  type CompactionState,
+  shouldCompact,
+  estimateTokens,
+  extractWorkingState,
+  pickBoundary,
+  compactTurnHistory,
+} from "./compaction";
+
+// ── Run queue with leasing (P9) ─────────────────────────────────────────────
+export {
+  type RunStatus,
+  type RunInput,
+  type Run,
+  type NonRetryableError,
+  type RunStore,
+  isNonRetryable,
+  createRunStore,
+} from "./run-queue";
+
+// ── Subagent exploration (P10) ──────────────────────────────────────────────
+export {
+  type SubagentConfig,
+  type SubagentResult,
+  READ_ONLY_TOOLS,
+  createSubagentConfig,
+  validateSubagentConfig,
+  runSubagent,
+} from "./subagent";
+
+// ── Platform views ──────────────────────────────────────────────────────────
+
 export type PlatformView =
   | "chat"
   | "sessions"

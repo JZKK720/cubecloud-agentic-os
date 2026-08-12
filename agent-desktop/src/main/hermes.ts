@@ -26,6 +26,12 @@ import {
 } from "./headroom-chat";
 import { loadHeadroomConfig } from "./headroom";
 import {
+  runBeforeModelChain,
+  createBeforeModelChain,
+  type ChatMessage as MiddlewareChatMessage,
+} from "./chat-middleware";
+import { createHarnessRegistry } from "./harnesses/registry";
+import {
   getApiServerKey,
   getConnectionConfig,
   getModelConfig,
@@ -729,6 +735,16 @@ export interface ChatCallbacks {
       skipReason?: string;
       error?: string;
     };
+    /** Middleware chain results for this turn. Surfaced so the
+     *  renderer can show routing decisions and middleware stats
+     *  (e.g. "routed to IronClaw for sandboxed execution").
+     *  Undefined when the middleware chain hasn't been wired yet
+     *  or when all middlewares skipped. */
+    middleware?: Array<{
+      label: string;
+      applied: boolean;
+      stats?: Record<string, unknown>;
+    }>;
   }) => void;
 }
 
@@ -907,6 +923,15 @@ function sendMessageViaApi(
     skipReason?: string;
     error?: string;
   } | null = null;
+  // Middleware chain results for this turn. Populated by
+  // the before_model chain in finalizePreparedRequest.
+  // Surfaced in onUsage so the renderer can show routing
+  // decisions and middleware stats.
+  let middlewareStats: Array<{
+    label: string;
+    applied: boolean;
+    stats?: Record<string, unknown>;
+  }> = [];
   let bodyBuf: Buffer = Buffer.from("", "utf-8");
   let sessionId = "";
   let hasContent = false;
@@ -1097,6 +1122,47 @@ function sendMessageViaApi(
       // Swallow and fall through with no stats.
     }
 
+    // ─── Middleware chain (DeerFlow Phase 0) ──────────────
+    // Runs the before_model middleware chain. Currently this
+    // runs alongside the existing inline Headroom hook above
+    // (which will eventually be replaced by the headroomCompress
+    // middleware). The runtimeRouteMiddleware is a no-op stub
+    // that will become the harness router insertion point (P1).
+    try {
+      // Create the harness registry (cached per process — the registry
+      // reads config on each resolve, so it picks up config changes).
+      // This is the P1 integration point: the registry wires all 4
+      // runtime adapters into the middleware chain.
+      if (!_harnessRegistry) {
+        _harnessRegistry = createHarnessRegistry();
+      }
+      const chain = createBeforeModelChain(_harnessRegistry);
+      const middlewareMessages: MiddlewareChatMessage[] = messages.map(
+        (m) => ({
+          role: m.role as MiddlewareChatMessage["role"],
+          content:
+            typeof m.content === "string"
+              ? m.content
+              : null,
+        }),
+      );
+      const providerHint = isOllamaLikeProvider(mc.provider)
+        ? `local:${mc.provider}`
+        : mc.provider || "openai";
+      const { results } = await runBeforeModelChain(
+        {
+          messages: middlewareMessages,
+          model: selectedModel,
+          providerHint,
+          hermesHome: HERMES_HOME,
+        },
+        chain,
+      );
+      middlewareStats = results;
+    } catch {
+      // Middleware chain failure must never break the chat path.
+    }
+
     headers["Content-Length"] = String(bodyBuf.length);
   }
 
@@ -1215,6 +1281,10 @@ function sendMessageViaApi(
           // see "compressed by Headroom: −X% on local Ollama"
           // in the chat usage footer when this is set.
           headroom: headroomStats ?? undefined,
+          // Middleware chain results from this turn. Includes
+          // the runtimeRoute label (currently "route:pass" —
+          // will become the harness routing decision in P1).
+          middleware: middlewareStats.length > 0 ? middlewareStats : undefined,
         });
       }
 
@@ -1642,6 +1712,11 @@ function sendMessageViaCli(
 // ────────────────────────────────────────────────────
 
 let apiServerAvailable: boolean | null = null; // cached after first check
+
+// Cached harness registry (P1). Created once per process.
+// The registry reads config on each resolve, so it picks up
+// runtime provider changes without needing a restart.
+let _harnessRegistry: ReturnType<typeof createHarnessRegistry> | null = null;
 
 export async function sendMessage(
   message: string,
