@@ -1,0 +1,14 @@
+export default {
+  title: "Swarm",
+  subtitle: "Multi-agent collaboration — dispatch read-only subagents for research and analysis",
+  active: "active",
+  clear: "Clear",
+  maxReached: "Maximum 5 concurrent subagents. Terminate one before creating another.",
+  createFailed: "Failed to create subagent.",
+  taskPlaceholder: "Describe a research task for a subagent…",
+  dispatch: "Dispatch",
+  noAgents: "No subagents running",
+  noAgentsHint: "Dispatch a task above to spawn a read-only subagent with fresh context.",
+  moreAgents: "+{{count}} more agents",
+  messageFlow: "Message Flow",
+} as const;
