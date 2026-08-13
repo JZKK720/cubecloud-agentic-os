@@ -3981,8 +3981,8 @@ select:focus-visible {
   font-size: 11px;
   font-weight: 600;
   color: var(--warning);
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-bg);
   padding: 2px 8px;
   border-radius: 10px;
   animation: fadeIn 0.2s ease;
@@ -5875,7 +5875,7 @@ select:focus-visible {
 }
 
 .swarm-error {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--error-bg);
   border: 1px solid var(--error);
   border-radius: var(--radius-sm);
   padding: 8px 14px;
@@ -5923,6 +5923,12 @@ select:focus-visible {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 12px 14px;
+  transition: all var(--transition);
+}
+
+.swarm-agent-card:hover {
+  border-color: var(--border-bright);
+  background: var(--bg-tertiary);
 }
 
 .swarm-agent-header {
@@ -6150,7 +6156,7 @@ select:focus-visible {
 }
 
 .knowledge-search-result:hover {
-  border-color: var(--accent);
+  border-color: var(--border-bright);
 }
 
 .knowledge-search-result-header {
@@ -6277,7 +6283,7 @@ select:focus-visible {
 }
 
 .knowledge-textarea:focus {
-  border-color: var(--accent);
+  border-color: var(--border-focus);
 }
 
 .knowledge-preview {
@@ -6363,8 +6369,7 @@ select:focus-visible {
   margin-bottom: 12px;
   background: var(--accent-subtle);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--accent);
-  border-opacity: 0.2;
+  border: 1px solid var(--accent-subtle);
 }
 
 .skills-catalog-status-dot {
