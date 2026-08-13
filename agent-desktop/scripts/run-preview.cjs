@@ -91,7 +91,7 @@ async function waitForCdp(url, timeoutMs) {
     [path.join(root, "scripts", "capture-previews.js")],
     {
       cwd: root,
-      env: { ...process.env, HERMES_HOME: stageDir },
+      env: { ...process.env, HERMES_HOME: stageDir, SKIP_MOCK_GATEWAY: "1" },
       stdio: "inherit",
       shell: true,
       windowsHide: true,
