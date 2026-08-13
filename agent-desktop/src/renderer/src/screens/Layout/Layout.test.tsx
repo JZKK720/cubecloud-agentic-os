@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../../components/useI18n", () => ({
@@ -88,12 +94,12 @@ function installHermesAPI(
       // Soul screen needs this on mount; return empty string.
       readSoul: vi.fn().mockResolvedValue(""),
       // MCP servers
-      listMcpServers:
-        overrides.listMcpServers ?? vi.fn().mockResolvedValue([]),
+      listMcpServers: overrides.listMcpServers ?? vi.fn().mockResolvedValue([]),
       setMcpServerEnabled:
         overrides.setMcpServerEnabled ??
         vi.fn().mockResolvedValue({ ok: true }),
-      addMcpServer: overrides.addMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
+      addMcpServer:
+        overrides.addMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
       removeMcpServer:
         overrides.removeMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
       // Codebase Memory (CMM) — probed by the CodeGraph screen on mount
@@ -257,7 +263,7 @@ describe("Layout sidebar groups", () => {
     }
   });
 
-  it("renders exactly 19 nav items in the sidebar (18 work/configure/platform + MCP)", async () => {
+  it("renders exactly 21 nav items in the sidebar (20 work/configure/platform + MCP)", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
@@ -266,7 +272,7 @@ describe("Layout sidebar groups", () => {
     const navButtons = buttons.filter((b) =>
       b.classList.contains("sidebar-nav-item"),
     );
-    expect(navButtons.length).toBe(19);
+    expect(navButtons.length).toBe(21);
   });
 
   it("renders the MCP nav item in the platform group between Gateway and Settings", async () => {
@@ -280,9 +286,13 @@ describe("Layout sidebar groups", () => {
     const labels = navButtons.map((b) => b.textContent ?? "");
     expect(labels.find((l) => l.includes("navigation.mcp"))).toBeDefined();
     // MCP comes after Gateway and before Settings.
-    const idxGateway = labels.findIndex((l) => l.includes("navigation.gateway"));
+    const idxGateway = labels.findIndex((l) =>
+      l.includes("navigation.gateway"),
+    );
     const idxMcp = labels.findIndex((l) => l.includes("navigation.mcp"));
-    const idxSettings = labels.findIndex((l) => l.includes("navigation.settings"));
+    const idxSettings = labels.findIndex((l) =>
+      l.includes("navigation.settings"),
+    );
     expect(idxMcp).toBeGreaterThan(idxGateway);
     expect(idxMcp).toBeLessThan(idxSettings);
   });
@@ -319,9 +329,9 @@ describe("Layout sidebar active state", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const skillsButton = screen.getByText("navigation.skills").closest(
-      "button",
-    ) as HTMLButtonElement;
+    const skillsButton = screen
+      .getByText("navigation.skills")
+      .closest("button") as HTMLButtonElement;
     fireEvent.click(skillsButton);
 
     await waitFor(() => {
@@ -338,9 +348,9 @@ describe("Layout sidebar active state", () => {
     });
 
     // Click into the platform group (settings)
-    const settingsButton = screen.getByText("navigation.settings").closest(
-      "button",
-    ) as HTMLButtonElement;
+    const settingsButton = screen
+      .getByText("navigation.settings")
+      .closest("button") as HTMLButtonElement;
     fireEvent.click(settingsButton);
     await waitFor(() => {
       const active = document.querySelectorAll(".sidebar-nav-item.active");
@@ -348,9 +358,9 @@ describe("Layout sidebar active state", () => {
     });
 
     // Then back to a work-group item (soul)
-    const soulButton = screen.getByText("navigation.soul").closest(
-      "button",
-    ) as HTMLButtonElement;
+    const soulButton = screen
+      .getByText("navigation.soul")
+      .closest("button") as HTMLButtonElement;
     fireEvent.click(soulButton);
     await waitFor(() => {
       const active = document.querySelectorAll(".sidebar-nav-item.active");
@@ -378,7 +388,9 @@ describe("Layout sidebar footer", () => {
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
-    expect(document.querySelector(".sidebar-update-btn")).not.toBeInTheDocument();
+    expect(
+      document.querySelector(".sidebar-update-btn"),
+    ).not.toBeInTheDocument();
   });
 
   it("shows the update button when an update becomes available", async () => {
@@ -388,7 +400,11 @@ describe("Layout sidebar footer", () => {
     });
 
     // Simulate the update-available event firing.
-    const hermes = (window as unknown as { hermesAPI: { onUpdateAvailable: ReturnType<typeof vi.fn> } }).hermesAPI;
+    const hermes = (
+      window as unknown as {
+        hermesAPI: { onUpdateAvailable: ReturnType<typeof vi.fn> };
+      }
+    ).hermesAPI;
     const onAvailable = hermes.onUpdateAvailable.mock.calls[0][0];
     act(() => {
       onAvailable({ version: "0.7.0" });
@@ -405,7 +421,14 @@ describe("Layout sidebar footer", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const hermes = (window as unknown as { hermesAPI: { onUpdateAvailable: ReturnType<typeof vi.fn>; downloadUpdate: ReturnType<typeof vi.fn> } }).hermesAPI;
+    const hermes = (
+      window as unknown as {
+        hermesAPI: {
+          onUpdateAvailable: ReturnType<typeof vi.fn>;
+          downloadUpdate: ReturnType<typeof vi.fn>;
+        };
+      }
+    ).hermesAPI;
     const onAvailable = hermes.onUpdateAvailable.mock.calls[0][0];
     act(() => {
       onAvailable({ version: "0.7.0" });
@@ -427,9 +450,9 @@ describe("Layout sidebar keyboard accessibility", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const skillsButton = screen.getByText("navigation.skills").closest(
-      "button",
-    ) as HTMLButtonElement;
+    const skillsButton = screen
+      .getByText("navigation.skills")
+      .closest("button") as HTMLButtonElement;
     // Native <button> elements translate Enter / Space to a click
     // event automatically. We simulate that here so the test does
     // not depend on the user-event polyfill.
@@ -447,9 +470,9 @@ describe("Layout sidebar keyboard accessibility", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const memoryButton = screen.getByText("navigation.memory").closest(
-      "button",
-    ) as HTMLButtonElement;
+    const memoryButton = screen
+      .getByText("navigation.memory")
+      .closest("button") as HTMLButtonElement;
     fireEvent.click(memoryButton);
 
     await waitFor(() => {
@@ -466,13 +489,13 @@ describe("Layout sidebar keyboard accessibility", () => {
     const navButtons = Array.from(
       document.querySelectorAll(".sidebar-nav-item"),
     ) as HTMLButtonElement[];
-    expect(navButtons.length).toBe(19);
+    expect(navButtons.length).toBe(21);
     // The order in the DOM should match the order defined by NAV_ITEMS.
     expect(navButtons[0].textContent).toContain("navigation.chat");
     expect(navButtons[6].textContent).toContain("navigation.everos");
-    expect(navButtons[9].textContent).toContain("navigation.models");
-    expect(navButtons[17].textContent).toContain("navigation.mcp");
-    expect(navButtons[18].textContent).toContain("navigation.settings");
+    expect(navButtons[11].textContent).toContain("navigation.models");
+    expect(navButtons[19].textContent).toContain("navigation.mcp");
+    expect(navButtons[20].textContent).toContain("navigation.settings");
   });
 });
 
@@ -485,7 +508,12 @@ describe("Layout sidebar MCP badge", () => {
     installHermesAPI({
       listMcpServers: vi.fn().mockResolvedValue([
         { name: "github", type: "stdio", enabled: true, detail: "npx" },
-        { name: "exa", type: "http", enabled: true, detail: "https://mcp.exa.ai/mcp" },
+        {
+          name: "exa",
+          type: "http",
+          enabled: true,
+          detail: "https://mcp.exa.ai/mcp",
+        },
         { name: "playwright", type: "stdio", enabled: false, detail: "npx" },
       ]),
     });
@@ -499,16 +527,21 @@ describe("Layout sidebar MCP badge", () => {
 
   it("does not show the badge until the list resolves", async () => {
     // Defer the response so we can observe the loading state.
-    let resolve: (v: Array<{ name: string; type: string; enabled: boolean; detail: string }>) => void = () => {};
+    let resolve: (
+      v: Array<{
+        name: string;
+        type: string;
+        enabled: boolean;
+        detail: string;
+      }>,
+    ) => void = () => {};
     installHermesAPI({
-      listMcpServers: vi
-        .fn()
-        .mockImplementation(
-          () =>
-            new Promise((r) => {
-              resolve = r;
-            }),
-        ),
+      listMcpServers: vi.fn().mockImplementation(
+        () =>
+          new Promise((r) => {
+            resolve = r;
+          }),
+      ),
     });
     render(<Layout />);
     await waitFor(() => {
@@ -548,9 +581,9 @@ describe("Layout sidebar content panes", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const skillsButton = screen.getByText("navigation.skills").closest(
-      "button",
-    ) as HTMLButtonElement;
+    const skillsButton = screen
+      .getByText("navigation.skills")
+      .closest("button") as HTMLButtonElement;
     fireEvent.click(skillsButton);
 
     await waitFor(() => {
@@ -581,7 +614,9 @@ describe("Layout sidebar content panes", () => {
 
     // Navigate back to chat.
     fireEvent.click(
-      screen.getByText("navigation.chat").closest("button") as HTMLButtonElement,
+      screen
+        .getByText("navigation.chat")
+        .closest("button") as HTMLButtonElement,
     );
     await waitFor(() => {
       expect(screen.getByText("chat-screen")).toBeInTheDocument();
@@ -617,10 +652,15 @@ describe("Layout chat session persistence", () => {
     });
     // Override getSessionMessages to return a non-empty array so the
     // restore effect treats the session as still valid.
-    (window as unknown as { hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> } })
-      .hermesAPI.getSessionMessages = vi
-        .fn()
-        .mockResolvedValue([{ id: 1, role: "user", content: "hello", timestamp: 0 }]);
+    (
+      window as unknown as {
+        hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> };
+      }
+    ).hermesAPI.getSessionMessages = vi
+      .fn()
+      .mockResolvedValue([
+        { id: 1, role: "user", content: "hello", timestamp: 0 },
+      ]);
 
     render(<Layout />);
     await waitFor(() => {
@@ -631,8 +671,11 @@ describe("Layout chat session persistence", () => {
     // the persisted session ID.
     await waitFor(() => {
       expect(
-        (window as unknown as { hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> } })
-          .hermesAPI.getSessionMessages,
+        (
+          window as unknown as {
+            hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> };
+          }
+        ).hermesAPI.getSessionMessages,
       ).toHaveBeenCalledWith("abc-123");
     });
   });
@@ -642,8 +685,11 @@ describe("Layout chat session persistence", () => {
     installHermesAPI({
       listMcpServers: vi.fn().mockResolvedValue([]),
     });
-    (window as unknown as { hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> } })
-      .hermesAPI.getSessionMessages = vi.fn().mockResolvedValue([]);
+    (
+      window as unknown as {
+        hermesAPI: { getSessionMessages: ReturnType<typeof vi.fn> };
+      }
+    ).hermesAPI.getSessionMessages = vi.fn().mockResolvedValue([]);
 
     render(<Layout />);
     await waitFor(() => {

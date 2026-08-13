@@ -15,6 +15,8 @@ export default {
   everos: "EverOS",
   headroom: "Headroom",
   sandboxtasks: "Sandbox Tasks",
+  swarm: "Swarm",
+  knowledge: "Knowledge",
   gateway: "Gateway",
   plans: "Plans",
   mcp: "MCP",

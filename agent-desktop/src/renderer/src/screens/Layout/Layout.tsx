@@ -23,6 +23,8 @@ import EverOS from "../EverOS/EverOS";
 import Headroom from "../Headroom/Headroom";
 import SandboxTasks from "../SandboxTasks/SandboxTasks";
 import Mcp from "../Mcp/Mcp";
+import Swarm from "../Swarm/Swarm";
+import Knowledge from "../Knowledge/Knowledge";
 import RuntimeNotice from "../../components/RuntimeNotice";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
 import ToolSuggestions from "../../components/ToolSuggestions";
@@ -47,7 +49,11 @@ import {
   Database,
   Cable,
 } from "../../assets/icons";
-import { FileText as LicensingIcon } from "lucide-react";
+import {
+  FileText as LicensingIcon,
+  GitBranch as SwarmIcon,
+  BookOpen as KnowledgeIcon,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useI18n } from "../../components/useI18n";
 
@@ -70,28 +76,127 @@ type View =
   | "gateway"
   | "mcp"
   | "sandboxtasks"
+  | "swarm"
+  | "knowledge"
   | "settings";
 
-const NAV_ITEMS: { view: View; icon: LucideIcon; labelKey: string; group: "work" | "configure" | "platform" }[] = [
-  { view: "chat", icon: ChatBubble, labelKey: "navigation.chat", group: "work" },
-  { view: "sessions", icon: Clock, labelKey: "navigation.sessions", group: "work" },
+const NAV_ITEMS: {
+  view: View;
+  icon: LucideIcon;
+  labelKey: string;
+  group: "work" | "configure" | "platform";
+}[] = [
+  {
+    view: "chat",
+    icon: ChatBubble,
+    labelKey: "navigation.chat",
+    group: "work",
+  },
+  {
+    view: "sessions",
+    icon: Clock,
+    labelKey: "navigation.sessions",
+    group: "work",
+  },
   { view: "agents", icon: Users, labelKey: "navigation.agents", group: "work" },
   { view: "soul", icon: Sparkles, labelKey: "navigation.soul", group: "work" },
-  { view: "plans", icon: PlansIcon, labelKey: "navigation.plans", group: "work" },
-  { view: "codegraph", icon: Network, labelKey: "navigation.codegraph", group: "work" },
-  { view: "everos", icon: Database, labelKey: "navigation.everos", group: "work" },
-  { view: "headroom", icon: Sparkles, labelKey: "navigation.headroom", group: "work" },
-  { view: "sandboxtasks", icon: Network, labelKey: "navigation.sandboxtasks", group: "work" },
-  { view: "models", icon: Layers, labelKey: "navigation.models", group: "configure" },
-  { view: "providers", icon: KeyRound, labelKey: "navigation.providers", group: "configure" },
-  { view: "skills", icon: Puzzle, labelKey: "navigation.skills", group: "configure" },
-  { view: "memory", icon: Brain, labelKey: "navigation.memory", group: "configure" },
-  { view: "tools", icon: Wrench, labelKey: "navigation.tools", group: "configure" },
-  { view: "workspace", icon: Search, labelKey: "navigation.workspace", group: "configure" },
-  { view: "schedules", icon: Timer, labelKey: "navigation.schedules", group: "configure" },
-  { view: "gateway", icon: Signal, labelKey: "navigation.gateway", group: "platform" },
+  {
+    view: "plans",
+    icon: PlansIcon,
+    labelKey: "navigation.plans",
+    group: "work",
+  },
+  {
+    view: "codegraph",
+    icon: Network,
+    labelKey: "navigation.codegraph",
+    group: "work",
+  },
+  {
+    view: "everos",
+    icon: Database,
+    labelKey: "navigation.everos",
+    group: "work",
+  },
+  {
+    view: "headroom",
+    icon: Sparkles,
+    labelKey: "navigation.headroom",
+    group: "work",
+  },
+  {
+    view: "sandboxtasks",
+    icon: Network,
+    labelKey: "navigation.sandboxtasks",
+    group: "work",
+  },
+  {
+    view: "swarm",
+    icon: SwarmIcon,
+    labelKey: "navigation.swarm",
+    group: "work",
+  },
+  {
+    view: "knowledge",
+    icon: KnowledgeIcon,
+    labelKey: "navigation.knowledge",
+    group: "work",
+  },
+  {
+    view: "models",
+    icon: Layers,
+    labelKey: "navigation.models",
+    group: "configure",
+  },
+  {
+    view: "providers",
+    icon: KeyRound,
+    labelKey: "navigation.providers",
+    group: "configure",
+  },
+  {
+    view: "skills",
+    icon: Puzzle,
+    labelKey: "navigation.skills",
+    group: "configure",
+  },
+  {
+    view: "memory",
+    icon: Brain,
+    labelKey: "navigation.memory",
+    group: "configure",
+  },
+  {
+    view: "tools",
+    icon: Wrench,
+    labelKey: "navigation.tools",
+    group: "configure",
+  },
+  {
+    view: "workspace",
+    icon: Search,
+    labelKey: "navigation.workspace",
+    group: "configure",
+  },
+  {
+    view: "schedules",
+    icon: Timer,
+    labelKey: "navigation.schedules",
+    group: "configure",
+  },
+  {
+    view: "gateway",
+    icon: Signal,
+    labelKey: "navigation.gateway",
+    group: "platform",
+  },
   { view: "mcp", icon: Cable, labelKey: "navigation.mcp", group: "platform" },
-  { view: "settings", icon: SettingsIcon, labelKey: "navigation.settings", group: "platform" },
+  {
+    view: "settings",
+    icon: SettingsIcon,
+    labelKey: "navigation.settings",
+    group: "platform",
+  },
 ];
 
 const LEGAL_STATUS_POINTS = [
@@ -157,9 +262,10 @@ function Layout({
   const [runtimeBannerDismissed, setRuntimeBannerDismissed] = useState(false);
   // MCP sidebar badge — shows enabled/total next to the MCP nav item.
   // null means "unknown / not loaded yet"; 0 is a real value.
-  const [mcpCount, setMcpCount] = useState<{ enabled: number; total: number } | null>(
-    null,
-  );
+  const [mcpCount, setMcpCount] = useState<{
+    enabled: number;
+    total: number;
+  } | null>(null);
 
   // Fetch MCP status once on mount so the sidebar badge can show
   // enabled/total at a glance. Re-fetched after a successful
@@ -439,22 +545,25 @@ function Layout({
         <nav className="sidebar-nav" aria-label="Platform navigation">
           <div className="nav-group">
             <p className="nav-group-label">{t("navigation.group.work")}</p>
-            {NAV_ITEMS.filter((n) => n.group === "work").map(({ view: v, icon: Icon, labelKey }) =>
-              renderNavItem(v, Icon, labelKey),
+            {NAV_ITEMS.filter((n) => n.group === "work").map(
+              ({ view: v, icon: Icon, labelKey }) =>
+                renderNavItem(v, Icon, labelKey),
             )}
           </div>
 
           <div className="nav-group">
             <p className="nav-group-label">{t("navigation.group.configure")}</p>
-            {NAV_ITEMS.filter((n) => n.group === "configure").map(({ view: v, icon: Icon, labelKey }) =>
-              renderNavItem(v, Icon, labelKey),
+            {NAV_ITEMS.filter((n) => n.group === "configure").map(
+              ({ view: v, icon: Icon, labelKey }) =>
+                renderNavItem(v, Icon, labelKey),
             )}
           </div>
 
           <div className="nav-group nav-group-platform">
             <p className="nav-group-label">{t("navigation.group.platform")}</p>
-            {NAV_ITEMS.filter((n) => n.group === "platform").map(({ view: v, icon: Icon, labelKey }) =>
-              renderNavItem(v, Icon, labelKey),
+            {NAV_ITEMS.filter((n) => n.group === "platform").map(
+              ({ view: v, icon: Icon, labelKey }) =>
+                renderNavItem(v, Icon, labelKey),
             )}
           </div>
         </nav>
@@ -590,10 +699,7 @@ function Layout({
 
         {visitedViews.has("providers") && (
           <div style={paneStyle("providers")}>
-            <Providers
-              profile={activeProfile}
-              visible={view === "providers"}
-            />
+            <Providers profile={activeProfile} visible={view === "providers"} />
           </div>
         )}
 
@@ -669,6 +775,18 @@ function Layout({
           </div>
         )}
 
+        {visitedViews.has("swarm") && (
+          <div style={paneStyle("swarm")}>
+            <Swarm />
+          </div>
+        )}
+
+        {visitedViews.has("knowledge") && (
+          <div style={paneStyle("knowledge")}>
+            <Knowledge />
+          </div>
+        )}
+
         {visitedViews.has("settings") && (
           <div style={paneStyle("settings")}>
             <Settings profile={activeProfile} />
@@ -686,19 +804,26 @@ function Layout({
             >
               <div className="legal-modal-header">
                 <div>
-                  <p className="legal-modal-eyebrow">Cubecloud legal boundary</p>
+                  <p className="legal-modal-eyebrow">
+                    Cubecloud legal boundary
+                  </p>
                   <h2 id="legal-modal-title" className="legal-modal-title">
                     Copyright, license, and clean-room status
                   </h2>
                 </div>
-                <button className="btn-ghost" type="button" onClick={closeLegalModal}>
+                <button
+                  className="btn-ghost"
+                  type="button"
+                  onClick={closeLegalModal}
+                >
                   Close
                 </button>
               </div>
 
               <div className="legal-modal-body">
                 <div className="legal-modal-callout">
-                  The current root LICENSE still governs inherited code. The way out is path-by-path replacement, not relabeling.
+                  The current root LICENSE still governs inherited code. The way
+                  out is path-by-path replacement, not relabeling.
                 </div>
 
                 <section className="legal-modal-section">
