@@ -10,14 +10,14 @@
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
 
-## Latest release: **v2.10.78**
+## Latest release: **v2.10.79**
 
 Download the Windows installer from the
-[v2.10.78 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78):
+[v2.10.79 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.79):
 
-- `cubecloud-agent-desktop-2.10.78-setup.exe` (NSIS one-click installer)
-- `cubecloud-agent-desktop-2.10.78-portable.exe` (single-file portable)
-- `cubecloud-agent-desktop-2.10.78-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
+- `cubecloud-agent-desktop-2.10.79-setup.exe` (NSIS one-click installer)
+- `cubecloud-agent-desktop-2.10.79-portable.exe` (single-file portable)
+- `cubecloud-agent-desktop-2.10.79-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
 
 v2.10.78 is the **architectural foundation** release: Swarm multi-agent
 collaboration screen (dispatch read-only subagents, live SVG topology
@@ -29,7 +29,7 @@ memory service, auto-compaction, run queue, and subagent infrastructure.
 3 competitive gaps closed (IM channels, agent swarm, knowledge vault).
 Full i18n parity across 8 locales (27/27 files, 0 drift). 1383 tests pass.
 See
-[`agent-desktop/changelogs/2.10.78.md`](agent-desktop/changelogs/2.10.78.md)
+[`agent-desktop/changelogs/2.10.79.md`](agent-desktop/changelogs/2.10.79.md)
 for the full changelog. v0.6.0 and v0.6.1 are marked pre-release on
 GitHub and should not be used — they were built from the retired
 `apps/desktop-shell/` wrapper tree.
@@ -93,13 +93,13 @@ surface exposed in the sidebar) lives at
 Cubecloud is for teams that want the convenience of a desktop product
 without giving up the control surface of a self-directed stack.
 
-| Outcome | How Cubecloud gets there |
-|---|---|
-| Faster first useful session | A prelaunch bundle seeds the desktop with 3 user-visible skills (`cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`), a starter kanban board with 5 example tasks, and a default-models registry. The working tools, agents, skills, schedules, memory, persona, knowledge-graph, and file-management surfaces are all enabled from day one — the user can start operating immediately instead of staring at an empty shell. |
-| Lower operating cost | Local-first lanes handle drafting, retrieval, orchestration, and iteration on already-paid hardware; remote frontier models stay optional. |
-| Lower vendor risk | Runtime choice and provider choice are separate decisions, so a model or vendor change is a reconfiguration event instead of a rewrite event. |
-| More reproducible operator workflows | Skills, schedules, provider definitions, and state live in inspectable files, SQLite, and explicit IPC surfaces rather than in a hosted black box. |
-| Cleaner procurement and legal review | Cubecloud-original work is available under AGPL-3.0-or-later, Apache-2.0, or MIT, while inherited framework code remains MIT and documented path-by-path. |
+| Outcome                              | How Cubecloud gets there                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Faster first useful session          | A prelaunch bundle seeds the desktop with 3 user-visible skills (`cubecloud-persona`, `cubecloud-onboarding`, `cubegraph-code-intel`), a starter kanban board with 5 example tasks, and a default-models registry. The working tools, agents, skills, schedules, memory, persona, knowledge-graph, and file-management surfaces are all enabled from day one — the user can start operating immediately instead of staring at an empty shell. |
+| Lower operating cost                 | Local-first lanes handle drafting, retrieval, orchestration, and iteration on already-paid hardware; remote frontier models stay optional.                                                                                                                                                                                                                                                                                                    |
+| Lower vendor risk                    | Runtime choice and provider choice are separate decisions, so a model or vendor change is a reconfiguration event instead of a rewrite event.                                                                                                                                                                                                                                                                                                 |
+| More reproducible operator workflows | Skills, schedules, provider definitions, and state live in inspectable files, SQLite, and explicit IPC surfaces rather than in a hosted black box.                                                                                                                                                                                                                                                                                            |
+| Cleaner procurement and legal review | Cubecloud-original work is available under AGPL-3.0-or-later, Apache-2.0, or MIT, while inherited framework code remains MIT and documented path-by-path.                                                                                                                                                                                                                                                                                     |
 
 ## Why local-first wins
 
@@ -107,14 +107,14 @@ Local-first here is not a marketing adjective. It changes where the
 control plane lives, how costs accumulate, and how much of the system a
 team can inspect when something goes wrong.
 
-| Decision area | Hosted wrapper default | Cubecloud local-first model |
-|---|---|---|
-| Control plane | Vendor account, vendor UI, vendor retention loop | Native desktop under the local user's control |
-| Cost shape | Seat fee + token fee + wrapper economics | Local hardware for routine work, remote spend only where it adds value |
-| State and provenance | History and orchestration live primarily in the hosted product | Prompts, skills, schedules, and memory remain inspectable and reproducible |
-| Runtime change | Often means switching products or accepting vendor abstraction limits | Runtime picker keeps the operating surface stable while runtimes evolve |
-| Provider change | Usually vendor-first, sometimes BYOK second | Provider layer is explicit and separate from runtime choice |
-| Failure recovery | Wait for vendor fixes or inspect partial logs | Inspect local state, logs, config, and IPC boundaries directly |
+| Decision area        | Hosted wrapper default                                                | Cubecloud local-first model                                                |
+| -------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Control plane        | Vendor account, vendor UI, vendor retention loop                      | Native desktop under the local user's control                              |
+| Cost shape           | Seat fee + token fee + wrapper economics                              | Local hardware for routine work, remote spend only where it adds value     |
+| State and provenance | History and orchestration live primarily in the hosted product        | Prompts, skills, schedules, and memory remain inspectable and reproducible |
+| Runtime change       | Often means switching products or accepting vendor abstraction limits | Runtime picker keeps the operating surface stable while runtimes evolve    |
+| Provider change      | Usually vendor-first, sometimes BYOK second                           | Provider layer is explicit and separate from runtime choice                |
+| Failure recovery     | Wait for vendor fixes or inspect partial logs                         | Inspect local state, logs, config, and IPC boundaries directly             |
 
 **BYOK is a procurement control. Local-first is an operating model.**
 BYOK changes whose bill arrives. Local-first changes how much billable
@@ -163,12 +163,12 @@ Cubecloud is not trying to be the best cloud copilot, the best vendor CLI,
 or the best demo app template. It is aimed at a different buyer: the team
 that cares most about control, portability, and unit economics.
 
-| Market option | Strong at | Constraint | Cubecloud position |
-|---|---|---|---|
-| Cloud IDE copilots such as Cursor or GitHub Copilot agents | Fast hosted coding loops and deep IDE assistance | Cloud-default state, seat economics, and a more vendor-centric control plane | Cubecloud centers a local desktop operator and keeps runtimes, providers, and skill assets swappable |
-| Single-vendor CLIs such as Claude Code or Codex CLI | Strong terminal-native loops for a specific vendor stack | Terminal-first UX and narrower runtime portability | Cubecloud offers a GUI-first control plane with a portable runtime and provider model |
-| Reference repos and quickstarts | Learning, demos, and fast prototyping | Not an opinionated operating surface or long-lived operator workflow | Cubecloud ships a real desktop workflow, a handbook, seeded context, and a documented provenance posture |
-| BYOK wrappers | Easier procurement conversations | Often still wrapper-seat economics on top of token costs | Cubecloud uses local-first design to reduce how much of the workflow needs paid remote inference at all |
+| Market option                                              | Strong at                                                | Constraint                                                                   | Cubecloud position                                                                                       |
+| ---------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Cloud IDE copilots such as Cursor or GitHub Copilot agents | Fast hosted coding loops and deep IDE assistance         | Cloud-default state, seat economics, and a more vendor-centric control plane | Cubecloud centers a local desktop operator and keeps runtimes, providers, and skill assets swappable     |
+| Single-vendor CLIs such as Claude Code or Codex CLI        | Strong terminal-native loops for a specific vendor stack | Terminal-first UX and narrower runtime portability                           | Cubecloud offers a GUI-first control plane with a portable runtime and provider model                    |
+| Reference repos and quickstarts                            | Learning, demos, and fast prototyping                    | Not an opinionated operating surface or long-lived operator workflow         | Cubecloud ships a real desktop workflow, a handbook, seeded context, and a documented provenance posture |
+| BYOK wrappers                                              | Easier procurement conversations                         | Often still wrapper-seat economics on top of token costs                     | Cubecloud uses local-first design to reduce how much of the workflow needs paid remote inference at all  |
 
 The strategic point is simple: many competitors optimize for **vendor
 depth**. Cubecloud optimizes for **operator control**.
@@ -193,12 +193,14 @@ That is the enterprise story: not "trust us," but "inspect the stack."
 The desktop experience is built from three cooperating layers:
 
 **Core runtime layer**
+
 - **State layer** - [`agent-desktop/src/main/agentControlPlane.ts`](agent-desktop/src/main/agentControlPlane.ts) owns profiles, sessions, models, providers, skills, memory, schedules, and kanban state.
 - **Runtime orchestration** - [`docs/RUNTIME_ORCHESTRATION_PLAN.md`](docs/RUNTIME_ORCHESTRATION_PLAN.md) describes Hermes as the current lane, IronClaw as a current gateway-handoff lane, and OpenClaw as an optional future lane.
 - **Provider layer** - [`agent-desktop/src/main/providerDiscovery.ts`](agent-desktop/src/main/providerDiscovery.ts) keeps model-provider selection separate from runtime selection.
 - **Skills harness** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) applies the skill layer around outgoing requests.
 
 **Integrated support surfaces** (optional, user-initiated)
+
 - **Swarm** — multi-agent collaboration screen for dispatching read-only subagents (max 5 concurrent) with a live SVG topology graph. [`packages/platform-core/src/swarm.ts`](packages/platform-core/src/swarm.ts)
 - **Knowledge Vault** — editable Markdown knowledge base with full-text search. [`packages/platform-core/src/knowledge-vault.ts`](packages/platform-core/src/knowledge-vault.ts)
 - **IM Channels** — interface for connecting the agent to enterprise IM platforms (Feishu, DingTalk, WeCom). [`packages/platform-core/src/channel.ts`](packages/platform-core/src/channel.ts)
@@ -206,6 +208,7 @@ The desktop experience is built from three cooperating layers:
 - **EverOS sidecar** - [`docs/EVEROS-SIDECAR.md`](docs/EVEROS-SIDECAR.md) explains the optional memory and harness sidecar lifecycle.
 
 **User-managed third-party applications**
+
 - The desktop can connect to tools the operator already uses — for example Open WebUI, OpenCode, Warp ADE, VS Code, Ollama, LM-Studio, Odysseus, ComfyUI, or Open Design. These are not bundled, not required, and can be added or removed by the user.
 
 ### Conceptual model (V2.10.35)

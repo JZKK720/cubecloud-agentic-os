@@ -1,7 +1,7 @@
 {
   "name": "cubecloud-agentic-os",
   "private": true,
-  "version": "2.10.78",
+  "version": "2.10.79",
   "description": "Desktop-first agentic operating system shell for Cubecloud",
   "workspaces": [
     "packages/*"

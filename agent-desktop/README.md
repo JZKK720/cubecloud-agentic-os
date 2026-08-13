@@ -16,7 +16,7 @@ choice**, **skills**, **memory**, **schedules**, and **optional code
 intelligence** — without coupling the workflow to a hosted wrapper or
 a single-vendor CLI.
 
-**Latest release: [v2.10.78](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78)** —
+**Latest release: [v2.10.79](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.79)** —
 Swarm multi-agent collaboration screen, Knowledge Vault markdown editor, IM channel interface (Feishu/DingTalk/WeCom), harness adapter framework, provider router, tool policy, memory service, auto-compaction, run queue, and subagent infrastructure.
 
 ## What the user sees
@@ -183,12 +183,12 @@ The full per-skill breakdown is in the monorepo README under
 
 ## Install
 
-The latest stable installer is **v2.10.78**, published at
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78>.
+The latest stable installer is **v2.10.79**, published at
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.79>.
 Older releases are listed on the
 [Releases page](https://github.com/JZKK720/cubecloud-agentic-os/releases).
 v0.6.0 and v0.6.1 are marked pre-release because they were built
-from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.78
+from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.79
 or later**.
 
 ### Prerequisites
@@ -213,8 +213,8 @@ access — the desktop prompts for the admin password upfront.
 ### Windows
 
 Download
-`cubecloud-agent-desktop-2.10.78-setup.exe` from the
-[v2.10.78 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78)
+`cubecloud-agent-desktop-2.10.79-setup.exe` from the
+[v2.10.79 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.79)
 and run it. The NSIS installer is one-click per-user and registers
 `cubecloud-agent-desktop` in Windows Programs and Features.
 
@@ -225,7 +225,7 @@ and run it. The NSIS installer is one-click per-user and registers
 > for the OEM-build path that includes a corporate certificate.
 
 For an installer-free option, download
-`cubecloud-agent-desktop-2.10.78-portable.exe` instead — single-file
+`cubecloud-agent-desktop-2.10.79-portable.exe` instead — single-file
 portable that runs without an install step.
 
 ### macOS / Linux

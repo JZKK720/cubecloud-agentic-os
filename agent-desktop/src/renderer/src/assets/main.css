@@ -6322,6 +6322,7 @@ select:focus-visible {
 }
 
 /* Skills loading */
+.skills-loading {
   flex: 1;
   display: flex;
   align-items: center;

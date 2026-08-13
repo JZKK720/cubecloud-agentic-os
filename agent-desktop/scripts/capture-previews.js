@@ -71,12 +71,14 @@ async function clickTab(page, label) {
     .getByRole("button", { name: new RegExp(`^${escapeRegExp(label)}$`) })
     .first();
   if (await exact.count()) {
-    await exact.click({ timeout: 5000 });
+    await exact.scrollIntoViewIfNeeded({ timeout: 3000 });
+    await exact.click({ timeout: 10000 });
     return true;
   }
   const fallback = scope.getByText(label, { exact: true }).first();
   if (await fallback.count()) {
-    await fallback.click({ timeout: 5000 });
+    await fallback.scrollIntoViewIfNeeded({ timeout: 3000 });
+    await fallback.click({ timeout: 10000 });
     return true;
   }
   return false;
