@@ -31,6 +31,7 @@ import {
   type ChatMessage as MiddlewareChatMessage,
 } from "./chat-middleware";
 import { createHarnessRegistry } from "./harnesses/registry";
+import { createKnowledgeVault } from "@cubecloud/platform-core";
 import {
   getApiServerKey,
   getConnectionConfig,
@@ -878,6 +879,19 @@ function sendMessageViaApi(
     messages.unshift({ role: "system", content: hiddenFragment });
   }
 
+  // Knowledge Vault (G3.7): search the vault for keywords from the
+  // user's message and inject matching results as a system message.
+  // This gives the agent access to the user's knowledge base during
+  // conversations without the user having to manually reference it.
+  try {
+    const vaultResults = searchVaultForContext(message);
+    if (vaultResults) {
+      messages.unshift({ role: "system", content: vaultResults });
+    }
+  } catch {
+    // Vault search failure must never break the chat path.
+  }
+
   // Session id: always send via `X-Hermes-Session-Id` so the gateway
   // doesn't fall back to its `_derive_chat_session_id` fingerprint —
   // sha256(system_prompt + first_user_message)[:16] — which collides
@@ -1717,6 +1731,49 @@ let apiServerAvailable: boolean | null = null; // cached after first check
 // The registry reads config on each resolve, so it picks up
 // runtime provider changes without needing a restart.
 let _harnessRegistry: ReturnType<typeof createHarnessRegistry> | null = null;
+
+// Knowledge Vault instance for context injection (G3.7).
+// Lazy-initialized on first use. The vault is populated by the
+// Knowledge screen IPC handlers.
+let _vaultForContext: ReturnType<typeof createKnowledgeVault> | null = null;
+
+/** Search the knowledge vault for keywords from the user's message.
+ *  Returns a system prompt fragment with matching results, or null
+ *  if no results or no vault exists. */
+function searchVaultForContext(userMessage: string): string | null {
+  if (!_vaultForContext) {
+    _vaultForContext = createKnowledgeVault();
+  }
+
+  // Extract keywords from the user's message (simple tokenization)
+  const keywords = userMessage
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 4) // only meaningful words
+    .slice(0, 3); // limit to 3 keywords to avoid over-searching
+
+  if (keywords.length === 0) return null;
+
+  // Search with the first keyword (most likely to be relevant)
+  const results = _vaultForContext.search(keywords[0]);
+  if (results.length === 0) return null;
+
+  // Take top 3 results and format as a system prompt fragment
+  const topResults = results.slice(0, 3);
+  const lines = [
+    "## Knowledge Vault context",
+    "",
+    "The following entries from the user's knowledge vault may be relevant to this conversation:",
+    "",
+    ...topResults.map(
+      (r) =>
+        `- **${r.fileName}** (score: ${r.score}): ${r.snippet.slice(0, 150)}`,
+    ),
+  ];
+
+  return lines.join("\n");
+}
 
 export async function sendMessage(
   message: string,
