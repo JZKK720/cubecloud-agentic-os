@@ -11,4 +11,5 @@ export default {
   noAgentsHint: "Dispatch a task above to spawn a read-only subagent with fresh context.",
   moreAgents: "+{{count}} more agents",
   messageFlow: "Message Flow",
+  topology: "Topology",
 } as const;

@@ -1,5 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useI18n } from "../../components/useI18n";
+import TopologyGraph, {
+  type TopologyNode,
+  type TopologyEdge,
+} from "./TopologyGraph";
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -84,6 +88,29 @@ function Swarm(): React.JSX.Element {
       a.status !== "terminated" && a.status !== "done" && a.status !== "failed",
   ).length;
 
+  // Topology graph data (G2.3)
+  const topologyNodes: TopologyNode[] = useMemo(
+    () => [
+      { id: "main", label: "Main Agent", status: "running", isMain: true },
+      ...agents.map((a) => ({
+        id: a.id,
+        label: a.message.slice(0, 20),
+        status: a.status,
+      })),
+    ],
+    [agents],
+  );
+
+  const topologyEdges: TopologyEdge[] = useMemo(
+    () =>
+      agents.map((a) => ({
+        from: "main",
+        to: a.id,
+        active: a.status === "running",
+      })),
+    [agents],
+  );
+
   // Status colors matching existing patterns
   const statusColor = (status: string): string => {
     switch (status) {
@@ -139,6 +166,14 @@ function Swarm(): React.JSX.Element {
           {t("swarm.dispatch")}
         </button>
       </div>
+
+      {/* Topology graph — visual swarm state (G2.3) */}
+      {agents.length > 0 && (
+        <div className="swarm-topology-section">
+          <div className="swarm-topology-title">{t("swarm.topology")}</div>
+          <TopologyGraph nodes={topologyNodes} edges={topologyEdges} />
+        </div>
+      )}
 
       {/* Agent list — visible wins (i-have-adhd principle) */}
       <div className="swarm-agents">
