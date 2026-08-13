@@ -15,6 +15,7 @@
 **What it is:** Local-first AI microkernel runtime (MIT, Python/SQLite, ~13k LOC). The knowledge base is a side effect of its file-indexing pipeline.
 
 **Adoptable patterns:**
+
 1. **`vec_cosine()` SQLite scalar function** — register cosine similarity as a SQLite custom function so vector search becomes a SQL expression. Portable to `better-sqlite3` in Electron.
 2. **FTS5 query sanitization** — two-pass approach: try raw FTS5 query, fall back to literal token extraction on parser error.
 3. **MEMORY.md prompt-inlined index** — single Markdown file inlined into the agent's system prompt every turn, capped at 4000 chars.
@@ -29,6 +30,7 @@
 **What it is:** Daemon-centric multi-agent platform bridging IM platforms to AI coding agents (Apache-2.0, TypeScript, pnpm monorepo). Supports Slack, Telegram, Discord, Feishu/Lark.
 
 **Adoptable patterns:**
+
 1. **`NormalizedPlatformMessage` schema** — transport-neutral zod schema with DM/group, threads, attachments, mentions, triggers. Directly adoptable.
 2. **`PlatformConnection` interface** — Layer-1 contract (`start`/`stop`/`getChannelInfo`/`listMembers`/`downloadFile`). Clean abstraction for any IM platform.
 3. **Strategy table pattern** — `Map<string, Strategy>` with fail-closed defaults eliminates `switch(platform)` branching.
@@ -44,6 +46,7 @@
 **What it is:** Bilingual HTML design skill (MIT) that turns an AI agent into a designer who works in HTML — prototypes, slides, animations, infographics, design critiques.
 
 **Adoptable patterns for G2/G3:**
+
 1. **Three-direction hard gate** — any new visual design must produce 3 differentiated direction drafts before execution. Prevents AI slop.
 2. **Anti-AI-slop banlist** — explicit banlist: purple gradients, emoji icons, rounded cards with left border accent, Inter/Roboto as display fonts.
 3. **Brand asset protocol** — 5-step flow: ask → search → download → verify →固化 as `brand-spec.md`.
@@ -58,6 +61,7 @@
 **What it is:** Output-formatting skill (MIT) that reshapes AI agent responses for ADHD readers — action-first, low-friction communication.
 
 **Adoptable UX principles for G2 Agent Swarm UI:**
+
 1. **Lead with the next action** — swarm UI should surface "what to do next" first, not buried in logs.
 2. **Restate state every turn** — topology graph always shows current state (busy/done/failed) without requiring user to remember.
 3. **Number multi-step tasks** — show "Step 2 of 5: research phase" not just a tree of agents.
@@ -73,6 +77,7 @@
 The kit has **20+ design/UX skills** already available: `frontend-ui-engineering`, `baseline-ui`, `improve-ui`, `fixing-accessibility`, `create-design-md`, `design-md-library` (74 DESIGN.md files), `impeccable-*` (6 design methodology skills), `hallmark`, `taste-skill`, `brand-discovery`, `planning-and-task-breakdown`, `spec-driven-development`, `mcp-builder`, `api-and-interface-design`, `knowledge-ops`, `archify`, `scheduler`.
 
 **Skill gaps to fill:**
+
 - **agent-swarm-orchestration** — no skill covers multi-agent coordination, A2A protocol, or swarm topology
 - **knowledge-vault** — `knowledge-ops` is close but focuses on MCP/vector stores, not Obsidian-compatible vault design
 - **im-channel-integration** — pure engineering, not a transferable skill

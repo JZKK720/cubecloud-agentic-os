@@ -85,7 +85,11 @@ function Knowledge(): React.JSX.Element {
       setNewFileName("");
       setShowNewFile(false);
       await loadFiles();
-      const newFile = { name: fileName, content: `# ${name}\n\n`, updatedAt: Date.now() };
+      const newFile = {
+        name: fileName,
+        content: `# ${name}\n\n`,
+        updatedAt: Date.now(),
+      };
       handleSelectFile(newFile);
       setIsEditing(true);
     } catch {
@@ -205,7 +209,9 @@ function Knowledge(): React.JSX.Element {
           {files.length === 0 ? (
             <div className="knowledge-empty">
               <p className="knowledge-empty-text">{t("knowledge.noFiles")}</p>
-              <p className="knowledge-empty-hint">{t("knowledge.noFilesHint")}</p>
+              <p className="knowledge-empty-hint">
+                {t("knowledge.noFilesHint")}
+              </p>
             </div>
           ) : (
             files.map((file) => (
@@ -274,7 +280,9 @@ function Knowledge(): React.JSX.Element {
             </>
           ) : (
             <div className="knowledge-editor-empty">
-              <p className="knowledge-empty-text">{t("knowledge.selectFile")}</p>
+              <p className="knowledge-empty-text">
+                {t("knowledge.selectFile")}
+              </p>
             </div>
           )}
         </div>

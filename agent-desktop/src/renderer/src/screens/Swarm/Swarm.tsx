@@ -60,7 +60,9 @@ function Swarm(): React.JSX.Element {
       setNewTask("");
       await refresh();
     } catch (err) {
-      setError((err as Error).message?.slice(0, 200) || t("swarm.createFailed"));
+      setError(
+        (err as Error).message?.slice(0, 200) || t("swarm.createFailed"),
+      );
     }
   }
 
@@ -78,17 +80,23 @@ function Swarm(): React.JSX.Element {
   const visibleAgents = agents.slice(0, 5);
   const hasMore = agents.length > 5;
   const activeCount = agents.filter(
-    (a) => a.status !== "terminated" && a.status !== "done" && a.status !== "failed",
+    (a) =>
+      a.status !== "terminated" && a.status !== "done" && a.status !== "failed",
   ).length;
 
   // Status colors matching existing patterns
   const statusColor = (status: string): string => {
     switch (status) {
-      case "running": return "var(--accent-text)";
-      case "done": return "var(--success)";
-      case "failed": return "var(--error)";
-      case "terminated": return "var(--text-muted)";
-      default: return "var(--warning)";
+      case "running":
+        return "var(--accent-text)";
+      case "done":
+        return "var(--success)";
+      case "failed":
+        return "var(--error)";
+      case "terminated":
+        return "var(--text-muted)";
+      default:
+        return "var(--warning)";
     }
   };
 
@@ -109,11 +117,7 @@ function Swarm(): React.JSX.Element {
         </div>
       </div>
 
-      {error && (
-        <div className="swarm-error">
-          {error}
-        </div>
-      )}
+      {error && <div className="swarm-error">{error}</div>}
 
       {/* Task input — action-first (i-have-adhd principle) */}
       <div className="swarm-input-row">
