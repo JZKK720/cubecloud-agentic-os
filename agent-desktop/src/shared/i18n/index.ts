@@ -199,6 +199,22 @@ import sandboxTasksPtBr from "./locales/pt-BR/sandboxTasks";
 import sandboxTasksPtPt from "./locales/pt-PT/sandboxTasks";
 import sandboxTasksZhCn from "./locales/zh-CN/sandboxTasks";
 import sandboxTasksZhTw from "./locales/zh-TW/sandboxTasks";
+import swarmEn from "./locales/en/swarm";
+import swarmEs from "./locales/es/swarm";
+import swarmId from "./locales/id/swarm";
+import swarmJa from "./locales/ja/swarm";
+import swarmPtBr from "./locales/pt-BR/swarm";
+import swarmPtPt from "./locales/pt-PT/swarm";
+import swarmZhCn from "./locales/zh-CN/swarm";
+import swarmZhTw from "./locales/zh-TW/swarm";
+import knowledgeEn from "./locales/en/knowledge";
+import knowledgeEs from "./locales/es/knowledge";
+import knowledgeId from "./locales/id/knowledge";
+import knowledgeJa from "./locales/ja/knowledge";
+import knowledgePtBr from "./locales/pt-BR/knowledge";
+import knowledgePtPt from "./locales/pt-PT/knowledge";
+import knowledgeZhCn from "./locales/zh-CN/knowledge";
+import knowledgeZhTw from "./locales/zh-TW/knowledge";
 import workspaceEs from "./locales/es/workspace";
 import workspaceId from "./locales/id/workspace";
 import workspaceJa from "./locales/ja/workspace";
@@ -227,6 +243,8 @@ export const resources = {
       agents: agentsEn,
       headroom: headroomEn,
       sandboxTasks: sandboxTasksEn,
+      swarm: swarmEn,
+      knowledge: knowledgeEn,
       soul: soulEn,
       memory: memoryEn,
       install: installEn,
@@ -254,6 +272,8 @@ export const resources = {
       skills: skillsEs,
       headroom: headroomEs,
       sandboxTasks: sandboxTasksEs,
+      swarm: swarmEs,
+      knowledge: knowledgeEs,
       gateway: gatewayEs,
       agents: agentsEs,
       soul: soulEs,
@@ -289,6 +309,8 @@ export const resources = {
       workspace: workspaceId,
       headroom: headroomId,
       sandboxTasks: sandboxTasksId,
+      swarm: swarmId,
+      knowledge: knowledgeId,
       plans: plansId,
       mcp: mcpId,
     },
@@ -318,6 +340,8 @@ export const resources = {
       workspace: workspaceZhCn,
       headroom: headroomZhCn,
       sandboxTasks: sandboxTasksZhCn,
+      swarm: swarmZhCn,
+      knowledge: knowledgeZhCn,
       plans: plansZhCn,
       mcp: mcpZhCn,
     },
@@ -349,6 +373,8 @@ export const resources = {
       mcp: mcpZhTw,
       headroom: headroomZhTw,
       sandboxTasks: sandboxTasksZhTw,
+      swarm: swarmZhTw,
+      knowledge: knowledgeZhTw,
     },
   },
   "pt-BR": {
@@ -378,6 +404,8 @@ export const resources = {
       mcp: mcpPtBr,
       headroom: headroomPtBr,
       sandboxTasks: sandboxTasksPtBr,
+      swarm: swarmPtBr,
+      knowledge: knowledgePtBr,
     },
   },
   "pt-PT": {
@@ -407,6 +435,8 @@ export const resources = {
       sandboxTasks: sandboxTasksPtPt,
       plans: plansPtPt,
       mcp: mcpPtPt,
+      swarm: swarmPtPt,
+      knowledge: knowledgePtPt,
     },
   },
   ja: {
@@ -436,6 +466,8 @@ export const resources = {
       mcp: mcpJa,
       headroom: headroomJa,
       sandboxTasks: sandboxTasksJa,
+      swarm: swarmJa,
+      knowledge: knowledgeJa,
     },
   },
 } satisfies Resource;

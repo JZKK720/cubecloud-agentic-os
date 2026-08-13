@@ -14,6 +14,11 @@ export default {
   supportedBridgesHint:
     "As pontes compatíveis permanecem desativadas até optar por ativá-las. Ative apenas os fornecedores e as faixas de mensagens que esta máquina deve expor.",
   platformsEnabled: "{{enabled}}/{{total}} plataformas ativadas",
+  imChannels: {
+    title: "Canais de IM",
+    summary:
+      "Ligue o agente a plataformas de IM empresariais. As mensagens dos clientes de IM são encaminhadas para o runtime ativo; as respostas são enviadas de volta à conversa.",
+  },
   group: {
     messaging: "Mensagens",
     eastern: "Plataformas asiáticas",

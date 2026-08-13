@@ -14,6 +14,11 @@ export default {
   supportedBridgesHint:
     "受支持的桥接在您主动启用前保持禁用。仅启用此机器应暴露的提供者与消息通道。",
   platformsEnabled: "{{enabled}}/{{total}} 个平台已启用",
+  imChannels: {
+    title: "IM 渠道",
+    summary:
+      "将智能体连接到企业 IM 平台。IM 客户端的消息会路由到活跃的运行时；回复会发送回对话中。",
+  },
   group: {
     messaging: "即时通讯",
     eastern: "东方平台",

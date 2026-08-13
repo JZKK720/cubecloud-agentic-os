@@ -1,0 +1,15 @@
+export default {
+  title: "Enxame",
+  subtitle: "Colaboração multi-agente — despache subagentes somente leitura para pesquisa e análise",
+  active: "ativo",
+  clear: "Limpar",
+  maxReached: "Máximo de 5 subagentes simultâneos. Encerre um antes de criar outro.",
+  createFailed: "Falha ao criar subagente.",
+  taskPlaceholder: "Descreva uma tarefa de pesquisa para um subagente…",
+  dispatch: "Despachar",
+  noAgents: "Nenhum subagente em execução",
+  noAgentsHint: "Despache uma tarefa acima para criar um subagente somente leitura com contexto novo.",
+  moreAgents: "+{{count}} agentes a mais",
+  messageFlow: "Fluxo de mensagens",
+  topology: "Topologia",
+} as const;

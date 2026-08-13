@@ -1,0 +1,15 @@
+export default {
+  title: "Enjambre",
+  subtitle: "Colaboración multi-agente — despacha subagentes de solo lectura para investigación y análisis",
+  active: "activo",
+  clear: "Limpiar",
+  maxReached: "Máximo 5 subagentes concurrentes. Termina uno antes de crear otro.",
+  createFailed: "Error al crear el subagente.",
+  taskPlaceholder: "Describe una tarea de investigación para un subagente…",
+  dispatch: "Despachar",
+  noAgents: "Sin subagentes en ejecución",
+  noAgentsHint: "Despacha una tarea arriba para crear un subagente de solo lectura con contexto nuevo.",
+  moreAgents: "+{{count}} agentes más",
+  messageFlow: "Flujo de mensajes",
+  topology: "Topología",
+} as const;

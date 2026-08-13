@@ -14,6 +14,11 @@ export default {
   supportedBridgesHint:
     "受支援的橋接在您主動啟用前保持停用。僅啟用此機器應暴露的供應商與訊息通道。",
   platformsEnabled: "{{enabled}}/{{total}} 個平台已啟用",
+  imChannels: {
+    title: "IM 管道",
+    summary:
+      "將智慧型代理人連接到企業 IM 平台。IM 客戶端的訊息會路由到活躍的執行階段；回覆會發送回對話中。",
+  },
   group: {
     messaging: "即時通訊",
     eastern: "東方平台",

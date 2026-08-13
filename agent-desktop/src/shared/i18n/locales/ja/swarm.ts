@@ -1,0 +1,15 @@
+export default {
+  title: "スウォーム",
+  subtitle: "マルチエージェント連携 — 調査・分析用の読み取り専用サブエージェントをディスパッチ",
+  active: "実行中",
+  clear: "クリア",
+  maxReached: "同時実行サブエージェントは最大5件です。別の作成前に1件終了してください。",
+  createFailed: "サブエージェントの作成に失敗しました。",
+  taskPlaceholder: "サブエージェントの調査タスクを入力…",
+  dispatch: "ディスパッチ",
+  noAgents: "実行中のサブエージェントはありません",
+  noAgentsHint: "上記からタスクをディスパッチすると、新しいコンテキストの読み取り専用サブエージェントが起動します。",
+  moreAgents: "+{{count}} エージェント",
+  messageFlow: "メッセージフロー",
+  topology: "トポロジー",
+} as const;

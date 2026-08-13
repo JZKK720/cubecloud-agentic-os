@@ -1,0 +1,15 @@
+export default {
+  title: "集群",
+  subtitle: "多智能体协作 — 派发只读子智能体进行调研与分析",
+  active: "运行中",
+  clear: "清空",
+  maxReached: "最多 5 个并发子智能体。请先终止一个再创建新的。",
+  createFailed: "创建子智能体失败。",
+  taskPlaceholder: "描述一个调研任务给子智能体…",
+  dispatch: "派发",
+  noAgents: "没有运行中的子智能体",
+  noAgentsHint: "在上方派发任务即可生成一个拥有全新上下文的只读子智能体。",
+  moreAgents: "+{{count}} 个智能体",
+  messageFlow: "消息流",
+  topology: "拓扑图",
+} as const;

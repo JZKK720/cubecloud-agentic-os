@@ -4693,7 +4693,7 @@ select:focus-visible {
   color: var(--warning);
   background: rgba(245, 158, 11, 0.1);
   padding: 6px 10px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   width: fit-content;
 }
 
@@ -4705,7 +4705,7 @@ select:focus-visible {
 .settings-hermes-result {
   font-size: 12px;
   padding: 6px 10px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
 }
 
 .settings-hermes-result--spaced {
@@ -4820,7 +4820,7 @@ select:focus-visible {
   line-height: 1.5;
   color: var(--text-secondary);
   background: var(--bg-tertiary);
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   padding: 12px;
   max-height: 200px;
   overflow-y: auto;
@@ -5071,7 +5071,7 @@ select:focus-visible {
 /* Platform cards in Gateway */
 .settings-platform-card {
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   padding: 14px 16px;
   margin-bottom: 10px;
 }

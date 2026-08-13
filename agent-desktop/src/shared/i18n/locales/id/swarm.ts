@@ -1,0 +1,15 @@
+export default {
+  title: "Swar",
+  subtitle: "Kolaborasi multi-agen — kirim subagen read-only untuk riset dan analisis",
+  active: "aktif",
+  clear: "Bersihkan",
+  maxReached: "Maksimum 5 subagen concurrent. Hentikan satu sebelum membuat yang lain.",
+  createFailed: "Gagal membuat subagen.",
+  taskPlaceholder: "Deskripsikan tugas riset untuk subagen…",
+  dispatch: "Kirim",
+  noAgents: "Tidak ada subagen berjalan",
+  noAgentsHint: "Kirim tugas di atas untuk memunculkan subagen read-only dengan konteks baru.",
+  moreAgents: "+{{count}} agen lagi",
+  messageFlow: "Alur Pesan",
+  topology: "Topologi",
+} as const;

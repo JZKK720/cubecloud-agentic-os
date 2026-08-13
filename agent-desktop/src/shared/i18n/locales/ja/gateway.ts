@@ -15,6 +15,11 @@ export default {
   supportedBridgesHint:
     "対応ブリッジはオプトインするまで無効のままです。このマシンが公開すべきプロバイダーとメッセージングレーンのみを有効化してください。",
   platformsEnabled: "{{enabled}}/{{total}} 件のプラットフォームが有効",
+  imChannels: {
+    title: "IMチャネル",
+    summary:
+      "エージェントをエンタープライズIMプラットフォームに接続します。IMクライアントからのメッセージはアクティブなランタイムにルーティングされ、返信が会話に送り返されます。",
+  },
   group: {
     messaging: "メッセージング",
     eastern: "東アジアのプラットフォーム",

@@ -15,6 +15,11 @@ export default {
   supportedBridgesHint:
     "Jembatan yang didukung tetap dinonaktifkan sampai Anda mengaktifkannya. Aktifkan hanya penyedia dan jalur pesan yang harus diekspos oleh mesin ini.",
   platformsEnabled: "{{enabled}}/{{total}} platform diaktifkan",
+  imChannels: {
+    title: "Saluran IM",
+    summary:
+      "Hubungkan agen ke platform IM perusahaan. Pesan dari klien IM dirutekan ke runtime aktif; balasan dikirim kembali ke percakapan.",
+  },
   group: {
     messaging: "Pesan",
     eastern: "Platform Asia",

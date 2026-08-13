@@ -15,6 +15,11 @@ export default {
   supportedBridgesHint:
     "Los puentes compatibles permanecen deshabilitados hasta que optes por ellos. Habilita solo los proveedores y los carriles de mensajería que esta máquina deba exponer.",
   platformsEnabled: "{{enabled}}/{{total}} plataformas habilitadas",
+  imChannels: {
+    title: "Canales de IM",
+    summary:
+      "Conecta el agente a plataformas de mensajería empresarial. Los mensajes de los clientes de IM se enrutan al runtime activo; las respuestas se envían de vuelta a la conversación.",
+  },
   group: {
     messaging: "Mensajería",
     eastern: "Plataformas asiáticas",
