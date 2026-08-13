@@ -422,7 +422,23 @@ console.log('    en: ' + enMd.length + ' bytes');
 console.log('    zh: ' + zhMd.length + ' bytes');
 
 console.log('  building combined HTML ...');
-const html = buildHtml(enMd, zhMd);
+let html = buildHtml(enMd, zhMd);
+
+// Rewrite relative image paths to absolute file:// URLs so headless Chrome
+// can resolve them when rendering the PDF. The HTML is written to
+// .review-extras/pdf-build/ but images are referenced relative to the
+// repo root (e.g. agent-desktop/previews/welcome.png). Without this
+// rewrite, Chrome resolves them against the HTML file location and
+// every screenshot is broken in the PDF.
+const rootUrl = 'file:///' + ROOT.replace(/\\/g, '/');
+html = html.replace(
+  /src="(?!https?:\/\/|file:\/\/|data:)([^"]+)"/g,
+  (match, relPath) => {
+    const absPath = path.resolve(ROOT, relPath).replace(/\\/g, '/');
+    return 'src="file:///' + absPath + '"';
+  },
+);
+
 fs.mkdirSync(path.dirname(TMP_HTML), { recursive: true });
 fs.writeFileSync(TMP_HTML, html, 'utf8');
 console.log('    html: ' + html.length + ' bytes (written to ' + TMP_HTML + ')');
