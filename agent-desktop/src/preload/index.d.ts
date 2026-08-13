@@ -774,6 +774,56 @@ interface HermesAPI {
   listThreadOutputs: (threadId: string, profile?: string) => Promise<ThreadOutputs>;
   ensureThreadOutputDir: (threadId: string, profile?: string) => Promise<string>;
   clearThreadOutputs: (threadId: string, profile?: string) => Promise<boolean>;
+
+  // Swarm (G2)
+  listSwarmAgents: () => Promise<Array<{
+    id: string;
+    message: string;
+    status: string;
+    tools: string[];
+    createdAt: number;
+    result?: string;
+    error?: string;
+  }>>;
+  getSwarmMessages: () => Promise<Array<{
+    id: string;
+    fromId: string;
+    toId: string;
+    text: string;
+    timestamp: number;
+  }>>;
+  createSwarmSubagent: (message: string) => Promise<{
+    id: string;
+    message: string;
+    status: string;
+    tools: string[];
+    createdAt: number;
+  } | null>;
+  terminateSwarmAgent: (id: string) => Promise<boolean>;
+  clearSwarm: () => Promise<void>;
+
+  // Knowledge Vault (G3)
+  listVaultFiles: () => Promise<Array<{
+    name: string;
+    content: string;
+    createdAt: number;
+    updatedAt: number;
+  }>>;
+  readVaultFile: (name: string) => Promise<{
+    name: string;
+    content: string;
+    createdAt: number;
+    updatedAt: number;
+  } | null>;
+  addVaultFile: (name: string, content: string) => Promise<boolean>;
+  updateVaultFile: (name: string, content: string) => Promise<boolean>;
+  deleteVaultFile: (name: string) => Promise<boolean>;
+  searchVault: (query: string) => Promise<Array<{
+    fileName: string;
+    score: number;
+    snippet: string;
+  }>>;
+
   listRuntimeProviders: () => Promise<RuntimeProviderSnapshot[]>;
   runRuntimeProviderAction: (
     providerId: RuntimeProviderId,

@@ -446,6 +446,32 @@ const hermesAPI = {
   clearThreadOutputs: (threadId: string, profile?: string): Promise<boolean> =>
     ipcRenderer.invoke("clear-thread-outputs", threadId, profile),
 
+  // Swarm (G2)
+  listSwarmAgents: (): Promise<Array<{ id: string; message: string; status: string; tools: string[]; createdAt: number; result?: string; error?: string }>> =>
+    ipcRenderer.invoke("list-swarm-agents"),
+  getSwarmMessages: (): Promise<Array<{ id: string; fromId: string; toId: string; text: string; timestamp: number }>> =>
+    ipcRenderer.invoke("get-swarm-messages"),
+  createSwarmSubagent: (message: string): Promise<{ id: string; message: string; status: string; tools: string[]; createdAt: number } | null> =>
+    ipcRenderer.invoke("create-swarm-subagent", message),
+  terminateSwarmAgent: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke("terminate-swarm-agent", id),
+  clearSwarm: (): Promise<void> =>
+    ipcRenderer.invoke("clear-swarm"),
+
+  // Knowledge Vault (G3)
+  listVaultFiles: (): Promise<Array<{ name: string; content: string; createdAt: number; updatedAt: number }>> =>
+    ipcRenderer.invoke("list-vault-files"),
+  readVaultFile: (name: string): Promise<{ name: string; content: string; createdAt: number; updatedAt: number } | null> =>
+    ipcRenderer.invoke("read-vault-file", name),
+  addVaultFile: (name: string, content: string): Promise<boolean> =>
+    ipcRenderer.invoke("add-vault-file", name, content),
+  updateVaultFile: (name: string, content: string): Promise<boolean> =>
+    ipcRenderer.invoke("update-vault-file", name, content),
+  deleteVaultFile: (name: string): Promise<boolean> =>
+    ipcRenderer.invoke("delete-vault-file", name),
+  searchVault: (query: string): Promise<Array<{ fileName: string; score: number; snippet: string }>> =>
+    ipcRenderer.invoke("search-vault", query),
+
   listRuntimeProviders: (): Promise<RuntimeProviderSnapshot[]> =>
     ipcRenderer.invoke("list-runtime-providers"),
 

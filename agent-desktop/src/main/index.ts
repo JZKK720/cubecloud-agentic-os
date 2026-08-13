@@ -67,6 +67,12 @@ import {
 } from "./output-aggregation";
 import { discoverDockerRuntimes } from "./docker-runtimes";
 import {
+  createSwarmManager,
+  createKnowledgeVault,
+  type SwarmManager,
+  type KnowledgeVault,
+} from "@cubecloud/platform-core";
+import {
   loadEverOsConfig,
   saveEverOsConfig,
   pingEverOs,
@@ -979,6 +985,70 @@ function setupIPC(): void {
   );
   ipcMain.handle("clear-thread-outputs", (_e, threadId: string, profile?: string) =>
     clearThreadOutputs(threadId, profile),
+  );
+
+  // ── Swarm IPC handlers (G2) ─────────────────────────────
+  // In-process swarm manager instance. Uses the harness registry
+  // to dispatch subagent turns.
+  let _swarmManager: SwarmManager | null = null;
+  function getSwarmManager(): SwarmManager {
+    if (!_swarmManager) {
+      // Lazy-init: create a minimal harness router for the swarm.
+      // In production, this should use the same registry as the
+      // middleware chain. For now, a simple stub.
+      const stubRouter = {
+        async *runTurn(_sessionId: string, input: { message: string }) {
+          yield { type: "text" as const, content: `subagent result: ${input.message}` };
+          yield { type: "done" as const, sessionId: _sessionId };
+        },
+        getActiveProvider: () => "hermes",
+        async close() {},
+      };
+      _swarmManager = createSwarmManager(stubRouter);
+    }
+    return _swarmManager;
+  }
+
+  ipcMain.handle("list-swarm-agents", () => getSwarmManager().listAgents());
+  ipcMain.handle("get-swarm-messages", () => getSwarmManager().getMessages());
+  ipcMain.handle("create-swarm-subagent", (_e, message: string) => {
+    const agent = getSwarmManager().createSubagent(message);
+    return agent;
+  });
+  ipcMain.handle("terminate-swarm-agent", (_e, id: string) =>
+    getSwarmManager().terminate(id),
+  );
+  ipcMain.handle("clear-swarm", () => {
+    getSwarmManager().clear();
+  });
+
+  // ── Knowledge Vault IPC handlers (G3) ────────────────────
+  // In-process knowledge vault instance. Files are stored in
+  // <profile>/vault/ as plain Markdown.
+  let _vault: KnowledgeVault | null = null;
+  function getVault(): KnowledgeVault {
+    if (!_vault) {
+      _vault = createKnowledgeVault();
+    }
+    return _vault;
+  }
+
+  ipcMain.handle("list-vault-files", () => getVault().listFiles());
+  ipcMain.handle("read-vault-file", (_e, name: string) =>
+    getVault().readFile(name),
+  );
+  ipcMain.handle("add-vault-file", (_e, name: string, content: string) => {
+    getVault().addFile(name, content);
+    return true;
+  });
+  ipcMain.handle("update-vault-file", (_e, name: string, content: string) =>
+    getVault().updateFile(name, content),
+  );
+  ipcMain.handle("delete-vault-file", (_e, name: string) =>
+    getVault().deleteFile(name),
+  );
+  ipcMain.handle("search-vault", (_e, query: string) =>
+    getVault().search(query),
   );
 
   ipcMain.handle("list-runtime-providers", () => listRuntimeProviders());
