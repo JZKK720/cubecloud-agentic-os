@@ -25,6 +25,9 @@ const tabScreens = [
   ["gateway.png", "Gateway"],
   ["mcp.png", "MCP"],
   ["settings.png", "Settings"],
+  // V2.10.78 — new screens added after the original set.
+  ["swarm.png", "Swarm"],
+  ["knowledge.png", "Knowledge"],
   // Renamed-and-renumbered screens. The order is: existing flow
   // tabs, then the new runtime / platform tabs that were embedded
   // during the rollout. Keeping new screens last means a tab click

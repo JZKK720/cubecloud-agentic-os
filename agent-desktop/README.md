@@ -6,8 +6,8 @@
 
 > **This is the install + features doc for the desktop binary.** The
 > agentic-OS monorepo README lives at
-> [`../README.md`](../README.md); the master index for *what this is,
-> why it is the way it is, and where to look next* lives at
+> [`../README.md`](../README.md); the master index for _what this is,
+> why it is the way it is, and where to look next_ lives at
 > [`../docs/HANDBOOK.md`](../docs/HANDBOOK.md).
 
 Cubecloud Agent Desktop is a native Electron desktop that gives one
@@ -16,9 +16,8 @@ choice**, **skills**, **memory**, **schedules**, and **optional code
 intelligence** — without coupling the workflow to a hosted wrapper or
 a single-vendor CLI.
 
-**Latest release: [v2.10.77](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77)** —
-MCP registry overhaul: Firecrawl replaces Tavily (keyless tier, self-hostable),
-SkillSpector + OpenKnowledge added, Qdrant defaults to local Docker (no API key).
+**Latest release: [v2.10.78](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78)** —
+Swarm multi-agent collaboration screen, Knowledge Vault markdown editor, IM channel interface (Feishu/DingTalk/WeCom), harness adapter framework, provider router, tool policy, memory service, auto-compaction, run queue, and subagent infrastructure.
 
 ## What the user sees
 
@@ -41,6 +40,15 @@ SkillSpector + OpenKnowledge added, Qdrant defaults to local Docker (no API key)
   and state.
 - **Sandbox Tasks** screen (V2.10.65) for IronClaw WASM-sandbox
   workflows.
+- **Swarm** screen (V2.10.78) — dispatch read-only subagents for
+  research and analysis, with a live SVG topology graph showing agent
+  status and message flow. Max 5 concurrent subagents.
+- **Knowledge Vault** screen (V2.10.78) — user-visible, editable
+  Markdown knowledge base with full-text search. Files are plain
+  Markdown, editable in-app with a live preview.
+- **IM Channels** (V2.10.78) — interface for connecting the agent to
+  enterprise IM platforms (Feishu, DingTalk, WeCom). Inbound messages
+  route to the active runtime; replies go back to the conversation.
 - **Optional sidecars** — CodeGraph (semantic code intelligence),
   EverOS (memory + harness), Headroom (context compression) — all
   user-initiated, not silently installed.
@@ -105,6 +113,10 @@ major operator surface exposed in the sidebar.
 <td width="50%" align="center"><b>MCP</b><br/><img width="100%" alt="MCP" src="previews/mcp.png" /></td>
 <td width="50%" align="center"><b>Settings</b><br/><img width="100%" alt="Settings" src="previews/settings.png" /></td>
 </tr>
+<tr>
+<td width="50%" align="center"><b>Swarm (multi-agent)</b><br/><img width="100%" alt="Swarm" src="previews/swarm.png" /></td>
+<td width="50%" align="center"><b>Knowledge Vault</b><br/><img width="100%" alt="Knowledge" src="previews/knowledge.png" /></td>
+</tr>
 </table>
 
 ## Skills ecosystem — 3 layers
@@ -122,25 +134,25 @@ moment the user installs the desktop.
 
 **5 new operator-targeted skills (V2.10.71):**
 
-| Skill | When the operator should use it |
-|---|---|
-| `first-5-minutes` | "I'm new", "where do I start", "just installed" — walks through picking a runtime, attaching a provider, running the first chat |
-| `runtime-attach` | "Runtime won't connect", "ECONNREFUSED 127.0.0.1:8642" — the 5 things to check when an attach fails (Hermes / IronClaw / OpenClaw) |
-| `models-page-scan` | "Models page doesn't see my Ollama", "health dot is red" — loopback scan, health probe, LAN opt-in |
-| `sidecar-setup` | "How do I install CodeGraph / EverOS / Headroom" — the 3 optional sidecars, opt-in per profile |
-| `session-search` | "Find my chat about X", "search past sessions" — SQLite FTS5 patterns, what it can and can't do |
+| Skill              | When the operator should use it                                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `first-5-minutes`  | "I'm new", "where do I start", "just installed" — walks through picking a runtime, attaching a provider, running the first chat    |
+| `runtime-attach`   | "Runtime won't connect", "ECONNREFUSED 127.0.0.1:8642" — the 5 things to check when an attach fails (Hermes / IronClaw / OpenClaw) |
+| `models-page-scan` | "Models page doesn't see my Ollama", "health dot is red" — loopback scan, health probe, LAN opt-in                                 |
+| `sidecar-setup`    | "How do I install CodeGraph / EverOS / Headroom" — the 3 optional sidecars, opt-in per profile                                     |
+| `session-search`   | "Find my chat about X", "search past sessions" — SQLite FTS5 patterns, what it can and can't do                                    |
 
 **23 existing skills (kept from the runtime integration):**
 
-| Category | Skills |
-|---|---|
-| Runtime patterns | `hermes-agent`, `hermes-imports`, `openclaw-persona-forge` |
+| Category              | Skills                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| Runtime patterns      | `hermes-agent`, `hermes-imports`, `openclaw-persona-forge`                                    |
 | Engineering practices | `karpathy-guidelines`, `careful`, `continuous-learning-v2`, `learn`, `eval-harness`, `freeze` |
-| Electron-specific | `electron-pro`, `windows-desktop-e2e` |
-| Design and quality | `design-taste-frontend` |
-| Workflow | `plan-tune`, `wiki-conventions`, `kanban-task-shape`, `diff-overlay-writer` |
-| Meta-harnesses | `agent-harness-construction`, `autonomous-agent-harness`, `agentic-engineering` |
-| Tooling | `markitdown-mcp`, `office-hours`, `investigate` |
+| Electron-specific     | `electron-pro`, `windows-desktop-e2e`                                                         |
+| Design and quality    | `design-taste-frontend`                                                                       |
+| Workflow              | `plan-tune`, `wiki-conventions`, `kanban-task-shape`, `diff-overlay-writer`                   |
+| Meta-harnesses        | `agent-harness-construction`, `autonomous-agent-harness`, `agentic-engineering`               |
+| Tooling               | `markitdown-mcp`, `office-hours`, `investigate`                                               |
 
 The user can install any of these with one click. The 5 new
 operator-targeted skills are flagged in the Browse tab with
@@ -171,12 +183,12 @@ The full per-skill breakdown is in the monorepo README under
 
 ## Install
 
-The latest stable installer is **v2.10.77**, published at
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77>.
+The latest stable installer is **v2.10.78**, published at
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78>.
 Older releases are listed on the
 [Releases page](https://github.com/JZKK720/cubecloud-agentic-os/releases).
 v0.6.0 and v0.6.1 are marked pre-release because they were built
-from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.77
+from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.78
 or later**.
 
 ### Prerequisites
@@ -184,11 +196,11 @@ or later**.
 The desktop binary is self-contained — **no prerequisites are required
 to install it.** On first launch, the user picks a connection mode:
 
-| Mode | What the desktop needs | What it installs automatically |
-|---|---|---|
-| **Local** (default) | Nothing pre-installed | Runs the Hermes runtime installer, which bootstraps: Git, uv, Python 3.12+, Node.js, ripgrep, ffmpeg, Playwright + Chromium |
-| **Remote** | Nothing | Just needs the gateway URL — no local install |
-| **SSH tunnel** | Nothing | Just needs SSH credentials + the remote gateway URL |
+| Mode                | What the desktop needs | What it installs automatically                                                                                              |
+| ------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Local** (default) | Nothing pre-installed  | Runs the Hermes runtime installer, which bootstraps: Git, uv, Python 3.12+, Node.js, ripgrep, ffmpeg, Playwright + Chromium |
+| **Remote**          | Nothing                | Just needs the gateway URL — no local install                                                                               |
+| **SSH tunnel**      | Nothing                | Just needs SSH credentials + the remote gateway URL                                                                         |
 
 **Windows:** PowerShell must be available (pre-installed on all modern
 Windows). The installer is not code-signed — SmartScreen will warn on
@@ -201,8 +213,8 @@ access — the desktop prompts for the admin password upfront.
 ### Windows
 
 Download
-`cubecloud-agent-desktop-2.10.77-setup.exe` from the
-[v2.10.77 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77)
+`cubecloud-agent-desktop-2.10.78-setup.exe` from the
+[v2.10.78 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78)
 and run it. The NSIS installer is one-click per-user and registers
 `cubecloud-agent-desktop` in Windows Programs and Features.
 
@@ -213,7 +225,7 @@ and run it. The NSIS installer is one-click per-user and registers
 > for the OEM-build path that includes a corporate certificate.
 
 For an installer-free option, download
-`cubecloud-agent-desktop-2.10.77-portable.exe` instead — single-file
+`cubecloud-agent-desktop-2.10.78-portable.exe` instead — single-file
 portable that runs without an install step.
 
 ### macOS / Linux
@@ -229,29 +241,29 @@ store credentials in the repo settings.
 These are **not** required for a working desktop. The desktop discovers
 them via PATH lookup and degrades gracefully if missing:
 
-| Component | Purpose | Install | Local-first? |
-|---|---|---|---|
-| **Docker** | Discover Hermes/IronClaw/OpenClaw runtime containers | [Docker Desktop](https://docker.com) | ✅ |
-| **IronClaw** | WASM-sandbox gateway runtime (3rd core runtime) | IronClaw's own installer | ✅ |
-| **OpenClaw** | Optional gateway runtime | `npm install -g openclaw@latest` | ✅ |
-| **CodeGraph** | Code-structure graph (optional sidecar) | Install `codegraph` binary on PATH | ✅ |
-| **EverOS** | Memory distill / cost watchdog / skill audit | `pip install everos` | ✅ |
-| **Headroom** | Context compression proxy + MCP | `pip install headroom-ai[proxy]` | ✅ |
-| **Ollama** | Local model server | [ollama.com](https://ollama.com) | ✅ |
-| **LM Studio** | Local model server | [lmstudio.ai](https://lmstudio.ai) | ✅ |
+| Component     | Purpose                                              | Install                              | Local-first? |
+| ------------- | ---------------------------------------------------- | ------------------------------------ | ------------ |
+| **Docker**    | Discover Hermes/IronClaw/OpenClaw runtime containers | [Docker Desktop](https://docker.com) | ✅           |
+| **IronClaw**  | WASM-sandbox gateway runtime (3rd core runtime)      | IronClaw's own installer             | ✅           |
+| **OpenClaw**  | Optional gateway runtime                             | `npm install -g openclaw@latest`     | ✅           |
+| **CodeGraph** | Code-structure graph (optional sidecar)              | Install `codegraph` binary on PATH   | ✅           |
+| **EverOS**    | Memory distill / cost watchdog / skill audit         | `pip install everos`                 | ✅           |
+| **Headroom**  | Context compression proxy + MCP                      | `pip install headroom-ai[proxy]`     | ✅           |
+| **Ollama**    | Local model server                                   | [ollama.com](https://ollama.com)     | ✅           |
+| **LM Studio** | Local model server                                   | [lmstudio.ai](https://lmstudio.ai)   | ✅           |
 
 ### MCP servers (enable on demand from the MCP screen)
 
-| MCP server | Purpose | Prerequisite | API key needed? |
-|---|---|---|---|
-| **Firecrawl** | Web scrape, crawl, search, extract | `npx -y firecrawl-mcp` (auto-download) | ❌ Keyless tier for scrape/search; key for crawl/extract |
-| **SkillSpector** | Security scanner for AI agent skills | `pip install 'skillspector[mcp]'` | ❌ Static analysis by default; LLM pass is opt-in |
-| **OpenKnowledge** | Markdown knowledge base + link graph | `npx -y @inkeep/open-knowledge mcp` | ❌ No key needed |
-| **Qdrant** | Vector search | `docker run -p 6333:6333 qdrant/qdrant` | ❌ Local Docker needs no key |
-| **Agent Reach** | Headless internet research (13+ platforms) | `pip install agent-reach[mcp]` | ❌ No key needed |
-| **GitHub** | GitHub repos, issues, PRs | `GITHUB_PERSONAL_ACCESS_TOKEN` | ✅ |
-| **Playwright** | Browser automation | `npx -y @playwright/mcp` | ❌ |
-| **Headroom (local)** | Context compression as MCP | Desktop must run Headroom sidecar | ❌ |
+| MCP server           | Purpose                                    | Prerequisite                            | API key needed?                                          |
+| -------------------- | ------------------------------------------ | --------------------------------------- | -------------------------------------------------------- |
+| **Firecrawl**        | Web scrape, crawl, search, extract         | `npx -y firecrawl-mcp` (auto-download)  | ❌ Keyless tier for scrape/search; key for crawl/extract |
+| **SkillSpector**     | Security scanner for AI agent skills       | `pip install 'skillspector[mcp]'`       | ❌ Static analysis by default; LLM pass is opt-in        |
+| **OpenKnowledge**    | Markdown knowledge base + link graph       | `npx -y @inkeep/open-knowledge mcp`     | ❌ No key needed                                         |
+| **Qdrant**           | Vector search                              | `docker run -p 6333:6333 qdrant/qdrant` | ❌ Local Docker needs no key                             |
+| **Agent Reach**      | Headless internet research (13+ platforms) | `pip install agent-reach[mcp]`          | ❌ No key needed                                         |
+| **GitHub**           | GitHub repos, issues, PRs                  | `GITHUB_PERSONAL_ACCESS_TOKEN`          | ✅                                                       |
+| **Playwright**       | Browser automation                         | `npx -y @playwright/mcp`                | ❌                                                       |
+| **Headroom (local)** | Context compression as MCP                 | Desktop must run Headroom sidecar       | ❌                                                       |
 
 ## How it works
 
@@ -281,11 +293,11 @@ arrives.
 
 ### Runtime providers (3)
 
-| Runtime | Role | Default port | Integration mode |
-|---|---|---|---|
-| **Hermes** | Default core runtime | 8642 | `native-core` |
-| **IronClaw** | WASM-sandbox gateway-handoff lane | 3231 | `optional-bridge` |
-| **OpenClaw** | Optional future lane | 18789 | `optional-runtime` |
+| Runtime      | Role                              | Default port | Integration mode   |
+| ------------ | --------------------------------- | ------------ | ------------------ |
+| **Hermes**   | Default core runtime              | 8642         | `native-core`      |
+| **IronClaw** | WASM-sandbox gateway-handoff lane | 3231         | `optional-bridge`  |
+| **OpenClaw** | Optional future lane              | 18789        | `optional-runtime` |
 
 Hermes and IronClaw are the current lanes. OpenClaw is wired through
 the runtime picker but ships as an optional attach target.

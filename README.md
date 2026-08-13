@@ -10,22 +10,26 @@
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
 
-## Latest release: **v2.10.77**
+## Latest release: **v2.10.78**
 
 Download the Windows installer from the
-[v2.10.77 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.77):
+[v2.10.78 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.78):
 
-- `cubecloud-agent-desktop-2.10.77-setup.exe` (127 MB, NSIS one-click installer)
-- `cubecloud-agent-desktop-2.10.77-portable.exe` (127 MB, single-file portable)
-- `cubecloud-agent-desktop-2.10.77-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
+- `cubecloud-agent-desktop-2.10.78-setup.exe` (NSIS one-click installer)
+- `cubecloud-agent-desktop-2.10.78-portable.exe` (single-file portable)
+- `cubecloud-agent-desktop-2.10.78-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
 
-v2.10.77 is the **Tier 1 add-on + onboarding restructure** release: voice
-STT/TTS (Handy local-first + cloud fallback), Raven runtime activation
-(port 8855, 4th runtime), agent eval framework (5 starter cases), skill
-sharing via git URL, SkillSpector hard gate, 140 user-global skills now
-visible in Browse tab, full i18n parity across 8 locales (25/25 files, 0
-drift). `verify:bundle` 7/7 PASS. See
-[`agent-desktop/changelogs/2.10.77.md`](agent-desktop/changelogs/2.10.77.md)
+v2.10.78 is the **architectural foundation** release: Swarm multi-agent
+collaboration screen (dispatch read-only subagents, live SVG topology
+graph), Knowledge Vault (editable Markdown knowledge base with full-text
+search), IM channel interface (Feishu/DingTalk/WeCom), harness adapter
+framework, provider router, tool policy + command screening, scoped
+memory service, auto-compaction, run queue, and subagent infrastructure.
+10 architectural modules adopted from openworker, qm, and skills-bundle-kit.
+3 competitive gaps closed (IM channels, agent swarm, knowledge vault).
+Full i18n parity across 8 locales (27/27 files, 0 drift). 1383 tests pass.
+See
+[`agent-desktop/changelogs/2.10.78.md`](agent-desktop/changelogs/2.10.78.md)
 for the full changelog. v0.6.0 and v0.6.1 are marked pre-release on
 GitHub and should not be used — they were built from the retired
 `apps/desktop-shell/` wrapper tree.
@@ -60,7 +64,7 @@ The short version:
 
 A curated subset of the desktop surfaces — what a first-time reader
 should see before reading the architecture sections. Every image is a
-full-page capture from the current desktop build. The full 22-image
+full-page capture from the current desktop build. The full 24-image
 gallery (onboarding, runtime discovery, and every major operator
 surface exposed in the sidebar) lives at
 [`agent-desktop/README.md`](agent-desktop/README.md#preview).
@@ -73,6 +77,10 @@ surface exposed in the sidebar) lives at
 <tr>
 <td width="50%" align="center"><b>Chat</b><br/><img width="100%" alt="Chat" src="agent-desktop/previews/chat.png" /></td>
 <td width="50%" align="center"><b>Profiles &amp; agents</b><br/><img width="100%" alt="Agents" src="agent-desktop/previews/agents.png" /></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>Swarm (multi-agent)</b><br/><img width="100%" alt="Swarm" src="agent-desktop/previews/swarm.png" /></td>
+<td width="50%" align="center"><b>Knowledge Vault</b><br/><img width="100%" alt="Knowledge" src="agent-desktop/previews/knowledge.png" /></td>
 </tr>
 <tr>
 <td width="50%" align="center"><b>Gateway (16 platforms)</b><br/><img width="100%" alt="Gateway" src="agent-desktop/previews/gateway.png" /></td>
@@ -191,6 +199,9 @@ The desktop experience is built from three cooperating layers:
 - **Skills harness** - [`agent-desktop/src/main/skills-harness.ts`](agent-desktop/src/main/skills-harness.ts) applies the skill layer around outgoing requests.
 
 **Integrated support surfaces** (optional, user-initiated)
+- **Swarm** — multi-agent collaboration screen for dispatching read-only subagents (max 5 concurrent) with a live SVG topology graph. [`packages/platform-core/src/swarm.ts`](packages/platform-core/src/swarm.ts)
+- **Knowledge Vault** — editable Markdown knowledge base with full-text search. [`packages/platform-core/src/knowledge-vault.ts`](packages/platform-core/src/knowledge-vault.ts)
+- **IM Channels** — interface for connecting the agent to enterprise IM platforms (Feishu, DingTalk, WeCom). [`packages/platform-core/src/channel.ts`](packages/platform-core/src/channel.ts)
 - **CodeGraph surface** - [`docs/CODEGRAPH-RUNTIME.md`](docs/CODEGRAPH-RUNTIME.md) explains the optional semantic code-intelligence path.
 - **EverOS sidecar** - [`docs/EVEROS-SIDECAR.md`](docs/EVEROS-SIDECAR.md) explains the optional memory and harness sidecar lifecycle.
 
