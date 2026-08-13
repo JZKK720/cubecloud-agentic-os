@@ -447,7 +447,7 @@ const hermesAPI = {
     ipcRenderer.invoke("clear-thread-outputs", threadId, profile),
 
   // Swarm (G2)
-  listSwarmAgents: (): Promise<Array<{ id: string; message: string; status: string; tools: string[]; createdAt: number; result?: string; error?: string }>> =>
+  listSwarmAgents: (): Promise<Array<{ id: string; message: string; status: "pending" | "running" | "done" | "failed" | "terminated"; tools: string[]; createdAt: number; result?: string; error?: string }>> =>
     ipcRenderer.invoke("list-swarm-agents"),
   getSwarmMessages: (): Promise<Array<{ id: string; fromId: string; toId: string; text: string; timestamp: number }>> =>
     ipcRenderer.invoke("get-swarm-messages"),

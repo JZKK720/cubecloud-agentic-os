@@ -10,7 +10,6 @@
 
 import {
   sendMessage,
-  ensureInitialized,
   type ChatCallbacks,
 } from "../hermes";
 import type {
@@ -40,8 +39,6 @@ export function createHermesHarness(): Harness {
     async *runTurn(
       input: HarnessTurnInput,
     ): AsyncIterable<HarnessTurnDelta> {
-      ensureInitialized();
-
       // Bridge the callback-based sendMessage to an async iterable.
       // We accumulate deltas in a queue and yield them as they arrive.
       const queue: HarnessTurnDelta[] = [];
@@ -89,8 +86,8 @@ export function createHermesHarness(): Harness {
         onToolProgress: undefined,
       };
 
-      // Call sendMessage — it returns a ChatHandle with abort()
-      const handle = sendMessage(
+      // Call sendMessage — it returns a Promise<ChatHandle> with abort()
+      const handlePromise = sendMessage(
         input.message,
         callbacks,
         undefined, // profile — use default
@@ -115,12 +112,9 @@ export function createHermesHarness(): Harness {
         yield queue.shift()!;
       }
 
-      // Clean up the handle
-      if (handle && typeof handle.abort === "function") {
-        // The turn is done — no need to abort, but keep the reference
-        // so the linter doesn't complain about unused variable.
-        void handle;
-      }
+      // Ensure the handle promise settles (avoids unhandled rejection).
+      // The turn is already done — no need to abort.
+      void handlePromise;
     },
 
     async resetSession(_sessionId: string): Promise<void> {

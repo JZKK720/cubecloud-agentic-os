@@ -110,7 +110,7 @@ export function createProviderRouter(
   const cache = new Map<string, ProviderClient>();
 
   function getClient(modelString: string): ProviderClient {
-    const { provider, model } = parseProviderPrefix(modelString);
+    const { provider } = parseProviderPrefix(modelString);
 
     // Check cache
     const cached = cache.get(provider);

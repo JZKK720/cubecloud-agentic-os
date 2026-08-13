@@ -779,7 +779,7 @@ interface HermesAPI {
   listSwarmAgents: () => Promise<Array<{
     id: string;
     message: string;
-    status: string;
+    status: "pending" | "running" | "done" | "failed" | "terminated";
     tools: string[];
     createdAt: number;
     result?: string;

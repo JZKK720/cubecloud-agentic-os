@@ -87,7 +87,6 @@ const FILE_RE = /(?:src|test|tests|lib|packages)\/[\w./-]+\.(?:ts|tsx|js|jsx|py|
  *  This is mechanical extraction — no LLM call. */
 export function extractWorkingState(history: TurnEntry[]): WorkingState {
   const pendingTodos: string[] = [];
-  const activeFiles: string[] = [];
   const fileSet = new Set<string>();
 
   for (const entry of history) {

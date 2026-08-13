@@ -157,6 +157,7 @@ export const ChatHeader = memo(function ChatHeader({
   hasMessages,
   contextFolder,
   showContextFolder,
+  pendingApprovals,
   worktreeVisible,
   onPickFolder,
   onClearFolder,
@@ -176,7 +177,7 @@ export const ChatHeader = memo(function ChatHeader({
             : t("chat.title")}
         </div>
         {usage && <UsageBadge usage={usage} />}
-        {pendingApprovals > 0 && (
+        {pendingApprovals != null && pendingApprovals > 0 && (
           <div
             className="chat-approval-badge"
             title={`${pendingApprovals} pending approval${pendingApprovals > 1 ? "s" : ""}`}
