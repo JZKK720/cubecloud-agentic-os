@@ -242,6 +242,10 @@ import {
 } from "./config";
 import { profileHome } from "./utils";
 import {
+  createApprovalInbox,
+  type ApprovalInbox,
+} from "./steering-inbox";
+import {
   listSessions,
   getSessionMessages,
   searchSessions,
@@ -1053,6 +1057,40 @@ function setupIPC(): void {
   );
   ipcMain.handle("search-vault", (_e, query: string) =>
     getVault().search(query),
+  );
+
+  // ── Approval Inbox IPC handlers (P8) ─────────────────────
+  // Human-in-the-loop approval for tool calls. When the agent calls a
+  // tool that requires approval (per tool policy rules), an entry is
+  // created in the inbox. The renderer polls for pending entries and
+  // shows an approval dialog. The user approves/denies, and the chat
+  // stream resumes or cancels accordingly.
+  let _approvalInbox: ApprovalInbox | null = null;
+  function getApprovalInbox(): ApprovalInbox {
+    if (!_approvalInbox) {
+      _approvalInbox = createApprovalInbox();
+    }
+    return _approvalInbox;
+  }
+
+  ipcMain.handle("approval-create", (_e, input: {
+    sessionId: string;
+    toolName: string;
+    command: string;
+    reason: string;
+    timeoutMs?: number;
+  }) => getApprovalInbox().create(input));
+  ipcMain.handle("approval-approve", (_e, id: string) =>
+    getApprovalInbox().approve(id),
+  );
+  ipcMain.handle("approval-deny", (_e, id: string) =>
+    getApprovalInbox().deny(id),
+  );
+  ipcMain.handle("approval-list", (_e, includeAll?: boolean) =>
+    getApprovalInbox().list(includeAll),
+  );
+  ipcMain.handle("approval-has-pending", () =>
+    getApprovalInbox().hasPending(),
   );
 
   ipcMain.handle("list-runtime-providers", () => listRuntimeProviders());

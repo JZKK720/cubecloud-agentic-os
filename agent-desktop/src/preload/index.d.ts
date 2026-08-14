@@ -824,6 +824,39 @@ interface HermesAPI {
     snippet: string;
   }>>;
 
+  // Approval Inbox (P8)
+  approvalCreate: (input: {
+    sessionId: string;
+    toolName: string;
+    command: string;
+    reason: string;
+    timeoutMs?: number;
+  }) => Promise<{
+    id: string;
+    sessionId: string;
+    toolName: string;
+    command: string;
+    reason: string;
+    status: string;
+    createdAt: number;
+    resolvedAt: number | null;
+    timeoutMs?: number;
+  }>;
+  approvalApprove: (id: string) => Promise<boolean>;
+  approvalDeny: (id: string) => Promise<boolean>;
+  approvalList: (includeAll?: boolean) => Promise<Array<{
+    id: string;
+    sessionId: string;
+    toolName: string;
+    command: string;
+    reason: string;
+    status: string;
+    createdAt: number;
+    resolvedAt: number | null;
+    timeoutMs?: number;
+  }>>;
+  approvalHasPending: () => Promise<boolean>;
+
   listRuntimeProviders: () => Promise<RuntimeProviderSnapshot[]>;
   runRuntimeProviderAction: (
     providerId: RuntimeProviderId,

@@ -58,6 +58,8 @@ function Chat({
   const [contextFolder, setContextFolder] = useState<string | null>(null);
   // Whether the worktree panel is visible (only applies when contextFolder is set)
   const [worktreeVisible, setWorktreeVisible] = useState<boolean>(true);
+  // Pending approval count for the chat header badge (P8)
+  const [pendingApprovals, setPendingApprovals] = useState(0);
   const dragCounter = useRef(0);
   const chatInputRef = useRef<ChatInputHandle>(null);
   const queueRef = useRef<QueuedMessage[]>([]);
@@ -71,6 +73,25 @@ function Chat({
     })();
     return (): void => {
       cancelled = true;
+    };
+  }, []);
+
+  // Poll for pending approvals (P8) — every 2s while chat is active
+  useEffect(() => {
+    let cancelled = false;
+    const poll = async (): Promise<void> => {
+      try {
+        const hasPending = await window.hermesAPI.approvalHasPending();
+        if (!cancelled) setPendingApprovals(hasPending ? 1 : 0);
+      } catch {
+        // IPC not available — silently skip
+      }
+    };
+    void poll();
+    const interval = setInterval(() => void poll(), 2000);
+    return (): void => {
+      cancelled = true;
+      clearInterval(interval);
     };
   }, []);
 
@@ -322,6 +343,7 @@ function Chat({
         hasMessages={messages.length > 0}
         contextFolder={contextFolder}
         showContextFolder={!remoteMode}
+        pendingApprovals={pendingApprovals}
         worktreeVisible={worktreeVisible}
         onPickFolder={handlePickFolder}
         onClearFolder={handleClearFolder}

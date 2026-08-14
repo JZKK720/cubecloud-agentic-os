@@ -472,6 +472,18 @@ const hermesAPI = {
   searchVault: (query: string): Promise<Array<{ fileName: string; score: number; snippet: string }>> =>
     ipcRenderer.invoke("search-vault", query),
 
+  // Approval Inbox (P8) — human-in-the-loop tool call approval
+  approvalCreate: (input: { sessionId: string; toolName: string; command: string; reason: string; timeoutMs?: number }): Promise<{ id: string; sessionId: string; toolName: string; command: string; reason: string; status: string; createdAt: number; resolvedAt: number | null; timeoutMs?: number }> =>
+    ipcRenderer.invoke("approval-create", input),
+  approvalApprove: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke("approval-approve", id),
+  approvalDeny: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke("approval-deny", id),
+  approvalList: (includeAll?: boolean): Promise<Array<{ id: string; sessionId: string; toolName: string; command: string; reason: string; status: string; createdAt: number; resolvedAt: number | null; timeoutMs?: number }>> =>
+    ipcRenderer.invoke("approval-list", includeAll),
+  approvalHasPending: (): Promise<boolean> =>
+    ipcRenderer.invoke("approval-has-pending"),
+
   listRuntimeProviders: (): Promise<RuntimeProviderSnapshot[]> =>
     ipcRenderer.invoke("list-runtime-providers"),
 

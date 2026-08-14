@@ -713,6 +713,13 @@ export interface ChatCallbacks {
   onDone: (sessionId?: string) => void;
   onError: (error: string) => void;
   onToolProgress?: (tool: string) => void;
+  /** Called when a tool call in the SSE stream requires human approval
+   *  (per the tool policy rules). The callback receives the tool name
+   *  and the command/parameters. The caller should create an approval
+   *  entry in the ApprovalInbox and wait for the user's decision before
+   *  allowing the tool to proceed. If the callback is not provided,
+   *  tool calls proceed without approval (backward compatibility). */
+  onToolApprovalRequired?: (toolName: string, command: string) => void;
   onUsage?: (usage: {
     promptTokens: number;
     completionTokens: number;
@@ -1242,12 +1249,25 @@ function sendMessageViaApi(
 
   /** Handle a custom SSE event (non-data lines with `event:` prefix). */
   function processCustomEvent(eventType: string, data: string): void {
-    if (eventType === "hermes.tool.progress" && cb.onToolProgress) {
+    if (eventType === "hermes.tool.progress") {
       try {
         const payload = JSON.parse(data);
         const label = payload.label || payload.tool || "";
         const emoji = payload.emoji || "";
-        cb.onToolProgress(emoji ? `${emoji} ${label}` : label);
+        if (cb.onToolProgress) {
+          cb.onToolProgress(emoji ? `${emoji} ${label}` : label);
+        }
+        // Fire approval callback if the tool requires it.
+        // The Hermes gateway can include `requires_approval: true` in
+        // the tool progress event when the tool matches an approval rule.
+        // The desktop creates an ApprovalInbox entry and waits for the
+        // user's decision. The gateway itself doesn't block — it's the
+        // desktop's responsibility to intercept and pause if needed.
+        if (payload.requires_approval && cb.onToolApprovalRequired) {
+          const toolName = payload.tool || label || "unknown";
+          const command = payload.command || payload.args || "";
+          cb.onToolApprovalRequired(toolName, command);
+        }
       } catch {
         /* malformed — skip */
       }
