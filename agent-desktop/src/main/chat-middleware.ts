@@ -235,7 +235,225 @@ export function createRuntimeRouteMiddleware(
 export const runtimeRouteMiddleware: BeforeModelMiddleware =
   createRuntimeRouteMiddleware();
 
-// ── Middleware 3: Reflection (after_model) ─────────────────
+// ── Middleware 3: Compaction (before_model) ────────────────
+//
+// Uses P5 auto-compaction to summarize old conversation entries when
+// the context approaches the model's token budget. Keeps recent
+// entries as-is; replaces old entries with a context_summary.
+// Degrades gracefully: if compaction is not needed or fails, the
+// messages pass through unchanged.
+
+import {
+  shouldCompact,
+  estimateTokens,
+  extractWorkingState,
+  pickBoundary,
+  type TurnEntry,
+} from "@cubecloud/platform-core";
+
+/** Default token budget if model info is unavailable. */
+const DEFAULT_TOKEN_BUDGET = 128_000;
+
+export function createCompactionMiddleware(
+  summaryFn?: (entries: TurnEntry[]) => Promise<string>,
+): BeforeModelMiddleware {
+  return async (ctx) => {
+    const { messages } = ctx;
+    if (messages.length < 6) {
+      return { messages, applied: false, label: "compaction:skip(too-short)" };
+    }
+
+    // Convert ChatMessage[] to TurnEntry[] for the compaction module
+    const history: TurnEntry[] = messages
+      .filter((m) => m.content && m.role !== "system")
+      .map((m) => ({
+        role: m.role as TurnEntry["role"],
+        content: m.content!,
+        timestamp: Date.now(),
+      }));
+
+    // Estimate budget from model name (rough heuristic)
+    const budget = ctx.model.includes("128k") ? 128_000
+      : ctx.model.includes("200k") ? 200_000
+      : ctx.model.includes("1m") || ctx.model.includes("1000k") ? 1_000_000
+      : DEFAULT_TOKEN_BUDGET;
+
+    if (!shouldCompact(history, budget)) {
+      return { messages, applied: false, label: "compaction:skip(below-threshold)" };
+    }
+
+    try {
+      const boundary = pickBoundary(history, budget);
+      if (boundary <= 0) {
+        return { messages, applied: false, label: "compaction:skip(no-boundary)" };
+      }
+
+      const workingState = extractWorkingState(history);
+      const oldEntries = history.slice(0, boundary);
+      const recentEntries = history.slice(boundary);
+
+      // Build summary — use provided summaryFn or mechanical extraction
+      let summary: string;
+      if (summaryFn) {
+        summary = await summaryFn(oldEntries);
+      } else {
+        // Mechanical summary (no LLM call) — just list working state
+        const parts: string[] = ["[Context Summary]"];
+        if (workingState.pendingTodos.length > 0) {
+          parts.push(`Pending: ${workingState.pendingTodos.map((t) => `[ ] ${t}`).join(", ")}`);
+        }
+        if (workingState.activeFiles.length > 0) {
+          parts.push(`Files: ${workingState.activeFiles.join(", ")}`);
+        }
+        parts.push(`Compacted ${oldEntries.length} entries.`);
+        summary = parts.join("\n");
+      }
+
+      // Rebuild messages: system + summary + recent entries
+      const systemMsgs = messages.filter((m) => m.role === "system");
+      const compacted: ChatMessage[] = [
+        ...systemMsgs,
+        { role: "user", content: summary },
+        ...recentEntries.map((e) => ({
+          role: e.role as ChatMessage["role"],
+          content: e.content,
+        })),
+      ];
+
+      const tokensBefore = history.reduce((s, e) => s + estimateTokens(e.content), 0);
+      const tokensAfter = compacted.reduce((s, m) => s + estimateTokens(m.content ?? ""), 0);
+
+      return {
+        messages: compacted,
+        applied: true,
+        label: "compaction:applied",
+        stats: {
+          tokensBefore,
+          tokensAfter,
+          entriesCompacted: oldEntries.length,
+        },
+      };
+    } catch {
+      return { messages, applied: false, label: "compaction:error" };
+    }
+  };
+}
+
+// ── Middleware 4: Memory inject (before_model) ─────────────
+//
+// Uses P4 memory service to recall relevant facts and inject them
+// into the system prompt. This gives the agent persistent memory
+// across conversations without modifying the gateway.
+// Degrades gracefully: if no memories or service unavailable, passes through.
+
+export function createMemoryInjectMiddleware(
+  recallFn?: () => Array<{ content: string; label: string }>,
+): BeforeModelMiddleware {
+  return async (ctx) => {
+    if (!recallFn) {
+      return { messages: ctx.messages, applied: false, label: "memory:skip(no-recall-fn)" };
+    }
+
+    try {
+      const memories = recallFn();
+      if (memories.length === 0) {
+        return { messages: ctx.messages, applied: false, label: "memory:skip(empty)" };
+      }
+
+      // Build a memory context block to prepend to the system message
+      const memoryBlock = memories
+        .map((m) => `- ${m.content}`)
+        .join("\n");
+      const memoryPrefix = `[Persistent Memory]\n${memoryBlock}\n[/Persistent Memory]\n\n`;
+
+      const messages = ctx.messages.map((m) => {
+        if (m.role === "system" && m.content) {
+          return { ...m, content: memoryPrefix + m.content };
+        }
+        return m;
+      });
+
+      // If no system message, prepend one
+      if (!messages.some((m) => m.role === "system")) {
+        messages.unshift({ role: "system", content: memoryPrefix.trim() });
+      }
+
+      return {
+        messages,
+        applied: true,
+        label: "memory:injected",
+        stats: { memoryCount: memories.length },
+      };
+    } catch {
+      return { messages: ctx.messages, applied: false, label: "memory:error" };
+    }
+  };
+}
+
+// ── Middleware 5: Tool policy screen (before_model) ────────
+//
+// Uses P3 tool policy to screen the user's message for commands that
+// require approval or should be denied. Does NOT block the message —
+// just annotates the context so the after_model chain or the approval
+// inbox can act on it. Degrades gracefully.
+
+import {
+  createCommandPolicy,
+  scannableCommand,
+  type CommandPolicyRule,
+} from "@cubecloud/platform-core";
+
+/** Default tool policy rules for the desktop. */
+const DEFAULT_TOOL_POLICY_RULES: CommandPolicyRule[] = [
+  // Deny destructive shell commands
+  { pattern: /\brm\s+-rf\s+\//i, decision: "deny", label: "deny:rm-rf-root" },
+  { pattern: /\bmkfs\./i, decision: "deny", label: "deny:mkfs" },
+  { pattern: /\bdd\s+if=.*of=\/dev\//i, decision: "deny", label: "deny:dd-to-device" },
+  // Require approval for package installs
+  { pattern: /\bnpm\s+install\b|\bpip\s+install\b|\bapt\s+install\b/i, decision: "require_approval", label: "approve:package-install" },
+  // Require approval for git push
+  { pattern: /\bgit\s+push\b/i, decision: "require_approval", label: "approve:git-push" },
+  // Require approval for network operations
+  { pattern: /\bcurl\s+.*\|\s*(bash|sh)\b/i, decision: "require_approval", label: "approve:curl-pipe" },
+];
+
+export function createToolPolicyMiddleware(
+  customRules?: CommandPolicyRule[],
+): BeforeModelMiddleware {
+  const policy = createCommandPolicy(customRules ?? DEFAULT_TOOL_POLICY_RULES);
+
+  return async (ctx) => {
+    const lastUserMsg = [...ctx.messages].reverse().find((m) => m.role === "user" && m.content);
+    if (!lastUserMsg?.content) {
+      return { messages: ctx.messages, applied: false, label: "tool-policy:skip(no-user-msg)" };
+    }
+
+    try {
+      // Scan the user message (including embedded commands) for policy violations
+      const scannable = scannableCommand(lastUserMsg.content);
+      const result = policy.evaluate(scannable);
+
+      if (result.decision === "allow") {
+        return { messages: ctx.messages, applied: false, label: "tool-policy:allow" };
+      }
+
+      // Annotate the context — don't block, just report
+      return {
+        messages: ctx.messages,
+        applied: true,
+        label: `tool-policy:${result.decision}:${result.label}`,
+        stats: {
+          decision: result.decision,
+          rule: result.label,
+        },
+      };
+    } catch {
+      return { messages: ctx.messages, applied: false, label: "tool-policy:error" };
+    }
+  };
+}
+
+// ── Middleware 6: Reflection (after_model) ─────────────────
 //
 // Runs a second LLM pass that critiques the response for accuracy,
 // completeness, and coherence. Opt-in via the reflectionEnabled
@@ -374,12 +592,28 @@ export async function runAfterModelChain(
 
 /** Build the default before_model chain for the desktop.
  *  When a harness registry is provided, the runtimeRoute middleware
- *  resolves the active provider and annotates the context. */
+ *  resolves the active provider and annotates the context.
+ *
+ *  Chain order (each step degrades gracefully):
+ *  1. tool-policy     — screen user message for dangerous/approval-needing commands
+ *  2. memory-inject   — inject persistent memories into system prompt
+ *  3. headroom        — compress context via Headroom sidecar
+ *  4. compaction      — summarize old entries when near token budget
+ *  5. runtime-route   — resolve active runtime/provider
+ */
 export function createBeforeModelChain(
   registry?: HarnessRegistry,
+  options?: {
+    memoryRecallFn?: () => Array<{ content: string; label: string }>;
+    compactionSummaryFn?: (entries: TurnEntry[]) => Promise<string>;
+    toolPolicyRules?: CommandPolicyRule[];
+  },
 ): BeforeModelMiddleware[] {
   return [
+    createToolPolicyMiddleware(options?.toolPolicyRules),
+    createMemoryInjectMiddleware(options?.memoryRecallFn),
     headroomCompressMiddleware,
+    createCompactionMiddleware(options?.compactionSummaryFn),
     createRuntimeRouteMiddleware(registry),
   ];
 }
