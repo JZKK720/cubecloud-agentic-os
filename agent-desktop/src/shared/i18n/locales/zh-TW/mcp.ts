@@ -32,8 +32,11 @@ export default {
   resultsHeader: "{count} 筆結果",
   searchNoResults: "內建目錄中沒有符合的伺服器。",
   add: "新增",
+  oneClickInstall: "安裝",
+  installing: "安裝中…",
   envKeys: "需要",
   category: {
+    all: "全部",
     developer: "開發",
     search: "搜尋",
     browser: "瀏覽器",

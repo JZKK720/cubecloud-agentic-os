@@ -32,8 +32,11 @@ export default {
   resultsHeader: "{count} 条结果",
   searchNoResults: "内置目录中没有匹配的服务器。",
   add: "添加",
+  oneClickInstall: "安装",
+  installing: "安装中…",
   envKeys: "需要",
   category: {
+    all: "全部",
     developer: "开发",
     search: "搜索",
     browser: "浏览器",

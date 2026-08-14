@@ -33,8 +33,11 @@ export default {
   resultsHeader: "{count} 件の結果",
   searchNoResults: "内蔵カタログに一致するサーバーはありません。",
   add: "追加",
+  oneClickInstall: "インストール",
+  installing: "インストール中…",
   envKeys: "必要",
   category: {
+    all: "すべて",
     developer: "開発",
     search: "検索",
     browser: "ブラウザ",

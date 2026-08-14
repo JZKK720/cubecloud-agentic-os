@@ -1,8 +1,22 @@
 // channel.ts — G1: IM Channel interface + router.
 //
-// ChannelInterface: common interface for all IM channels (WeCom, DingTalk, Feishu).
-// ChannelRouter: dispatches inbound messages to the HarnessRouter and
-// outbound messages to the correct channel.
+// ARCHITECTURAL STATUS (V2.10.79 audit):
+// The Hermes gateway already handles all IM platform connections
+// (Telegram, Discord, Slack, Feishu, DingTalk, WeCom, WhatsApp,
+// Signal, Matrix). The desktop is a control plane that monitors
+// gateway status — it does NOT run its own webhook servers.
+//
+// What's kept here:
+//   - ChannelMessage / NormalizedMessage types — useful for rendering
+//     IM messages in the desktop's chat view if Hermes forwards them
+//   - normalizeMessage() — adds traceId + timestamp to raw messages
+//   - parseFeishuEvent / parseDingTalkEvent / parseWeComEvent (in the
+//     channels/ directory) — event parsers, useful as rendering utils
+//
+// What's architecturally unnecessary (kept for now, not wired):
+//   - Channel interface, ChannelRouter, createChannelRouter — these
+//     would duplicate what Hermes already does. Do NOT build webhook
+//     servers in the desktop.
 //
 // Inspired by AgentConnect's PlatformConnection interface and
 // NormalizedPlatformMessage schema, adapted to the Cubecloud Agent Desktop.

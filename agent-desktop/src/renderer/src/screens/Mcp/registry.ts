@@ -524,3 +524,37 @@ export function validateMcpDetail(
   }
   return null;
 }
+
+/** Check if a registry entry is a one-click install candidate.
+ *  One-click = no env keys required AND uses npx (auto-fetches on
+ *  first run, no manual install step). Servers that need API keys,
+ *  pip installs, or custom binaries still go through the add form
+ *  so the user can supply credentials. */
+export function isOneClickInstall(entry: BundledMcpServer): boolean {
+  const needsEnvKeys = (entry.envKeys?.length ?? 0) > 0;
+  const usesNpx = /^npx\b/i.test(entry.detail.trim());
+  return !needsEnvKeys && usesNpx;
+}
+
+/** Filter the bundled registry by category. Returns all entries when
+ *  category is null/empty. */
+export function filterByCategory(
+  category: string | null,
+): BundledMcpServer[] {
+  if (!category) return BUNDLED_MCP_SERVERS;
+  return BUNDLED_MCP_SERVERS.filter((s) => s.category === category);
+}
+
+/** The distinct categories present in the bundled registry, in
+ *  display order. Used for the filter chips on the MCP screen. */
+export const MCP_CATEGORIES: BundledMcpServer["category"][] = [
+  "developer",
+  "search",
+  "browser",
+  "data",
+  "memory",
+  "reasoning",
+  "productivity",
+  "media",
+  "utility",
+];

@@ -6066,7 +6066,8 @@ select:focus-visible {
 }
 
 @keyframes swarm-node-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.4;
     transform: scale(1);
   }
@@ -6078,8 +6079,15 @@ select:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   @keyframes swarm-node-pulse {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1); }
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
   }
 }
 

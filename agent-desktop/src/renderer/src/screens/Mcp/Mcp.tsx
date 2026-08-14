@@ -3,6 +3,8 @@ import { useI18n } from "../../components/useI18n";
 import {
   searchBundledMcpServers,
   validateMcpDetail,
+  isOneClickInstall,
+  MCP_CATEGORIES,
   type BundledMcpServer,
 } from "./registry";
 
@@ -207,6 +209,8 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
           });
           setShowAdd(true);
         }}
+        onOneClickInstalled={() => void reload()}
+        profile={profile}
       />
 
       {servers.length === 0 ? (
@@ -441,20 +445,59 @@ function AddMcpForm({
 
 interface McpSearchPanelProps {
   onAddFromRegistry: (entry: BundledMcpServer) => void;
+  /** Called when a one-click install completes (server added directly). */
+  onOneClickInstalled?: (name: string) => void;
+  profile?: string;
 }
 
 function McpSearchPanel({
   onAddFromRegistry,
+  onOneClickInstalled,
+  profile,
 }: McpSearchPanelProps): React.JSX.Element {
   const { t } = useI18n();
   const [query, setQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [installing, setInstalling] = useState<string | null>(null);
   const [cbmStatus, setCbmStatus] = useState<{
     found: boolean;
     version: string | null;
   } | null>(null);
-  const results = useMemo(
-    () => searchBundledMcpServers(query).slice(0, 20),
-    [query],
+
+  const results = useMemo(() => {
+    let list = searchBundledMcpServers(query);
+    if (categoryFilter) {
+      list = list.filter((s) => s.category === categoryFilter);
+    }
+    return list.slice(0, 20);
+  }, [query, categoryFilter]);
+
+  /** One-click install: add the server directly without opening the
+   *  form. Only available for servers that need no env keys and use
+   *  npx (auto-fetches on first run). */
+  const handleOneClickInstall = useCallback(
+    async (entry: BundledMcpServer): Promise<void> => {
+      setInstalling(entry.name);
+      try {
+        const res = await window.hermesAPI.addMcpServer(
+          {
+            name: entry.name,
+            type: entry.transport,
+            enabled: true,
+            detail: entry.detail,
+          },
+          profile,
+        );
+        if (res.ok) {
+          onOneClickInstalled?.(entry.name);
+        }
+      } catch {
+        // Silently fail — user can still use the form
+      } finally {
+        setInstalling(null);
+      }
+    },
+    [profile, onOneClickInstalled],
   );
 
   useEffect(() => {
@@ -488,7 +531,29 @@ function McpSearchPanel({
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
-      {query.trim() && (
+
+      {/* Category filter chips */}
+      <div className="mcp-category-chips">
+        <button
+          type="button"
+          className={`mcp-chip ${categoryFilter === null ? "mcp-chip-active" : ""}`}
+          onClick={() => setCategoryFilter(null)}
+        >
+          {t("mcp.category.all")}
+        </button>
+        {MCP_CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            className={`mcp-chip ${categoryFilter === cat ? "mcp-chip-active" : ""}`}
+            onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+          >
+            {t(`mcp.category.${cat}`)}
+          </button>
+        ))}
+      </div>
+
+      {(query.trim() || categoryFilter) && (
         <div className="mcp-search-results" aria-live="polite">
           <div className="mcp-search-results-header">
             {t("mcp.resultsHeader", { count: results.length })}
@@ -544,14 +609,27 @@ function McpSearchPanel({
                       <div className="mcp-search-item-hint">{entry.hint}</div>
                     )}
                   </div>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    disabled={cbmDisabled}
-                    onClick={() => onAddFromRegistry(entry)}
-                  >
-                    {t("mcp.add")}
-                  </button>
+                  {isOneClickInstall(entry) ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      disabled={installing === entry.name}
+                      onClick={() => void handleOneClickInstall(entry)}
+                    >
+                      {installing === entry.name
+                        ? t("mcp.installing")
+                        : t("mcp.oneClickInstall")}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      disabled={cbmDisabled}
+                      onClick={() => onAddFromRegistry(entry)}
+                    >
+                      {t("mcp.add")}
+                    </button>
+                  )}
                 </li>
                 );
               })}

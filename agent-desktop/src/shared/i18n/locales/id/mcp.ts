@@ -33,8 +33,11 @@ export default {
   resultsHeader: "{count} hasil",
   searchNoResults: "Tidak ada server di katalog bawaan yang cocok dengan pencarian Anda.",
   add: "Tambah",
+  oneClickInstall: "Instal",
+  installing: "Menginstal…",
   envKeys: "Memerlukan",
   category: {
+    all: "Semua",
     developer: "Developer",
     search: "Pencarian",
     browser: "Browser",

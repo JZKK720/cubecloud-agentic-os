@@ -1,0 +1,127 @@
+---
+references:
+  - "File: /agent-desktop/src/main/chat-middleware.ts"
+  - "File: /agent-desktop/src/main/harnesses/hermes-harness.ts"
+  - "File: /agent-desktop/src/main/harnesses/registry.ts"
+  - "File: /agent-desktop/src/main/hermes.ts"
+  - "File: /agent-desktop/src/main/skills-discovery.ts"
+  - "File: /agent-desktop/src/main/skills-progressive.ts"
+  - "File: /agent-desktop/src/main/steering-inbox.ts"
+  - "File: /agent-desktop/src/renderer/src/screens/Chat/ChatHeader.tsx"
+  - "File: /agent-desktop/src/renderer/src/screens/Skills/Skills.tsx"
+  - "File: /agent-desktop/tests/chat-middleware.test.ts"
+  - "File: /agent-desktop/tests/harness-registry.test.ts"
+  - "File: /agent-desktop/tests/hermes-harness.test.ts"
+  - "File: /agent-desktop/tests/phase0-middleware-wiring.test.ts"
+  - "File: /agent-desktop/tests/skills-discovery.test.ts"
+  - "File: /agent-desktop/tests/skills-progressive.test.ts"
+  - "File: /agent-desktop/tests/steering-inbox.test.ts"
+  - "File: /packages/platform-core/src/compaction.ts"
+  - "File: /packages/platform-core/src/harness.ts"
+  - "File: /packages/platform-core/src/index.ts"
+  - "File: /packages/platform-core/src/memory-service.ts"
+  - "File: /packages/platform-core/src/provider-router.ts"
+  - "File: /packages/platform-core/src/run-queue.ts"
+  - "File: /packages/platform-core/src/subagent.ts"
+  - "File: /packages/platform-core/src/tool-policy.ts"
+  - "File: /packages/platform-core/tests/compaction.test.ts"
+  - "File: /packages/platform-core/tests/harness.test.ts"
+  - "File: /packages/platform-core/tests/memory-service.test.ts"
+  - "File: /packages/platform-core/tests/provider-router.test.ts"
+  - "File: /packages/platform-core/tests/run-queue.test.ts"
+  - "File: /packages/platform-core/tests/subagent.test.ts"
+  - "File: /packages/platform-core/tests/tool-policy.test.ts"
+generationTime: 2026-08-12T16:34:20.492Z
+---
+flowchart TD
+    Start(["User sends message"]) --> SendMsg["sendMessage()"]
+    SendMsg --> RemoteCheck{"Remote mode?"}
+    RemoteCheck -->|Yes| ApiPath["sendMessageViaApi()"]
+    RemoteCheck -->|No| ApiReady{"API server ready?"}
+    ApiReady -->|Yes| ApiPath
+    ApiReady -->|No| CliPath["sendMessageViaCli()"]
+    CliPath --> CliSpawn["spawn Hermes CLI process"]
+    CliSpawn --> CliStream["Stream stdout/stderr"]
+    CliStream --> Finish["finish() → onDone/onError"]
+
+    ApiPath --> Finalize["finalizePreparedRequest()"]
+    Finalize --> HeadroomHook["Inline Headroom compress hook"]
+    HeadroomHook --> MWChain["runBeforeModelChain()"]
+    MWChain --> MW1["headroomCompressMiddleware"]
+    MW1 --> MW1Gates{"Gates pass?"}
+    MW1Gates -->|Yes| Compress["compressMessages()"]
+    MW1Gates -->|No| MW1Skip["skip: too-few/disabled/no-sidecar"]
+    Compress --> MW2
+    MW1Skip --> MW2
+    MW2["runtimeRouteMiddleware"]
+    MW2 --> MW2Reg{"Registry provided?"}
+    MW2Reg -->|Yes| Resolve["registry.resolve() → route label"]
+    MW2Reg -->|No| PassThrough["route:pass (no-op)"]
+    Resolve --> StartReq
+    PassThrough --> StartReq
+
+    StartReq["startPreparedRequest()"] --> HttpReq["POST /v1/chat/completions"]
+    HttpReq --> SseStream{"SSE streaming"}
+    SseStream -->|delta.content| OnChunk["cb.onChunk()"]
+    SseStream -->|delta.reasoning| OnReasoning["cb.onReasoningChunk()"]
+    SseStream -->|parsed.usage| OnUsage["cb.onUsage() with headroom + middleware stats"]
+    SseStream -->|DONE| StreamEnd{"hasContent?"}
+    StreamEnd -->|Yes| Finish
+    StreamEnd -->|No| Probe["probeRealError()"]
+    Probe --> Finish
+
+    Finish --> AfterModel["runAfterModelChain()"]
+    AfterModel --> AM1{"reflection enabled?"}
+    AM1 -->|Yes + critiqueFn| Critique["critiqueFn() → LLM critique"]
+    AM1 -->|No| AM1Skip["reflection:skip(disabled/no-critique-fn)"]
+    Critique --> AMEnd
+    AM1Skip --> AMEnd["Return results"]
+
+    subgraph Harness System
+        Reg["createHarnessRegistry()"]
+        Reg --> Adapters["4 adapters: Hermes, IronClaw, OpenClaw, Raven"]
+        Adapters --> HermesH["createHermesHarness()"]
+        Adapters --> Stubs["createStubHarness() x3"]
+        HermesH --> Bridge["Callback → AsyncIterable bridge"]
+        Reg --> Router["HarnessRouter dispatches by providerId"]
+        Router --> Switch{"Provider switched?"}
+        Switch -->|Yes| Reset["resetSession() on old harness"]
+        Switch -->|No| Dispatch["yield* harness.turns.runTurn()"]
+        Reset --> Dispatch
+    end
+
+    subgraph Platform Core
+        ProviderRouter["ProviderRouter: parse prefix → dispatch"]
+        ToolPolicy["CommandPolicy: regex screening → allow/deny/approve"]
+        Memory["MemoryService: foldCapture → dedup + FIFO eviction"]
+        Compaction["compactTurnHistory: shouldCompact → pickBoundary → summarize"]
+        RunQueue["RunStore: enqueue → claim → complete/fail → retry"]
+        Subagent["runSubagent: fresh context + read-only tools"]
+    end
+
+    subgraph Skills System
+        SkillDiscover["discoverSkillsFromDir()"]
+        SkillDiscover --> Classify["classifySkillLayout: flat vs categorized"]
+        Classify --> Normalize["normalizeSkillPath → category + name"]
+        Normalize --> Dedup["deduplicate by name"]
+        Dedup --> Catalog["buildSkillCatalog: name + description only"]
+        Catalog --> Inject["formatCatalogForSystemPrompt"]
+        Inject --> LoadCheck{"shouldLoadFullBody()?"}
+        LoadCheck -->|Yes| FullBody["buildFullBodyInjection()"]
+        LoadCheck -->|No| CatalogOnly["catalog stays compact"]
+    end
+
+    subgraph Steering & Inbox
+        SteeringQ["SteeringQueue: enqueue/dequeue FIFO"]
+        Approvals["ApprovalInbox: create → approve/deny/expire"]
+        Approvals --> ApprovalStatus{"Status: pending/approved/denied/expired"}
+        ApprovalStatus -->|timeout| Expired["auto-expire via setTimeout"]
+    end
+
+    MWChain -.->|"uses"| Reg
+    AfterModel -.->|"future"| Memory
+    ProviderRouter -.->|"routes model strings"| HttpReq
+    ToolPolicy -.->|"screens commands"| Approvals
+    Compaction -.->|"P5: compact history"| HermesH
+    RunQueue -.->|"P9: queue turns"| Dispatch
+    Subagent -.->|"P10: child harness"| Router

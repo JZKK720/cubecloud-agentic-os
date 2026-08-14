@@ -37,8 +37,11 @@ export default {
   resultsHeader: "{count} results",
   searchNoResults: "No servers in the bundled catalog match your search.",
   add: "Add",
+  oneClickInstall: "Install",
+  installing: "Installing…",
   envKeys: "Requires",
   category: {
+    all: "All",
     developer: "Developer",
     search: "Search",
     browser: "Browser",

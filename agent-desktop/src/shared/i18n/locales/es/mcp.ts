@@ -33,8 +33,11 @@ export default {
   resultsHeader: "{count} resultados",
   searchNoResults: "Ningún servidor del catálogo integrado coincide con tu búsqueda.",
   add: "Agregar",
+  oneClickInstall: "Instalar",
+  installing: "Instalando…",
   envKeys: "Requiere",
   category: {
+    all: "Todos",
     developer: "Desarrollo",
     search: "Búsqueda",
     browser: "Navegador",
