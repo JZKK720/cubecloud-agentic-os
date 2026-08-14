@@ -96,7 +96,9 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
       const previous = servers;
       // Optimistic update so the toggle feels immediate.
       setServers((prev) =>
-        prev.map((s) => (s.name === name ? { ...s, enabled: !currentEnabled } : s)),
+        prev.map((s) =>
+          s.name === name ? { ...s, enabled: !currentEnabled } : s,
+        ),
       );
       try {
         const res = await window.hermesAPI.setMcpServerEnabled(
@@ -412,7 +414,9 @@ function AddMcpForm({
             disabled={submitting}
           />
           {detailError && !error && (
-            <span className="mcp-add-hint">{t(`mcp.addError_${detailError}`)}</span>
+            <span className="mcp-add-hint">
+              {t(`mcp.addError_${detailError}`)}
+            </span>
           )}
         </label>
       </div>
@@ -546,7 +550,9 @@ function McpSearchPanel({
             key={cat}
             type="button"
             className={`mcp-chip ${categoryFilter === cat ? "mcp-chip-active" : ""}`}
-            onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+            onClick={() =>
+              setCategoryFilter(categoryFilter === cat ? null : cat)
+            }
           >
             {t(`mcp.category.${cat}`)}
           </button>
@@ -559,78 +565,77 @@ function McpSearchPanel({
             {t("mcp.resultsHeader", { count: results.length })}
           </div>
           {results.length === 0 ? (
-            <div className="mcp-search-empty">
-              {t("mcp.searchNoResults")}
-            </div>
+            <div className="mcp-search-empty">{t("mcp.searchNoResults")}</div>
           ) : (
             <ul className="mcp-search-list">
               {results.map((entry) => {
                 const isCbm = entry.name === "codebase-memory";
                 const cbmInstalled = cbmStatus?.found ?? false;
-                const cbmDisabled = isCbm && cbmStatus !== null && !cbmInstalled;
+                const cbmDisabled =
+                  isCbm && cbmStatus !== null && !cbmInstalled;
                 return (
-                <li
-                  key={entry.name}
-                  className="mcp-search-item"
-                  data-category={entry.category}
-                >
-                  <div className="mcp-search-item-main">
-                    <div className="mcp-search-item-name">
-                      {entry.title}
-                      <span className="mcp-search-item-cat">
-                        {t(`mcp.category.${entry.category}`)}
-                      </span>
-                      {isCbm && cbmStatus && (
-                        <span
-                          className={`mcp-search-item-status ${cbmInstalled ? "mcp-status-on" : "mcp-status-off"}`}
-                        >
-                          <span className="mcp-status-dot" />
-                          {cbmInstalled
-                            ? cbmStatus.version || "installed"
-                            : "not installed"}
+                  <li
+                    key={entry.name}
+                    className="mcp-search-item"
+                    data-category={entry.category}
+                  >
+                    <div className="mcp-search-item-main">
+                      <div className="mcp-search-item-name">
+                        {entry.title}
+                        <span className="mcp-search-item-cat">
+                          {t(`mcp.category.${entry.category}`)}
                         </span>
+                        {isCbm && cbmStatus && (
+                          <span
+                            className={`mcp-search-item-status ${cbmInstalled ? "mcp-status-on" : "mcp-status-off"}`}
+                          >
+                            <span className="mcp-status-dot" />
+                            {cbmInstalled
+                              ? cbmStatus.version || "installed"
+                              : "not installed"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="mcp-search-item-desc">
+                        {entry.description}
+                      </div>
+                      {entry.envKeys && entry.envKeys.length > 0 && (
+                        <div className="mcp-search-item-env">
+                          {t("mcp.envKeys")}:{" "}
+                          {entry.envKeys.map((k, i) => (
+                            <code key={k}>
+                              {k}
+                              {i < (entry.envKeys?.length ?? 0) - 1 ? ", " : ""}
+                            </code>
+                          ))}
+                        </div>
+                      )}
+                      {entry.hint && (
+                        <div className="mcp-search-item-hint">{entry.hint}</div>
                       )}
                     </div>
-                    <div className="mcp-search-item-desc">
-                      {entry.description}
-                    </div>
-                    {entry.envKeys && entry.envKeys.length > 0 && (
-                      <div className="mcp-search-item-env">
-                        {t("mcp.envKeys")}:{" "}
-                        {entry.envKeys.map((k, i) => (
-                          <code key={k}>
-                            {k}
-                            {i < (entry.envKeys?.length ?? 0) - 1 ? ", " : ""}
-                          </code>
-                        ))}
-                      </div>
+                    {isOneClickInstall(entry) ? (
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        disabled={installing === entry.name}
+                        onClick={() => void handleOneClickInstall(entry)}
+                      >
+                        {installing === entry.name
+                          ? t("mcp.installing")
+                          : t("mcp.oneClickInstall")}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        disabled={cbmDisabled}
+                        onClick={() => onAddFromRegistry(entry)}
+                      >
+                        {t("mcp.add")}
+                      </button>
                     )}
-                    {entry.hint && (
-                      <div className="mcp-search-item-hint">{entry.hint}</div>
-                    )}
-                  </div>
-                  {isOneClickInstall(entry) ? (
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      disabled={installing === entry.name}
-                      onClick={() => void handleOneClickInstall(entry)}
-                    >
-                      {installing === entry.name
-                        ? t("mcp.installing")
-                        : t("mcp.oneClickInstall")}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      disabled={cbmDisabled}
-                      onClick={() => onAddFromRegistry(entry)}
-                    >
-                      {t("mcp.add")}
-                    </button>
-                  )}
-                </li>
+                  </li>
                 );
               })}
             </ul>

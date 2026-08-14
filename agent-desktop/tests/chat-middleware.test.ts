@@ -279,13 +279,15 @@ describe("chat-middleware — reflection middleware", () => {
 });
 
 describe("chat-middleware — chain factories", () => {
-  it("createBeforeModelChain returns headroom + route", async () => {
+  it("createBeforeModelChain returns tool-policy + memory + headroom + compaction + route", async () => {
     const chain = createBeforeModelChain();
-    expect(chain).toHaveLength(2);
-    expect(chain[0]).toBe(headroomCompressMiddleware);
-    // chain[1] is now created by createRuntimeRouteMiddleware() —
+    // G2/Item 3: the chain now wires 5 middleware in order:
+    //   0 tool-policy, 1 memory-inject, 2 headroom, 3 compaction, 4 route
+    expect(chain).toHaveLength(5);
+    expect(chain[2]).toBe(headroomCompressMiddleware);
+    // chain[4] is created by createRuntimeRouteMiddleware() —
     // verify it behaves like the no-op pass-through when no registry.
-    const result = await chain[1]({
+    const result = await chain[4]({
       messages: [{ role: "user", content: "test" }],
       model: "test",
       providerHint: "openai",

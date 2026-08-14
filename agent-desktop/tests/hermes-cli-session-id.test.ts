@@ -157,6 +157,11 @@ vi.mock("../src/main/utils", () => ({
   getActiveProfileNameSync: () => "default",
 }));
 
+// G2: hermes.ts now imports ./memory for the memory-inject middleware.
+vi.mock("../src/main/memory", () => ({
+  readMemory: () => ({ memory: { entries: [] } }),
+}));
+
 vi.mock("../src/main/models", () => ({
   readModels: () => [],
 }));

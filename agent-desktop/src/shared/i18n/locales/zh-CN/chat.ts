@@ -35,6 +35,14 @@ export default {
   attach: "上传文件",
   removeAttachment: "移除附件",
   dropToAttach: "拖放文件以添加附件",
+  approval: {
+    title: "需要工具审批",
+    hint: "智能体想要运行一个需要你审批的工具。请审查每个请求并批准或拒绝。",
+    empty: "没有待处理的审批。",
+    approve: "批准",
+    deny: "拒绝",
+    working: "处理中…",
+  },
   attachUnsupported: "{{name}}：不支持的文件类型",
   attachImageTooLarge: "{{name}}：图片过大（最大 50 MB）",
   attachImageUncompressible:

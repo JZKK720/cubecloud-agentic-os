@@ -19,6 +19,7 @@ import {
   hermesCliArgs,
   getEnhancedPath,
 } from "./installer";
+import { readMemory } from "./memory";
 import {
   compressForChat,
   isOllamaLikeProvider,
@@ -1157,7 +1158,23 @@ function sendMessageViaApi(
       if (!_harnessRegistry) {
         _harnessRegistry = createHarnessRegistry();
       }
-      const chain = createBeforeModelChain(_harnessRegistry);
+      // G2 — wire the middleware options so the P3/P4/P5 modules are
+      // actually configured. memoryRecallFn pulls the profile's memory
+      // entries (synchronous read) so the memory-inject middleware can
+      // prepend them to the system prompt. Degrades to [] on any error.
+      const memoryRecallFn = (): Array<{ content: string; label: string }> => {
+        try {
+          return readMemory().memory.entries.map((e) => ({
+            content: e.content,
+            label: "memory",
+          }));
+        } catch {
+          return [];
+        }
+      };
+      const chain = createBeforeModelChain(_harnessRegistry, {
+        memoryRecallFn,
+      });
       const middlewareMessages: MiddlewareChatMessage[] = messages.map(
         (m) => ({
           role: m.role as MiddlewareChatMessage["role"],

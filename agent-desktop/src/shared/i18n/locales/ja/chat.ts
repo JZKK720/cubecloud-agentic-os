@@ -27,6 +27,14 @@ export default {
   attach: "ファイルを添付",
   removeAttachment: "添付を削除",
   dropToAttach: "ファイルをドロップして添付",
+  approval: {
+    title: "ツールの承認が必要です",
+    hint: "エージェントが承認が必要なツールを実行しようとしています。各リクエストを確認し、承認または拒否してください。",
+    empty: "保留中の承認はありません。",
+    approve: "承認",
+    deny: "拒否",
+    working: "処理中…",
+  },
   attachUnsupported: "{{name}}: 対応していないファイル形式です",
   attachImageTooLarge: "{{name}}: 画像が大きすぎます（最大 50 MB）",
   attachImageUncompressible:

@@ -40,6 +40,14 @@ export default {
   attach: "Attach files",
   removeAttachment: "Remove attachment",
   dropToAttach: "Drop files to attach",
+  approval: {
+    title: "Tool approval required",
+    hint: "The agent wants to run a tool that needs your approval. Review each request and approve or deny it.",
+    empty: "No pending approvals.",
+    approve: "Approve",
+    deny: "Deny",
+    working: "Working…",
+  },
   attachUnsupported: "{{name}}: file type not supported",
   attachImageTooLarge: "{{name}}: image too large (max 50 MB)",
   attachImageUncompressible:

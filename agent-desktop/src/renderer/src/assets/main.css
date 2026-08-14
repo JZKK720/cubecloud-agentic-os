@@ -3973,7 +3973,7 @@ select:focus-visible {
   gap: 10px;
 }
 
-/* Approval inbox badge (P8) */
+/* Approval inbox badge (P8) — clickable, opens the approval dialog */
 .chat-approval-badge {
   display: flex;
   align-items: center;
@@ -3986,6 +3986,13 @@ select:focus-visible {
   padding: 2px 8px;
   border-radius: 10px;
   animation: fadeIn 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+  transition: filter var(--transition);
+}
+
+.chat-approval-badge:hover {
+  filter: brightness(1.1);
 }
 
 .chat-approval-badge-dot {
@@ -3994,6 +4001,76 @@ select:focus-visible {
   border-radius: 50%;
   background: var(--warning);
   flex-shrink: 0;
+}
+
+/* Approval dialog (P8 approval loop — G1) */
+.approval-dialog {
+  max-width: 520px;
+}
+
+.approval-dialog-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 12px 0;
+}
+
+.approval-dialog-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.approval-dialog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.approval-dialog-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-secondary);
+}
+
+.approval-dialog-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.approval-dialog-tool {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.approval-dialog-reason {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.approval-dialog-command {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.approval-dialog-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .chat-token-counter {
@@ -8422,6 +8499,43 @@ select:focus-visible {
 
 .mcp-search-input {
   flex: 1;
+}
+
+/* MCP category filter chips (Item 4 / G3) */
+.mcp-category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mcp-chip {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition),
+    border-color var(--transition);
+}
+
+.mcp-chip:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.mcp-chip-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.mcp-chip-active:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 .mcp-search-results {

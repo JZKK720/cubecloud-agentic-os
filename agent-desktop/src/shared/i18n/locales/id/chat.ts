@@ -29,6 +29,14 @@ export default {
   attach: "Lampirkan file",
   removeAttachment: "Hapus lampiran",
   dropToAttach: "Lepaskan file untuk dilampirkan",
+  approval: {
+    title: "Persetujuan alat diperlukan",
+    hint: "Agen ingin menjalankan alat yang memerlukan persetujuan Anda. Tinjau setiap permintaan lalu setujui atau tolak.",
+    empty: "Tidak ada persetujuan yang tertunda.",
+    approve: "Setujui",
+    deny: "Tolak",
+    working: "Memproses…",
+  },
   attachUnsupported: "{{name}}: tipe file tidak didukung",
   attachImageTooLarge: "{{name}}: gambar terlalu besar (maks. 50 MB)",
   attachImageUncompressible:

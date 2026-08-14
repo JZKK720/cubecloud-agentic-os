@@ -317,9 +317,11 @@ describe("Mcp search panel", () => {
       expect(screen.getByText("mcp.empty")).toBeInTheDocument();
     });
     const search = screen.getByPlaceholderText("mcp.searchPlaceholder");
-    fireEvent.change(search, { target: { value: "playwright" } });
+    // "github" requires env keys, so it is NOT a one-click candidate and
+    // still opens the add form (one-click entries show "Install" instead).
+    fireEvent.change(search, { target: { value: "github" } });
     await waitFor(() => {
-      expect(screen.getByText("Playwright")).toBeInTheDocument();
+      expect(screen.getByText("GitHub")).toBeInTheDocument();
     });
     // The first "mcp.add" button is the registry quick-add.
     const quickAddButtons = screen.getAllByText("mcp.add");
@@ -331,7 +333,22 @@ describe("Mcp search panel", () => {
     const nameInput = screen.getByPlaceholderText(
       "mcp.addNamePlaceholder",
     ) as HTMLInputElement;
-    expect(nameInput.value).toBe("playwright");
+    expect(nameInput.value).toBe("github");
+  });
+
+  it("one-click candidates show an Install button instead of Add", async () => {
+    installHermes();
+    render(<Mcp />);
+    await waitFor(() => {
+      expect(screen.getByText("mcp.empty")).toBeInTheDocument();
+    });
+    const search = screen.getByPlaceholderText("mcp.searchPlaceholder");
+    // "playwright" has no envKeys and uses npx → one-click install.
+    fireEvent.change(search, { target: { value: "playwright" } });
+    await waitFor(() => {
+      expect(screen.getByText("Playwright")).toBeInTheDocument();
+    });
+    expect(screen.getByText("mcp.oneClickInstall")).toBeInTheDocument();
   });
 });
 

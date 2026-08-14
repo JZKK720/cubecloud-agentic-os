@@ -29,6 +29,14 @@ export default {
   attach: "Anexar ficheiros",
   removeAttachment: "Remover anexo",
   dropToAttach: "Largue ficheiros para anexar",
+  approval: {
+    title: "Aprovação de ferramenta necessária",
+    hint: "O agente quer executar uma ferramenta que precisa da sua aprovação. Reveja cada pedido e aprove ou rejeite.",
+    empty: "Nenhuma aprovação pendente.",
+    approve: "Aprovar",
+    deny: "Rejeitar",
+    working: "A processar…",
+  },
   attachUnsupported: "{{name}}: tipo de ficheiro não suportado",
   attachImageTooLarge: "{{name}}: imagem demasiado grande (máx. 50 MB)",
   attachImageUncompressible:

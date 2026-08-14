@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChatInput, type ChatInputHandle } from "./ChatInput";
 import { ChatHeader } from "./ChatHeader";
+import { ApprovalDialog } from "./ApprovalDialog";
 import { ChatEmptyState } from "./ChatEmptyState";
 import { MessageList } from "./MessageList";
 import { ModelPicker } from "./ModelPicker";
@@ -60,6 +61,21 @@ function Chat({
   const [worktreeVisible, setWorktreeVisible] = useState<boolean>(true);
   // Pending approval count for the chat header badge (P8)
   const [pendingApprovals, setPendingApprovals] = useState(0);
+  // Pending approval entries + dialog visibility (P8 approval loop)
+  const [approvalEntries, setApprovalEntries] = useState<
+    Array<{
+      id: string;
+      sessionId: string;
+      toolName: string;
+      command: string;
+      reason: string;
+      status: string;
+      createdAt: number;
+      resolvedAt: number | null;
+      timeoutMs?: number;
+    }>
+  >([]);
+  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
   const dragCounter = useRef(0);
   const chatInputRef = useRef<ChatInputHandle>(null);
   const queueRef = useRef<QueuedMessage[]>([]);
@@ -76,13 +92,17 @@ function Chat({
     };
   }, []);
 
-  // Poll for pending approvals (P8) — every 2s while chat is active
+  // Poll for pending approvals (P8) — every 2s while chat is active.
+  // Fetches the full entry list so the approval dialog can render them.
   useEffect(() => {
     let cancelled = false;
     const poll = async (): Promise<void> => {
       try {
-        const hasPending = await window.hermesAPI.approvalHasPending();
-        if (!cancelled) setPendingApprovals(hasPending ? 1 : 0);
+        const entries = await window.hermesAPI.approvalList(false);
+        if (!cancelled) {
+          setApprovalEntries(entries);
+          setPendingApprovals(entries.length);
+        }
       } catch {
         // IPC not available — silently skip
       }
@@ -93,6 +113,18 @@ function Chat({
       cancelled = true;
       clearInterval(interval);
     };
+  }, []);
+
+  // Re-fetch approval entries after a decision resolves.
+  const refreshApprovals = useCallback(async (): Promise<void> => {
+    try {
+      const entries = await window.hermesAPI.approvalList(false);
+      setApprovalEntries(entries);
+      setPendingApprovals(entries.length);
+      if (entries.length === 0) setShowApprovalDialog(false);
+    } catch {
+      // IPC not available — silently skip
+    }
   }, []);
 
   const { containerRef, bottomRef } = useChatScroll(messages);
@@ -344,6 +376,7 @@ function Chat({
         contextFolder={contextFolder}
         showContextFolder={!remoteMode}
         pendingApprovals={pendingApprovals}
+        onOpenApprovals={() => setShowApprovalDialog(true)}
         worktreeVisible={worktreeVisible}
         onPickFolder={handlePickFolder}
         onClearFolder={handleClearFolder}
@@ -406,6 +439,13 @@ function Chat({
             {t("chat.dropToAttach")}
           </div>
         </div>
+      )}
+      {showApprovalDialog && (
+        <ApprovalDialog
+          entries={approvalEntries}
+          onClose={() => setShowApprovalDialog(false)}
+          onResolved={() => void refreshApprovals()}
+        />
       )}
     </div>
   );

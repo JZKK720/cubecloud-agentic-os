@@ -24,6 +24,8 @@ interface ChatHeaderProps {
   worktreeVisible: boolean;
   /** Number of pending approvals in the inbox (P8). */
   pendingApprovals?: number;
+  /** Opens the approval dialog (P8 approval loop). */
+  onOpenApprovals?: () => void;
   onPickFolder: () => void;
   onClearFolder: () => void;
   onToggleFast: () => void;
@@ -158,6 +160,7 @@ export const ChatHeader = memo(function ChatHeader({
   contextFolder,
   showContextFolder,
   pendingApprovals,
+  onOpenApprovals,
   worktreeVisible,
   onPickFolder,
   onClearFolder,
@@ -178,13 +181,15 @@ export const ChatHeader = memo(function ChatHeader({
         </div>
         {usage && <UsageBadge usage={usage} />}
         {pendingApprovals != null && pendingApprovals > 0 && (
-          <div
+          <button
+            type="button"
             className="chat-approval-badge"
             title={`${pendingApprovals} pending approval${pendingApprovals > 1 ? "s" : ""}`}
+            onClick={onOpenApprovals}
           >
             <span className="chat-approval-badge-dot" />
             {pendingApprovals}
-          </div>
+          </button>
         )}
       </div>
       <div className="chat-header-actions">
