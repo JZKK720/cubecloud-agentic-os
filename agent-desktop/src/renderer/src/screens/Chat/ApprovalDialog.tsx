@@ -55,7 +55,10 @@ export function ApprovalDialog({
 
   return (
     <div className="models-modal-overlay" onClick={onClose}>
-      <div className="models-modal approval-dialog" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="models-modal approval-dialog"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="models-modal-header">
           <h2 className="models-modal-title">{t("chat.approval.title")}</h2>
           <button
@@ -75,11 +78,17 @@ export function ApprovalDialog({
               {pending.map((entry) => (
                 <li key={entry.id} className="approval-dialog-item">
                   <div className="approval-dialog-item-head">
-                    <span className="approval-dialog-tool">{entry.toolName}</span>
-                    <span className="approval-dialog-reason">{entry.reason}</span>
+                    <span className="approval-dialog-tool">
+                      {entry.toolName}
+                    </span>
+                    <span className="approval-dialog-reason">
+                      {entry.reason}
+                    </span>
                   </div>
                   {entry.command && (
-                    <code className="approval-dialog-command">{entry.command}</code>
+                    <code className="approval-dialog-command">
+                      {entry.command}
+                    </code>
                   )}
                   <div className="approval-dialog-actions">
                     <button

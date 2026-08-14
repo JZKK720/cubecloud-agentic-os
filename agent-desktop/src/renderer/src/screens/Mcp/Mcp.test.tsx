@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 // useI18n needs an I18nProvider; pass-through `t` keeps the test
@@ -22,20 +28,22 @@ vi.mock("../../components/useI18n", () => ({
 
 import Mcp from "./Mcp";
 
-function installHermes(overrides: {
-  listMcpServers?: ReturnType<typeof vi.fn>;
-  setMcpServerEnabled?: ReturnType<typeof vi.fn>;
-  addMcpServer?: ReturnType<typeof vi.fn>;
-  removeMcpServer?: ReturnType<typeof vi.fn>;
-  discoverCodebaseMemory?: ReturnType<typeof vi.fn>;
-} = {}): void {
+function installHermes(
+  overrides: {
+    listMcpServers?: ReturnType<typeof vi.fn>;
+    setMcpServerEnabled?: ReturnType<typeof vi.fn>;
+    addMcpServer?: ReturnType<typeof vi.fn>;
+    removeMcpServer?: ReturnType<typeof vi.fn>;
+    discoverCodebaseMemory?: ReturnType<typeof vi.fn>;
+  } = {},
+): void {
   Object.defineProperty(window, "hermesAPI", {
     configurable: true,
     value: {
-      listMcpServers:
-        overrides.listMcpServers ?? vi.fn().mockResolvedValue([]),
+      listMcpServers: overrides.listMcpServers ?? vi.fn().mockResolvedValue([]),
       setMcpServerEnabled:
-        overrides.setMcpServerEnabled ?? vi.fn().mockResolvedValue({ ok: true }),
+        overrides.setMcpServerEnabled ??
+        vi.fn().mockResolvedValue({ ok: true }),
       addMcpServer:
         overrides.addMcpServer ?? vi.fn().mockResolvedValue({ ok: true }),
       removeMcpServer:
@@ -68,7 +76,9 @@ describe("Mcp screen", () => {
   });
 
   it("renders one row per server with name, transport, and status", async () => {
-    installHermes({ listMcpServers: vi.fn().mockResolvedValue(SAMPLE_SERVERS) });
+    installHermes({
+      listMcpServers: vi.fn().mockResolvedValue(SAMPLE_SERVERS),
+    });
     render(<Mcp />);
     await waitFor(() => {
       expect(screen.getByText("github")).toBeInTheDocument();
@@ -79,7 +89,9 @@ describe("Mcp screen", () => {
   });
 
   it("shows the enabled/total badge in the header", async () => {
-    installHermes({ listMcpServers: vi.fn().mockResolvedValue(SAMPLE_SERVERS) });
+    installHermes({
+      listMcpServers: vi.fn().mockResolvedValue(SAMPLE_SERVERS),
+    });
     render(<Mcp />);
     // The badge is rendered whenever the list resolves with at least
     // one server. We just check the element exists. The i18n
@@ -162,7 +174,9 @@ describe("Mcp screen", () => {
   });
 
   it("opens the add form when the header button is clicked", async () => {
-    installHermes({ listMcpServers: vi.fn().mockResolvedValue(SAMPLE_SERVERS) });
+    installHermes({
+      listMcpServers: vi.fn().mockResolvedValue(SAMPLE_SERVERS),
+    });
     render(<Mcp />);
     await waitFor(() => {
       expect(screen.getByText("github")).toBeInTheDocument();
@@ -367,15 +381,9 @@ describe("Mcp registry validation", () => {
 
   it("accepts stdio commands with a known runtime prefix", async () => {
     const { validateMcpDetail } = await import("./registry");
-    expect(
-      validateMcpDetail("stdio", "npx -y @x/y"),
-    ).toBeNull();
-    expect(
-      validateMcpDetail("stdio", "node server.js"),
-    ).toBeNull();
-    expect(
-      validateMcpDetail("stdio", "python -m myserver"),
-    ).toBeNull();
+    expect(validateMcpDetail("stdio", "npx -y @x/y")).toBeNull();
+    expect(validateMcpDetail("stdio", "node server.js")).toBeNull();
+    expect(validateMcpDetail("stdio", "python -m myserver")).toBeNull();
   });
 
   it("rejects stdio commands without a known runtime prefix", async () => {

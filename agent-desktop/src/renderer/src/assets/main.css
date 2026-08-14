@@ -8518,7 +8518,9 @@ select:focus-visible {
   padding: 3px 10px;
   border-radius: 999px;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition),
+  transition:
+    background var(--transition),
+    color var(--transition),
     border-color var(--transition);
 }
 
