@@ -68,7 +68,7 @@ import {
 import { discoverDockerRuntimes } from "./docker-runtimes";
 import {
   createSwarmManager,
-  createKnowledgeVault,
+  createFsKnowledgeVault,
   type SwarmManager,
   type KnowledgeVault,
 } from "@cubecloud/platform-core";
@@ -240,6 +240,7 @@ import {
   setPlatformEnabled,
   getApiServerKey,
 } from "./config";
+import { profileHome } from "./utils";
 import {
   listSessions,
   getSessionMessages,
@@ -1023,12 +1024,15 @@ function setupIPC(): void {
   });
 
   // ── Knowledge Vault IPC handlers (G3) ────────────────────
-  // In-process knowledge vault instance. Files are stored in
-  // <profile>/vault/ as plain Markdown.
+  // File-system-backed knowledge vault. Files are stored as
+  // <profile>/vault/*.md on disk — plain Markdown, editable in any
+  // editor (Obsidian, VS Code). The in-memory inverted index provides
+  // fast full-text search; files persist across restarts.
   let _vault: KnowledgeVault | null = null;
   function getVault(): KnowledgeVault {
     if (!_vault) {
-      _vault = createKnowledgeVault();
+      const vaultDir = join(profileHome(), "vault");
+      _vault = createFsKnowledgeVault(vaultDir);
     }
     return _vault;
   }

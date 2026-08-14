@@ -1,5 +1,13 @@
 // dingtalk-channel.ts — G1.4: DingTalk (钉钉) channel adapter.
 //
+// ARCHITECTURAL STATUS (V2.10.79 audit):
+// Hermes already handles DingTalk connections. The desktop does NOT
+// need to run its own DingTalk webhook server. This file is kept for:
+//   - parseDingTalkEvent() — useful for rendering DingTalk messages
+//   - DingTalkConfig / DingTalkEvent types — reference for the format
+//
+// createDingTalkChannel() is a stub and should NOT be wired.
+//
 // Connects to DingTalk via Stream Mode (WebSocket long-connection).
 // Receives messages, normalizes them, and sends replies via the IM API.
 //

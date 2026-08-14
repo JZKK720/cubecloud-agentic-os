@@ -1,5 +1,13 @@
 // wecom-channel.ts — G1.5: WeCom (企业微信) channel adapter.
 //
+// ARCHITECTURAL STATUS (V2.10.79 audit):
+// Hermes already handles WeCom connections. The desktop does NOT
+// need to run its own WeCom callback server. This file is kept for:
+//   - parseWeComEvent() — useful for rendering WeCom messages
+//   - WeComConfig / WeComEvent types — reference for the format
+//
+// createWeComChannel() is a stub and should NOT be wired.
+//
 // Connects to WeCom via HTTP callback (webhook) or long-connection.
 // Receives messages, normalizes them, and sends replies via the IM API.
 //

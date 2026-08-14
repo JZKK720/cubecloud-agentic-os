@@ -116,6 +116,8 @@ export {
   createKnowledgeVault,
 } from "./knowledge-vault";
 
+export { createFsKnowledgeVault } from "./knowledge-vault-fs";
+
 // ── Platform views ──────────────────────────────────────────────────────────
 
 export type PlatformView =

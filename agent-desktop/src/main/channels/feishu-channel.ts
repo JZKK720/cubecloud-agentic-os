@@ -1,5 +1,15 @@
 // feishu-channel.ts — G1.3: Feishu (飞书) channel adapter.
 //
+// ARCHITECTURAL STATUS (V2.10.79 audit):
+// Hermes already handles Feishu/Lark connections. The desktop does NOT
+// need to run its own Feishu webhook server. This file is kept for:
+//   - parseFeishuEvent() — useful for rendering Feishu messages in the
+//     desktop's chat view if Hermes forwards them
+//   - FeishuConfig / FeishuEvent types — reference for the message format
+//
+// createFeishuChannel() is a stub and should NOT be wired — it would
+// duplicate Hermes's Feishu bridge.
+//
 // Connects to Feishu/Lark via the Lark Suite SDK (WSClient long-connection).
 // Receives messages, normalizes them, and sends replies via the IM API.
 //
