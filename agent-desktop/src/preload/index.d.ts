@@ -363,6 +363,15 @@ interface AgentPromotionResult {
   error: string | null;
 }
 
+// Config center provision result — P5 (gate spec §3.1).
+interface WorkspaceProvisionResult {
+  env: string;
+  stamp: string;
+  written: boolean;
+  fingerprintedKeys: string[];
+  error?: string | null;
+}
+
 interface EverOsRecentItem {
   id: string;
   content: string;
@@ -1730,6 +1739,20 @@ interface HermesAPI {
       instructions?: string;
     },
   ) => Promise<AgentPromotionResult>;
+  // Config center + vault bridge — P5 (provision-time env, dry-run by
+  // default; write requires explicit options).
+  workspaceProvisionEnv: (
+    input: {
+      workspaceBaseUrl: string;
+      workspaceApiKey?: string | null;
+      hermesBaseUrl?: string | null;
+      hermesApiKey?: string | null;
+      localSingleUser?: boolean;
+      extraEnv?: Record<string, string>;
+    },
+    options?: { write?: boolean; writePath?: string },
+  ) => Promise<WorkspaceProvisionResult>;
+  workspaceProvisionFingerprint: (key: string) => Promise<string>;
 
   // Headroom proxy (context compression for LLM calls)
   headroomGetConfig: () => Promise<HeadroomConfig>;

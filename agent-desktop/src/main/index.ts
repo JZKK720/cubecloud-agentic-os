@@ -115,6 +115,12 @@ import {
   type AgentBundleInput,
 } from "./agent-bundle-compiler";
 import {
+  buildProvisionEnv,
+  fingerprintApiKey,
+  writeProvisionEnv,
+  type ProvisionInput,
+} from "./cubecloud-agent-config";
+import {
   getWorkspaceSupervisorLogTail,
   getWorkspaceSupervisorStatus,
   startWorkspaceSupervisor,
@@ -2789,6 +2795,34 @@ function setupIPC(): void {
       const normalized = normalizeWorkspaceOrigin(rawUrl ?? undefined);
       return promoteAgentBundle(normalized ?? CUBECLOUD_AGENT_DEFAULT_URL, input);
     },
+  );
+
+  // Config center + vault bridge — P5. Provision-time env generation for
+  // the workspace (the ONLY write the console performs against the
+  // workspace's provisioning; everything else is read-only or vault-side
+  // — see coordination matrix §3.1 gate spec). The IPC is the operator
+  // gate: `workspace-provision-env` builds (dry-run) + writes when asked;
+  // logs carry key fingerprints only.
+  ipcMain.handle(
+    "workspace-provision-env",
+    async (
+      _event,
+      input: ProvisionInput,
+      options?: { write?: boolean; writePath?: string },
+    ) => {
+      const result = await buildProvisionEnv(input);
+      if (!options?.write) {
+        return { ...result, written: false, fingerprintedKeys: [] };
+      }
+      const writeResult = await writeProvisionEnv(
+        options.writePath ?? "",
+        result,
+      );
+      return { ...result, ...writeResult };
+    },
+  );
+  ipcMain.handle("workspace-provision-fingerprint", (_event, key: string) =>
+    fingerprintApiKey(key),
   );
 
   // Headroom proxy (context compression for LLM calls).

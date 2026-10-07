@@ -15,6 +15,7 @@ import type { LayaProbeResult } from "../main/laya-probe";
 import type { WeknoraProbeResult } from "../main/weknora-probe";
 import type { OpenVikingProbeResult } from "../main/openviking-probe";
 import type { AgentPromotionResult } from "../main/agent-bundle-compiler";
+import type { ProvisionResult } from "../main/cubecloud-agent-config";
 
 /**
  * Mirror of the renderer-side `CredentialPoolEntry` ambient type
@@ -1667,6 +1668,23 @@ const hermesAPI = {
     },
   ): Promise<AgentPromotionResult> =>
     ipcRenderer.invoke("agent-bundle-promote", rawUrl, input),
+
+  // Config center + vault bridge — P5 (provision-time env; see gate
+  // spec §3.1). Dry-run by default; write requires explicit options.
+  workspaceProvisionEnv: (
+    input: {
+      workspaceBaseUrl: string;
+      workspaceApiKey?: string | null;
+      hermesBaseUrl?: string | null;
+      hermesApiKey?: string | null;
+      localSingleUser?: boolean;
+      extraEnv?: Record<string, string>;
+    },
+    options?: { write?: boolean; writePath?: string },
+  ): Promise<ProvisionResult & { written: boolean; fingerprintedKeys: string[]; error?: string | null }> =>
+    ipcRenderer.invoke("workspace-provision-env", input, options),
+  workspaceProvisionFingerprint: (key: string): Promise<string> =>
+    ipcRenderer.invoke("workspace-provision-fingerprint", key),
 
   // Headroom proxy (context compression for LLM calls).
   // The renderer uses these channels to manage the Headroom
