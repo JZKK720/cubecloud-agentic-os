@@ -10,6 +10,7 @@ import type {
   RuntimeProviderSnapshot,
   TaskOrchestratorSnapshot,
 } from "../shared/runtime-orchestration";
+import type { WorkspaceSupervisorStatus } from "../main/cubecloud-agent-supervisor";
 
 /**
  * Mirror of the renderer-side `CredentialPoolEntry` ambient type
@@ -1590,6 +1591,35 @@ const hermesAPI = {
   }> => ipcRenderer.invoke("everos-sidecar-log-tail"),
   everosSidecarClearLogs: (): Promise<{ success: boolean }> =>
     ipcRenderer.invoke("everos-sidecar-clear-logs"),
+
+  // cubecloud-agent (AI Workspace) probe — contract row A of the
+  // workspace↔desktop control-console plan. Main normalizes the
+  // origin (loopback http only); unreachable degrades gracefully.
+  workspaceProbe: (rawUrl?: string | null): Promise<{
+    reachable: boolean;
+    baseUrl: string;
+    health: { status: string | null; body: unknown };
+    info: { name?: string; version?: string } | null;
+    stack: unknown;
+    error: string | null;
+    scannedAt: string;
+  }> => ipcRenderer.invoke("workspace-probe", rawUrl),
+  workspaceProbeUrl: (): Promise<string> =>
+    ipcRenderer.invoke("workspace-probe-url"),
+
+  // AI Workspace lifecycle supervisor — contract row B (P1).
+  workspaceSupervisorStatus: (): Promise<WorkspaceSupervisorStatus> =>
+    ipcRenderer.invoke("workspace-supervisor-status"),
+  workspaceSupervisorStart: (
+    options?: { port?: number },
+  ): Promise<WorkspaceSupervisorStatus> =>
+    ipcRenderer.invoke("workspace-supervisor-start", options),
+  workspaceSupervisorStop: (): Promise<WorkspaceSupervisorStatus> =>
+    ipcRenderer.invoke("workspace-supervisor-stop"),
+  workspaceSupervisorLogTail: (): Promise<{
+    lines: string[];
+    totalBytes: number;
+  }> => ipcRenderer.invoke("workspace-supervisor-log-tail"),
 
   // Headroom proxy (context compression for LLM calls).
   // The renderer uses these channels to manage the Headroom

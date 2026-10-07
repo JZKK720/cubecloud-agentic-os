@@ -141,20 +141,42 @@ export async function listRuntimeProviders(): Promise<
         } satisfies RuntimeProviderSnapshot;
       }
       case "raven": {
+        const ravenCommand = resolveCommandOnPath("raven", getEnhancedPath());
+        const ravenConnected = currentRemoteRuntime === "raven";
         return {
           definition,
-          status: "planned" as const,
-          available: false,
-          detected: false,
-          detectedCount: 0,
+          status: ravenConnected || ravenCommand ? "ready" : "available",
+          available: true,
+          detected: ravenConnected || !!ravenCommand,
+          detectedCount: ravenConnected || ravenCommand ? 1 : 0,
           detectedPath: null,
-          detectedCommand: null,
-          currentConnectionMode: null,
-          actions: [],
-          summary:
-            "Raven is EverMind's self-improving agent harness. The runtime slot is reserved as 'planned' until Raven's gateway API stabilizes.",
+          detectedCommand: ravenCommand,
+          currentConnectionMode: ravenConnected ? connection.mode : null,
+          actions: [
+            {
+              id: "scan-raven-gateway",
+              kind: "scan",
+              label: "Rescan",
+              detail:
+                "Probe http://127.0.0.1:8855/health and detect the Raven binary on PATH again.",
+              primary: false,
+            },
+            {
+              id: "open-install-guide",
+              kind: "docs",
+              label: ravenCommand ? "Open Raven install guide" : "Install Raven CLI",
+              detail:
+                "Open the upstream Raven install guide (raven.evermind.ai). The gateway attaches on port 8855; the WebUI served by `raven web` is a separate browser surface on 18793.",
+              primary: !ravenCommand,
+            },
+          ],
+          summary: ravenConnected
+            ? `${definition.displayName} is currently attached through its OpenAI-compatible gateway surface.`
+            : ravenCommand
+              ? `${definition.displayName} CLI was detected on the current PATH; attach it through the Welcome screen gateway flow.`
+              : `${definition.displayName} is optional. Install it externally when you want self-evolving memory; the gateway lane is already wired.`,
           detail:
-            "Raven is pre-alpha (v0.1.x). The desktop already discovers the 'raven' binary on PATH via the AGENT_CLI_CATALOG. EverOS (already integrated as a Tier 2 support surface) is Raven's memory backend.",
+            "Raven (EverMind) is Apache-2.0 and ships its own four built-in agents plus an Evolver. The desktop attaches to the gateway on port 8855 with the same chat contract as the other lanes. The Raven harness adapter is a later phase — until then the gateway lane is chat-capable. Hermes remains the default runtime.",
         } satisfies RuntimeProviderSnapshot;
       }
     }

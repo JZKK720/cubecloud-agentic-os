@@ -289,6 +289,33 @@ interface EverOsSearchResult {
   error?: string;
 }
 
+// cubecloud-agent (AI Workspace) probe — contract row A.
+interface WorkspaceProbeResult {
+  reachable: boolean;
+  baseUrl: string;
+  health: { status: string | null; body: unknown };
+  info: { name?: string; version?: string; [key: string]: unknown } | null;
+  stack: unknown;
+  error: string | null;
+  scannedAt: string;
+}
+
+// AI Workspace lifecycle supervisor — contract row B (P1).
+interface WorkspaceSupervisorStatus {
+  state: "stopped" | "starting" | "running" | "crashed" | "exited";
+  running: boolean;
+  pid: number | null;
+  port: number | null;
+  baseUrl: string;
+  cli: string | null;
+  cliPath: string | null;
+  lastError: string | null;
+  crashCount: number;
+  startedAt: number | null;
+  uptimeMs: number | null;
+  reason: string | null;
+}
+
 interface EverOsRecentItem {
   id: string;
   content: string;
@@ -1608,6 +1635,26 @@ interface HermesAPI {
   }) => Promise<EverOsSidecarStatus>;
   everosSidecarLogTail: () => Promise<EverOsSidecarLogTail>;
   everosSidecarClearLogs: () => Promise<{ success: boolean }>;
+
+  // cubecloud-agent (AI Workspace) probe — contract row A of the
+  // workspace↔desktop control-console plan
+  // (docs/plans/2026-10-06-cubecloud-agent-integration-plan.md).
+  // Main normalizes the origin (loopback http only); unreachable
+  // degrades gracefully. `workspaceProbeUrl` feeds the hardened
+  // webview embed (contract row C, later phase).
+  workspaceProbe: (rawUrl?: string | null) => Promise<WorkspaceProbeResult>;
+  workspaceProbeUrl: () => Promise<string>;
+
+  // AI Workspace lifecycle supervisor — contract row B (P1).
+  workspaceSupervisorStatus: () => Promise<WorkspaceSupervisorStatus>;
+  workspaceSupervisorStart: (options?: {
+    port?: number;
+  }) => Promise<WorkspaceSupervisorStatus>;
+  workspaceSupervisorStop: () => Promise<WorkspaceSupervisorStatus>;
+  workspaceSupervisorLogTail: () => Promise<{
+    lines: string[];
+    totalBytes: number;
+  }>;
 
   // Headroom proxy (context compression for LLM calls)
   headroomGetConfig: () => Promise<HeadroomConfig>;

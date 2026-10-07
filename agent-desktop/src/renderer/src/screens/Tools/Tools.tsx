@@ -300,6 +300,20 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     detectedCommand: string | null;
     version: string | null;
   } | null>(null);
+  const [workspace, setWorkspace] = useState<{
+    reachable: boolean;
+    baseUrl: string;
+    version: string | null;
+    error: string | null;
+    scannedAt: string;
+  } | null>(null);
+  const [workspaceLoading, setWorkspaceLoading] = useState(false);
+  const [workspaceSupervisor, setWorkspaceSupervisor] = useState<{
+    state: "stopped" | "starting" | "running" | "crashed" | "exited";
+    running: boolean;
+    cli: string | null;
+    reason: string | null;
+  } | null>(null);
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -325,9 +339,42 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     }
   }, []);
 
+  const loadWorkspace = useCallback(async (): Promise<void> => {
+    setWorkspaceLoading(true);
+    try {
+      const result = await window.hermesAPI.workspaceProbe();
+      setWorkspace({
+        reachable: result.reachable,
+        baseUrl: result.baseUrl,
+        version:
+          result.info && typeof result.info.version === "string"
+            ? result.info.version
+            : null,
+        error: result.error,
+        scannedAt: result.scannedAt,
+      });
+    } catch {
+      setWorkspace(null);
+    } finally {
+      setWorkspaceLoading(false);
+    }
+    try {
+      const sup = await window.hermesAPI.workspaceSupervisorStatus();
+      setWorkspaceSupervisor({
+        state: sup.state,
+        running: sup.running,
+        cli: sup.cli,
+        reason: sup.reason,
+      });
+    } catch {
+      setWorkspaceSupervisor(null);
+    }
+  }, []);
+
   useEffect(() => {
     loadToolsets();
     loadAgentReach();
+    void loadWorkspace();
     void window.hermesAPI
       .discoverLast30Days()
       .then((s) => setLast30days(s))
@@ -622,6 +669,77 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               __html: t("tools.panels.gbrain.notInstalled"),
             }}
           />
+        ) : null}
+      </div>
+
+      {/* cubecloud-agent (AI Workspace) — contract row A console card */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            AI Workspace (cubecloud-agent)
+          </h3>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {workspaceSupervisor?.running ? (
+              <button
+                className="btn btn-secondary tools-agent-reach-refresh"
+                onClick={async () => {
+                  try {
+                    await window.hermesAPI.workspaceSupervisorStop();
+                  } finally {
+                    void loadWorkspace();
+                  }
+                }}
+              >
+                {t("tools.workspace.stop", { defaultValue: "Stop" })}
+              </button>
+            ) : workspaceSupervisor?.cli ? (
+              <button
+                className="btn btn-secondary tools-agent-reach-refresh"
+                onClick={async () => {
+                  try {
+                    await window.hermesAPI.workspaceSupervisorStart();
+                  } finally {
+                    void loadWorkspace();
+                  }
+                }}
+              >
+                {t("tools.workspace.start", { defaultValue: "Start" })}
+              </button>
+            ) : null}
+            <button
+              className="btn btn-secondary tools-agent-reach-refresh"
+              onClick={loadWorkspace}
+              disabled={workspaceLoading}
+            >
+              <Refresh size={14} />
+              {workspaceLoading ? t("tools.workspace.probing", { defaultValue: "Probing..." }) : t("tools.agentReachRefresh", { defaultValue: "Refresh" })}
+            </button>
+          </div>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          {t(
+            "tools.workspace.subtitle",
+            { defaultValue: "The AI Workspace front interface. The Agentic OS console attaches, supervises, and governs it; chat and files stay in the workspace." },
+          )}
+        </p>
+        {workspace?.reachable ? (
+          <div className="tools-agent-reach-status">
+            <span className="tools-agent-reach-installed">
+              <CheckCircle size={14} /> {t("tools.workspace.reachable", { defaultValue: "Reachable" })}
+              {workspace.version ? ` (v${workspace.version})` : ""}
+            </span>
+            <p className="tools-agent-reach-subtitle">
+              {t("tools.workspace.attachedAt", { defaultValue: "Attached at" })}{" "}
+              <code>{workspace.baseUrl}</code>
+            </p>
+          </div>
+        ) : workspace ? (
+          <div className="tools-agent-reach-not-installed">
+            {t("tools.workspace.unreachable", { defaultValue: "AI Workspace not reachable on" })}{" "}
+            <code>{workspace.baseUrl}</code>
+            {workspace.error ? ` — ${workspace.error}` : ""}
+          </div>
         ) : null}
       </div>
 

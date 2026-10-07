@@ -93,6 +93,19 @@ import {
   type EverOsSidecarStartOptions,
 } from "./everos-sidecar";
 import {
+  CUBECLOUD_AGENT_DEFAULT_URL,
+  normalizeWorkspaceOrigin,
+  probeCubecloudAgent,
+  type CubecloudAgentProbeResult,
+} from "./cubecloud-agent-probe";
+import {
+  getWorkspaceSupervisorLogTail,
+  getWorkspaceSupervisorStatus,
+  startWorkspaceSupervisor,
+  stopWorkspaceSupervisor,
+  type WorkspaceSupervisorStartOptions,
+} from "./cubecloud-agent-supervisor";
+import {
   clearMooTasksSidecarLogs,
   getMooTasksSidecarLogTail,
   getMooTasksSidecarStatus,
@@ -2655,6 +2668,46 @@ function setupIPC(): void {
     "everos-sidecar-restart",
     (_event, options?: EverOsSidecarStartOptions) =>
       restartEverOsSidecar(options ?? {}),
+  );
+
+  // cubecloud-agent (AI Workspace) probe — contract row A of the
+  // workspace↔desktop control-console plan. Stateless HTTP probe of
+  // /health + opportunistic /v1/info and /v1/stack/status. Never
+  // throws: unreachable returns `reachable: false` with `error`.
+  // The renderer passes an optional loopback origin (normalized with
+  // `normalizeWorkspaceOrigin`); arbitrary/non-loopback URLs are
+  // rejected to the default 127.0.0.1:6767.
+  ipcMain.handle(
+    "workspace-probe",
+    async (_event, rawUrl?: string | null): Promise<CubecloudAgentProbeResult> => {
+      const normalized = normalizeWorkspaceOrigin(rawUrl ?? undefined);
+      return probeCubecloudAgent(normalized ?? CUBECLOUD_AGENT_DEFAULT_URL);
+    },
+  );
+  // The origin the renderer feeds the hardened webview embed
+  // (contract row C). P0 pins it to the loopback default; P5
+  // (config center) persists an operator-override.
+  ipcMain.handle("workspace-probe-url", (): string => {
+    const normalized = normalizeWorkspaceOrigin(null);
+    return normalized ?? CUBECLOUD_AGENT_DEFAULT_URL;
+  });
+
+  // AI Workspace lifecycle supervisor — contract row B. Best-effort:
+  // a missing CLI resolves to `state: "stopped"` + reason rather
+  // than throwing (mirrors the everos/headroom sidecar family).
+  ipcMain.handle("workspace-supervisor-status", () =>
+    getWorkspaceSupervisorStatus(),
+  );
+  ipcMain.handle(
+    "workspace-supervisor-start",
+    async (_event, options?: WorkspaceSupervisorStartOptions) =>
+      startWorkspaceSupervisor(options ?? {}),
+  );
+  ipcMain.handle("workspace-supervisor-stop", async () =>
+    stopWorkspaceSupervisor(),
+  );
+  ipcMain.handle("workspace-supervisor-log-tail", () =>
+    getWorkspaceSupervisorLogTail(),
   );
 
   // Headroom proxy (context compression for LLM calls).
