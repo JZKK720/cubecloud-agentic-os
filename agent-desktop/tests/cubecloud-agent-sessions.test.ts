@@ -207,7 +207,7 @@ describe("cubecloud-agent sessions (read-only inventory, P3/R1)", () => {
     it("joins desktop catalog vs workspace agents and flags divergences", async () => {
       fetchMock.mockImplementation(async (input: unknown) => {
         const url = String(input);
-        if (url.includes("/api/agents")) {
+        if (url.includes("/v1/agents")) {
           return jsonResponse({
             object: "list",
             data: [

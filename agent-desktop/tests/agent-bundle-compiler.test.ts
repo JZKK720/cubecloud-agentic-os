@@ -100,12 +100,9 @@ describe("agent bundle compiler (P4/R2+R3)", () => {
     );
   });
 
-  it("promotion round-trip: 201 resolves with the returned agent row", async () => {
+  it("promotion round-trip: session-create resolves with the session id", async () => {
     fetchMock.mockResolvedValue(
-      jsonResponse(
-        { id: "ag_abc123", object: "agent", name: "cubecloud-researcher" },
-        201,
-      ),
+      jsonResponse({ id: "conv_new", agent_id: "ag_abc123" }, 200),
     );
     const result = await promoteAgentBundle(
       "http://127.0.0.1:6767",
@@ -114,9 +111,11 @@ describe("agent bundle compiler (P4/R2+R3)", () => {
     expect(result.success).toBe(true);
     expect(result.agentId).toBe("ag_abc123");
     expect(result.conflict).toBe(false);
-    // multipart FormData with the bundle part.
+    // multipart FormData with the bundle part — the live-verified
+    // promotion path (POST /v1/sessions with a bundle part; the
+    // standalone /api/agents upload was removed in this build).
     const called = fetchMock.mock.calls[0]!;
-    expect(String(called[0])).toBe("http://127.0.0.1:6767/api/agents");
+    expect(String(called[0])).toBe("http://127.0.0.1:6767/v1/sessions");
     expect(called[1]!.method).toBe("POST");
   });
 

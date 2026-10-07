@@ -13,7 +13,9 @@
 // Endpoints used (all exist today, cubecloud_agent/server/API.md):
 //   GET /v1/sessions            — paginated list (cursor + has_more)
 //   GET /v1/sessions/{id}       — snapshot (identity, status, items)
-//   GET /api/agents             — agent bundle registry (object:list)
+//   GET /v1/agents             — agent bundle registry (object:list;
+//     live-verified on the current server build — /v1/agents lists 404,
+//     the registry list is served under /v1)
 //
 // Cubecloud original work (2026). Distributed under the repo's dual
 // license per `LICENSE`; see `BRANDING_AND_LICENSE.md` for provenance.
@@ -264,7 +266,7 @@ export async function getWorkspaceSessionSnapshot(
   }
 }
 
-/** GET /api/agents — the agent bundle registry (object:list). Read-only
+/** GET /v1/agents — the agent bundle registry (object:list). Read-only
  *  view for the R1 reconciliation; promotion lives in the R2/R3
  *  translator phase. Never throws. */
 export async function listWorkspaceAgents(
@@ -273,14 +275,14 @@ export async function listWorkspaceAgents(
 ): Promise<WorkspaceAgentListResult> {
   try {
     const { ok, status, body } = await fetchJson(
-      `${trimTrailingSlash(baseUrl)}/api/agents?limit=${encodeURIComponent(String(limit))}`,
+      `${trimTrailingSlash(baseUrl)}/v1/agents?limit=${encodeURIComponent(String(limit))}`,
     );
     if (!ok || typeof body !== "object" || body === null) {
       return {
         success: false,
         data: [],
         hasMore: false,
-        error: `HTTP ${status} from /api/agents`,
+        error: `HTTP ${status} from /v1/agents`,
       };
     }
     const record = body as Record<string, unknown>;

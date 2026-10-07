@@ -2,7 +2,12 @@
 // (`docs/plans/2026-10-06-workspace-agentic-os-coordination-matrix.md`):
 //   R2 — compile a desktop persona (SOUL profile + skills) into a
 //        cubecloud-agent bundle (tar.gz with config.yaml)
-//   R3 — promote it via the bundle registry upload (POST /api/agents)
+//   R3 — promote it via session creation: multipart
+//     `POST /v1/sessions` with a `bundle` part (the standalone agent
+//     registry upload `/api/agents` was REMOVED in this server build —
+//     `builtin_agents.py`: "agent writes happen through session
+//     creation", `/v1/agents` is read-only list). The console therefore
+//     promotes a persona by creating its dedicated workspace session.
 //
 // Bundle contract (cubecloud-agent AGENTSPEC.md + web/src/lib/agentBundle.ts
 // — the workspace's own SPA uses exactly this shape):
@@ -10,7 +15,8 @@
 //     config.yaml (spec_version: 1, name, description?, executor.type:
 //     agent-meow, executor.config.harness, executor.model, prompt)
 //     AGENTS.md (optional instructions; config.yaml gains `instructions:`)
-//   201 Created → { id, name }; 409 name conflict; 400 invalid bundle.
+//   `GET /v1/agents` lists built-in agents (read-only, PaginatedList).
+//   201/200 session creation → { id }; 400 invalid bundle; 404 no route.
 //
 // Cubecloud original work (2026). Distributed under the repo's dual license
 // per `LICENSE`; see `BRANDING_AND_LICENSE.md` for provenance.
@@ -241,7 +247,7 @@ export async function promoteAgentBundle(
     const timer = setTimeout(() => controller.abort(), UPLOAD_TIMEOUT_MS);
     try {
       const response = await fetch(
-        `${baseUrl.replace(/\/+$/, "")}/api/agents`,
+        `${baseUrl.replace(/\/+$/, "")}/v1/sessions`,
         { method: "POST", body: form, signal: controller.signal },
       );
       if (response.status === 409) {
@@ -264,17 +270,27 @@ export async function promoteAgentBundle(
           conflict: false,
           error:
             body?.detail ??
-            `upload failed with HTTP ${response.status}`,
+            `session-create promotion failed with HTTP ${response.status}`,
         };
       }
       const created = (await response.json().catch(() => ({}))) as {
         id?: string;
         name?: string;
+        agent_id?: string;
+        agent_name?: string;
+        // Session-create responses also echo the conversation id under
+        // `session` in some builds — tolerate that shape too.
+        session?: { id?: string; agent_id?: string };
       };
+      // The promoted artifact is the AGENT (the persona now bound to the
+      // new session) — prefer the echoed agent_id; some builds only
+      // return the conversation id.
+      const agentId =
+        created.agent_id ?? created.session?.agent_id ?? created.id ?? null;
       return {
         success: true,
-        agentId: created.id ?? null,
-        agentName: created.name ?? input.name,
+        agentId,
+        agentName: created.agent_name ?? created.name ?? input.name,
         conflict: false,
         error: null,
       };
