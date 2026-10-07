@@ -17,6 +17,7 @@ import {
   type HarnessResolver,
 } from "@cubecloud/platform-core";
 import { createHermesHarness } from "./hermes-harness";
+import { createRavenHarness } from "./raven-harness";
 import { getConfigValue } from "../config";
 
 /** A stub harness for runtimes that don't have a full adapter yet. */
@@ -77,7 +78,9 @@ export function createHarnessRegistry(): HarnessRegistry {
     ["hermes", createHermesHarness()],
     ["ironclaw", createStubHarness("ironclaw", "IronClaw")],
     ["openclaw", createStubHarness("openclaw", "OpenClaw")],
-    ["raven", createStubHarness("raven", "Raven")],
+    // I-phase: the real adapter replaced the throwing stub — Raven is
+    // an OpenAI-compatible gateway (8855) the desktop can stream from.
+    ["raven", createRavenHarness()],
   ]);
 
   const resolve: HarnessResolver = async (_sessionId: string) => {
