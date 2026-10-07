@@ -21,6 +21,12 @@ import type {
   PendingElicitationResult,
   GovernanceResolveResult,
 } from "../main/cubecloud-agent-governance";
+import type {
+  PreScreenDecision,
+  SkillTriageDecision,
+  PreScreenConfig,
+  SkillTriageConfig,
+} from "../main/decision-triage";
 
 /**
  * Mirror of the renderer-side `CredentialPoolEntry` ambient type
@@ -1718,6 +1724,28 @@ const hermesAPI = {
     rawUrl: string | null,
   ): Promise<GovernanceSurfacesResult> =>
     ipcRenderer.invoke("workspace-governance-surfaces", rawUrl),
+
+  // Decision triage — DM2 (pre-screen + skill triage; typed audit on
+  // request via options.audit).
+  decisionPrescreenApproval: (
+    input: {
+      sessionId: string;
+      elicitationId: string;
+      message: string;
+      policyName: string | null;
+    },
+    config: PreScreenConfig,
+    options?: { audit?: boolean },
+  ): Promise<PreScreenDecision> =>
+    ipcRenderer.invoke("decision-prescreen-approval", input, config, options),
+  decisionTriageSkill: (
+    input: { skillName: string; summary: string },
+    config: SkillTriageConfig,
+    options?: { audit?: boolean },
+  ): Promise<SkillTriageDecision> =>
+    ipcRenderer.invoke("decision-triage-skill", input, config, options),
+  decisionAuditPath: (): Promise<string> =>
+    ipcRenderer.invoke("decision-audit-path"),
 
   // Headroom proxy (context compression for LLM calls).
   // The renderer uses these channels to manage the Headroom

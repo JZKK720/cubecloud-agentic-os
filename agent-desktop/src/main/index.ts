@@ -127,6 +127,13 @@ import {
   type GovernanceVerdictBody,
 } from "./cubecloud-agent-governance";
 import {
+  preScreenApproval,
+  triageStagedSkill,
+  appendDecisionLog,
+  type PreScreenConfig,
+  type SkillTriageConfig,
+} from "./decision-triage";
+import {
   getWorkspaceSupervisorLogTail,
   getWorkspaceSupervisorStatus,
   startWorkspaceSupervisor,
@@ -655,6 +662,70 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(rendererHtmlPath);
   }
+}
+
+// ── DM2 helpers (decision triage) ───────────────────────────────
+
+/** Default decide fn for the DM2 slots: hits a local laya-serve with the
+ *  noul/risk question set (bounded 10 s, optional bearer). A missing /
+ *  errored server throws — the slots treat that as fail-safe
+ *  (humanRequired / hold), matching the governance inversion rule. */
+function createDefaultNoulDecide(): (
+  state: { message: string },
+  context?: { policyName?: string | null },
+) => Promise<{
+  values: Record<string, string | number | boolean | null>;
+  confidence: Record<string, number>;
+}> {
+  return async (state) => {
+    const layaBase =
+      (getConfigValue("agent.laya_base_url") as string | null) ??
+      process.env.LAYA_BASE_URL ??
+      "http://127.0.0.1:8000";
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10_000);
+    try {
+      const response = await fetch(`${layaBase.replace(/\/+$/, "")}/v1/systemone`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(process.env.LAYA_API_KEY
+            ? { authorization: `Bearer ${process.env.LAYA_API_KEY}` }
+            : {}),
+        },
+        body: JSON.stringify({
+          state,
+          schema: {
+            type: "object",
+            properties: {
+              needs_human: { type: "boolean" },
+              risk_level: { type: "integer", minimum: 0, maximum: 3 },
+            },
+            required: ["needs_human", "risk_level"],
+          },
+        }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        throw new Error(`laya-serve HTTP ${response.status}`);
+      }
+      const body = (await response.json()) as Record<string, unknown>;
+      return {
+        values: (body.values ?? {}) as Record<
+          string,
+          string | number | boolean | null
+        >,
+        confidence: (body.confidence ?? {}) as Record<string, number>,
+      };
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+}
+
+/** The decision audit log path (per-profile bench dir). */
+function decisionAuditPath(): string {
+  return join(getHermesHome(), "decisions.jsonl");
 }
 
 function setupIPC(): void {
@@ -2875,6 +2946,63 @@ function setupIPC(): void {
       return listGovernanceSurfaces(normalized ?? CUBECLOUD_AGENT_DEFAULT_URL);
     },
   );
+
+  // Decision triage — DM2 (decision-core replan §D3.3): the two
+  // governance decision slots, both toggle-gated with typed audit
+  // entries. Neither slot ever delivers a verdict to the workspace by
+  // itself — preScreens only annotate the operator's inbox, and skill
+  // triage only reorders the staging queue. Fail-safe: an unavailable
+  // decid­er ⇒ humanRequired / hold.
+  ipcMain.handle(
+    "decision-prescreen-approval",
+    async (
+      _event,
+      input: { sessionId: string; elicitationId: string; message: string; policyName: string | null },
+      config: PreScreenConfig,
+      options?: { audit?: boolean },
+    ) => {
+      const decision = await preScreenApproval(input, createDefaultNoulDecide(), config);
+      if (options?.audit) {
+        appendDecisionLog(decisionAuditPath(), {
+          slot: "pre_screen",
+          decision: decision.decision,
+          confidence: decision.confidence,
+          subject: `${input.sessionId}/${input.elicitationId}`,
+          subjectKind: "elicitation",
+          detail: decision.reason,
+        });
+      }
+      return decision;
+    },
+  );
+  ipcMain.handle(
+    "decision-triage-skill",
+    async (
+      _event,
+      input: { skillName: string; summary: string },
+      config: SkillTriageConfig,
+      options?: { audit?: boolean },
+    ) => {
+      const triage = await triageStagedSkill(
+        input,
+        () =>
+          createDefaultNoulDecide()({ message: `${input.skillName}: ${input.summary}` }),
+        config,
+      );
+      if (options?.audit) {
+        appendDecisionLog(decisionAuditPath(), {
+          slot: "skill_triage",
+          decision: triage.decision,
+          confidence: triage.confidence,
+          subject: input.skillName,
+          subjectKind: "skill",
+          detail: triage.reason,
+        });
+      }
+      return triage;
+    },
+  );
+  ipcMain.handle("decision-audit-path", () => decisionAuditPath());
 
   // Headroom proxy (context compression for LLM calls).
   // The desktop auto-spawns the sidecar on the first IPC call

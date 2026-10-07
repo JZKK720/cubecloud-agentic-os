@@ -1809,6 +1809,34 @@ interface HermesAPI {
   workspaceGovernanceSurfaces: (
     rawUrl: string | null,
   ) => Promise<GovernanceSurfacesResult>;
+  // Decision triage — DM2 (pre-screen + skill triage; audit optional).
+  decisionPrescreenApproval: (
+    input: {
+      sessionId: string;
+      elicitationId: string;
+      message: string;
+      policyName: string | null;
+    },
+    config: { enabled: boolean; minConf: number; maxAutoRisk: number; alwaysHumanPolicies?: string[] },
+    options?: { audit?: boolean },
+  ) => Promise<{
+    decision: "autoApprovable" | "humanRequired";
+    needsHuman: boolean;
+    riskLevel: number | null;
+    confidence: number | null;
+    reason: string | null;
+  }>;
+  decisionTriageSkill: (
+    input: { skillName: string; summary: string },
+    config: { enabled: boolean; minConf: number },
+    options?: { audit?: boolean },
+  ) => Promise<{
+    decision: "promote" | "hold" | "reject";
+    maturity: number | null;
+    confidence: number | null;
+    reason: string | null;
+  }>;
+  decisionAuditPath: () => Promise<string>;
 
   // Headroom proxy (context compression for LLM calls)
   headroomGetConfig: () => Promise<HeadroomConfig>;
