@@ -31,6 +31,11 @@ import {
   createBeforeModelChain,
   type ChatMessage as MiddlewareChatMessage,
 } from "./chat-middleware";
+import {
+  createLayaBeforeModelChain,
+  type LayaDecideFn,
+} from "./laya-middlewares";
+import { getConfigValue } from "./config";
 import { createHarnessRegistry } from "./harnesses/registry";
 import { createKnowledgeVault } from "@cubecloud/platform-core";
 import {
@@ -1172,9 +1177,60 @@ function sendMessageViaApi(
           return [];
         }
       };
-      const chain = createBeforeModelChain(_harnessRegistry, {
-        memoryRecallFn,
-      });
+      // DM1 — Laya System-1 decision pair (fail-open, toggle-gated).
+      // Reads the operator's config (agent.laya_guard / agent.laya_route,
+      // both default OFF); when enabled, the pair leads the chain so the
+      // guard screens the prompt and the routing hint annotates before the
+      // platform middlewares run. The decide fn targets a LOCAL laya-serve
+      // (http) — a missing/failed server degrades to pass-through, never
+      // breaking the chat path.
+      const layaGuardOn = getConfigValue("agent.laya_guard") === "true";
+      const layaRouteOn = getConfigValue("agent.laya_route") === "true";
+      const layaToggles = {
+        guard: { enabled: layaGuardOn, minConf: 0.6 },
+        routing: { enabled: layaRouteOn, minConf: 0.6 },
+      };
+      const layaDecide: LayaDecideFn = async (state, schema, options) => {
+        // Local laya-serve HTTP client (LAYA_BASE_URL read from env with
+        // the documented default off — the toggles above remain the only
+        // enable path, so this fetch only fires when the operator opted in).
+        const layaBase =
+          process.env.LAYA_BASE_URL ?? "http://127.0.0.1:8000";
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10_000);
+        try {
+          const response = await fetch(`${layaBase}/v1/systemone`, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              ...(process.env.LAYA_API_KEY
+                ? { authorization: `Bearer ${process.env.LAYA_API_KEY}` }
+                : {}),
+            },
+            body: JSON.stringify({ state, schema, ...options }),
+            signal: controller.signal,
+          });
+          if (!response.ok) {
+            throw new Error(`laya-serve HTTP ${response.status}`);
+          }
+          const body = (await response.json()) as Record<string, unknown>;
+          return {
+            values: (body.values ?? {}) as never,
+            confidence: (body.confidence ?? {}) as never,
+            probabilities: (body.probabilities ?? null) as never,
+            routing: (body.routing ?? { model: "unknown", reason: null }) as never,
+            latencyMs: typeof body.latency_ms === "number" ? (body.latency_ms as number) : 0,
+          };
+        } finally {
+          clearTimeout(timer);
+        }
+      };
+      const chain = [
+        ...createLayaBeforeModelChain(layaToggles, layaDecide),
+        ...createBeforeModelChain(_harnessRegistry, {
+          memoryRecallFn,
+        }),
+      ];
       const middlewareMessages: MiddlewareChatMessage[] = messages.map(
         (m) => ({
           role: m.role as MiddlewareChatMessage["role"],
