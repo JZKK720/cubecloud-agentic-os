@@ -334,6 +334,11 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     authNote: string | null;
     error: string | null;
   } | null>(null);
+  const [governance, setGovernance] = useState<{
+    policies: Array<{ name: string; mode: string | null }>;
+    scheduledTasks: Array<{ id: string | null; name: string }>;
+    errors: string[];
+  } | null>(null);
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -423,6 +428,19 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       });
     } catch {
       setOpenviking(null);
+    }
+    try {
+      const surfaces = await window.hermesAPI.workspaceGovernanceSurfaces(null);
+      setGovernance({
+        policies: surfaces.policies,
+        scheduledTasks: surfaces.scheduledTasks.map((t) => ({
+          id: t.id,
+          name: t.name,
+        })),
+        errors: surfaces.errors,
+      });
+    } catch {
+      setGovernance(null);
     }
   }, []);
 
@@ -864,6 +882,47 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               <span className="tools-agent-reach-not-installed">
                 {t("tools.panels.weknora.unreachable", { defaultValue: "Not reachable" })}
                 {weknora.error ? ` — ${weknora.error}` : ""}
+              </span>
+            )
+          ) : null}
+        </div>
+      </div>
+
+      {/* Governance relay (row G) — the workspace's policy/schedule surfaces, read-only view }*/}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            {t("tools.panels.governance.title", { defaultValue: "Workspace governance" })}
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          {t("tools.panels.governance.subtitle", {
+            defaultValue:
+              "Policy registry, scheduled tasks, and sharing from the AI Workspace — the console's governance view. Approval verdicts are delivered by you, to the workspace's resolve endpoint.",
+          })}
+        </p>
+        <div className="tools-agent-reach-status">
+          {governance ? (
+            governance.errors.length > 0 &&
+            governance.policies.length === 0 &&
+            governance.scheduledTasks.length === 0 ? (
+              <span className="tools-agent-reach-not-installed">
+                {t("tools.panels.governance.unavailable", {
+                  defaultValue: "Governance surfaces not reachable",
+                })}
+                {governance.errors[0] ? ` — ${governance.errors[0]}` : ""}
+              </span>
+            ) : (
+              <span className="tools-agent-reach-installed">
+                <CheckCircle size={14} />{' '}
+                {t("tools.panels.governance.visible", { defaultValue: "Visible" })}
+                {governance.policies.length > 0
+                  ? ` — ${governance.policies.length} policies`
+                  : ""}
+                {governance.scheduledTasks.length > 0
+                  ? ` — ${governance.scheduledTasks.length} scheduled`
+                  : ""}
               </span>
             )
           ) : null}

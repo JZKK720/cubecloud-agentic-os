@@ -121,6 +121,12 @@ import {
   type ProvisionInput,
 } from "./cubecloud-agent-config";
 import {
+  listGovernanceSurfaces,
+  listPendingElicitations,
+  resolveElicitation,
+  type GovernanceVerdictBody,
+} from "./cubecloud-agent-governance";
+import {
   getWorkspaceSupervisorLogTail,
   getWorkspaceSupervisorStatus,
   startWorkspaceSupervisor,
@@ -2823,6 +2829,51 @@ function setupIPC(): void {
   );
   ipcMain.handle("workspace-provision-fingerprint", (_event, key: string) =>
     fingerprintApiKey(key),
+  );
+
+  // Governance relay — P6 / contract row G. Read-side (pending
+  // elicitations + governance surfaces) and the ONE write the console
+  // performs: the human approval verdict delivered to the resource-scoped
+  // resolve URL. Mirrored-child requests route to the child session per
+  // the workspace contract.
+  ipcMain.handle(
+    "workspace-governance-elicitations",
+    async (
+      _event,
+      rawUrl: string | null,
+      sessionId: string,
+    ) => {
+      const normalized = normalizeWorkspaceOrigin(rawUrl ?? undefined);
+      return listPendingElicitations(normalized ?? CUBECLOUD_AGENT_DEFAULT_URL, sessionId);
+    },
+  );
+  ipcMain.handle(
+    "workspace-governance-resolve",
+    async (
+      _event,
+      rawUrl: string | null,
+      sessionId: string,
+      elicitationId: string,
+      verdict: GovernanceVerdictBody & { targetSessionId?: string },
+    ) => {
+      const normalized = normalizeWorkspaceOrigin(rawUrl ?? undefined);
+      // Mirrored-child routing: deliver to the session the workspace
+      // names (defaults to the parent session id).
+      const deliverSession = verdict.targetSessionId || sessionId;
+      return resolveElicitation(
+        normalized ?? CUBECLOUD_AGENT_DEFAULT_URL,
+        deliverSession,
+        elicitationId,
+        { action: verdict.action, content: verdict.content },
+      );
+    },
+  );
+  ipcMain.handle(
+    "workspace-governance-surfaces",
+    async (_event, rawUrl: string | null) => {
+      const normalized = normalizeWorkspaceOrigin(rawUrl ?? undefined);
+      return listGovernanceSurfaces(normalized ?? CUBECLOUD_AGENT_DEFAULT_URL);
+    },
   );
 
   // Headroom proxy (context compression for LLM calls).

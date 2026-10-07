@@ -372,6 +372,44 @@ interface WorkspaceProvisionResult {
   error?: string | null;
 }
 
+// Governance relay — P6 / contract row G.
+interface PendingElicitation {
+  elicitationId: string;
+  mode: "form" | "url";
+  message: string | null;
+  requestedSchema: unknown;
+  url: string | null;
+  phase: string | null;
+  policyName: string | null;
+  contentPreview: string | null;
+  targetSessionId: string | null;
+}
+
+interface PendingElicitationResult {
+  success: boolean;
+  requests: PendingElicitation[];
+  error?: string;
+}
+
+interface GovernanceResolveResult {
+  success: boolean;
+  queued: boolean | null;
+  error?: string;
+  cause?: string | null;
+}
+
+interface GovernanceSurfacesResult {
+  scheduledTasks: Array<{
+    id: string | null;
+    name: string;
+    mode: string | null;
+    nextRun: number | null;
+  }>;
+  policies: Array<{ name: string; mode: string | null }>;
+  shares: unknown[];
+  errors: string[];
+}
+
 interface EverOsRecentItem {
   id: string;
   content: string;
@@ -1753,6 +1791,24 @@ interface HermesAPI {
     options?: { write?: boolean; writePath?: string },
   ) => Promise<WorkspaceProvisionResult>;
   workspaceProvisionFingerprint: (key: string) => Promise<string>;
+  // Governance relay — P6 / contract row G.
+  workspaceGovernanceElicitations: (
+    rawUrl: string | null,
+    sessionId: string,
+  ) => Promise<PendingElicitationResult>;
+  workspaceGovernanceResolve: (
+    rawUrl: string | null,
+    sessionId: string,
+    elicitationId: string,
+    verdict: {
+      action: "accept" | "decline" | "cancel";
+      content?: unknown;
+      targetSessionId?: string;
+    },
+  ) => Promise<GovernanceResolveResult>;
+  workspaceGovernanceSurfaces: (
+    rawUrl: string | null,
+  ) => Promise<GovernanceSurfacesResult>;
 
   // Headroom proxy (context compression for LLM calls)
   headroomGetConfig: () => Promise<HeadroomConfig>;

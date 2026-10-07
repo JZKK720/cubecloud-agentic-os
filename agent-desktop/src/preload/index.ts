@@ -16,6 +16,11 @@ import type { WeknoraProbeResult } from "../main/weknora-probe";
 import type { OpenVikingProbeResult } from "../main/openviking-probe";
 import type { AgentPromotionResult } from "../main/agent-bundle-compiler";
 import type { ProvisionResult } from "../main/cubecloud-agent-config";
+import type {
+  GovernanceSurfacesResult,
+  PendingElicitationResult,
+  GovernanceResolveResult,
+} from "../main/cubecloud-agent-governance";
 
 /**
  * Mirror of the renderer-side `CredentialPoolEntry` ambient type
@@ -1685,6 +1690,34 @@ const hermesAPI = {
     ipcRenderer.invoke("workspace-provision-env", input, options),
   workspaceProvisionFingerprint: (key: string): Promise<string> =>
     ipcRenderer.invoke("workspace-provision-fingerprint", key),
+
+  // Governance relay — P6 / contract row G.
+  workspaceGovernanceElicitations: (
+    rawUrl: string | null,
+    sessionId: string,
+  ): Promise<PendingElicitationResult> =>
+    ipcRenderer.invoke("workspace-governance-elicitations", rawUrl, sessionId),
+  workspaceGovernanceResolve: (
+    rawUrl: string | null,
+    sessionId: string,
+    elicitationId: string,
+    verdict: {
+      action: "accept" | "decline" | "cancel";
+      content?: unknown;
+      targetSessionId?: string;
+    },
+  ): Promise<GovernanceResolveResult> =>
+    ipcRenderer.invoke(
+      "workspace-governance-resolve",
+      rawUrl,
+      sessionId,
+      elicitationId,
+      verdict,
+    ),
+  workspaceGovernanceSurfaces: (
+    rawUrl: string | null,
+  ): Promise<GovernanceSurfacesResult> =>
+    ipcRenderer.invoke("workspace-governance-surfaces", rawUrl),
 
   // Headroom proxy (context compression for LLM calls).
   // The renderer uses these channels to manage the Headroom
