@@ -98,6 +98,13 @@ import {
   probeCubecloudAgent,
   type CubecloudAgentProbeResult,
 } from "./cubecloud-agent-probe";
+import { probeLaya, LAYA_MCP_REGISTRATION, type LayaProbeResult } from "./laya-probe";
+import {
+  normalizeWeknoraBaseUrl,
+  probeWeknora,
+  type WeknoraProbeOptions,
+  type WeknoraProbeResult,
+} from "./weknora-probe";
 import {
   getWorkspaceSupervisorLogTail,
   getWorkspaceSupervisorStatus,
@@ -2708,6 +2715,42 @@ function setupIPC(): void {
   );
   ipcMain.handle("workspace-supervisor-log-tail", () =>
     getWorkspaceSupervisorLogTail(),
+  );
+
+  // Workspace console embed — contract row C (P2). The renderer's
+  // WorkspaceConsole screen gets the loopback origin here; navigation
+  // gating for attached webviews rides the will-attach handler already
+  // installed at window creation (`isAllowedWebviewUrl`).
+  ipcMain.handle("workspace-console-url", (): string => {
+    const normalized = normalizeWorkspaceOrigin(null);
+    return normalized ?? CUBECLOUD_AGENT_DEFAULT_URL;
+  });
+
+  // Laya decision-engine probe — DM0 (decision-core replan §D3.3).
+  // Presence/version via CLI; the MCP descriptor is rendered by the
+  // MCP screen when the operator toggles the `laya` server on.
+  ipcMain.handle("laya-probe", (): LayaProbeResult => probeLaya());
+  ipcMain.handle("laya-mcp-registration", () => LAYA_MCP_REGISTRATION);
+
+  // WeKnora RAG platform probe — row R6 (decision-core replan §D3.4).
+  // Optional tool surface: operator-configured base URL + optional
+  // API key from the desktop config store (never inlined in source).
+  ipcMain.handle(
+    "weknora-probe",
+    async (_event, rawUrl?: string | null, options?: WeknoraProbeOptions): Promise<WeknoraProbeResult> => {
+      const normalized = normalizeWeknoraBaseUrl(rawUrl ?? undefined);
+      if (!normalized) {
+        return {
+          reachable: false,
+          baseUrl: "",
+          kbCount: null,
+          authNote: null,
+          error: "invalid or missing WeKnora base URL",
+          scannedAt: new Date().toISOString(),
+        };
+      }
+      return probeWeknora(normalized, options ?? {});
+    },
   );
 
   // Headroom proxy (context compression for LLM calls).

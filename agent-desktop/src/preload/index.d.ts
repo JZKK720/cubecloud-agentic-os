@@ -316,6 +316,33 @@ interface WorkspaceSupervisorStatus {
   reason: string | null;
 }
 
+// Laya decision-engine probe — DM0 (decision-core replan §D3.3).
+interface LayaProbeResult {
+  installed: boolean;
+  healthy: boolean;
+  version: string | null;
+  summary: string;
+  error: string | null;
+}
+
+interface LayaMcpRegistration {
+  name: string;
+  command: string;
+  env: Record<string, string>;
+  toolNames: string[];
+  description: string;
+}
+
+// WeKnora RAG platform probe — row R6 (decision-core replan §D3.4).
+interface WeknoraProbeResult {
+  reachable: boolean;
+  baseUrl: string;
+  kbCount: number | null;
+  authNote: string | null;
+  error: string | null;
+  scannedAt: string;
+}
+
 interface EverOsRecentItem {
   id: string;
   content: string;
@@ -1655,6 +1682,17 @@ interface HermesAPI {
     lines: string[];
     totalBytes: number;
   }>;
+
+  // Workspace console embed — contract row C (P2).
+  workspaceConsoleUrl: () => Promise<string>;
+  // Laya decision-engine probe — DM0.
+  layaProbe: () => Promise<LayaProbeResult>;
+  layaMcpRegistration: () => Promise<LayaMcpRegistration>;
+  // WeKnora RAG platform probe — row R6.
+  weknoraProbe: (
+    rawUrl?: string | null,
+    options?: { apiKey?: string | null; tenantId?: string | null },
+  ) => Promise<WeknoraProbeResult>;
 
   // Headroom proxy (context compression for LLM calls)
   headroomGetConfig: () => Promise<HeadroomConfig>;

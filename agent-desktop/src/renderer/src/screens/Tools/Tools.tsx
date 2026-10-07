@@ -314,6 +314,19 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     cli: string | null;
     reason: string | null;
   } | null>(null);
+  const [laya, setLaya] = useState<{
+    installed: boolean;
+    healthy: boolean;
+    version: string | null;
+    summary: string;
+  } | null>(null);
+  const [weknora, setWeknora] = useState<{
+    reachable: boolean;
+    baseUrl: string;
+    kbCount: number | null;
+    authNote: string | null;
+    error: string | null;
+  } | null>(null);
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -368,6 +381,29 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       });
     } catch {
       setWorkspaceSupervisor(null);
+    }
+    try {
+      const probe = await window.hermesAPI.layaProbe();
+      setLaya({
+        installed: probe.installed,
+        healthy: probe.healthy,
+        version: probe.version,
+        summary: probe.summary,
+      });
+    } catch {
+      setLaya(null);
+    }
+    try {
+      const probe = await window.hermesAPI.weknoraProbe();
+      setWeknora({
+        reachable: probe.reachable,
+        baseUrl: probe.baseUrl,
+        kbCount: probe.kbCount,
+        authNote: probe.authNote,
+        error: probe.error,
+      });
+    } catch {
+      setWeknora(null);
     }
   }, []);
 
@@ -741,6 +777,78 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
             {workspace.error ? ` — ${workspace.error}` : ""}
           </div>
         ) : null}
+      </div>
+
+      {/* Wigolo local-first web intelligence */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            Laya (decision engine)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          {t("tools.panels.laya.subtitle", {
+            defaultValue:
+              "Local System-1 decision engine — typed choice/score/noul decisions with confidence and abstention, exposed to the console via MCP.",
+          })}
+        </p>
+        <div className="tools-agent-reach-status">
+          {laya ? (
+            <span
+              className={
+                laya.installed && laya.healthy
+                  ? "tools-agent-reach-installed"
+                  : "tools-agent-reach-not-installed"
+              }
+            >
+              {laya.installed && laya.healthy ? (
+                <>
+                  <CheckCircle size={14} />{' '}
+                  {t("tools.panels.laya.ready", { defaultValue: "Ready" })}
+                  {laya.version ? ` (v${laya.version})` : ""}
+                </>
+              ) : laya.installed ? (
+                t("tools.panels.laya.broken", { defaultValue: "Installed but version probe failed" })
+              ) : (
+                laya.summary
+              )}
+            </span>
+          ) : null}
+        </div>
+      </div>
+
+      {/* WeKnora RAG knowledge platform (optional tool surface, row R6) */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            WeKnora (knowledge / RAG)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          {t("tools.panels.weknora.subtitle", {
+            defaultValue:
+              "Optional enterprise RAG knowledge platform. Retrieval-only on the console side; your WeKnora server owns its data.",
+          })}
+        </p>
+        <div className="tools-agent-reach-status">
+          {weknora ? (
+            weknora.reachable ? (
+              <span className="tools-agent-reach-installed">
+                <CheckCircle size={14} />{' '}
+                {t("tools.panels.weknora.reachable", { defaultValue: "Reachable" })}
+                {weknora.kbCount !== null ? ` — ${weknora.kbCount} KB` : ""}
+                {weknora.authNote ? ` — ${weknora.authNote}` : ""}
+              </span>
+            ) : (
+              <span className="tools-agent-reach-not-installed">
+                {t("tools.panels.weknora.unreachable", { defaultValue: "Not reachable" })}
+                {weknora.error ? ` — ${weknora.error}` : ""}
+              </span>
+            )
+          ) : null}
+        </div>
       </div>
 
       {/* Wigolo local-first web intelligence */}

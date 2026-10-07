@@ -12,6 +12,7 @@ import Skills from "../Skills/Skills";
 import Memory from "../Memory/Memory";
 import Tools from "../Tools/Tools";
 import Workspace, { type WorkspaceChatDraft } from "../Workspace/Workspace";
+import WorkspaceConsole from "../WorkspaceConsole/WorkspaceConsole";
 import Gateway from "../Gateway/Gateway";
 import Models from "../Models/Models";
 import Providers from "../Providers/Providers";
@@ -68,6 +69,7 @@ type View =
   | "memory"
   | "tools"
   | "workspace"
+  | "workspaceConsole"
   | "schedules"
   | "plans"
   | "codegraph"
@@ -177,6 +179,12 @@ const NAV_ITEMS: {
     icon: Search,
     labelKey: "navigation.workspace",
     group: "configure",
+  },
+  {
+    view: "workspaceConsole",
+    icon: ChatBubble,
+    labelKey: "navigation.workspaceConsole",
+    group: "work",
   },
   {
     view: "schedules",
@@ -724,6 +732,12 @@ function Layout({
         {visitedViews.has("workspace") && (
           <div style={paneStyle("workspace")}>
             <Workspace onOpenInChat={handleUseWorkspaceContext} />
+          </div>
+        )}
+
+        {visitedViews.has("workspaceConsole") && (
+          <div style={paneStyle("workspaceConsole")}>
+            <WorkspaceConsole />
           </div>
         )}
 

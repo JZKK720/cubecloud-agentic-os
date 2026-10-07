@@ -11,6 +11,8 @@ import type {
   TaskOrchestratorSnapshot,
 } from "../shared/runtime-orchestration";
 import type { WorkspaceSupervisorStatus } from "../main/cubecloud-agent-supervisor";
+import type { LayaProbeResult } from "../main/laya-probe";
+import type { WeknoraProbeResult } from "../main/weknora-probe";
 
 /**
  * Mirror of the renderer-side `CredentialPoolEntry` ambient type
@@ -1620,6 +1622,28 @@ const hermesAPI = {
     lines: string[];
     totalBytes: number;
   }> => ipcRenderer.invoke("workspace-supervisor-log-tail"),
+
+  // Workspace console embed — contract row C (P2).
+  workspaceConsoleUrl: (): Promise<string> =>
+    ipcRenderer.invoke("workspace-console-url"),
+
+  // Laya decision-engine probe — DM0.
+  layaProbe: (): Promise<LayaProbeResult> =>
+    ipcRenderer.invoke("laya-probe"),
+  layaMcpRegistration: (): Promise<{
+    name: string;
+    command: string;
+    env: Record<string, string>;
+    toolNames: string[];
+    description: string;
+  }> => ipcRenderer.invoke("laya-mcp-registration"),
+
+  // WeKnora RAG platform probe — row R6.
+  weknoraProbe: (
+    rawUrl?: string | null,
+    options?: { apiKey?: string | null; tenantId?: string | null },
+  ): Promise<WeknoraProbeResult> =>
+    ipcRenderer.invoke("weknora-probe", rawUrl, options),
 
   // Headroom proxy (context compression for LLM calls).
   // The renderer uses these channels to manage the Headroom
