@@ -106,6 +106,15 @@ import {
   type WeknoraProbeResult,
 } from "./weknora-probe";
 import {
+  probeOpenViking,
+  type OpenVikingProbeOptions,
+  type OpenVikingProbeResult,
+} from "./openviking-probe";
+import {
+  promoteAgentBundle,
+  type AgentBundleInput,
+} from "./agent-bundle-compiler";
+import {
   getWorkspaceSupervisorLogTail,
   getWorkspaceSupervisorStatus,
   startWorkspaceSupervisor,
@@ -2750,6 +2759,35 @@ function setupIPC(): void {
         };
       }
       return probeWeknora(normalized, options ?? {});
+    },
+  );
+
+  // OpenViking (agent context database) probe — row R5 (decision-core
+  // replan §D3.4). AGPL-3.0 core — interop-only, sidecar/remote; never
+  // vendored. Optional tool surface: probe + config in the console.
+  ipcMain.handle(
+    "openviking-probe",
+    async (
+      _event,
+      rawUrl?: string | null,
+      options?: OpenVikingProbeOptions,
+    ): Promise<OpenVikingProbeResult> => probeOpenViking(rawUrl ?? null, options ?? {}),
+  );
+
+  // Agent bundle promotion — P4/R2+R3. The operator-triggered upload to
+  // the workspace bundle registry (POST /api/agents, multipart). The
+  // upload never happens automatically — an explicit IPC call from the
+  // renderer is the "operator triggered it" gate. (Compilation is pure
+  // and lives inside promote; no separate surface needed.)
+  ipcMain.handle(
+    "agent-bundle-promote",
+    async (
+      _event,
+      rawUrl: string | null,
+      input: AgentBundleInput,
+    ) => {
+      const normalized = normalizeWorkspaceOrigin(rawUrl ?? undefined);
+      return promoteAgentBundle(normalized ?? CUBECLOUD_AGENT_DEFAULT_URL, input);
     },
   );
 

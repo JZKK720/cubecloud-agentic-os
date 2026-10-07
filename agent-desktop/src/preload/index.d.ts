@@ -343,6 +343,26 @@ interface WeknoraProbeResult {
   scannedAt: string;
 }
 
+// OpenViking (agent context database) probe — row R5 (interop-only,
+// AGPL-3.0 core; never vendored).
+interface OpenVikingProbeResult {
+  reachable: boolean;
+  baseUrl: string;
+  sessionCount: number | null;
+  authNote: string | null;
+  error: string | null;
+  scannedAt: string;
+}
+
+// Agent bundle promotion — P4/R2+R3 (operator-triggered upload).
+interface AgentPromotionResult {
+  success: boolean;
+  agentId: string | null;
+  agentName: string | null;
+  conflict: boolean;
+  error: string | null;
+}
+
 interface EverOsRecentItem {
   id: string;
   content: string;
@@ -1693,6 +1713,23 @@ interface HermesAPI {
     rawUrl?: string | null,
     options?: { apiKey?: string | null; tenantId?: string | null },
   ) => Promise<WeknoraProbeResult>;
+  // OpenViking (agent context database) probe — row R5.
+  openvikingProbe: (
+    rawUrl?: string | null,
+    options?: { apiKey?: string | null },
+  ) => Promise<OpenVikingProbeResult>;
+  // Agent bundle promotion — P4/R2+R3 (operator-triggered upload).
+  agentBundlePromote: (
+    rawUrl: string | null,
+    input: {
+      name: string;
+      description?: string;
+      prompt: string;
+      harness: string;
+      model: string;
+      instructions?: string;
+    },
+  ) => Promise<AgentPromotionResult>;
 
   // Headroom proxy (context compression for LLM calls)
   headroomGetConfig: () => Promise<HeadroomConfig>;

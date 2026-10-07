@@ -13,6 +13,8 @@ import type {
 import type { WorkspaceSupervisorStatus } from "../main/cubecloud-agent-supervisor";
 import type { LayaProbeResult } from "../main/laya-probe";
 import type { WeknoraProbeResult } from "../main/weknora-probe";
+import type { OpenVikingProbeResult } from "../main/openviking-probe";
+import type { AgentPromotionResult } from "../main/agent-bundle-compiler";
 
 /**
  * Mirror of the renderer-side `CredentialPoolEntry` ambient type
@@ -1644,6 +1646,27 @@ const hermesAPI = {
     options?: { apiKey?: string | null; tenantId?: string | null },
   ): Promise<WeknoraProbeResult> =>
     ipcRenderer.invoke("weknora-probe", rawUrl, options),
+
+  // OpenViking (agent context database) probe — row R5.
+  openvikingProbe: (
+    rawUrl?: string | null,
+    options?: { apiKey?: string | null },
+  ): Promise<OpenVikingProbeResult> =>
+    ipcRenderer.invoke("openviking-probe", rawUrl, options),
+
+  // Agent bundle promotion — P4/R2+R3 (operator-triggered upload).
+  agentBundlePromote: (
+    rawUrl: string | null,
+    input: {
+      name: string;
+      description?: string;
+      prompt: string;
+      harness: string;
+      model: string;
+      instructions?: string;
+    },
+  ): Promise<AgentPromotionResult> =>
+    ipcRenderer.invoke("agent-bundle-promote", rawUrl, input),
 
   // Headroom proxy (context compression for LLM calls).
   // The renderer uses these channels to manage the Headroom

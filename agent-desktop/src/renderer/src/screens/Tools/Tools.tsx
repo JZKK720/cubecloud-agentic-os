@@ -327,6 +327,13 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     authNote: string | null;
     error: string | null;
   } | null>(null);
+  const [openviking, setOpenviking] = useState<{
+    reachable: boolean;
+    baseUrl: string;
+    sessionCount: number | null;
+    authNote: string | null;
+    error: string | null;
+  } | null>(null);
 
   const loadToolsets = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -404,6 +411,18 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       });
     } catch {
       setWeknora(null);
+    }
+    try {
+      const probe = await window.hermesAPI.openvikingProbe();
+      setOpenviking({
+        reachable: probe.reachable,
+        baseUrl: probe.baseUrl,
+        sessionCount: probe.sessionCount,
+        authNote: probe.authNote,
+        error: probe.error,
+      });
+    } catch {
+      setOpenviking(null);
     }
   }, []);
 
@@ -845,6 +864,39 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               <span className="tools-agent-reach-not-installed">
                 {t("tools.panels.weknora.unreachable", { defaultValue: "Not reachable" })}
                 {weknora.error ? ` — ${weknora.error}` : ""}
+              </span>
+            )
+          ) : null}
+        </div>
+      </div>
+
+      {/* Wigolo local-first web intelligence */}
+      <div className="tools-section-divider" />
+      <div className="tools-agent-reach">
+        <div className="tools-agent-reach-header">
+          <h3 className="tools-agent-reach-title">
+            OpenViking (context database)
+          </h3>
+        </div>
+        <p className="tools-agent-reach-subtitle">
+          {t("tools.panels.openviking.subtitle", {
+            defaultValue:
+              "Optional agent context database — resources, memories, and skills in one browsable viking:// filesystem (interop-only; AGPL core).",
+          })}
+        </p>
+        <div className="tools-agent-reach-status">
+          {openviking ? (
+            openviking.reachable ? (
+              <span className="tools-agent-reach-installed">
+                <CheckCircle size={14} />{' '}
+                {t("tools.panels.openviking.reachable", { defaultValue: "Reachable" })}
+                {openviking.sessionCount !== null ? ` — ${openviking.sessionCount} sessions` : ""}
+                {openviking.authNote ? ` — ${openviking.authNote}` : ""}
+              </span>
+            ) : (
+              <span className="tools-agent-reach-not-installed">
+                {t("tools.panels.openviking.unreachable", { defaultValue: "Not reachable" })}
+                {openviking.error ? ` — ${openviking.error}` : ""}
               </span>
             )
           ) : null}
