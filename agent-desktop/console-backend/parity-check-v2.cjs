@@ -26,12 +26,18 @@ const table = JSON.parse(
 const serverSrc = readFileSync(join(here, "server.ts"), "utf8");
 const bridgeSrc = readFileSync(join(here, "generic-bridge.ts"), "utf8");
 const governanceSrc = readFileSync(join(here, "governance-seed.ts"), "utf8");
+const managedAppsSeedSrc = readFileSync(join(here, "managed-apps-seed.ts"), "utf8");
+const managedAppsRegistrySrc = readFileSync(
+  join(here, "..", "src", "main", "managed-apps", "registry.ts"),
+  "utf8",
+);
 
 // Preload invoke methods (kind !== push), keyed by capability name.
 const EXPECTED_UNCOVERED = new Set(["getPathForFile"]);
 // Deliberate new-wiring: kernel capabilities with no preload method
 // (the sessions modules shipped in V2.10.80 with module + tests but
-// no IPC/preload wiring; kernelHome is kernel-self-describing).
+// no IPC/preload wiring; kernelHome is kernel-self-describing; the
+// ManagedApp `<id>Health` family is seeded below at derivation time).
 const NEW_WIRING = new Set([
   "listWorkspaceSessions",
   "getWorkspaceSessionSnapshot",
@@ -54,7 +60,8 @@ for (const m of map.methods) {
 
 // Kernel-registered capability names: hand seeds (server.ts +
 // governance-seed.ts `name: "..."` literals) + every channel the
-// bridge registers (dispatch-table channels → camel names).
+// bridge registers (dispatch-table channels → camel names) + the
+// ManagedApp framework's per-adapter health capabilities.
 const kernelCaps = new Set();
 for (const src of [serverSrc, governanceSrc]) {
   for (const m of src.matchAll(/name: "([a-zA-Z]\w*)",/g)) {
@@ -65,6 +72,41 @@ for (const e of table.entries) {
   kernelCaps.add(
     e.channel.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase()),
   );
+}
+
+// ManagedApp framework: seedManagedApps derives one `<id>Health`
+// capability per adapter. Its own source names neither, so the adapter
+// ids come from EXPECTED_MANAGED_APP_IDS in registry.ts and the
+// `<id>Health` suffix from the camel() call in managed-apps-seed.ts.
+// This is a deliberate derivation, not a literal scan — verify the
+// assumptions so a rename in either file fails loudly instead of
+// silently under-counting the kernel surface.
+if (!/createManagedAppRegistry\(\)/.test(managedAppsSeedSrc)) {
+  console.error(
+    "PARITY FAIL — managed-apps-seed.ts no longer iterates createManagedAppRegistry(); " +
+      "the kernel capability derivation below is stale.",
+  );
+  process.exit(1);
+}
+if (!/"Health"|\`Health|Health\`/.test(managedAppsSeedSrc)) {
+  console.error(
+    "PARITY FAIL — managed-apps-seed.ts no longer derives a `<id>Health` name; " +
+      "the kernel capability derivation below is stale.",
+  );
+  process.exit(1);
+}
+const managedAppIds = [
+  ...managedAppsRegistrySrc.matchAll(/"([a-z][a-z0-9-]*)",\s*\n/g),
+].map((m) => m[1]);
+for (const id of managedAppIds) {
+  const capName =
+    id.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase()) + "Health";
+  kernelCaps.add(capName);
+  // No preload method exists for these yet — the framework was wired
+  // into the kernel ahead of any renderer consumer. Registered here so
+  // the kernel⊆preload direction reports them as deliberate rather
+  // than as orphans.
+  NEW_WIRING.add(capName);
 }
 
 // 1. kernel ⊆ preload
@@ -92,6 +134,10 @@ if (failed) process.exit(1);
 console.log(
   `PARITY PASS — ${kernelCaps.size} kernel capabilities ↔ ` +
     `${preloadInvoke.size} preload invoke methods (bidirectional)`,
+);
+console.log(
+  `managed-app adapters wired into the kernel: ${managedAppIds.length} ` +
+    `(each as <id>Health)`,
 );
 if (pendingNewWiring.length > 0) {
   console.log(

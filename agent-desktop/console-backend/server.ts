@@ -179,6 +179,19 @@ async function main(): Promise<void> {
   // verdict write, and the registry surfaces view (via governance-seed).
   seedGovernance(registry);
 
+  // Phase B's ManagedApp framework — the 16-adapter registry. It was
+  // built and tested but had no runtime consumer, so none of its
+  // capabilities reached the kernel. Seed one health capability per
+  // adapter (capability-honest, never-throw — the uniform read of the
+  // contract). Runs BEFORE the generic bridge so the bridge's
+  // already-present skip keeps these authoritative.
+  const { seedManagedApps } = await import("./managed-apps-seed.ts");
+  const managedAppSummary = seedManagedApps(registry);
+  console.log(
+    `managed apps: +${managedAppSummary.registered} capabilities ` +
+      `(${managedAppSummary.skipped} already seeded)`,
+  );
+
   // Phase A — generic capability bridge: register every remaining
   // desktop IPC channel from dispatch-table.json (delegates call the
   // main modules directly; desktopOnly channels degrade; manual
