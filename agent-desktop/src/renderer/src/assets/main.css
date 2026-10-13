@@ -12830,6 +12830,7 @@ select:focus-visible {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .workspace-console-header h2 {
@@ -12843,7 +12844,9 @@ select:focus-visible {
   margin: 4px 0 0;
   font-size: 12px;
   line-height: 1.5;
-  color: var(--text-muted);
+  /* --text-secondary, not --text-muted: the muted token is #999999 in
+     light mode, which lands at 2.68:1 on --bg-secondary (below AA). */
+  color: var(--text-secondary);
   max-width: 560px;
 }
 
@@ -12880,7 +12883,7 @@ select:focus-visible {
 
 .workspace-console-card {
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-secondary);
   padding: 12px 14px;
   display: flex;
@@ -12893,6 +12896,7 @@ select:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
   font-size: 13px;
   color: var(--text-primary);
 }
@@ -12910,7 +12914,8 @@ select:focus-visible {
 
 .workspace-console-muted {
   font-size: 12px;
-  color: var(--text-muted);
+  /* Readable secondary, not the light-mode 2.68:1 muted token. */
+  color: var(--text-secondary);
 }
 
 .workspace-console-error {
@@ -12939,6 +12944,7 @@ select:focus-visible {
 }
 
 .workspace-console-input:focus {
-  outline: none;
+  /* Border tint only — the app's global :focus-visible rule owns the
+     focus ring, so no outline override here. */
   border-color: var(--border-focus);
 }
