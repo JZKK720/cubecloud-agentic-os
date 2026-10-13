@@ -462,4 +462,49 @@ The divergent sets are the point: capability-honesty (rule 1) is now observable 
 
 Parity moved `295 → 311` and lists the 16 new names as deliberate new-wiring, matching how the sessions family is treated. Written test-first (`tests/console-managed-apps-seed.test.ts`, 10 tests) — all 10 failed on *"Failed to resolve import ../console-backend/managed-apps-seed"* before the module existed.
 
-**Still open from this family:** the lifecycle verbs (`start`/`stop`/`restart`) need their own seed + operator-gating review; and the 37 uncategorized IPC channels remain a bookkeeping gap.
+**Still open from this family:** per-adapter **operator-gating polish** — the verbs are non-forgeable now (below), but a confirmation affordance for the destructive subset (`stop-gateway`, `quit-app`) is still worth adding.
+
+### Both follow-on items — outcome
+
+#### (a) Lifecycle verbs: not a seeding task — it was a security hole
+
+The premise "lifecycle verbs need their own seed" was **wrong**. Verified against `console-backend/dispatch-table.json`: the process-affecting verbs were **already exposed** by the generic bridge — 14 routes, including `start-gateway`, `stop-gateway`, `codegraph-runtime-open`/`close`, and the `everos`/`headroom`/`moo-tasks` sidecar `start`/`stop`/`restart` family.
+
+The real defect was that **the kernel had no authentication and no origin check at all**. Confirmed exploitable before the fix:
+
+```
+POST /api/console/kernelHome
+Origin: http://evil.example
+Content-Type: text/plain          <- a CORS *simple request*: no preflight
+-> HTTP 200, real data returned
+```
+
+`text/plain` is a simple request, so the browser performs **no preflight** — meaning any website the operator merely visited could drive-by invoke credentialed routes against `127.0.0.1`, including `set-config`, `write-soul`, `set-env`, `delete-session`, `start-gateway`, and `quit-app`.
+
+**Fixed in `d70fcd5`**, pinned for the effectful verbs in `2a61949`:
+
+| Layer | Rule |
+|---|---|
+| Origin check | An `Origin` header that is present and not loopback → **403**, token or not |
+| Token gate | Per-boot 32-byte random token (`CONSOLE_KERNEL_TOKEN` overridable) → missing/mismatched **401** |
+| Bootstrap | `SameSite=Strict; HttpOnly` cookie set on the shell HTML load |
+
+The token is deliberately **not** embedded in `/shim.js`: a cross-origin page can load and execute a script *without* CORS, so an embedded global would leak. The cookie cannot be read or sent cross-site. Exemptions are minimal and justified — `/health` (the container HEALTHCHECK holds no credential) and `/shim.js` (executes before the shell has one).
+
+**Verified end-to-end on a real boot and in a real container:**
+
+| Case | Result |
+|---|---|
+| A — the original exploit (foreign Origin + `text/plain`) | **403** (was 200) |
+| B — cross-origin *with* a token | **403** |
+| C — no Origin, no token | **401** |
+| D — `/health` (container HEALTHCHECK) | **200**; container reports `healthy` |
+| E — `/shim.js` served, contains no token | **200** |
+| F — all 9 effectful verbs, foreign origin | **403** |
+| G — all 9 effectful verbs, no token | **401** |
+
+Written test-first: **6 of 8 failed** on the pre-fix kernel. Writing them surfaced a false-positive bug in my own harness — assertion failures were escaping as unhandled rejections while vitest reported "passed" — the exact failure mode TDD exists to catch.
+
+#### (b) 37 uncategorized IPC channels — closed
+
+`9fcb53e`: categorised into read-only (22) and in-staging mutating (15). `Unknown / not categorized: 37 → 0`, restoring the audit's ability to flag a genuinely unwired new channel.
