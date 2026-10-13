@@ -374,6 +374,7 @@ Expected: the server binds and `/` serves the SPA. Reference: `2026-10-13-phase-
 | 3. Write the Phase D plan | ✅ `2026-10-14-everos-v2-dashboard-plan.md` (8 tasks) | `04c612a` |
 | 4. Laya capability-honest health | ⚠️ **re-scoped** — see below; landed red→green | `08258d3` |
 | 5. End-to-end smoke | ✅ all five checks pass | *(verification only)* |
+| — *(follow-on)* Wire the ManagedApp framework | ✅ parity `295 → 311`; live on `:6779` and in-container `:6781` | `3620ac6` |
 
 **Smoke evidence**
 
@@ -381,7 +382,7 @@ Expected: the server binds and `/` serves the SPA. Reference: `2026-10-13-phase-
 |---|---|
 | Kernel parity | `PARITY PASS — 295 kernel capabilities ↔ 291 preload invoke methods (bidirectional)` |
 | Typecheck | exit 0 (node + web) |
-| Full suite | **148 files / 1,566 passed / 3 skipped**, exit 0, three consecutive clean runs |
+| Full suite | **149 files / 1,576 passed / 3 skipped**, exit 0 (after the ManagedApp wiring) |
 | Container build | `cubecloud-console:smoke` built, exit 0 — proved the container path is independent of the packaging scripts |
 | Live container | `cubecloud-agentic-os-c0-kernel-console-backend-1` up 15 h healthy; `/health` → `capabilities: 295`; `/` → HTTP 200 |
 
@@ -439,6 +440,26 @@ Running the four doc/i18n checks against a **detached worktree of `HEAD`** (trac
 
 The local-tree failures come from five **untracked** vendored candidate-repo mirrors under `docs/plans/external-repos/` (`agentconnect`, `qm`, `openworker`, `openocta`, `second-brain`). They are not in `git ls-files`, so CI never sees them and the gates pass. The mojibake check walks the working directory and does not respect `.gitignore`.
 
-### Open item discovered during execution (not in the plan's scope)
+### ~~Open item~~ **CLOSED (2026-10-14): `createManagedAppRegistry()` had no runtime consumer**
 
-**`createManagedAppRegistry()` has no runtime consumer.** Verified: the only importers are `tests/managed-apps.test.ts` and a *renderer* `./registry` (a different file — the MCP screen's server list). The kernel's `generated-route-map.json` and `dispatch-table.json` contain no managed-app or adapter routes. So the 16-adapter framework is fully built, fully tested, and **not yet reachable from the running console**. Wiring it into a `managedApps*` route family is the natural next task and belongs in its own plan.
+Found during execution, fixed immediately after. The 16-adapter framework was built and fully tested but unreachable — its only importers were its own test and an unrelated *renderer* `./registry` (the MCP screen's server list), and none of its capabilities appeared in `generated-route-map.json` or `dispatch-table.json`.
+
+**Fixed in `3620ac6`** by `console-backend/managed-apps-seed.ts`, which follows the established `seedGovernance` shape: one `<adapterId>Health` capability per adapter, idempotent. Scope is **health only** — it is the uniform, never-throw, capability-honest read of the contract, so it needs no argument disambiguation across 16 heterogeneous adapters. The lifecycle verbs are deliberately *not* seeded: each needs a per-adapter argument contract and operator-gating review, and several adapters legitimately report `lifecycle() === null` (rule 4).
+
+**Verified live, twice** — locally on `:6779` and from outside the container on `:6781`:
+
+```
+managed apps: +16 capabilities (0 already seeded)
+capabilities: 311                      # was 295
+POST /api/console/layaHealth  -> ok=false, capabilities ["inventory"],
+                                  detail "laya-serve unreachable ..."
+everosHealth                  -> caps [inventory,lifecycle,config]
+codegraphHealth               -> caps [inventory]
+aiWorkspaceHealth             -> caps [inventory,lifecycle,config,governance]
+```
+
+The divergent sets are the point: capability-honesty (rule 1) is now observable at runtime, not just in a unit test. The `layaHealth` response folds in the Task 4 serve probe, so the two changes reinforce each other.
+
+Parity moved `295 → 311` and lists the 16 new names as deliberate new-wiring, matching how the sessions family is treated. Written test-first (`tests/console-managed-apps-seed.test.ts`, 10 tests) — all 10 failed on *"Failed to resolve import ../console-backend/managed-apps-seed"* before the module existed.
+
+**Still open from this family:** the lifecycle verbs (`start`/`stop`/`restart`) need their own seed + operator-gating review; and the 37 uncategorized IPC channels remain a bookkeeping gap.
