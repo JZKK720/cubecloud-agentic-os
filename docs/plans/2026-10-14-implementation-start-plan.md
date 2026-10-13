@@ -417,6 +417,28 @@ Investigating the *actual* defect surfaced a better one: the generic `cliProbeAp
 
 The shipped fix folds a bounded `/health` probe of the serve endpoint into `health()`, and reports `auth-required` from `discover()` when the CLI is present but the server is not. It stays `fabric-attach` with a null lifecycle, so rule 4 holds. Locked in by `agent-desktop/tests/laya-managed-app.test.ts` (4 tests, red→green).
 
+| 6. Operator CLI smokes | ✅ pass | Hermes `PASS status=200 latency=8ms` (repo-root `scripts/hermes-agent-attach.smoke.cjs`); IronClaw skipped — gateway not running |
+| 7. CDP / Playwright smokes | ⚪ skipped | needs a running dev Electron (`ENABLE_CDP=1 npm run dev`); `scripts/smoke-all.js` present and its runner is intact |
+| 8. CI reality check | ✅ verified | 7 jobs; `desktop-shell-checks` runs the full `npm run test`; the broken `desktop-shell-electron-smoke` job is gone; `desktop-shell-windows-packaging` runs `build:win` + `verify:bundle` (live — this is what Task 2 broke) |
+
+### Two pre-existing issues the audit surfaced (neither caused by this session)
+
+1. **`Skills.test.tsx` is flaky under full-suite load** — roughly 1 run in 3–5. The failing case is *"surfaces the CLI error in the UI when installSkill returns success:false (issue #310 fix)"*, failing inside `render()`/`fireEvent`, not in an assertion. It passes 6/6 in isolation and 3/3 on the last full-suite runs. It also failed at 03:34 today, **before any change in this session**, and it fails in untouched code — so it is pre-existing.
+2. **`audit-smoke-safe.cjs` reports 37 uncategorized IPC channels** (118 read-only, 1 round-trip, 36 in-staging, 155 total safe). The audit's own guidance: *"'Unknown / not categorized' count should be 0 or explicitly justified."* The uncategorized set is the whole workspace-* / vault-* / swarm-* / knowledge-* family — i.e. the V2.10.80 workspace-console + governance-relay channels. The script exits 0, and it is **advisory, not a CI gate** (not referenced in `ci.yml`), so this is a bookkeeping gap rather than a build breaker.
+
+### CI-equivalent verification of the doc checks
+
+Running the four doc/i18n checks against a **detached worktree of `HEAD`** (tracked files only, exactly what CI checks out) gives:
+
+| Check | Local working tree | CI-equivalent (`HEAD`) |
+|---|---|---|
+| `check-mojibake` | ❌ 2 files | ✅ `NO mojibake found` (1117 files) |
+| `check-skill-counts` | ❌ flagged prose | ✅ `no hard-coded skill counts` |
+| `check-doc-pair` | ⚠️ section drift | ⚠️ drift present, exit 0 (soft) |
+| `check-i18n-coverage` | ✅ no drift | ✅ no drift |
+
+The local-tree failures come from five **untracked** vendored candidate-repo mirrors under `docs/plans/external-repos/` (`agentconnect`, `qm`, `openworker`, `openocta`, `second-brain`). They are not in `git ls-files`, so CI never sees them and the gates pass. The mojibake check walks the working directory and does not respect `.gitignore`.
+
 ### Open item discovered during execution (not in the plan's scope)
 
 **`createManagedAppRegistry()` has no runtime consumer.** Verified: the only importers are `tests/managed-apps.test.ts` and a *renderer* `./registry` (a different file — the MCP screen's server list). The kernel's `generated-route-map.json` and `dispatch-table.json` contain no managed-app or adapter routes. So the 16-adapter framework is fully built, fully tested, and **not yet reachable from the running console**. Wiring it into a `managedApps*` route family is the natural next task and belongs in its own plan.
