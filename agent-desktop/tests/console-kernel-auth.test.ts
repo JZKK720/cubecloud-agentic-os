@@ -255,3 +255,91 @@ describe("console kernel browser-shell bootstrap", () => {
     });
   });
 });
+
+describe("console kernel operator-gating for lifecycle effects", () => {
+  // The generic bridge already exposes the process-affecting verbs
+  // (start-gateway / stop-gateway, codegraph-runtime-open/close,
+  // everos|headroom|moo-tasks sidecar start/stop/restart). Before the
+  // transport gate, ANY site the operator merely visited could POST
+  // start-gateway to 127.0.0.1 and spawn processes on their machine.
+  // These tests pin that every effectful verb is now non-forgeable.
+  const EFFECTFUL = [
+    "startGateway",
+    "stopGateway",
+    "everosSidecarStart",
+    "everosSidecarStop",
+    "everosSidecarRestart",
+    "headroomSidecarStart",
+    "mooTasksSidecarStart",
+    "codegraphRuntimeOpen",
+    "codegraphRuntimeClose",
+  ];
+
+  function registryWithEffectfulVerbs(): ConsoleRouteRegistry {
+    const registry = new ConsoleRouteRegistry();
+    for (const name of EFFECTFUL) {
+      registry.register({
+        name,
+        ipcChannel: name,
+        handler: async () => ({ success: true, sideEffect: "would-spawn" }),
+      });
+    }
+    return registry;
+  }
+
+  async function withRegistry(
+    registry: ConsoleRouteRegistry,
+    options: { authToken?: string | null },
+    fn: (base: string) => Promise<void>,
+  ): Promise<void> {
+    const server = createConsoleServer(registry, {
+      rendererRoot: join(tmpdir(), "console-kernel-test-no-renderer"),
+      authToken: options.authToken ?? null,
+    });
+    await new Promise<void>((resolve, reject) => {
+      server.listen(0, "127.0.0.1", () => {
+        const addr = server.address();
+        const port = typeof addr === "object" && addr ? addr.port : 0;
+        fn(`http://127.0.0.1:${port}`).then(
+          () => server.close(() => resolve()),
+          (err) => server.close(() => reject(err)),
+        );
+      });
+      server.on("error", reject);
+    });
+  }
+
+  it("refuses every effectful verb from a foreign origin", async () => {
+    await withRegistry(
+      registryWithEffectfulVerbs(),
+      { authToken: TOKEN },
+      async (base) => {
+        for (const name of EFFECTFUL) {
+          const res = await request(`${base}/api/console/${name}`, {
+            method: "POST",
+            body: "[]",
+            headers: { origin: "http://evil.example" },
+          });
+          expect(res.status, `${name} must be refused cross-origin`).toBe(403);
+          expect(res.body).not.toContain("would-spawn");
+        }
+      },
+    );
+  });
+
+  it("refuses every effectful verb without a token", async () => {
+    await withRegistry(
+      registryWithEffectfulVerbs(),
+      { authToken: TOKEN },
+      async (base) => {
+        for (const name of EFFECTFUL) {
+          const res = await request(`${base}/api/console/${name}`, {
+            method: "POST",
+            body: "[]",
+          });
+          expect(res.status, `${name} must require a token`).toBe(401);
+        }
+      },
+    );
+  });
+});
