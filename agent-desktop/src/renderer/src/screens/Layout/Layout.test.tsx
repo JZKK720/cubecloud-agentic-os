@@ -198,7 +198,7 @@ describe("Layout navigation", () => {
     render(<Layout />);
 
     const legalButton = await screen.findByRole("button", {
-      name: "legal.openPanel",
+      name: "common.legal.openPanel",
     });
 
     fireEvent.click(legalButton);
