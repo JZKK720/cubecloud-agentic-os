@@ -1,15 +1,17 @@
 # console-backend kernel image — C2 (doctrine §3).
 #
-# Multi-stage build (mirrors cubecloud-agent's deploy/docker/Dockerfile
-# pattern: deps → renderer-builder → runtime):
+# Two stages:
 #
-#   deps      — npm ci for the workspace (platform-core + agent-desktop
-#               prod deps incl. better-sqlite3, which the kernel's
-#               memory/sessions modules import).
-#   renderer  — electron-vite build of the browser shell (out/renderer);
-#               the kernel serves it at / via shell.ts.
-#   runtime   — node:24-alpine + sources + node_modules + built renderer.
-#               No Electron, no build tooling in the final image.
+#   renderer-builder — installs agent-desktop from its OWN lockfile
+#                      (agent-desktop is a STANDALONE npm project, not a
+#                      root workspace: root `workspaces` only covers
+#                      packages/*), builds the browser shell with the
+#                      repo's electron-vite, and prunes the packages
+#                      that only exist to package an Electron app.
+#   runtime          — node:24-alpine + the kernel sources + the built
+#                      renderer + agent-desktop's node_modules, pruned of
+#                      the build-only toolchain. No Electron, no build
+#                      tooling in the final image.
 #
 # Build (from the monorepo root — the context must contain packages/ and
 # agent-desktop/):
@@ -19,40 +21,48 @@
 #
 # The kernel boots with node --experimental-strip-types (no TS build
 # step, C0 finding); register-loader.mjs rewrites the repo's
-# extensionless TS imports to .ts siblings at import time.
+# extensionless TS imports to .ts siblings at import time (and redirects
+# a bare `electron` import to the local stub).
 
-# ── deps ────────────────────────────────────────────────────────────
-# Manifests first so the install layer caches across pure source edits.
-FROM node:24-alpine AS deps
-WORKDIR /build
-COPY package.json package-lock.json ./
-COPY packages/platform-core/package.json packages/platform-core/package.json
-COPY agent-desktop/package.json agent-desktop/package.json
-# electron + electron-builder postinstall would fail in a plain node
-# container (no display, no wine); skip lifecycle scripts, then rebuild
-# better-sqlite3 explicitly (its prebuild-install needs its own install
-# script to fetch the linux/musl prebuilt binary).
+# ── renderer-builder ────────────────────────────────────────────────
+# agent-desktop is a STANDALONE npm project, not a root workspace, so it
+# installs from its OWN lockfile here. `npm ci --ignore-scripts` skips
+# electron's and electron-builder's postinstall (no display / no wine in
+# a plain node container); better-sqlite3 is then rebuilt against musl.
 #
 # @rollup/rollup-linux-x64-musl + @esbuild/linux-x64 are installed
 # explicitly: npm's optional-dependencies bug means a lockfile resolved
-# on Windows omits the linux/musl native binaries (rollup's loader and
-# esbuild both hard-fail without them — the renderer build stage needs
-# both via vite).
-RUN npm ci --ignore-scripts --no-audit --no-fund \
+# on Windows omits the linux/musl native binaries (vite needs both).
+#
+# The electron family is pruned for space — but **@electron-toolkit is
+# KEPT**: tsconfig.node.json extends
+# @electron-toolkit/tsconfig/tsconfig.node.json, which vite resolves
+# while transforming src/main/*.
+FROM node:24-alpine AS renderer-builder
+WORKDIR /build
+# Root workspace install FIRST: it creates the
+# node_modules/@cubecloud/platform-core workspace symlink that
+# src/main/* imports. electron-vite build compiles main+preload too, so
+# rollup must be able to resolve that bare specifier. tsconfig.base.json
+# is also needed: packages/platform-core/tsconfig.json extends it, and
+# vite reads the extends chain while transforming platform-core/src.
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY packages/platform-core/ packages/platform-core/
+RUN npm ci --ignore-scripts --no-audit --no-fund
+COPY agent-desktop/ agent-desktop/
+RUN cd agent-desktop \
+ && npm ci --ignore-scripts --no-audit --no-fund \
  && npm rebuild better-sqlite3 \
  && npm install --no-save --no-audit --no-fund \
       @rollup/rollup-linux-x64-musl @esbuild/linux-x64 \
- && rm -rf node_modules/electron node_modules/electron-builder \
-           node_modules/electron-vite node_modules/electron-updater \
-           node_modules/@electron-toolkit
-
-# ── renderer-builder ────────────────────────────────────────────────
-# Builds the browser shell the kernel serves at /. electron-vite build
-# compiles main+preload too; only out/renderer is copied out.
-FROM deps AS renderer-builder
-WORKDIR /build
-COPY packages/platform-core/ packages/platform-core/
-COPY agent-desktop/ agent-desktop/
+ && rm -rf node_modules/electron-builder node_modules/electron-updater
+# NOTE: node_modules/electron and node_modules/@electron-toolkit are
+# deliberately KEPT through the build — electron-vite calls
+# `require.resolve("electron")` (getElectronMajorVer) and reads
+# `@electron-toolkit/tsconfig/tsconfig.node.json` via tsconfig `extends`.
+# Pruning either before the build fails it. With `--ignore-scripts` the
+# electron package is just its JS wrapper (no downloaded binary). Both
+# are pruned in the runtime stage, which never builds anything.
 # electron-vite build only needs vite + the react/tailwind plugins, all
 # still present after the electron-family prune. electron itself is only
 # needed for runtime packaging, which this image never does.
@@ -69,14 +79,25 @@ WORKDIR /app
 COPY agent-desktop/console-backend/ ./console-backend/
 COPY agent-desktop/src/main/ ./src/main/
 COPY agent-desktop/src/shared/ ./src/shared/
-# platform-core's exports map points at ./src/index.ts — the kernel
-# imports it as source (same as the desktop dev path). Landing it inside
-# node_modules makes the bare specifier resolve without a bundler.
-COPY packages/platform-core/src/ /app/node_modules/@cubecloud/platform-core/src/
-COPY packages/platform-core/package.json /app/node_modules/@cubecloud/platform-core/package.json
+# platform-core must NOT live under node_modules: node 24 refuses to
+# --experimental-strip-types a .ts file whose realpath is inside
+# node_modules (ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING). Land the
+# source at /app/packages and expose it to the bare specifier through a
+# SYMLINK — node resolves the symlink to its realpath (/app/packages/…,
+# outside node_modules), so stripping is allowed and the import works.
+COPY packages/platform-core/ /app/packages/platform-core/
+RUN mkdir -p /app/node_modules/@cubecloud \
+ && ln -s /app/packages/platform-core /app/node_modules/@cubecloud/platform-core
 COPY --from=renderer-builder /build/agent-desktop/out/renderer/ ./out/renderer/
-COPY --from=deps /build/node_modules/ ./node_modules/
+# agent-desktop's runtime deps (better-sqlite3 for the kernel's memory /
+# sessions modules + the electron-free families the kernel imports).
+COPY --from=renderer-builder /build/agent-desktop/node_modules/ ./node_modules/
 COPY agent-desktop/package.json ./package.json
+# Prune the build-only toolchain the kernel never uses at run time.
+RUN rm -rf node_modules/electron node_modules/electron-builder \
+           node_modules/electron-updater node_modules/@electron-toolkit \
+           node_modules/electron-vite node_modules/vite node_modules/rollup \
+           node_modules/esbuild
 
 ENV CONSOLE_KERNEL_PORT=6770 \
     NODE_ENV=production

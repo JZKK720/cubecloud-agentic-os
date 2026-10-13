@@ -51,6 +51,11 @@ import { scanLocalServers, probeLocalModelHealth } from "../src/main/local-serve
 import { diagnoseRemoteConnection, testRemoteConnection } from "../src/main/hermes.ts";
 
 const PORT = Number(process.env.CONSOLE_KERNEL_PORT ?? 6770);
+// Bind host: loopback by default (the desktop/dev shell only ever talks
+// to 127.0.0.1). Containers must set CONSOLE_KERNEL_HOST=0.0.0.0 — a
+// loopback bind is unreachable through a published port, so the
+// forwarded :6770 would accept the connection and then reset it.
+const HOST = process.env.CONSOLE_KERNEL_HOST?.trim() || "127.0.0.1";
 
 async function main(): Promise<void> {
   const registry = new ConsoleRouteRegistry();
@@ -202,8 +207,8 @@ async function main(): Promise<void> {
     rendererRoot,
     pushSinks,
   });
-  await new Promise<void>((resolve) => server.listen(PORT, "127.0.0.1", resolve));
-  console.log(`console-backend kernel listening on http://127.0.0.1:${PORT}`);
+  await new Promise<void>((resolve) => server.listen(PORT, HOST, resolve));
+  console.log(`console-backend kernel listening on http://${HOST}:${PORT}`);
   console.log(`capabilities: ${registry.size}`);
 }
 

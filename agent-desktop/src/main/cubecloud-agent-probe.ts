@@ -16,9 +16,15 @@
 
 export const CUBECLOUD_AGENT_PROBE_TIMEOUT_MS = 4_000;
 
-/** The plan's default workspace origin — loopback only, same allow-list
- *  class the hardened webview accepts (`isAllowedWebviewUrl`). */
-export const CUBECLOUD_AGENT_DEFAULT_URL = "http://127.0.0.1:6767";
+/** The workspace origin used when no explicit URL is supplied.
+ *
+ *  Defaults to loopback (the desktop/dev shell is always same-machine).
+ *  Containers override it with `CUBECLOUD_AGENT_URL` — an OPERATOR-set
+ *  value (compose host-gateway `http://host.docker.internal:6767`, or a
+ *  fabric service DNS name), not user input, so it is trusted here. The
+ *  USER-entered path is still loopback-only via `normalizeWorkspaceOrigin`. */
+export const CUBECLOUD_AGENT_DEFAULT_URL =
+  process.env.CUBECLOUD_AGENT_URL?.trim() || "http://127.0.0.1:6767";
 
 export interface CubecloudAgentHealthBody {
   status: string | null;

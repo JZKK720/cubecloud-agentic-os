@@ -27,6 +27,9 @@ services:
     restart: unless-stopped
     environment:
       CONSOLE_KERNEL_PORT: "6770"
+      # Bind 0.0.0.0 so the published :6770 reaches the kernel — a
+      # loopback bind is unreachable through a container port mapping.
+      CONSOLE_KERNEL_HOST: "0.0.0.0"
       # Row-A probe target. Standalone default: the host's workspace via
       # host-gateway. Fabric-joined deployments override with service DNS.
       CUBECLOUD_AGENT_URL: ${CONSOLE_WORKSPACE_URL:-http://host.docker.internal:6767}

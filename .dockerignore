@@ -1,0 +1,34 @@
+# Phase F — build-context trim for the console-backend image.
+# The build context is the monorepo root, so without this every build
+# ships node_modules, .git, the renderer out/, previews, and docs over
+# the wire before a single layer runs.
+#
+# Deliberately conservative: only large directories the Dockerfile never
+# COPYs are excluded. Blanket *.txt/*.json excludes are avoided so the
+# console-backend build artifacts (ipc-channels.txt, generated-*.json)
+# stay in the context.
+
+# Git history
+.git
+**/.git/**
+
+# Dependencies (the Dockerfile runs `npm ci` itself)
+node_modules
+**/node_modules/**
+
+# Build outputs (the renderer is rebuilt inside the image)
+agent-desktop/out
+agent-desktop/dist
+**/out/
+**/dist/
+agent-desktop/previews
+
+# Docs + external reference repos (large, never built into the image)
+docs
+agent-desktop/docs
+
+# Local scratch / editor state
+*.log
+.vscode
+.idea
+**/.DS_Store
