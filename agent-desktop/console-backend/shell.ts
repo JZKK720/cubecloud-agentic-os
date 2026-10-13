@@ -101,6 +101,13 @@ export function renderShimJs(
 // as POST /api/console/<name>; UNSEEDED bridge methods resolve to a
 // graceful degraded shape ({ success: false, degraded: true }) instead
 // of throwing — the never-throws convention at the transport layer.
+//
+// Auth: the kernel sets a SameSite=Strict console_token cookie when it
+// serves this shell's HTML, and the browser attaches it automatically
+// (same-origin). No token appears in this file — a cross-origin page can
+// load and execute a script without CORS, so an embedded token would leak.
+// "credentials": "same-origin" is explicit rather than relying on the fetch
+// default.
 // Generated ${new Date().toISOString()}.
 const KERNEL_BASE = "";
 const DEGRADED = Object.freeze({ success: false, degraded: true });
@@ -108,6 +115,7 @@ async function kernelInvoke(name, args) {
   const response = await fetch(KERNEL_BASE + "/api/console/" + encodeURIComponent(name), {
     method: "POST",
     headers: { "content-type": "application/json" },
+    credentials: "same-origin",
     body: JSON.stringify(args ?? []),
   });
   if (!response.ok) {

@@ -59,6 +59,47 @@ export interface ConsoleServerOptions {
   readonly rendererRoot?: string | null;
   /** Live push sinks: channel → SSE response. Managed by the caller. */
   readonly pushSinks?: Map<string, ServerResponse>;
+  /** Shared-secret required on every non-health request. When set, a
+   *  request without a matching `x-console-token` header is refused 401. */
+  readonly authToken?: string | null;
+}
+
+/** Loopback origins/names the browser shell legitimately serves from. */
+const SAME_ORIGIN_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
+
+/** The shell's session cookie. The token is delivered here rather than
+ *  embedded in /shim.js: a cross-origin page CAN load and execute a
+ *  script (no CORS needed) and could read an embedded global, but it can
+ *  neither read nor send a SameSite=Strict cookie. */
+const CONSOLE_COOKIE = "console_token";
+
+function readCookie(req: IncomingMessage, name: string): string | null {
+  const header = req.headers.cookie;
+  if (typeof header !== "string") return null;
+  for (const part of header.split(";")) {
+    const eq = part.indexOf("=");
+    if (eq === -1) continue;
+    if (part.slice(0, eq).trim() === name) {
+      return decodeURIComponent(part.slice(eq + 1).trim());
+    }
+  }
+  return null;
+}
+
+function originAllowed(req: IncomingMessage): boolean {
+  const origin = req.headers.origin;
+  if (typeof origin !== "string" || origin === "" || origin === "null") {
+    // No Origin header: not a browser cross-site request (curl, the
+    // container HEALTHCHECK, server-side clients). Allowed — the token
+    // is the gate for those callers.
+    return true;
+  }
+  try {
+    return SAME_ORIGIN_HOSTS.has(new URL(origin).hostname);
+  } catch {
+    // Unparseable Origin is not a trustworthy same-origin claim.
+    return false;
+  }
 }
 
 export function createConsoleServer(
@@ -67,14 +108,58 @@ export function createConsoleServer(
 ) {
   return createServer(async (req: IncomingMessage, res: ServerResponse) => {
     res.setHeader("content-type", "application/json");
+    // Bootstrap the shell's credential: the SameSite=Strict cookie is
+    // delivered here, on the same-origin HTML load, and never in
+    // /shim.js. A cross-origin page cannot read or send it.
+    if (options.authToken && (req.method === "GET" || req.method === "HEAD")) {
+      res.setHeader(
+        "set-cookie",
+        `${CONSOLE_COOKIE}=${encodeURIComponent(options.authToken)}; ` +
+          "HttpOnly; SameSite=Strict; Path=/",
+      );
+    }
     try {
       const url = new URL(req.url ?? "/", "http://127.0.0.1");
+      // ── Transport security gate ──────────────────────────────────
+      // Exempt: /health (the container HEALTHCHECK has no token) and
+      // /shim.js (loaded by the shell page before any credential exists;
+      // it must not carry the token, or a cross-origin <script src> could
+      // read it). Everything else is refused when cross-origin (the CSRF
+      // path a browser reaches without a preflight) or when the token is
+      // configured and neither the header nor the SameSite cookie matches.
+      const unauthenticated =
+        url.pathname === "/health" || url.pathname === "/shim.js";
+      if (!unauthenticated) {
+        if (!originAllowed(req)) {
+          res.statusCode = 403;
+          res.end(
+            JSON.stringify({ success: false, error: "cross-origin request refused" }),
+          );
+          return;
+        }
+        const expected = options.authToken;
+        if (expected) {
+          const header = req.headers["x-console-token"];
+          const supplied =
+            typeof header === "string" ? header : readCookie(req, CONSOLE_COOKIE);
+          if (supplied !== expected) {
+            res.statusCode = 401;
+            res.end(
+              JSON.stringify({ success: false, error: "invalid console token" }),
+            );
+            return;
+          }
+        }
+      }
       // Browser shell (C1-finish)
       if (options.rendererRoot && serveRenderer(req, res, options.rendererRoot)) {
         return;
       }
       if (options.rendererRoot && req.method === "GET" && url.pathname === "/shim.js") {
         res.setHeader("content-type", "application/javascript; charset=utf-8");
+        // Deliberately NO token: the shim runs before the shell has any
+        // credential, and a cross-origin <script src> could read an
+        // embedded one. Auth rides the SameSite cookie instead.
         res.end(renderShimJs(registry));
         return;
       }

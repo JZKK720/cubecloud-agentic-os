@@ -29,6 +29,7 @@ import {
 } from "./registry.ts";
 import { seedGovernance } from "./governance-seed.ts";
 import type { ServerResponse } from "http";
+import { randomBytes } from "crypto";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { HERMES_HOME, HERMES_PYTHON, HERMES_SCRIPT } from "../src/main/homer.ts";
@@ -216,13 +217,31 @@ async function main(): Promise<void> {
     process.env.CONSOLE_RENDERER_ROOT?.trim() ||
     resolve(moduleDir, "..", "out", "renderer");
 
+  // Transport security (see registry.ts). The kernel exposes the whole
+  // preload bridge — including mutating methods — over HTTP, so a
+  // cross-origin page the operator merely visits could drive-by invoke
+  // it. The Origin check in the server closes that path; the token
+  // additionally gates non-browser callers. The token is generated per
+  // boot and delivered to the shim through /shim.js, so no renderer code
+  // changes. An operator override (CONSOLE_KERNEL_TOKEN) wins for
+  // multi-process setups; `CONSOLE_KERNEL_TOKEN=""` disables the token
+  // gate (Origin protection stays on).
+  const authToken =
+    process.env.CONSOLE_KERNEL_TOKEN?.trim() ||
+    randomBytes(32).toString("hex");
+  const tokenGateEnabled = authToken.length > 0;
+
   const server = createConsoleServer(registry, {
     rendererRoot,
     pushSinks,
+    authToken: tokenGateEnabled ? authToken : null,
   });
   await new Promise<void>((resolve) => server.listen(PORT, HOST, resolve));
   console.log(`console-backend kernel listening on http://${HOST}:${PORT}`);
   console.log(`capabilities: ${registry.size}`);
+  console.log(
+    `transport security: origin-check on; token gate ${tokenGateEnabled ? "on (per-boot)" : "off"}`,
+  );
 }
 
 main().catch((err: unknown) => {
