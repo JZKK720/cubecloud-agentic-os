@@ -1,8 +1,8 @@
 # Implementation Start Plan — integrate the console kernel, close Phase G's packaging surface, and wire Laya lifecycle
 
 > **Date:** 2026-10-14
-> **Status:** PLAN — ready to execute. Written per the `sp-plan` contract: every task has exact file paths, complete code, a runnable verify step with expected output, a 2–5 minute estimate, and a commit boundary.
-> **Why this plan exists:** the workstream is further along than the docs on `main` suggest. Phases A, B, C, E and F are **done and green** on `feat/console-kernel-c0`; `main` is a clean ancestor of that branch. This plan sequences the integration and the remaining close-out.
+> **Status:** PLAN — **EXECUTED 2026-10-14.** Tasks 0–2 and 4–5 landed on `main`; Task 3 (the Phase D plan) was produced as `2026-10-14-everos-v2-dashboard-plan.md`. See the status block at the end of this file.
+> **Why this plan exists:** the workstream is further along than the docs on `main` suggest. Phases A, B, C, E and F are **done and green** on `feat/console-kernel-c0`, and that branch has since been fast-forwarded into `main`. This plan records the integration and the remaining close-out.
 > **Companion docs (all under `docs/plans/`):**
 > - `2026-10-08-desktop-overhaul-design.md` — the approved design; §5 is the phase DAG this plan executes
 > - `2026-10-08-second-brain-doctrine.md` — the relationship model (control plane over managed apps)
@@ -171,11 +171,13 @@ npm.cmd run test
 ```
 Expected: typecheck exits 0; suite reports **146 files passed / 1,555 passed**.
 
-**Step 5: Verify no packaging references remain**
+**Step 5: Verify no packaging *scripts* remain**
 ```powershell
-Select-String -Path d:\users\joeyzh\github-pr\cubecloud-agentic-os\agent-desktop\package.json -Pattern 'electron-builder|build:win|build:win|postinstall'
+Select-String -Path d:\users\joeyzh\github-pr\cubecloud-agentic-os\agent-desktop\package.json -Pattern '"build:(win|mac|linux|rpm|unpack)"|"postinstall"'
 ```
 Expected: **no output**.
+
+> **Do not remove the `electron-builder` devDependency.** It is inert once the scripts are gone, and removing it would require a `package-lock.json` regeneration — `npm ci` (which `console-backend/Dockerfile` runs) fails hard on a lockfile/manifest mismatch. The Dockerfile already prunes `node_modules/electron-builder` in both stages, so it costs the image nothing. Match on *quoted script names*, not the bare package name.
 
 **Step 6: Verify the SPA build still works (the thing Task 2 must not break)**
 ```powershell
@@ -350,9 +352,50 @@ Expected: the server binds and `/` serves the SPA. Reference: `2026-10-13-phase-
   1. An earlier draft of Task 2 also removed `"build"`, which would have **broken the Phase F container** — `console-backend/Dockerfile` runs `npm exec electron-vite build`, and `"build"` wraps it. Step 6 now verifies that build explicitly. Any future cleanup of `agent-desktop/package.json` must treat `"build"`, `"dev"`, and `"start"` as *shipping* scripts, not packaging scripts.
   2. An earlier draft ordered Task 0 (commit to `main`) **before** the fast-forward, which would have made the fast-forward impossible. The order above is the corrected one.
   3. An earlier draft claimed the fast-forward would preserve six of the eight untracked docs "for free". It would not — verified by `ls-tree` that the branch tracks **none** of them. Task 1 now commits all eight.
+  4. An earlier draft of Task 2 would have removed the `electron-builder` **devDependency**. That breaks `npm ci` (lockfile mismatch) and therefore the Phase F container. It stays; only the scripts go. Step 5's pattern was narrowed accordingly.
 
 ## Out of scope (deliberate)
 
 1. **Deleting `src/main/index.ts` / `src/preload/index.ts` / the desktop product** — Phase G's destructive half. Per the readiness audit this is an *operator* decision (it removes the product the repo is named for, and the preload is the kernel route map's source). Task 2 retires only the packaging surface.
 2. **The embedding sidecar, the utility-model lane and the REA spike** — all from `2026-10-14-laya-rea-local-model-layer-evaluation.md` §6, each needing its own plan.
 3. **Workspace write lanes** — scheduled-task CRUD, session MCP servers, media settings, sharing/policy edits. The Phase C plan already parked these as `workspace-writes-plan.md`.
+
+---
+
+## Execution status (2026-10-14)
+
+| Task | Outcome | Commit |
+|---|---|---|
+| 0. Fast-forward `main` | ✅ `261cd8b`, ahead/behind `0 14` | *(pointer move)* |
+| 1. Preserve the untracked corpus | ✅ all eight docs tracked; `docs/plans/` clean | `777cb88` |
+| — *(bonus)* the Laya latency copy fix | ✅ carried in from the evaluation | `393ccb8` |
+| 2. Retire the packaging surface | ✅ 4 files, 190 deletions; SPA build re-verified | `3371a75` |
+| 3. Write the Phase D plan | ✅ `2026-10-14-everos-v2-dashboard-plan.md` (8 tasks) | `04c612a` |
+| 4. Laya capability-honest health | ⚠️ **re-scoped** — see below; landed red→green | `08258d3` |
+| 5. End-to-end smoke | ✅ all five checks pass | *(verification only)* |
+
+**Smoke evidence**
+
+| Check | Result |
+|---|---|
+| Kernel parity | `PARITY PASS — 295 kernel capabilities ↔ 291 preload invoke methods (bidirectional)` |
+| Typecheck | exit 0 (node + web) |
+| Full suite | **148 files / 1,566 passed / 3 skipped**, exit 0, three consecutive clean runs |
+| Container build | `cubecloud-console:smoke` built, exit 0 — proves Task 2 did not break Phase F |
+| Live container | `cubecloud-agentic-os-c0-kernel-console-backend-1` up 15 h healthy; `/health` → `capabilities: 295`; `/` → HTTP 200 |
+
+### Task 4 was re-scoped during execution — and why that was correct
+
+The plan's original Task 4 proposed giving Laya a `lifecycle()` facade via `syncLifecycleFacade`. **Executing it would have broken a locked doctrine rule.** `agent-desktop/tests/managed-apps.test.ts` already enforces:
+
+> *"fabric-attach adapters have null lifecycle (console never spawns fabric services)"* — doctrine rule 4.
+
+Laya is `fabric-attach`. Adding a spawning lifecycle would have made that suite red, i.e. the plan was wrong, not the test.
+
+Investigating the *actual* defect surfaced a better one: the generic `cliProbeApp` reported `ok: true` and "Laya probe ok" the moment the `laya` CLI was on `PATH` — but the DM1/DM2 decision slots **never call the CLI**; they speak HTTP to `laya-serve` (`LAYA_BASE_URL`, default `:8000`). With that server down, every decision silently abstains (fail-open) while the operator sees a green row. That is precisely the capability-honesty violation doctrine rule 1 bans.
+
+The shipped fix folds a bounded `/health` probe of the serve endpoint into `health()`, and reports `auth-required` from `discover()` when the CLI is present but the server is not. It stays `fabric-attach` with a null lifecycle, so rule 4 holds. Locked in by `agent-desktop/tests/laya-managed-app.test.ts` (4 tests, red→green).
+
+### Open item discovered during execution (not in the plan's scope)
+
+**`createManagedAppRegistry()` has no runtime consumer.** Verified: the only importers are `tests/managed-apps.test.ts` and a *renderer* `./registry` (a different file — the MCP screen's server list). The kernel's `generated-route-map.json` and `dispatch-table.json` contain no managed-app or adapter routes. So the 16-adapter framework is fully built, fully tested, and **not yet reachable from the running console**. Wiring it into a `managedApps*` route family is the natural next task and belongs in its own plan.
