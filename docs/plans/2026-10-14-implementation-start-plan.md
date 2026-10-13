@@ -353,6 +353,7 @@ Expected: the server binds and `/` serves the SPA. Reference: `2026-10-13-phase-
   2. An earlier draft ordered Task 0 (commit to `main`) **before** the fast-forward, which would have made the fast-forward impossible. The order above is the corrected one.
   3. An earlier draft claimed the fast-forward would preserve six of the eight untracked docs "for free". It would not — verified by `ls-tree` that the branch tracks **none** of them. Task 1 now commits all eight.
   4. An earlier draft of Task 2 would have removed the `electron-builder` **devDependency**. That breaks `npm ci` (lockfile mismatch) and therefore the Phase F container. It stays; only the scripts go. Step 5's pattern was narrowed accordingly.
+  5. **Task 2 itself was wrong and was reverted (`b83a46c`).** It deleted `build:win`, which CI's `desktop-shell-windows-packaging` job runs. The step-6 SPA-build check was necessary but not sufficient — it proved the *container* still built while the *CI job* would have failed. **A packaging change must always be verified against `.github/workflows/ci.yml`, not just against the local build.** The fix landed as a revert with a byte-identical restore.
 
 ## Out of scope (deliberate)
 
@@ -369,7 +370,7 @@ Expected: the server binds and `/` serves the SPA. Reference: `2026-10-13-phase-
 | 0. Fast-forward `main` | ✅ `261cd8b`, ahead/behind `0 14` | *(pointer move)* |
 | 1. Preserve the untracked corpus | ✅ all eight docs tracked; `docs/plans/` clean | `777cb88` |
 | — *(bonus)* the Laya latency copy fix | ✅ carried in from the evaluation | `393ccb8` |
-| 2. Retire the packaging surface | ✅ 4 files, 190 deletions; SPA build re-verified | `3371a75` |
+| 2. Retire the packaging surface | ❌ **REVERTED** — see below; breaks CI | `3371a75` → reverted in `b83a46c` |
 | 3. Write the Phase D plan | ✅ `2026-10-14-everos-v2-dashboard-plan.md` (8 tasks) | `04c612a` |
 | 4. Laya capability-honest health | ⚠️ **re-scoped** — see below; landed red→green | `08258d3` |
 | 5. End-to-end smoke | ✅ all five checks pass | *(verification only)* |
@@ -381,8 +382,28 @@ Expected: the server binds and `/` serves the SPA. Reference: `2026-10-13-phase-
 | Kernel parity | `PARITY PASS — 295 kernel capabilities ↔ 291 preload invoke methods (bidirectional)` |
 | Typecheck | exit 0 (node + web) |
 | Full suite | **148 files / 1,566 passed / 3 skipped**, exit 0, three consecutive clean runs |
-| Container build | `cubecloud-console:smoke` built, exit 0 — proves Task 2 did not break Phase F |
+| Container build | `cubecloud-console:smoke` built, exit 0 — proved the container path is independent of the packaging scripts |
 | Live container | `cubecloud-agentic-os-c0-kernel-console-backend-1` up 15 h healthy; `/health` → `capabilities: 295`; `/` → HTTP 200 |
+
+### Task 2 was executed and then **reverted** — it broke CI
+
+Task 2 removed the six `electron-builder` packaging scripts, `electron-builder.yml`, and the two build hooks. Verification at the time showed the SPA build and the container were unaffected — and both claims were true. **But the verification was incomplete.**
+
+`.github/workflows/ci.yml`'s `desktop-shell-windows-packaging` job runs, at line 157:
+
+```yaml
+      - name: Build Windows package
+        working-directory: agent-desktop
+        run: npm run build:win
+```
+
+`build:win` was one of the scripts Task 2 deleted. **Every PR would have failed CI immediately.** The `2026-10-13-phase-g-readiness-audit.md` had already warned about exactly this class of mistake:
+
+> *"Why this is an operator decision, not an autonomous one… It removes the desktop product the repo is named for."*
+
+The revert is `b83a46c`, and `agent-desktop/package.json` is now byte-identical to its pre-Task-2 state (verified: empty diff against `393ccb8`).
+
+**Lesson recorded in the self-review:** the packaging surface is not dead code — it is *live CI infrastructure*. Phase G's step 1 cannot be done in isolation; it must land in the **same change** as the CI job update (or after the job is retired). The correct sequence is: retire the CI job → then retire the scripts.
 
 ### Task 4 was re-scoped during execution — and why that was correct
 
