@@ -1,4 +1,5 @@
 import posthog from "posthog-js";
+import { getPlatform, getRuntimeVersions } from "./platform";
 
 const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || "";
 const POSTHOG_HOST =
@@ -64,10 +65,11 @@ export function initAnalytics(): void {
     respect_dnt: true,
     mask_personal_data_properties: true,
     loaded: () => {
+      const v = getRuntimeVersions();
       posthog.identify(getOrCreateAnonymousId(), {
-        app_version: window.electron?.process?.versions?.electron || "unknown",
-        platform: window.electron?.process?.platform || "unknown",
-        node_version: window.electron?.process?.versions?.node || "unknown",
+        app_version: v.electron || "unknown",
+        platform: getPlatform() || "unknown",
+        node_version: v.node || "unknown",
       });
     },
   });

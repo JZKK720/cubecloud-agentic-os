@@ -1,5 +1,7 @@
 // ── Shared Types ────────────────────────────────────────
 
+import { isWindows } from "./utils/platform";
+
 export interface FieldDef {
   key: string;
   label: string;
@@ -1344,16 +1346,14 @@ export const INSTALL_CMD_UNIX = WSL_BASH_INSTALL_CMD;
 export const WINDOWS_INSTALL_CMD = POWERSHELL_INSTALL_CMD;
 export const INSTALL_CMD =
   typeof window !== "undefined" &&
-  window.electron?.process?.platform === "win32"
+  isWindows()
     ? POWERSHELL_INSTALL_CMD
     : WSL_BASH_INSTALL_CMD;
 
 export const INSTALL_CMD_WIN = POWERSHELL_INSTALL_CMD;
 
 export function getInstallCmd(): string {
-  return window.electron?.process?.platform === "win32"
-    ? POWERSHELL_INSTALL_CMD
-    : WSL_BASH_INSTALL_CMD;
+  return isWindows() ? POWERSHELL_INSTALL_CMD : WSL_BASH_INSTALL_CMD;
 }
 
 // Helper to resolve i18n key or return as-is

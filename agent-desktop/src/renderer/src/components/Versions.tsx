@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { getRuntimeVersions } from "../utils/platform";
 
 function Versions(): React.JSX.Element {
-  const [versions] = useState(window.electron.process.versions);
+  // Runtime labels — blank in the browser shell, populated in Electron.
+  const [versions] = useState(getRuntimeVersions);
 
   return (
     <ul className="versions">

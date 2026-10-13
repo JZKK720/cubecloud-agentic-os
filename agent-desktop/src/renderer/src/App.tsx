@@ -14,6 +14,7 @@ import {
   type GatewayRuntimePresetId,
 } from "../../shared/gateway-runtime-presets";
 import { setCachedGatewayRuntimePreset } from "./utils/gatewayRuntimePresetCache";
+import { isMac as detectIsMac } from "./utils/platform";
 
 type Screen =
   | "splash"
@@ -53,7 +54,7 @@ function App(): React.JSX.Element {
   // which previously trapped restricted-network users in a reinstall
   // loop on every launch (#130).
   const [verifyWarning, setVerifyWarning] = useState(false);
-  const isMac = window.electron?.process?.platform === "darwin";
+  const isMac = detectIsMac();
 
   const runInstallCheck = useCallback(async () => {
     const startedAt = Date.now();

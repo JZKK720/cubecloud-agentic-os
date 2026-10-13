@@ -14,6 +14,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "../../components/useI18n";
+import { isWindows as isWindowsPlatform } from "../../utils/platform";
 import {
   Refresh,
   Search,
@@ -95,7 +96,7 @@ function formatTimestamp(ts: number | null): string {
 
 function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
   const { t } = useI18n();
-  const isWindows = window.electron?.process?.platform === "win32";
+  const isWindows = isWindowsPlatform();
   const [config, setConfig] = useState<EverOsConfig | null>(null);
   const [health, setHealth] = useState<EverOsHealthStatus | null>(null);
   const [query, setQuery] = useState("");

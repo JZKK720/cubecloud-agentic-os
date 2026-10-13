@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Download, ExternalLink, Refresh, Search } from "../../assets/icons";
 import { useI18n } from "../../components/useI18n";
+import { isWindows as isWindowsPlatform } from "../../utils/platform";
 import type { Attachment } from "../../../../shared/attachments";
 
 const STORAGE_KEY = "agent-desktop.workspace.project-path";
@@ -319,7 +320,7 @@ function Workspace({ onOpenInChat }: WorkspaceProps): React.JSX.Element {
   }
 
   const installCommand =
-    window.electron.process.platform === "win32"
+    isWindowsPlatform()
       ? "irm https://raw.githubusercontent.com/colbymchenry/codegraph/main/install.ps1 | iex"
       : "curl -fsSL https://raw.githubusercontent.com/colbymchenry/codegraph/main/install.sh | bash";
 
