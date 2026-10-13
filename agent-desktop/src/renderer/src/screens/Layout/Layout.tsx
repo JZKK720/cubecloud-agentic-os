@@ -611,11 +611,11 @@ function Layout({
             type="button"
             className="sidebar-licensing-link"
             onClick={openLegalModal}
-            aria-label={t("legal.openPanel")}
-            title={t("legal.openPanel")}
+            aria-label={t("common.legal.openPanel")}
+            title={t("common.legal.openPanel")}
           >
             <LicensingIcon size={13} />
-            {t("legal.licensingLink")}
+            {t("common.legal.licensingLink")}
           </button>
           <div className="sidebar-footer-text">
             {activeProfile === "default" ? t("common.appName") : activeProfile}

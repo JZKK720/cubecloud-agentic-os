@@ -45,8 +45,20 @@
 
 ## Blockers
 
-- **No live browser pass.** Docker Desktop will not start in this environment, and the loopback workspace (`cubecloud-agent :6767`) accepts TCP but hangs on HTTP. The Playwright pass and the "live `:6767` smoke" in the design §5 both require a reachable runtime. Static CSS measurements + the 9 unit tests stand in as proxy evidence; the live visual pass stays **open** until a runtime is available.
+- **Resolved 2026-10-13 (second pass).** The initial static-only pass was forced because Docker Desktop was `stopped` while its `com.docker.backend.exe` (PID 34876) kept the port-forwarding sockets for 6767/3000/8642/8789/18889 — so nothing could bind and HTTP to 6767 hung. A `docker desktop restart` cleared the orphan; the full stack came up healthy (`cubecloud-agent-server:local-fix` on `0.0.0.0:6767`, hermes-gateway, postgres ×2, qwen3-tts, asr, host sidecar).
+- **Live browser pass — DONE.** Kernel on `:6770` against the live workspace; Playwright drove the real UI:
+  - Overview — **"Reachable http://127.0.0.1:6767"**; supervisor `stopped`.
+  - Policies & sharing — empty registry + the **tolerant partial-surface note** driven by a real `scheduled_tasks HTTP 404`.
+  - Sessions & agents — **real mirror**: 10 sessions with live titles/statuses, 12 agent bundles.
+  - Route-level proof: `workspaceProbe` → `{reachable:true, health:"ok", stack:{hermes/ollama/whisper/tts: ok}}`; `workspaceGovernanceSurfaces` → real data + tolerated 404.
+
+### Findings from the live pass
+
+- **[P1] Stale-bundle trap** — the kernel served a pre-Phase-C `out/renderer`, so the nav showed the raw `navigation.workspaceConsole` key. Rebuilt the renderer; the localized label now renders. **This is a deploy hazard**: the served bundle is only as fresh as the last `electron-vite build`; the compose image must build the renderer at image-build time (Phase F).
+- **[P2] `legal.openPanel` / `legal.licensingLink` keys** — real keys, but nested under the `common` namespace while the call omitted the `common.` prefix. **Fixed** (`Layout.tsx`).
 
 ## Verify output
 
 - typecheck (web) clean · `workspace-console` + `workspace-console-data` **9/9 pass** · full suite green.
+- **Live attach proof (2026-10-13):** browser → shim → kernel → live workspace on `:6767`, all five tabs exercised against real data.
+
