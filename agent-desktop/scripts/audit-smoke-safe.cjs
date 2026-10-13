@@ -50,6 +50,23 @@ const readOnly = [
   "list-all-outputs", "list-thread-outputs",
   "read-file", "read-directory", "read-image-file", "read-logs",
   "gateway-status",
+  // ── V2.10.80 workspace-console + governance-relay family ─────────
+  // These shipped with module + IPC + preload but were never added to
+  // this categorisation, so the audit reported them as "unknown" and
+  // lost its ability to spot a genuinely unwired new channel. Read-only
+  // = no side effects on the operator's machine or the workspace.
+  "list-vault-files", "read-vault-file", "search-vault",
+  "approval-list", "approval-has-pending",
+  "decision-audit-path",
+  "get-swarm-messages", "list-swarm-agents",
+  "laya-probe", "laya-mcp-registration",
+  "openviking-probe", "weknora-probe",
+  "workspace-agents-list", "workspace-console-url",
+  "workspace-governance-elicitations", "workspace-governance-surfaces",
+  "workspace-probe", "workspace-probe-url",
+  "workspace-provision-fingerprint",
+  "workspace-sessions-list",
+  "workspace-supervisor-log-tail", "workspace-supervisor-status",
 ];
 
 const roundTrip = [
@@ -69,6 +86,20 @@ const inStaging = [
   "moo-tasks-sidecar-start", "moo-tasks-sidecar-stop", "moo-tasks-sidecar-restart",
   "moo-tasks-sidecar-clear-logs", "moo-tasks-sidecar-log-tail", "moo-tasks-sidecar-status",
   "discover-codebase-memory", "discover-last30days", "list-codebase-memory-projects",
+  // ── V2.10.80 mutating family (never categorized) ──────────────────
+  // Side-effect channels: vault writes, the human approval verdict, the
+  // swarm lifecycle, DM2 decision slots, and the workspace process /
+  // provision writes. They are categorised here because the audit's job
+  // is to spot a channel that is NOT accounted for — not to assert that
+  // a mutating channel is safe to smoke unattended.
+  "add-vault-file", "update-vault-file", "delete-vault-file",
+  "approval-create", "approval-approve", "approval-deny",
+  "clear-swarm",
+  "create-swarm-subagent", "terminate-swarm-agent",
+  "agent-bundle-promote",
+  "decision-prescreen-approval", "decision-triage-skill",
+  "workspace-provision-env",
+  "workspace-supervisor-start", "workspace-supervisor-stop",
 ];
 
 const seen = new Set(readOnly);
