@@ -326,13 +326,84 @@ export function createBrowserHarnessApp(): ManagedApp {
   );
 }
 
+/** The default `laya-serve` origin — the endpoint the DM1/DM2 decision
+ *  slots actually call (`src/main/index.ts`, `src/main/hermes.ts`). Kept in
+ *  sync with the `agent.laya_base_url` config default. */
+const LAYA_DEFAULT_SERVE_URL = "http://127.0.0.1:8000";
+
+/** Probe the `laya-serve` HTTP endpoint the decision slots depend on.
+ *
+ *  Capability honesty (rule 1): the `laya` CLI being on PATH says nothing
+ *  about whether decisions will work — the slots speak HTTP. Without this
+ *  check the operator sees a green row while every decision silently
+ *  abstains (fail-open), which is the exact bug class rule 1 bans.
+ *
+ *  Never throws: any transport failure resolves to `{ reachable: false }`. */
+async function probeLayaServe(): Promise<{ reachable: boolean; detail: string }> {
+  const base =
+    process.env.LAYA_BASE_URL?.replace(/\/+$/, "") ?? LAYA_DEFAULT_SERVE_URL;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3_000);
+  try {
+    const res = await fetch(`${base}/health`, { signal: controller.signal });
+    return res.ok
+      ? { reachable: true, detail: `laya-serve ok at ${base}` }
+      : { reachable: false, detail: `laya-serve HTTP ${res.status} at ${base}` };
+  } catch (err) {
+    return {
+      reachable: false,
+      detail: `laya-serve unreachable at ${base} (${String(err).slice(0, 80)})`,
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Laya's decision engine is a *local* HTTP server but the console must
+ *  never spawn fabric services (rule 4) — so this adapter is fabric-attach
+ *  with a null lifecycle, and its health folds in the serve probe. */
 export function createLayaApp(): ManagedApp {
-  return cliProbeApp(
+  const base = cliProbeApp(
     "laya",
     "Laya",
     () => probeLaya(),
     (r) => (r as { installed: boolean }).installed === true,
   );
+
+  return {
+    ...base,
+
+    async discover(): Promise<ManagedAppDiscovery> {
+      const cli = probeLaya();
+      if (!cli.installed) {
+        return {
+          state: "not-found",
+          detail: cli.summary,
+          scannedAt: new Date().toISOString(),
+        };
+      }
+      const serve = await probeLayaServe();
+      return {
+        state: serve.reachable ? "found" : "auth-required",
+        detail: serve.detail,
+        scannedAt: new Date().toISOString(),
+      };
+    },
+
+    async health(): Promise<ManagedAppHealth> {
+      const cli = probeLaya();
+      const serve = await probeLayaServe();
+      return {
+        // Both halves matter: CLI present to run it, serve reachable for
+        // the decision slots to have any effect.
+        ok: cli.installed && serve.reachable,
+        capabilities: ["inventory"],
+        detail: serve.detail,
+        raw: { cli, serve },
+        scannedAt: new Date().toISOString(),
+      };
+    },
+  };
 }
 
 export function createCodeGraphApp(): ManagedApp {
