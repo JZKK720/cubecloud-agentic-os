@@ -28,6 +28,7 @@ import constantsEn from "./locales/en/constants";
 import everosen from "./locales/en/everos";
 import workspaceEn from "./locales/en/workspace";
 import firstrunEn from "./locales/en/firstrun";
+import workspaceConsoleEn from "./locales/en/workspaceConsole";
 import commonEs from "./locales/es/common";
 import navigationEs from "./locales/es/navigation";
 import welcomeEs from "./locales/es/welcome";
@@ -224,12 +225,19 @@ import knowledgePtPt from "./locales/pt-PT/knowledge";
 import knowledgeZhCn from "./locales/zh-CN/knowledge";
 import knowledgeZhTw from "./locales/zh-TW/knowledge";
 import workspaceEs from "./locales/es/workspace";
+import workspaceConsoleEs from "./locales/es/workspaceConsole";
 import workspaceId from "./locales/id/workspace";
+import workspaceConsoleId from "./locales/id/workspaceConsole";
 import workspaceJa from "./locales/ja/workspace";
+import workspaceConsoleJa from "./locales/ja/workspaceConsole";
 import workspacePtBr from "./locales/pt-BR/workspace";
+import workspaceConsolePtBr from "./locales/pt-BR/workspaceConsole";
 import workspacePtPt from "./locales/pt-PT/workspace";
+import workspaceConsolePtPt from "./locales/pt-PT/workspaceConsole";
 import workspaceZhCn from "./locales/zh-CN/workspace";
+import workspaceConsoleZhCn from "./locales/zh-CN/workspaceConsole";
 import workspaceZhTw from "./locales/zh-TW/workspace";
+import workspaceConsoleZhTw from "./locales/zh-TW/workspaceConsole";
 
 export const resources = {
   en: {
@@ -259,6 +267,7 @@ export const resources = {
       constants: constantsEn,
       everos: everosen,
       workspace: workspaceEn,
+      workspaceConsole: workspaceConsoleEn,
       plans: plansEn,
       mcp: mcpEn,
       firstrun: firstrunEn,
@@ -289,7 +298,7 @@ export const resources = {
       memory: memoryEs,
       install: installEs,
       constants: constantsEs,
-      everos: everoses,      workspace: workspaceEs,      plans: plansEs,
+      everos: everoses,      workspace: workspaceEs,      workspaceConsole: workspaceConsoleEs,      plans: plansEs,
       mcp: mcpEs,
       firstrun: firstrunEs,
     },
@@ -317,6 +326,7 @@ export const resources = {
       constants: constantsId,
       everos: everosid,
       workspace: workspaceId,
+      workspaceConsole: workspaceConsoleId,
       headroom: headroomId,
       sandboxTasks: sandboxTasksId,
       swarm: swarmId,
@@ -349,6 +359,7 @@ export const resources = {
       constants: constantsZh,
       everos: everoszhCN,
       workspace: workspaceZhCn,
+      workspaceConsole: workspaceConsoleZhCn,
       headroom: headroomZhCn,
       sandboxTasks: sandboxTasksZhCn,
       swarm: swarmZhCn,
@@ -381,6 +392,7 @@ export const resources = {
       constants: constantsZhTw,
       everos: everoszhTW,
       workspace: workspaceZhTw,
+      workspaceConsole: workspaceConsoleZhTw,
       plans: plansZhTw,
       mcp: mcpZhTw,
       headroom: headroomZhTw,
@@ -413,6 +425,7 @@ export const resources = {
       constants: constantsPt,
       everos: everosptBR,
       workspace: workspacePtBr,
+      workspaceConsole: workspaceConsolePtBr,
       plans: plansPtBr,
       mcp: mcpPtBr,
       headroom: headroomPtBr,
@@ -445,6 +458,7 @@ export const resources = {
       constants: constantsPtPt,
       everos: everosptPT,
       workspace: workspacePtPt,
+      workspaceConsole: workspaceConsolePtPt,
       headroom: headroomPtPt,
       sandboxTasks: sandboxTasksPtPt,
       plans: plansPtPt,
@@ -477,6 +491,7 @@ export const resources = {
       constants: constantsJa,
       everos: everosja,
       workspace: workspaceJa,
+      workspaceConsole: workspaceConsoleJa,
       plans: plansJa,
       mcp: mcpJa,
       headroom: headroomJa,
