@@ -54,7 +54,7 @@ export const LAYA_MCP_REGISTRATION = {
     "laya_preset",
   ] as string[],
   description:
-    "Laya System-1 decision engine — typed choice/score/noul decisions, ~33ms, abstention-gated",
+    "Laya System-1 decision engine — typed choice/score/noul decisions, abstention-gated (local CPU ~200–450 ms/pass; ~33 ms is GPU-only)",
 } as const;
 
 /** Candidate console-script names to resolve on PATH, in preference
