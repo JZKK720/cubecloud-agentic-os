@@ -1,7 +1,7 @@
 import { execFileSync } from "child_process";
 import { join, dirname } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { HERMES_HOME } from "./installer";
+import { HERMES_HOME } from "./homer";
 
 const PROFILE_NAME_RE = /^[a-z0-9_][a-z0-9_-]{0,63}$/;
 export const PROFILE_NAME_ERROR =

@@ -1750,6 +1750,43 @@ interface HermesAPI {
     totalBytes: number;
   }>;
 
+  // Workspace read-only session/agent mirrors — contract row D/R1.
+  // NEW-WIRING (C1): completes the sessions-family wire-up (module +
+  // tests shipped in V2.10.80; the console kernel was the first caller).
+  listWorkspaceSessions: (
+    baseUrl: string,
+    options?: { limit?: number; searchQuery?: string },
+  ) => Promise<{
+    success: boolean;
+    data: Array<{
+      id: string;
+      agentId: string | null;
+      agentName: string | null;
+      status: string;
+      title: string | null;
+      createdAt: number | null;
+      runnerId: string | null;
+      runnerOnline: boolean | null;
+      hostOnline: boolean | null;
+      externalSessionId: string | null;
+      modelOverride: string | null;
+      gitBranch: string | null;
+    }>;
+    hasMore: boolean;
+    error?: string;
+  }>;
+  listWorkspaceAgents: (baseUrl: string) => Promise<{
+    success: boolean;
+    data: Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      createdAt: number | null;
+    }>;
+    hasMore: boolean;
+    error?: string;
+  }>;
+
   // Workspace console embed — contract row C (P2).
   workspaceConsoleUrl: () => Promise<string>;
   // Laya decision-engine probe — DM0.

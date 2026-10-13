@@ -1,0 +1,41 @@
+// Fallback: English source until a native translation lands.
+export default {
+  eyebrow: "Agent Desktop",
+  title: "Looking for your AI Workspace",
+  subtitle:
+    "One moment — Agent Desktop is scanning this machine for a running Cubecloud AI Workspace.",
+  scanning: "Scanning",
+  scanHint:
+    "Probing the default workspace origin and well-known local server ports.",
+  foundTitle: "AI Workspace found",
+  foundSubtitle: "Your workspace is running and healthy. Connect to continue.",
+  connect: "Connect",
+  sessions: "Sessions",
+  agents: "Agents",
+  version: "Version",
+  notFoundTitle: "No AI Workspace found",
+  notFoundSubtitle:
+    "Nothing answered on the default origin or the well-known local ports.",
+  startWithDocker: "Start with Docker",
+  dockerCommandHint: "Run this in a terminal, then scan again:",
+  scanAgain: "Scan again",
+  advancedConnect: "Advanced: connect manually",
+  advancedHint: "Loopback http origins only (127.0.0.1, localhost, ::1).",
+  connectUrl: "Connect",
+  urlPlaceholder: "127.0.0.1:6767",
+  invalidUrl: "Enter a loopback http origin, e.g. 127.0.0.1:6767.",
+  authRequiredTitle: "Workspace requires a key",
+  authRequiredBody:
+    "The workspace answered but requires an API key. Paste it once — it is stored in the local profile, never in source.",
+  apiKeyPlaceholder: "API key",
+  verifyAndConnect: "Verify and connect",
+  authFailed: "The key was rejected. Check it and try again.",
+  connecting: "Connecting",
+  connectedTitle: "Connected",
+  connectedBody: "The console is attached to your AI Workspace.",
+  enterConsole: "Enter the console",
+  fallbackWizard: "Legacy gateway setup",
+  fallbackWizardHint:
+    "Direct gateway attach (Hermes / IronClaw / OpenClaw) without an AI Workspace. Most users never need this.",
+  back: "Back",
+} as const;

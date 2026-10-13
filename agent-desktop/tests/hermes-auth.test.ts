@@ -34,7 +34,7 @@ const { spawnSpy, fakeProcs } = vi.hoisted(() => {
   };
 });
 
-vi.mock("../src/main/installer", () => ({
+vi.mock("../src/main/homer", () => ({
   HERMES_PYTHON: "/usr/bin/python3",
   HERMES_REPO: "/tmp/hermes-repo",
   HERMES_HOME: "/tmp/hermes-home",

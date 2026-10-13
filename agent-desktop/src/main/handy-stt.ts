@@ -45,7 +45,7 @@
  */
 
 import { spawnSync, exec } from "child_process";
-import { getEnhancedPath } from "./installer";
+import { getEnhancedPath } from "./homer";
 
 /** Cached detection result. null = not yet checked. */
 let handyDetected: boolean | null = null;

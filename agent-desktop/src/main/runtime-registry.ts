@@ -1,11 +1,8 @@
 import { getPublicConnectionConfig } from "./config";
 import { resolveCommandOnPath } from "./agent-clis";
 import { detectGatewayRuntime } from "./hermes";
-import {
-  checkInstallStatus,
-  checkOpenClawExists,
-  getEnhancedPath,
-} from "./installer";
+import { checkInstallStatus } from "./installer";
+import { checkOpenClawExists, getEnhancedPath } from "./homer";
 import {
   RUNTIME_PROVIDER_CATALOG,
   type RuntimeProviderSnapshot,

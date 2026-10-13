@@ -1,6 +1,6 @@
 import { spawnSync } from "child_process";
 import { AGENT_CLI_CATALOG, type AgentCliId } from "../shared/agent-clis";
-import { getEnhancedPath } from "./installer";
+import { getEnhancedPath } from "./homer";
 
 export interface AgentCliDiscoveryItem {
   id: AgentCliId;

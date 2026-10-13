@@ -24,7 +24,7 @@ vi.mock("fs", () => ({
   },
 }));
 
-vi.mock("../src/main/installer", () => ({
+vi.mock("../src/main/homer", () => ({
   getEnhancedPath: () => "C:\\mock-bin",
   HERMES_HOME: "D:\\hermes",
 }));

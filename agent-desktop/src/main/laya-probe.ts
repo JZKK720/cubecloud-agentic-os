@@ -15,7 +15,7 @@
 // per `LICENSE`; see `BRANDING_AND_LICENSE.md` for provenance.
 
 import { execFileSync } from "child_process";
-import { getEnhancedPath } from "./installer";
+import { getEnhancedPath } from "./homer";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";
 
 export const LAYA_PROBE_TIMEOUT_MS = 10_000;

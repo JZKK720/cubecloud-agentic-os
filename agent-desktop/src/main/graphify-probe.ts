@@ -38,7 +38,7 @@
  */
 
 import { spawnSync } from "child_process";
-import { getEnhancedPath } from "./installer";
+import { getEnhancedPath } from "./homer";
 import { resolveCommandOnPath } from "./agent-clis";
 
 /** Commands that the graphify CLI might be installed as. */

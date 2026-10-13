@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync, rmSync, existsSync } from "fs";
 import { join } from "path";
-import { HERMES_HOME } from "./installer";
+import { HERMES_HOME } from "./homer";
 
 /**
  * Staging area for pasted attachments.  Picker / drag-drop attachments

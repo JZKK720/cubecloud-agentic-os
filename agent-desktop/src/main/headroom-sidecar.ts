@@ -49,7 +49,7 @@
 
 import { spawn, spawnSync, type ChildProcess, type SpawnOptions } from "child_process";
 import { delimiter } from "path";
-import { getEnhancedPath, HERMES_HOME } from "./installer";
+import { getEnhancedPath, HERMES_HOME } from "./homer";
 
 // ─── Public types ─────────────────────────────────────────────────
 

@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-10-08T07:58:28.667Z",
+  "totals": {
+    "preloadMethods": 309,
+    "invokeMethods": 292,
+    "coveredByHandler": 292,
+    "uncovered": 0,
+    "excludedByDesign": [
+      "getPathForFile"
+    ],
+    "pushChannels": 16,
+    "mainChannels": 292,
+    "orphanChannels": 0
+  },
+  "uncoveredMethods": [],
+  "orphanChannels": []
+}

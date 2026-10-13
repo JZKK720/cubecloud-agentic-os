@@ -1,0 +1,130 @@
+// console-backend C0 — route registry + HTTP server.
+//
+// The Agentic OS kernel as a headless Node service (doctrine:
+// docs/plans/2026-10-07-second-brain-doctrine.md §3). C0 seeds the
+// registry with the five already-Electron-free workspace-console
+// modules and serves every registered capability as
+// POST /api/console/<capability>. Streaming (chat SSE) is C1;
+// this server is intentionally dependency-free (node:http).
+//
+// Never throws on request errors: handler results are always
+// JSON-serializable result shapes (the "never throws / reason field"
+// convention shared by the module family).
+
+import { createServer, type IncomingMessage, type ServerResponse } from "http";
+import { serveRenderer, renderShimJs } from "./shell.ts";
+
+/** A kernel capability: one preload bridge analog, one HTTP route. */
+export interface ConsoleCapability {
+  /** Preload bridge method name (the parity key against preload/index.ts). */
+  readonly name: string;
+  /** The desktop IPC channel this route replaces (traceability). */
+  readonly ipcChannel: string;
+  /** Handler: argv[0] is a JSON-encodable args array from the caller. */
+  readonly handler: (args: unknown[]) => Promise<unknown>;
+}
+
+type Registry = Map<string, ConsoleCapability>;
+
+export class ConsoleRouteRegistry {
+  private readonly routes: Registry = new Map();
+
+  register(cap: ConsoleCapability): void {
+    if (this.routes.has(cap.name)) {
+      throw new Error(`duplicate capability: ${cap.name}`);
+    }
+    this.routes.set(cap.name, cap);
+  }
+
+  /** Resolved route info for the parity checker + router. */
+  list(): Array<{ name: string; ipcChannel: string }> {
+    return [...this.routes.values()].map((c) => ({
+      name: c.name,
+      ipcChannel: c.ipcChannel,
+    }));
+  }
+
+  get(name: string): ConsoleCapability | undefined {
+    return this.routes.get(name);
+  }
+
+  get size(): number {
+    return this.routes.size;
+  }
+}
+
+export interface ConsoleServerOptions {
+  /** Browser shell extension (C1): serve the built renderer at /, the
+   *  generated shim at /shim.js, and SSE push sinks at /api/events/. */
+  readonly rendererRoot?: string | null;
+  /** Live push sinks: channel → SSE response. Managed by the caller. */
+  readonly pushSinks?: Map<string, ServerResponse>;
+}
+
+export function createConsoleServer(
+  registry: ConsoleRouteRegistry,
+  options: ConsoleServerOptions = {},
+) {
+  return createServer(async (req: IncomingMessage, res: ServerResponse) => {
+    res.setHeader("content-type", "application/json");
+    try {
+      const url = new URL(req.url ?? "/", "http://127.0.0.1");
+      // Browser shell (C1-finish)
+      if (options.rendererRoot && serveRenderer(req, res, options.rendererRoot)) {
+        return;
+      }
+      if (options.rendererRoot && req.method === "GET" && url.pathname === "/shim.js") {
+        res.setHeader("content-type", "application/javascript; charset=utf-8");
+        res.end(renderShimJs(registry));
+        return;
+      }
+      if (options.pushSinks && req.method === "GET" && url.pathname.startsWith("/api/events/")) {
+        const channel = decodeURIComponent(url.pathname.slice("/api/events/".length));
+        res.setHeader("content-type", "text/event-stream");
+        res.setHeader("cache-control", "no-cache");
+        res.setHeader("connection", "keep-alive");
+        res.write(": connected\n\n");
+        options.pushSinks.set(channel, res);
+        req.on("close", () => options.pushSinks!.delete(channel));
+        return;
+      }
+      if (req.method === "GET" && url.pathname === "/health") {
+        res.end(
+          JSON.stringify({
+            status: "ok",
+            kernel: "console-backend",
+            capabilities: registry.size,
+            routes: registry.list(),
+          }),
+        );
+        return;
+      }
+      if (req.method !== "POST") {
+        res.statusCode = 405;
+        res.end(JSON.stringify({ success: false, error: "method not allowed" }));
+        return;
+      }
+      const name = url.pathname.replace(/^\/api\/console\//, "");
+      const cap = registry.get(name);
+      if (!cap) {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ success: false, error: `no capability: ${name}` }));
+        return;
+      }
+      const chunks: Buffer[] = [];
+      for await (const c of req) chunks.push(c as Buffer);
+      const raw = Buffer.concat(chunks).toString("utf8");
+      const args: unknown[] = raw ? (JSON.parse(raw) as unknown[]) : [];
+      const result = await cap.handler(args);
+      res.end(JSON.stringify(result ?? { success: true }));
+    } catch (err) {
+      res.statusCode = 500;
+      res.end(
+        JSON.stringify({
+          success: false,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    }
+  });
+}

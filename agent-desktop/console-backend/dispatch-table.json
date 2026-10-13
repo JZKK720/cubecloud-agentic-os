@@ -1,0 +1,2096 @@
+{
+  "generatedAt": "2026-10-08T08:30:35.825Z",
+  "totals": {
+    "handlers": 294,
+    "delegate": 207,
+    "desktopOnly": 10,
+    "manual": 77
+  },
+  "entries": [
+    {
+      "channel": "check-install",
+      "kind": "delegate",
+      "fn": "checkInstallStatus",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "verify-install",
+      "kind": "delegate",
+      "fn": "verifyInstall",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "start-install",
+      "kind": "manual",
+      "calledFns": [
+        "runInstall"
+      ],
+      "pushEmits": [
+        "install-progress"
+      ]
+    },
+    {
+      "channel": "inspect-install-target",
+      "kind": "delegate",
+      "fn": "inspectInstallTarget",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "validate-hermes-home",
+      "kind": "delegate",
+      "fn": "validateHermesHome",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "adopt-hermes-home",
+      "kind": "manual",
+      "calledFns": [
+        "validateHermesHome",
+        "setHermesHomeOverride"
+      ]
+    },
+    {
+      "channel": "quit-app",
+      "kind": "desktopOnly",
+      "reason": "app."
+    },
+    {
+      "channel": "get-hermes-version",
+      "kind": "delegate",
+      "fn": "getHermesVersion",
+      "module": "./installer",
+      "sshDegrade": true
+    },
+    {
+      "channel": "refresh-hermes-version",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "clearVersionCache",
+        "getHermesVersion"
+      ],
+      "sshBranch": true
+    },
+    {
+      "channel": "run-hermes-doctor",
+      "kind": "delegate",
+      "fn": "runHermesDoctor",
+      "module": "./installer",
+      "sshDegrade": true
+    },
+    {
+      "channel": "run-hermes-update",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "startSshTunnel",
+        "setSshRemoteApiKey",
+        "runHermesUpdate"
+      ],
+      "pushEmits": [
+        "install-progress",
+        "install-progress"
+      ],
+      "sshBranch": true
+    },
+    {
+      "channel": "check-openclaw",
+      "kind": "delegate",
+      "fn": "checkOpenClawExists",
+      "module": "./homer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "run-claw-migrate",
+      "kind": "manual",
+      "calledFns": [
+        "runClawMigrate"
+      ],
+      "pushEmits": [
+        "install-progress"
+      ]
+    },
+    {
+      "channel": "oauth-login",
+      "kind": "manual",
+      "calledFns": [
+        "runHermesAuthLogin",
+        "detectDeviceCode"
+      ],
+      "pushEmits": [
+        "oauth-login-progress"
+      ]
+    },
+    {
+      "channel": "oauth-login-cancel",
+      "kind": "delegate",
+      "fn": "cancelHermesAuthLogin",
+      "module": "./hermes-auth",
+      "sshDegrade": false
+    },
+    {
+      "channel": "get-locale",
+      "kind": "delegate",
+      "fn": "getAppLocale",
+      "module": "./locale",
+      "sshDegrade": false
+    },
+    {
+      "channel": "set-locale",
+      "kind": "delegate",
+      "fn": "setAppLocale",
+      "module": "./locale",
+      "sshDegrade": false
+    },
+    {
+      "channel": "get-env",
+      "kind": "delegate",
+      "fn": "readEnv",
+      "module": "./config",
+      "sshDegrade": true
+    },
+    {
+      "channel": "set-env",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "setEnvValue",
+        "isGatewayRunning",
+        "restartGateway",
+        "isRemoteMode"
+      ],
+      "sshBranch": true
+    },
+    {
+      "channel": "get-config",
+      "kind": "delegate",
+      "fn": "getConfigValue",
+      "module": "./config",
+      "sshDegrade": true
+    },
+    {
+      "channel": "set-config",
+      "kind": "delegate",
+      "fn": "setConfigValue",
+      "module": "./config",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-hermes-home",
+      "kind": "delegate",
+      "fn": "getHermesHome",
+      "module": "./config",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-model-config",
+      "kind": "delegate",
+      "fn": "getModelConfig",
+      "module": "./config",
+      "sshDegrade": true
+    },
+    {
+      "channel": "set-model-config",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "getModelConfig",
+        "setModelConfig",
+        "isGatewayRunning",
+        "restartGateway"
+      ],
+      "sshBranch": true
+    },
+    {
+      "channel": "get-api-server-key-status",
+      "kind": "delegate",
+      "fn": "getApiServerKey",
+      "module": "./config",
+      "sshDegrade": false
+    },
+    {
+      "channel": "generate-api-server-key",
+      "kind": "manual",
+      "calledFns": [
+        "setEnvValue",
+        "isGatewayRunning",
+        "stopGateway",
+        "startGateway"
+      ]
+    },
+    {
+      "channel": "is-remote-mode",
+      "kind": "delegate",
+      "fn": "isRemoteMode",
+      "module": "./hermes",
+      "sshDegrade": false
+    },
+    {
+      "channel": "is-remote-only-mode",
+      "kind": "delegate",
+      "fn": "isRemoteOnlyMode",
+      "module": "./hermes",
+      "sshDegrade": false
+    },
+    {
+      "channel": "get-connection-config",
+      "kind": "delegate",
+      "fn": "getPublicConnectionConfig",
+      "module": "./config",
+      "sshDegrade": false
+    },
+    {
+      "channel": "is-ssh-tunnel-active",
+      "kind": "delegate",
+      "fn": "isSshTunnelActive",
+      "module": "./ssh-tunnel",
+      "sshDegrade": false
+    },
+    {
+      "channel": "set-connection-config",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "setConnectionConfig",
+        "resolveConnectionApiKeyUpdate",
+        "resolveConnectionGatewayRuntimePresetUpdate"
+      ]
+    },
+    {
+      "channel": "set-ssh-config",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "setConnectionConfig",
+        "resolveConnectionGatewayRuntimePresetUpdate"
+      ]
+    },
+    {
+      "channel": "diagnose-remote-connection",
+      "kind": "delegate",
+      "fn": "diagnoseRemoteConnection",
+      "module": "./hermes",
+      "sshDegrade": false
+    },
+    {
+      "channel": "test-remote-connection",
+      "kind": "delegate",
+      "fn": "testRemoteConnection",
+      "module": "./hermes",
+      "sshDegrade": false
+    },
+    {
+      "channel": "discover-docker-runtimes",
+      "kind": "delegate",
+      "fn": "discoverDockerRuntimes",
+      "module": "./docker-runtimes",
+      "sshDegrade": false
+    },
+    {
+      "channel": "discover-agent-clis",
+      "kind": "delegate",
+      "fn": "discoverAgentClis",
+      "module": "./agent-clis",
+      "sshDegrade": false
+    },
+    {
+      "channel": "discover-browser-harness",
+      "kind": "delegate",
+      "fn": "discoverBrowserHarness",
+      "module": "./browser-harness",
+      "sshDegrade": false
+    },
+    {
+      "channel": "browser-harness-doctor",
+      "kind": "delegate",
+      "fn": "runBrowserHarnessDoctor",
+      "module": "./browser-harness",
+      "sshDegrade": false
+    },
+    {
+      "channel": "list-all-outputs",
+      "kind": "delegate",
+      "fn": "listAllOutputs",
+      "module": "./output-aggregation",
+      "sshDegrade": false
+    },
+    {
+      "channel": "list-thread-outputs",
+      "kind": "delegate",
+      "fn": "listThreadOutputs",
+      "module": "./output-aggregation",
+      "sshDegrade": false
+    },
+    {
+      "channel": "ensure-thread-output-dir",
+      "kind": "delegate",
+      "fn": "ensureThreadOutputDir",
+      "module": "./output-aggregation",
+      "sshDegrade": false
+    },
+    {
+      "channel": "clear-thread-outputs",
+      "kind": "delegate",
+      "fn": "clearThreadOutputs",
+      "module": "./output-aggregation",
+      "sshDegrade": false
+    },
+    {
+      "channel": "list-swarm-agents",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "get-swarm-messages",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "create-swarm-subagent",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "terminate-swarm-agent",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "clear-swarm",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "list-vault-files",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "read-vault-file",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "add-vault-file",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "update-vault-file",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "delete-vault-file",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "search-vault",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "approval-create",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "approval-approve",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "approval-deny",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "approval-list",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "approval-has-pending",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "list-runtime-providers",
+      "kind": "delegate",
+      "fn": "listRuntimeProviders",
+      "module": "./runtime-registry",
+      "sshDegrade": false
+    },
+    {
+      "channel": "run-runtime-provider-action",
+      "kind": "manual",
+      "calledFns": [
+        "runRuntimeProviderAction"
+      ],
+      "pushEmits": [
+        "install-progress"
+      ]
+    },
+    {
+      "channel": "list-task-orchestrators",
+      "kind": "delegate",
+      "fn": "listTaskOrchestrators",
+      "module": "./task-orchestrators",
+      "sshDegrade": false
+    },
+    {
+      "channel": "diagnose-ssh-connection",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "diagnoseSshConnection"
+      ]
+    },
+    {
+      "channel": "test-ssh-connection",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "testSshConnection"
+      ]
+    },
+    {
+      "channel": "start-ssh-tunnel",
+      "kind": "delegate",
+      "fn": "startConfiguredSshTunnel",
+      "module": "./ssh-startup",
+      "sshDegrade": false
+    },
+    {
+      "channel": "stop-ssh-tunnel",
+      "kind": "delegate",
+      "fn": "stopSshTunnel",
+      "module": "./ssh-tunnel",
+      "sshDegrade": false
+    },
+    {
+      "channel": "send-message",
+      "kind": "desktopOnly",
+      "reason": "new Notification, event.sender"
+    },
+    {
+      "channel": "abort-chat",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "copy-to-clipboard",
+      "kind": "desktopOnly",
+      "reason": "clipboard."
+    },
+    {
+      "channel": "read-media-file",
+      "kind": "delegate",
+      "fn": "readMediaAsDataUrl",
+      "module": "./media",
+      "sshDegrade": false
+    },
+    {
+      "channel": "save-media-file",
+      "kind": "desktopOnly",
+      "reason": "BrowserWindow, event.sender"
+    },
+    {
+      "channel": "media-file-exists",
+      "kind": "delegate",
+      "fn": "mediaFileExists",
+      "module": "./media",
+      "sshDegrade": false
+    },
+    {
+      "channel": "stage-attachment",
+      "kind": "delegate",
+      "fn": "stageAttachment",
+      "module": "./attachment-staging",
+      "sshDegrade": false
+    },
+    {
+      "channel": "clear-staged-attachments",
+      "kind": "delegate",
+      "fn": "clearStagedAttachments",
+      "module": "./attachment-staging",
+      "sshDegrade": false
+    },
+    {
+      "channel": "discover-provider-models",
+      "kind": "delegate",
+      "fn": "discoverProviderModels",
+      "module": "./model-discovery",
+      "sshDegrade": false
+    },
+    {
+      "channel": "scan-local-servers",
+      "kind": "delegate",
+      "fn": "scanLocalServers",
+      "module": "./local-server-scan",
+      "sshDegrade": false
+    },
+    {
+      "channel": "probe-local-model-health",
+      "kind": "delegate",
+      "fn": "probeLocalModelHealth",
+      "module": "./local-server-scan",
+      "sshDegrade": false
+    },
+    {
+      "channel": "ironclaw-probe",
+      "kind": "delegate",
+      "fn": "probeIronClawGateway",
+      "module": "./ironclaw-sandbox",
+      "sshDegrade": false
+    },
+    {
+      "channel": "ironclaw-models",
+      "kind": "delegate",
+      "fn": "listIronClawModels",
+      "module": "./ironclaw-sandbox",
+      "sshDegrade": false
+    },
+    {
+      "channel": "ironclaw-dispatch",
+      "kind": "delegate",
+      "fn": "dispatchSandboxTask",
+      "module": "./ironclaw-sandbox",
+      "sshDegrade": false
+    },
+    {
+      "channel": "agent-reach-probe",
+      "kind": "delegate",
+      "fn": "probeAgentReach",
+      "module": "./agent-reach",
+      "sshDegrade": false
+    },
+    {
+      "channel": "auto-discovery-scan",
+      "kind": "delegate",
+      "fn": "scanLocalhostRuntimes",
+      "module": "./auto-discovery",
+      "sshDegrade": false
+    },
+    {
+      "channel": "start-gateway",
+      "kind": "delegate",
+      "fn": "startGateway",
+      "module": "./hermes",
+      "sshDegrade": true
+    },
+    {
+      "channel": "stop-gateway",
+      "kind": "delegate",
+      "fn": "stopGateway",
+      "module": "./hermes",
+      "sshDegrade": true
+    },
+    {
+      "channel": "gateway-status",
+      "kind": "delegate",
+      "fn": "isGatewayRunning",
+      "module": "./hermes",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-platform-enabled",
+      "kind": "delegate",
+      "fn": "getPlatformEnabled",
+      "module": "./config",
+      "sshDegrade": true
+    },
+    {
+      "channel": "set-platform-enabled",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "setPlatformEnabled",
+        "isGatewayRunning",
+        "restartGateway"
+      ],
+      "sshBranch": true
+    },
+    {
+      "channel": "list-sessions",
+      "kind": "delegate",
+      "fn": "listSessions",
+      "module": "./sessions",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-session-messages",
+      "kind": "delegate",
+      "fn": "getSessionMessages",
+      "module": "./sessions",
+      "sshDegrade": true
+    },
+    {
+      "channel": "delete-session",
+      "kind": "delegate",
+      "fn": "deleteSession",
+      "module": "./sessions",
+      "sshDegrade": false
+    },
+    {
+      "channel": "list-profiles",
+      "kind": "delegate",
+      "fn": "listProfiles",
+      "module": "./profiles",
+      "sshDegrade": true
+    },
+    {
+      "channel": "create-profile",
+      "kind": "delegate",
+      "fn": "createProfile",
+      "module": "./profiles",
+      "sshDegrade": true
+    },
+    {
+      "channel": "delete-profile",
+      "kind": "delegate",
+      "fn": "deleteProfile",
+      "module": "./profiles",
+      "sshDegrade": true
+    },
+    {
+      "channel": "set-active-profile",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "setActiveProfile"
+      ]
+    },
+    {
+      "channel": "read-memory",
+      "kind": "delegate",
+      "fn": "readMemory",
+      "module": "./memory",
+      "sshDegrade": true
+    },
+    {
+      "channel": "add-memory-entry",
+      "kind": "delegate",
+      "fn": "addMemoryEntry",
+      "module": "./memory",
+      "sshDegrade": true
+    },
+    {
+      "channel": "update-memory-entry",
+      "kind": "delegate",
+      "fn": "updateMemoryEntry",
+      "module": "./memory",
+      "sshDegrade": true
+    },
+    {
+      "channel": "remove-memory-entry",
+      "kind": "delegate",
+      "fn": "removeMemoryEntry",
+      "module": "./memory",
+      "sshDegrade": true
+    },
+    {
+      "channel": "write-user-profile",
+      "kind": "delegate",
+      "fn": "writeUserProfile",
+      "module": "./memory",
+      "sshDegrade": true
+    },
+    {
+      "channel": "wiki-get-status",
+      "kind": "delegate",
+      "fn": "getWikiStatus",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-bootstrap",
+      "kind": "delegate",
+      "fn": "bootstrapWiki",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-read-index",
+      "kind": "delegate",
+      "fn": "readWikiIndex",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-write-index",
+      "kind": "delegate",
+      "fn": "writeWikiIndex",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-read-log",
+      "kind": "delegate",
+      "fn": "readWikiLog",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-append-log",
+      "kind": "delegate",
+      "fn": "appendWikiLog",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-list-sources",
+      "kind": "delegate",
+      "fn": "listWikiSources",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-read-schema",
+      "kind": "delegate",
+      "fn": "readWikiSchema",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-read-page",
+      "kind": "delegate",
+      "fn": "readWikiPage",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-write-page",
+      "kind": "delegate",
+      "fn": "writeWikiPage",
+      "module": "./wiki",
+      "sshDegrade": false
+    },
+    {
+      "channel": "wiki-ingest-file-as-markdown",
+      "kind": "manual",
+      "calledFns": [
+        "convertFileToMarkdown",
+        "writeWikiRawSource",
+        "appendWikiLog"
+      ]
+    },
+    {
+      "channel": "read-soul",
+      "kind": "delegate",
+      "fn": "readSoul",
+      "module": "./soul",
+      "sshDegrade": true
+    },
+    {
+      "channel": "write-soul",
+      "kind": "delegate",
+      "fn": "writeSoul",
+      "module": "./soul",
+      "sshDegrade": true
+    },
+    {
+      "channel": "reset-soul",
+      "kind": "delegate",
+      "fn": "resetSoul",
+      "module": "./soul",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-toolsets",
+      "kind": "delegate",
+      "fn": "getToolsets",
+      "module": "./tools",
+      "sshDegrade": true
+    },
+    {
+      "channel": "set-toolset-enabled",
+      "kind": "delegate",
+      "fn": "setToolsetEnabled",
+      "module": "./tools",
+      "sshDegrade": true
+    },
+    {
+      "channel": "convert-file-to-markdown",
+      "kind": "delegate",
+      "fn": "convertFileToMarkdown",
+      "module": "./converters",
+      "sshDegrade": false
+    },
+    {
+      "channel": "is-markitdown-available",
+      "kind": "delegate",
+      "fn": "isMarkitdownAvailable",
+      "module": "./converters",
+      "sshDegrade": false
+    },
+    {
+      "channel": "get-design-dials",
+      "kind": "delegate",
+      "fn": "getDesignDials",
+      "module": "./design-dials",
+      "sshDegrade": false
+    },
+    {
+      "channel": "set-design-dials",
+      "kind": "delegate",
+      "fn": "setDesignDials",
+      "module": "./design-dials",
+      "sshDegrade": false
+    },
+    {
+      "channel": "careful-check",
+      "kind": "delegate",
+      "fn": "checkCareful",
+      "module": "./safety",
+      "sshDegrade": false
+    },
+    {
+      "channel": "careful-find-in-body",
+      "kind": "delegate",
+      "fn": "findDestructiveCommandInBody",
+      "module": "./safety",
+      "sshDegrade": false
+    },
+    {
+      "channel": "careful-is-destructive",
+      "kind": "delegate",
+      "fn": "isDestructive",
+      "module": "./safety",
+      "sshDegrade": false
+    },
+    {
+      "channel": "learnings-read",
+      "kind": "delegate",
+      "fn": "readLearnings",
+      "module": "./learnings",
+      "sshDegrade": false
+    },
+    {
+      "channel": "learnings-search",
+      "kind": "manual",
+      "calledFns": [
+        "searchLearnings",
+        "readLearnings"
+      ]
+    },
+    {
+      "channel": "learnings-stats",
+      "kind": "manual",
+      "calledFns": [
+        "statsLearnings",
+        "readLearnings"
+      ]
+    },
+    {
+      "channel": "learnings-export",
+      "kind": "manual",
+      "calledFns": [
+        "exportLearningsAsMarkdown",
+        "readLearnings"
+      ]
+    },
+    {
+      "channel": "learnings-find-stale",
+      "kind": "manual",
+      "calledFns": [
+        "findStaleLearnings",
+        "readLearnings"
+      ]
+    },
+    {
+      "channel": "learnings-clear",
+      "kind": "delegate",
+      "fn": "clearLearningsFile",
+      "module": "./learnings",
+      "sshDegrade": false
+    },
+    {
+      "channel": "learnings-file-info",
+      "kind": "delegate",
+      "fn": "learningsFileInfo",
+      "module": "./learnings",
+      "sshDegrade": false
+    },
+    {
+      "channel": "learnings-append",
+      "kind": "delegate",
+      "fn": "appendLearning",
+      "module": "./learnings",
+      "sshDegrade": false
+    },
+    {
+      "channel": "retro-summarize",
+      "kind": "delegate",
+      "fn": "summarizeRetro",
+      "module": "./retro",
+      "sshDegrade": false
+    },
+    {
+      "channel": "retro-build-context",
+      "kind": "delegate",
+      "fn": "buildRetroContext",
+      "module": "./retro",
+      "sshDegrade": false
+    },
+    {
+      "channel": "retro-commit",
+      "kind": "delegate",
+      "fn": "commitRetro",
+      "module": "./retro",
+      "sshDegrade": false
+    },
+    {
+      "channel": "retro-export",
+      "kind": "delegate",
+      "fn": "exportRetroMarkdown",
+      "module": "./retro",
+      "sshDegrade": false
+    },
+    {
+      "channel": "triage-items",
+      "kind": "delegate",
+      "fn": "triageItems",
+      "module": "./triage",
+      "sshDegrade": false
+    },
+    {
+      "channel": "triage-recent-sessions",
+      "kind": "delegate",
+      "fn": "triageRecentSessions",
+      "module": "./triage",
+      "sshDegrade": false
+    },
+    {
+      "channel": "handoff-build",
+      "kind": "delegate",
+      "fn": "buildHandoff",
+      "module": "./handoff",
+      "sshDegrade": false
+    },
+    {
+      "channel": "handoff-save",
+      "kind": "delegate",
+      "fn": "saveHandoff",
+      "module": "./handoff",
+      "sshDegrade": false
+    },
+    {
+      "channel": "handoff-build-and-save",
+      "kind": "delegate",
+      "fn": "buildAndSaveHandoff",
+      "module": "./handoff",
+      "sshDegrade": false
+    },
+    {
+      "channel": "schemas-list-bundled",
+      "kind": "delegate",
+      "fn": "listBundledPacks",
+      "module": "./schemas",
+      "sshDegrade": false
+    },
+    {
+      "channel": "schemas-get-active",
+      "kind": "delegate",
+      "fn": "resolveActivePack",
+      "module": "./schemas",
+      "sshDegrade": false
+    },
+    {
+      "channel": "schemas-get-active-id",
+      "kind": "delegate",
+      "fn": "readActivePackId",
+      "module": "./schemas",
+      "sshDegrade": false
+    },
+    {
+      "channel": "schemas-set-active",
+      "kind": "delegate",
+      "fn": "setActivePackId",
+      "module": "./schemas",
+      "sshDegrade": false
+    },
+    {
+      "channel": "schemas-infer-type",
+      "kind": "manual",
+      "calledFns": [
+        "inferPageType",
+        "resolveActivePack"
+      ]
+    },
+    {
+      "channel": "synthesis-build",
+      "kind": "delegate",
+      "fn": "synthesize",
+      "module": "./synthesis",
+      "sshDegrade": false
+    },
+    {
+      "channel": "knowledge-tool-manifest",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "knowledge-search",
+      "kind": "delegate",
+      "fn": "knowledgeSearch",
+      "module": "./knowledge",
+      "sshDegrade": false
+    },
+    {
+      "channel": "knowledge-get",
+      "kind": "delegate",
+      "fn": "knowledgeGet",
+      "module": "./knowledge",
+      "sshDegrade": false
+    },
+    {
+      "channel": "knowledge-list",
+      "kind": "delegate",
+      "fn": "knowledgeList",
+      "module": "./knowledge",
+      "sshDegrade": false
+    },
+    {
+      "channel": "knowledge-sources",
+      "kind": "delegate",
+      "fn": "knowledgeRawSources",
+      "module": "./knowledge",
+      "sshDegrade": false
+    },
+    {
+      "channel": "list-installed-skills",
+      "kind": "delegate",
+      "fn": "listInstalledSkills",
+      "module": "./skills",
+      "sshDegrade": true
+    },
+    {
+      "channel": "list-bundled-skills",
+      "kind": "delegate",
+      "fn": "listBundledSkills",
+      "module": "./skills",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-skill-content",
+      "kind": "delegate",
+      "fn": "getSkillContent",
+      "module": "./skills",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-desktop-bundled-skill-path",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "getDesktopBundledSkillPath"
+      ]
+    },
+    {
+      "channel": "install-skill",
+      "kind": "delegate",
+      "fn": "installSkill",
+      "module": "./skills",
+      "sshDegrade": true
+    },
+    {
+      "channel": "uninstall-skill",
+      "kind": "delegate",
+      "fn": "uninstallSkill",
+      "module": "./skills",
+      "sshDegrade": true
+    },
+    {
+      "channel": "list-cached-sessions",
+      "kind": "delegate",
+      "fn": "listCachedSessions",
+      "module": "./session-cache",
+      "sshDegrade": true
+    },
+    {
+      "channel": "sync-session-cache",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "syncSessionCache",
+        "listCachedSessions"
+      ],
+      "sshBranch": true
+    },
+    {
+      "channel": "update-session-title",
+      "kind": "delegate",
+      "fn": "updateSessionTitle",
+      "module": "./session-cache",
+      "sshDegrade": false
+    },
+    {
+      "channel": "search-sessions",
+      "kind": "delegate",
+      "fn": "searchSessions",
+      "module": "./sessions",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-credential-pool",
+      "kind": "delegate",
+      "fn": "getCredentialPool",
+      "module": "./config",
+      "sshDegrade": false
+    },
+    {
+      "channel": "set-credential-pool",
+      "kind": "delegate",
+      "fn": "setCredentialPool",
+      "module": "./config",
+      "sshDegrade": false
+    },
+    {
+      "channel": "add-credential-pool-entry",
+      "kind": "delegate",
+      "fn": "addCredentialPoolEntry",
+      "module": "./config",
+      "sshDegrade": false
+    },
+    {
+      "channel": "list-models",
+      "kind": "delegate",
+      "fn": "listModels",
+      "module": "./models",
+      "sshDegrade": true
+    },
+    {
+      "channel": "add-model",
+      "kind": "delegate",
+      "fn": "addModel",
+      "module": "./models",
+      "sshDegrade": true
+    },
+    {
+      "channel": "remove-model",
+      "kind": "delegate",
+      "fn": "removeModel",
+      "module": "./models",
+      "sshDegrade": true
+    },
+    {
+      "channel": "update-model",
+      "kind": "delegate",
+      "fn": "updateModel",
+      "module": "./models",
+      "sshDegrade": true
+    },
+    {
+      "channel": "list-cron-jobs",
+      "kind": "delegate",
+      "fn": "listCronJobs",
+      "module": "./cronjobs",
+      "sshDegrade": false
+    },
+    {
+      "channel": "create-cron-job",
+      "kind": "delegate",
+      "fn": "createCronJob",
+      "module": "./cronjobs",
+      "sshDegrade": false
+    },
+    {
+      "channel": "remove-cron-job",
+      "kind": "delegate",
+      "fn": "removeCronJob",
+      "module": "./cronjobs",
+      "sshDegrade": false
+    },
+    {
+      "channel": "pause-cron-job",
+      "kind": "delegate",
+      "fn": "pauseCronJob",
+      "module": "./cronjobs",
+      "sshDegrade": false
+    },
+    {
+      "channel": "resume-cron-job",
+      "kind": "delegate",
+      "fn": "resumeCronJob",
+      "module": "./cronjobs",
+      "sshDegrade": false
+    },
+    {
+      "channel": "trigger-cron-job",
+      "kind": "delegate",
+      "fn": "triggerCronJob",
+      "module": "./cronjobs",
+      "sshDegrade": false
+    },
+    {
+      "channel": "kanban-create-task",
+      "kind": "delegate",
+      "fn": "kanbanCreateTask",
+      "module": "./kanban",
+      "sshDegrade": false
+    },
+    {
+      "channel": "plans-parse",
+      "kind": "delegate",
+      "fn": "parsePlan",
+      "module": "./plans",
+      "sshDegrade": false
+    },
+    {
+      "channel": "plans-save",
+      "kind": "delegate",
+      "fn": "savePlan",
+      "module": "./plans",
+      "sshDegrade": false
+    },
+    {
+      "channel": "plans-list",
+      "kind": "delegate",
+      "fn": "listPlans",
+      "module": "./plans",
+      "sshDegrade": false
+    },
+    {
+      "channel": "plans-get",
+      "kind": "delegate",
+      "fn": "getStoredPlan",
+      "module": "./plans",
+      "sshDegrade": false
+    },
+    {
+      "channel": "plans-delete",
+      "kind": "delegate",
+      "fn": "deletePlan",
+      "module": "./plans",
+      "sshDegrade": false
+    },
+    {
+      "channel": "plans-dispatch",
+      "kind": "manual",
+      "calledFns": [
+        "getConnectionConfig",
+        "getStoredPlan",
+        "findDestructiveCommandInBody",
+        "checkCareful",
+        "dispatchStoredPlan",
+        "kanbanCreateTask",
+        "recordDispatchFailure"
+      ],
+      "sshBranch": true
+    },
+    {
+      "channel": "autoplan-build-briefs",
+      "kind": "manual",
+      "calledFns": [
+        "getStoredPlan",
+        "buildBriefsForPlan"
+      ]
+    },
+    {
+      "channel": "autoplan-record-failure",
+      "kind": "delegate",
+      "fn": "recordDispatchFailure",
+      "module": "./autoplan",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-cli-status",
+      "kind": "delegate",
+      "fn": "getCodeGraphCliStatus",
+      "module": "./codegraph",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-install-cli",
+      "kind": "delegate",
+      "fn": "installCodeGraphCli",
+      "module": "./codegraph",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-setup-hermes",
+      "kind": "delegate",
+      "fn": "setupCodeGraphHermes",
+      "module": "./codegraph",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-project-status",
+      "kind": "delegate",
+      "fn": "getCodeGraphProjectStatus",
+      "module": "./codegraph",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-init-project",
+      "kind": "delegate",
+      "fn": "initCodeGraphProject",
+      "module": "./codegraph",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-build-context",
+      "kind": "delegate",
+      "fn": "buildCodeGraphContext",
+      "module": "./codegraph",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-runtime-status",
+      "kind": "delegate",
+      "fn": "getCodeGraphRuntimeStatus",
+      "module": "./codegraph-runtime",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-runtime-open",
+      "kind": "delegate",
+      "fn": "openCodeGraphRuntime",
+      "module": "./codegraph-runtime",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-runtime-close",
+      "kind": "delegate",
+      "fn": "closeCodeGraphRuntime",
+      "module": "./codegraph-runtime",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-runtime-search",
+      "kind": "delegate",
+      "fn": "searchCodeGraphRuntime",
+      "module": "./codegraph-runtime",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-runtime-impact",
+      "kind": "delegate",
+      "fn": "getImpactRadiusRuntime",
+      "module": "./codegraph-runtime",
+      "sshDegrade": false
+    },
+    {
+      "channel": "codegraph-runtime-stats",
+      "kind": "delegate",
+      "fn": "getCodeGraphRuntimeStats",
+      "module": "./codegraph-runtime",
+      "sshDegrade": false
+    },
+    {
+      "channel": "select-folder",
+      "kind": "desktopOnly",
+      "reason": "dialog., BrowserWindow, event.sender"
+    },
+    {
+      "channel": "open-data-folder",
+      "kind": "desktopOnly",
+      "reason": "shell."
+    },
+    {
+      "channel": "read-directory",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "read-file",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "open-file-in-editor",
+      "kind": "desktopOnly",
+      "reason": "shell."
+    },
+    {
+      "channel": "read-image-file",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "kanban-dispatch-once",
+      "kind": "delegate",
+      "fn": "kanbanDispatchOnce",
+      "module": "./kanban",
+      "sshDegrade": false
+    },
+    {
+      "channel": "everos-get-config",
+      "kind": "manual",
+      "calledFns": [
+        "loadEverOsConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "everos-save-config",
+      "kind": "manual",
+      "calledFns": [
+        "saveEverOsConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "everos-ping",
+      "kind": "manual",
+      "calledFns": [
+        "pingEverOs",
+        "loadEverOsConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "everos-add-memory",
+      "kind": "manual",
+      "calledFns": [
+        "addEverOsMemory",
+        "loadEverOsConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "everos-search",
+      "kind": "manual",
+      "calledFns": [
+        "searchEverOsMemory",
+        "loadEverOsConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "everos-list-recent",
+      "kind": "manual",
+      "calledFns": [
+        "listRecentEverOsMemory",
+        "loadEverOsConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "everos-sidecar-status",
+      "kind": "delegate",
+      "fn": "getEverOsSidecarStatus",
+      "module": "./everos-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "everos-sidecar-log-tail",
+      "kind": "delegate",
+      "fn": "getEverOsSidecarLogTail",
+      "module": "./everos-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "everos-sidecar-clear-logs",
+      "kind": "delegate",
+      "fn": "clearEverOsSidecarLogs",
+      "module": "./everos-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "everos-sidecar-start",
+      "kind": "delegate",
+      "fn": "startEverOsSidecar",
+      "module": "./everos-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "everos-sidecar-stop",
+      "kind": "delegate",
+      "fn": "stopEverOsSidecar",
+      "module": "./everos-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "everos-sidecar-restart",
+      "kind": "delegate",
+      "fn": "restartEverOsSidecar",
+      "module": "./everos-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "workspace-probe",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWorkspaceOrigin",
+        "probeCubecloudAgent"
+      ]
+    },
+    {
+      "channel": "workspace-probe-url",
+      "kind": "delegate",
+      "fn": "normalizeWorkspaceOrigin",
+      "module": "./cubecloud-agent-probe",
+      "sshDegrade": false
+    },
+    {
+      "channel": "workspace-supervisor-status",
+      "kind": "delegate",
+      "fn": "getWorkspaceSupervisorStatus",
+      "module": "./cubecloud-agent-supervisor",
+      "sshDegrade": false
+    },
+    {
+      "channel": "workspace-supervisor-start",
+      "kind": "delegate",
+      "fn": "startWorkspaceSupervisor",
+      "module": "./cubecloud-agent-supervisor",
+      "sshDegrade": false
+    },
+    {
+      "channel": "workspace-supervisor-stop",
+      "kind": "delegate",
+      "fn": "stopWorkspaceSupervisor",
+      "module": "./cubecloud-agent-supervisor",
+      "sshDegrade": false
+    },
+    {
+      "channel": "workspace-supervisor-log-tail",
+      "kind": "delegate",
+      "fn": "getWorkspaceSupervisorLogTail",
+      "module": "./cubecloud-agent-supervisor",
+      "sshDegrade": false
+    },
+    {
+      "channel": "workspace-sessions-list",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWorkspaceOrigin",
+        "listWorkspaceSessions"
+      ]
+    },
+    {
+      "channel": "workspace-agents-list",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWorkspaceOrigin",
+        "listWorkspaceAgents"
+      ]
+    },
+    {
+      "channel": "workspace-console-url",
+      "kind": "delegate",
+      "fn": "normalizeWorkspaceOrigin",
+      "module": "./cubecloud-agent-probe",
+      "sshDegrade": false
+    },
+    {
+      "channel": "laya-probe",
+      "kind": "delegate",
+      "fn": "probeLaya",
+      "module": "./laya-probe",
+      "sshDegrade": false
+    },
+    {
+      "channel": "laya-mcp-registration",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "weknora-probe",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWeknoraBaseUrl",
+        "probeWeknora"
+      ]
+    },
+    {
+      "channel": "openviking-probe",
+      "kind": "delegate",
+      "fn": "probeOpenViking",
+      "module": "./openviking-probe",
+      "sshDegrade": false
+    },
+    {
+      "channel": "agent-bundle-promote",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWorkspaceOrigin",
+        "promoteAgentBundle"
+      ]
+    },
+    {
+      "channel": "workspace-provision-env",
+      "kind": "manual",
+      "calledFns": [
+        "buildProvisionEnv",
+        "writeProvisionEnv"
+      ]
+    },
+    {
+      "channel": "workspace-provision-fingerprint",
+      "kind": "delegate",
+      "fn": "fingerprintApiKey",
+      "module": "./cubecloud-agent-config",
+      "sshDegrade": false
+    },
+    {
+      "channel": "workspace-governance-elicitations",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWorkspaceOrigin",
+        "listPendingElicitations"
+      ]
+    },
+    {
+      "channel": "workspace-governance-resolve",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWorkspaceOrigin",
+        "resolveElicitation"
+      ]
+    },
+    {
+      "channel": "workspace-governance-surfaces",
+      "kind": "manual",
+      "calledFns": [
+        "normalizeWorkspaceOrigin",
+        "listGovernanceSurfaces"
+      ]
+    },
+    {
+      "channel": "decision-prescreen-approval",
+      "kind": "manual",
+      "calledFns": [
+        "preScreenApproval",
+        "appendDecisionLog"
+      ]
+    },
+    {
+      "channel": "decision-triage-skill",
+      "kind": "manual",
+      "calledFns": [
+        "triageStagedSkill",
+        "appendDecisionLog"
+      ]
+    },
+    {
+      "channel": "decision-audit-path",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "headroom-sidecar-status",
+      "kind": "delegate",
+      "fn": "getHeadroomSidecarStatus",
+      "module": "./headroom-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-sidecar-log-tail",
+      "kind": "delegate",
+      "fn": "getHeadroomSidecarLogTail",
+      "module": "./headroom-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-sidecar-clear-logs",
+      "kind": "delegate",
+      "fn": "clearHeadroomSidecarLogs",
+      "module": "./headroom-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-sidecar-start",
+      "kind": "delegate",
+      "fn": "startHeadroomSidecar",
+      "module": "./headroom-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-sidecar-stop",
+      "kind": "delegate",
+      "fn": "stopHeadroomSidecar",
+      "module": "./headroom-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-sidecar-restart",
+      "kind": "delegate",
+      "fn": "restartHeadroomSidecar",
+      "module": "./headroom-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "gbrain-probe",
+      "kind": "delegate",
+      "fn": "probeGbrain",
+      "module": "./gbrain-probe",
+      "sshDegrade": false
+    },
+    {
+      "channel": "voice-transcribe",
+      "kind": "delegate",
+      "fn": "transcribeAudio",
+      "module": "./voice-stt",
+      "sshDegrade": false
+    },
+    {
+      "channel": "voice-synthesize",
+      "kind": "delegate",
+      "fn": "synthesizeSpeech",
+      "module": "./voice-tts",
+      "sshDegrade": false
+    },
+    {
+      "channel": "handy-detect",
+      "kind": "delegate",
+      "fn": "detectHandy",
+      "module": "./handy-stt",
+      "sshDegrade": false
+    },
+    {
+      "channel": "handy-toggle",
+      "kind": "delegate",
+      "fn": "toggleHandyTranscription",
+      "module": "./handy-stt",
+      "sshDegrade": false
+    },
+    {
+      "channel": "handy-cancel",
+      "kind": "delegate",
+      "fn": "cancelHandyTranscription",
+      "module": "./handy-stt",
+      "sshDegrade": false
+    },
+    {
+      "channel": "graphify-discover",
+      "kind": "delegate",
+      "fn": "discoverGraphify",
+      "module": "./graphify-probe",
+      "sshDegrade": false
+    },
+    {
+      "channel": "graphify-version",
+      "kind": "delegate",
+      "fn": "runGraphifyVersion",
+      "module": "./graphify-probe",
+      "sshDegrade": false
+    },
+    {
+      "channel": "eval-run",
+      "kind": "delegate",
+      "fn": "runEvalSuite",
+      "module": "./eval-harness",
+      "sshDegrade": false
+    },
+    {
+      "channel": "skill-install-git",
+      "kind": "delegate",
+      "fn": "installSkillFromGitUrl",
+      "module": "./skills",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-get-config",
+      "kind": "manual",
+      "calledFns": [
+        "loadHeadroomConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "headroom-save-config",
+      "kind": "manual",
+      "calledFns": [
+        "saveHeadroomConfig",
+        "getHermesHome"
+      ]
+    },
+    {
+      "channel": "headroom-ping",
+      "kind": "manual",
+      "calledFns": [
+        "loadHeadroomConfig",
+        "getHermesHome",
+        "pingHeadroom"
+      ]
+    },
+    {
+      "channel": "headroom-compress",
+      "kind": "manual",
+      "calledFns": [
+        "loadHeadroomConfig",
+        "getHermesHome",
+        "compressMessages"
+      ]
+    },
+    {
+      "channel": "headroom-retrieve",
+      "kind": "manual",
+      "calledFns": [
+        "loadHeadroomConfig",
+        "getHermesHome",
+        "retrieveOriginal"
+      ]
+    },
+    {
+      "channel": "headroom-stats",
+      "kind": "manual",
+      "calledFns": [
+        "loadHeadroomConfig",
+        "getHermesHome",
+        "getHeadroomStats"
+      ]
+    },
+    {
+      "channel": "headroom-mcp-status",
+      "kind": "delegate",
+      "fn": "getHeadroomMcpStatus",
+      "module": "./mcp/headroom-mcp-server",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-mcp-log-tail",
+      "kind": "delegate",
+      "fn": "getHeadroomMcpLogTail",
+      "module": "./mcp/headroom-mcp-server",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-mcp-clear-logs",
+      "kind": "delegate",
+      "fn": "clearHeadroomMcpLogs",
+      "module": "./mcp/headroom-mcp-server",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-mcp-start",
+      "kind": "delegate",
+      "fn": "startHeadroomMcpServer",
+      "module": "./mcp/headroom-mcp-server",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-mcp-stop",
+      "kind": "delegate",
+      "fn": "stopHeadroomMcpServer",
+      "module": "./mcp/headroom-mcp-server",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-mcp-restart",
+      "kind": "delegate",
+      "fn": "restartHeadroomMcpServer",
+      "module": "./mcp/headroom-mcp-server",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-learn-run",
+      "kind": "delegate",
+      "fn": "runHeadroomLearn",
+      "module": "./headroom-learn",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-learn-last-report",
+      "kind": "delegate",
+      "fn": "getLastHeadroomLearnReport",
+      "module": "./headroom-learn",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-learn-stop",
+      "kind": "delegate",
+      "fn": "stopHeadroomLearn",
+      "module": "./headroom-learn",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-learn-commit",
+      "kind": "delegate",
+      "fn": "commitHeadroomLearn",
+      "module": "./headroom-learn",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-learn-apply",
+      "kind": "delegate",
+      "fn": "applyHeadroomLearn",
+      "module": "./headroom-learn",
+      "sshDegrade": false
+    },
+    {
+      "channel": "headroom-learn-revert",
+      "kind": "delegate",
+      "fn": "revertHeadroomLearn",
+      "module": "./headroom-learn",
+      "sshDegrade": false
+    },
+    {
+      "channel": "open-external",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "run-hermes-backup",
+      "kind": "delegate",
+      "fn": "runHermesBackup",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "run-hermes-import",
+      "kind": "delegate",
+      "fn": "runHermesImport",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "run-hermes-dump",
+      "kind": "delegate",
+      "fn": "runHermesDump",
+      "module": "./installer",
+      "sshDegrade": true
+    },
+    {
+      "channel": "list-mcp-servers",
+      "kind": "delegate",
+      "fn": "listMcpServers",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "set-mcp-server-enabled",
+      "kind": "delegate",
+      "fn": "setMcpServerEnabled",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "add-mcp-server",
+      "kind": "delegate",
+      "fn": "addMcpServer",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "remove-mcp-server",
+      "kind": "delegate",
+      "fn": "removeMcpServer",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "discover-memory-providers",
+      "kind": "delegate",
+      "fn": "discoverMemoryProviders",
+      "module": "./installer",
+      "sshDegrade": true
+    },
+    {
+      "channel": "discover-codebase-memory",
+      "kind": "delegate",
+      "fn": "discoverCodebaseMemory",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "list-codebase-memory-projects",
+      "kind": "delegate",
+      "fn": "listCodebaseMemoryProjects",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "discover-last30days",
+      "kind": "delegate",
+      "fn": "discoverLast30Days",
+      "module": "./installer",
+      "sshDegrade": false
+    },
+    {
+      "channel": "moo-tasks-sidecar-status",
+      "kind": "delegate",
+      "fn": "getMooTasksSidecarStatus",
+      "module": "./moo-tasks-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "moo-tasks-sidecar-log-tail",
+      "kind": "delegate",
+      "fn": "getMooTasksSidecarLogTail",
+      "module": "./moo-tasks-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "moo-tasks-sidecar-clear-logs",
+      "kind": "delegate",
+      "fn": "clearMooTasksSidecarLogs",
+      "module": "./moo-tasks-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "moo-tasks-sidecar-start",
+      "kind": "delegate",
+      "fn": "startMooTasksSidecar",
+      "module": "./moo-tasks-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "moo-tasks-sidecar-stop",
+      "kind": "delegate",
+      "fn": "stopMooTasksSidecar",
+      "module": "./moo-tasks-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "moo-tasks-sidecar-restart",
+      "kind": "delegate",
+      "fn": "restartMooTasksSidecar",
+      "module": "./moo-tasks-sidecar",
+      "sshDegrade": false
+    },
+    {
+      "channel": "read-logs",
+      "kind": "delegate",
+      "fn": "readLogs",
+      "module": "./installer",
+      "sshDegrade": true
+    },
+    {
+      "channel": "get-app-version",
+      "kind": "desktopOnly",
+      "reason": "app."
+    },
+    {
+      "channel": "check-for-updates",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "download-update",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "install-update",
+      "kind": "manual",
+      "calledFns": []
+    },
+    {
+      "channel": "check-for-updates",
+      "kind": "desktopOnly",
+      "reason": "autoUpdater"
+    },
+    {
+      "channel": "download-update",
+      "kind": "manual",
+      "calledFns": [],
+      "pushEmits": [
+        "update-error"
+      ]
+    },
+    {
+      "channel": "install-update",
+      "kind": "desktopOnly",
+      "reason": "autoUpdater"
+    }
+  ]
+}

@@ -16,7 +16,7 @@ import {
   HERMES_REPO,
   hermesCliArgs,
   getEnhancedPath,
-} from "./installer";
+} from "./homer";
 import { profileHome } from "./utils";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";
 

@@ -16,7 +16,7 @@
  */
 
 import { spawnSync } from "child_process";
-import { getEnhancedPath } from "./installer";
+import { getEnhancedPath } from "./homer";
 
 const LOOKUP_TIMEOUT_MS = 3_000;
 const VERSION_TIMEOUT_MS = 5_000;

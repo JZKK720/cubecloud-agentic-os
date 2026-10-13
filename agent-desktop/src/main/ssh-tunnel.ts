@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from "child_process";
+import { type ChildProcess, spawn } from "child_process";
 import { homedir } from "os";
 import { join } from "path";
 import net from "net";

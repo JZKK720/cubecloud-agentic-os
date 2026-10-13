@@ -8,7 +8,7 @@ import {
   HERMES_PYTHON,
   hermesCliArgs,
   getEnhancedPath,
-} from "./installer";
+} from "./homer";
 import {
   getActiveProfileNameSync,
   isValidNamedProfileName,

@@ -36,7 +36,6 @@ import {
   clearVersionCache,
   runHermesDoctor,
   runHermesUpdate,
-  checkOpenClawExists,
   runClawMigrate,
   runHermesBackup,
   runHermesImport,
@@ -53,6 +52,7 @@ import {
   readLogs,
   InstallProgress,
 } from "./installer";
+import { checkOpenClawExists } from "./homer";
 import { updaterLogger } from "./updater-log";
 import { discoverAgentClis } from "./agent-clis";
 import {
@@ -140,6 +140,10 @@ import {
   stopWorkspaceSupervisor,
   type WorkspaceSupervisorStartOptions,
 } from "./cubecloud-agent-supervisor";
+import {
+  listWorkspaceSessions,
+  listWorkspaceAgents,
+} from "./cubecloud-agent-sessions";
 import {
   clearMooTasksSidecarLogs,
   getMooTasksSidecarLogTail,
@@ -2808,6 +2812,27 @@ function setupIPC(): void {
   ipcMain.handle("workspace-supervisor-log-tail", () =>
     getWorkspaceSupervisorLogTail(),
   );
+
+  // Workspace read-only session/agent mirrors — contract row D/R1.
+  // NEW-WIRING (C1): the sessions module shipped in V2.10.80 with no
+  // IPC wiring; the console kernel was its first caller. The renderer
+  // passes the workspace origin (normalized loopback-only, same class
+  // as the probe handler above); arbitrary origins are rejected to the
+  // default 127.0.0.1:6767.
+  ipcMain.handle(
+    "workspace-sessions-list",
+    async (_event, baseUrl: string, options?: { limit?: number; searchQuery?: string }) => {
+      const normalized = normalizeWorkspaceOrigin(baseUrl ?? undefined);
+      return listWorkspaceSessions(
+        normalized ?? CUBECLOUD_AGENT_DEFAULT_URL,
+        options ?? {},
+      );
+    },
+  );
+  ipcMain.handle("workspace-agents-list", async (_event, baseUrl: string) => {
+    const normalized = normalizeWorkspaceOrigin(baseUrl ?? undefined);
+    return listWorkspaceAgents(normalized ?? CUBECLOUD_AGENT_DEFAULT_URL);
+  });
 
   // Workspace console embed — contract row C (P2). The renderer's
   // WorkspaceConsole screen gets the loopback origin here; navigation

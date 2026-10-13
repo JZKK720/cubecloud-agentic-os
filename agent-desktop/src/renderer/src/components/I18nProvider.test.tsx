@@ -90,6 +90,36 @@ describe("I18nProvider", () => {
     ).toBeInTheDocument();
   });
 
+  it("ignores a degraded (non-string) getLocale result instead of crashing", async () => {
+    // Browser-shell parity: the kernel shim degrades unseeded bridge
+    // methods to { success: false, degraded: true, method }. A truthy
+    // object must not be applied as a locale (i18next would throw
+    // "codes.forEach is not a function" and blank the screen).
+    getLocale.mockResolvedValue({
+      success: false,
+      degraded: true,
+      method: "getLocale",
+    } as unknown as AppLocale);
+
+    await act(async () => {
+      render(
+        <I18nProvider>
+          <Probe />
+        </I18nProvider>,
+      );
+    });
+
+    expect(
+      await screen.findByText("Set up your gateway"),
+    ).toBeInTheDocument();
+    // The degraded object must never be applied as a locale — only the
+    // default may be persisted (the persist effect still runs).
+    expect(setLocale).not.toHaveBeenCalledWith(
+      expect.objectContaining({ degraded: true }),
+    );
+    expect(setLocale).toHaveBeenLastCalledWith(DEFAULT_ACTIVE_LOCALE);
+  });
+
   it("does not overwrite the main-process locale with the startup fallback", async () => {
     let resolveMainLocale: (locale: AppLocale) => void = () => {};
     getLocale.mockReturnValue(

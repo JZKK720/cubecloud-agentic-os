@@ -27,6 +27,7 @@ import installEn from "./locales/en/install";
 import constantsEn from "./locales/en/constants";
 import everosen from "./locales/en/everos";
 import workspaceEn from "./locales/en/workspace";
+import firstrunEn from "./locales/en/firstrun";
 import commonEs from "./locales/es/common";
 import navigationEs from "./locales/es/navigation";
 import welcomeEs from "./locales/es/welcome";
@@ -47,6 +48,7 @@ import memoryEs from "./locales/es/memory";
 import installEs from "./locales/es/install";
 import constantsEs from "./locales/es/constants";
 import everoses from "./locales/es/everos";
+import firstrunEs from "./locales/es/firstrun";
 import commonId from "./locales/id/common";
 import navigationId from "./locales/id/navigation";
 import welcomeId from "./locales/id/welcome";
@@ -67,6 +69,7 @@ import memoryId from "./locales/id/memory";
 import installId from "./locales/id/install";
 import constantsId from "./locales/id/constants";
 import everosid from "./locales/id/everos";
+import firstrunId from "./locales/id/firstrun";
 import commonZh from "./locales/zh-CN/common";
 import navigationZh from "./locales/zh-CN/navigation";
 import welcomeZh from "./locales/zh-CN/welcome";
@@ -87,6 +90,7 @@ import memoryZh from "./locales/zh-CN/memory";
 import installZh from "./locales/zh-CN/install";
 import constantsZh from "./locales/zh-CN/constants";
 import everoszhCN from "./locales/zh-CN/everos";
+import firstrunZhCn from "./locales/zh-CN/firstrun";
 import commonZhTw from "./locales/zh-TW/common";
 import navigationZhTw from "./locales/zh-TW/navigation";
 import welcomeZhTw from "./locales/zh-TW/welcome";
@@ -107,6 +111,7 @@ import memoryZhTw from "./locales/zh-TW/memory";
 import installZhTw from "./locales/zh-TW/install";
 import constantsZhTw from "./locales/zh-TW/constants";
 import everoszhTW from "./locales/zh-TW/everos";
+import firstrunZhTw from "./locales/zh-TW/firstrun";
 import commonJa from "./locales/ja/common";
 import navigationJa from "./locales/ja/navigation";
 import welcomeJa from "./locales/ja/welcome";
@@ -127,6 +132,7 @@ import memoryJa from "./locales/ja/memory";
 import installJa from "./locales/ja/install";
 import constantsJa from "./locales/ja/constants";
 import everosja from "./locales/ja/everos";
+import firstrunJa from "./locales/ja/firstrun";
 import commonPt from "./locales/pt-BR/common";
 import navigationPt from "./locales/pt-BR/navigation";
 import welcomePt from "./locales/pt-BR/welcome";
@@ -147,6 +153,7 @@ import memoryPt from "./locales/pt-BR/memory";
 import installPt from "./locales/pt-BR/install";
 import constantsPt from "./locales/pt-BR/constants";
 import everosptBR from "./locales/pt-BR/everos";
+import firstrunPtBr from "./locales/pt-BR/firstrun";
 import commonPtPt from "./locales/pt-PT/common";
 import navigationPtPt from "./locales/pt-PT/navigation";
 import welcomePtPt from "./locales/pt-PT/welcome";
@@ -167,6 +174,7 @@ import memoryPtPt from "./locales/pt-PT/memory";
 import installPtPt from "./locales/pt-PT/install";
 import constantsPtPt from "./locales/pt-PT/constants";
 import everosptPT from "./locales/pt-PT/everos";
+import firstrunPtPt from "./locales/pt-PT/firstrun";
 import plansEn from "./locales/en/plans";
 import plansEs from "./locales/es/plans";
 import plansId from "./locales/id/plans";
@@ -253,6 +261,7 @@ export const resources = {
       workspace: workspaceEn,
       plans: plansEn,
       mcp: mcpEn,
+      firstrun: firstrunEn,
     },
   },
   es: {
@@ -282,6 +291,7 @@ export const resources = {
       constants: constantsEs,
       everos: everoses,      workspace: workspaceEs,      plans: plansEs,
       mcp: mcpEs,
+      firstrun: firstrunEs,
     },
   },
   id: {
@@ -313,6 +323,7 @@ export const resources = {
       knowledge: knowledgeId,
       plans: plansId,
       mcp: mcpId,
+      firstrun: firstrunId,
     },
   },
   "zh-CN": {
@@ -344,6 +355,7 @@ export const resources = {
       knowledge: knowledgeZhCn,
       plans: plansZhCn,
       mcp: mcpZhCn,
+      firstrun: firstrunZhCn,
     },
   },
   "zh-TW": {
@@ -375,6 +387,7 @@ export const resources = {
       sandboxTasks: sandboxTasksZhTw,
       swarm: swarmZhTw,
       knowledge: knowledgeZhTw,
+      firstrun: firstrunZhTw,
     },
   },
   "pt-BR": {
@@ -406,6 +419,7 @@ export const resources = {
       sandboxTasks: sandboxTasksPtBr,
       swarm: swarmPtBr,
       knowledge: knowledgePtBr,
+      firstrun: firstrunPtBr,
     },
   },
   "pt-PT": {
@@ -437,6 +451,7 @@ export const resources = {
       mcp: mcpPtPt,
       swarm: swarmPtPt,
       knowledge: knowledgePtPt,
+      firstrun: firstrunPtPt,
     },
   },
   ja: {
@@ -468,6 +483,7 @@ export const resources = {
       sandboxTasks: sandboxTasksJa,
       swarm: swarmJa,
       knowledge: knowledgeJa,
+      firstrun: firstrunJa,
     },
   },
 } satisfies Resource;

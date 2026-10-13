@@ -15,7 +15,7 @@ const { TEST_HOME } = vi.hoisted(() => {
   };
 });
 
-vi.mock("../src/main/installer", () => ({
+vi.mock("../src/main/homer", () => ({
   HERMES_HOME: TEST_HOME,
 }));
 

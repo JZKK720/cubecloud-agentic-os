@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { randomUUID } from "crypto";
-import { HERMES_HOME } from "./installer";
+import { HERMES_HOME } from "./homer";
 import { safeWriteFile, profilePaths } from "./utils";
 import DEFAULT_MODELS from "./default-models";
 

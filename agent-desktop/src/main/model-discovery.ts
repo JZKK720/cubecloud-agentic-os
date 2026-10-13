@@ -25,7 +25,7 @@ import {
   HERMES_REPO,
   HERMES_HOME,
   getEnhancedPath,
-} from "./installer";
+} from "./homer";
 // PROVIDER_BASE_URLS lives in its own module so `config.ts` can use the
 // same lookup without pulling in this whole file (and triggering a
 // circular import via `model-discovery → config → ...`).

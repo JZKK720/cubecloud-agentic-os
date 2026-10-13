@@ -12381,3 +12381,436 @@ select:focus-visible {
 .models-modal-hint-error {
   color: var(--error);
 }
+
+/* ========================================================================
+   FIRST-RUN SCAN (scan-first onboarding — docs/plans/2026-10-07-
+   scan-first-onboarding-redesign.md). Replaces the Setup wizard as the
+   first-run surface: scan → found (one consent click) → not-found
+   (three doors). Flat tokens only; the single sanctioned gradient stays
+   on the hero CTA (.firstrun-connect mirrors .welcome-cta-install).
+   ======================================================================== */
+.firstrun-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  overflow-y: auto;
+}
+
+.firstrun-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.firstrun-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.firstrun-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.firstrun-subtitle {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+/* Scan phase: the radar sweep is the only motion on the screen. It
+   communicates "actively probing" without a spinner cliché, and it
+   collapses under prefers-reduced-motion. */
+.firstrun-radar {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 8px 0 20px;
+  border-radius: 50%;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-secondary);
+}
+
+.firstrun-radar::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.firstrun-radar-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--accent-text);
+}
+
+.firstrun-radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 300deg,
+    var(--accent-text) 355deg,
+    transparent 360deg
+  );
+  opacity: 0.35;
+  animation: firstrunSweep 1.6s linear infinite;
+}
+
+@keyframes firstrunSweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .firstrun-radar-sweep {
+    animation: none;
+    opacity: 0.15;
+  }
+}
+
+.firstrun-scan-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.firstrun-scan-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* Found card: borderless section per the DESIGN.md component rules —
+   the divider, not a boxed container, separates it from the actions. */
+.firstrun-card {
+  width: 100%;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.firstrun-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.firstrun-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.firstrun-card-origin {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.firstrun-card-origin code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.firstrun-stats {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.firstrun-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.firstrun-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.firstrun-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Hero connect CTA — the sanctioned gradient treatment, mirroring
+   .welcome-cta-install so the two onboarding flows read as one family. */
+.firstrun-connect {
+  width: 100%;
+  max-width: 480px;
+  padding: 18px 32px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    var(--accent-hover) 100%
+  );
+  color: #fff;
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.18),
+    0 0 0 1px var(--accent-hover) inset;
+  margin: 6px 0 10px;
+}
+
+.firstrun-connect:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    var(--accent-hover) 0%,
+    var(--accent) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.22),
+    0 0 0 1px var(--accent-hover) inset;
+}
+
+.firstrun-connect:disabled {
+  background: var(--accent);
+  opacity: 0.5;
+}
+
+/* Not-found doors: stacked full-width secondary actions. */
+.firstrun-doors {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.firstrun-door {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.firstrun-door:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--border-bright);
+}
+
+.firstrun-door:disabled {
+  opacity: 0.5;
+}
+
+.firstrun-door-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.firstrun-door-sub {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Docker command copy lane (not-found door 1 expansion). */
+.firstrun-cmd {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+  text-align: left;
+}
+
+.firstrun-cmd-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.firstrun-cmd-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.firstrun-cmd-text {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.firstrun-cmd-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.firstrun-cmd-copy:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+}
+
+/* Advanced manual-connect expansion. */
+.firstrun-advanced {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+.firstrun-field {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.firstrun-input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.firstrun-input:focus {
+  outline: none;
+  border-color: var(--accent-text);
+}
+
+.firstrun-input::placeholder {
+  color: var(--text-muted);
+}
+
+.firstrun-error {
+  display: block;
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 8px;
+}
+
+/* Auth-required key lane. */
+.firstrun-auth {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 12px;
+  text-align: left;
+}
+
+/* Footer link back to the demoted legacy wizard. */
+.firstrun-footer {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.firstrun-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.firstrun-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.firstrun-link-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+/* Status pill pair — mirrors the .tools-agent-reach-* pattern. */
+.firstrun-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.firstrun-pill-ok {
+  color: var(--success);
+}
+
+.firstrun-pill-fail {
+  color: var(--error);
+}

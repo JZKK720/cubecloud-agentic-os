@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from "child_process";
+import { type ChildProcess, spawn } from "child_process";
 import { randomUUID } from "crypto";
 import {
   existsSync,
@@ -18,7 +18,7 @@ import {
   HERMES_PYTHON,
   hermesCliArgs,
   getEnhancedPath,
-} from "./installer";
+} from "./homer";
 import { readMemory } from "./memory";
 import {
   compressForChat,

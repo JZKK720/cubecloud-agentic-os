@@ -1,4 +1,4 @@
-import { checkOpenClawExists } from "./installer";
+import { checkOpenClawExists } from "./homer";
 import {
   TASK_ORCHESTRATOR_CATALOG,
   type TaskOrchestratorSnapshot,

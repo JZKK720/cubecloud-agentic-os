@@ -6,7 +6,7 @@ import {
   HERMES_HOME,
   hermesCliArgs,
   getEnhancedPath,
-} from "./installer";
+} from "./homer";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";
 import { stripAnsi } from "./utils";
 

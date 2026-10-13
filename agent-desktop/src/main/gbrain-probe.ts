@@ -31,7 +31,7 @@
  */
 
 import { execFileSync } from "child_process";
-import { getEnhancedPath } from "./installer";
+import { getEnhancedPath } from "./homer";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";
 
 /**

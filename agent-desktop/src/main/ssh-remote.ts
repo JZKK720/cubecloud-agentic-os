@@ -19,7 +19,7 @@ import type { SessionSummary, SearchResult } from "./sessions";
 import type { CachedSession } from "./session-cache";
 import type { ToolsetInfo } from "./tools";
 import type { SavedModel } from "./models";
-import type { MemoryProviderInfo } from "./installer";
+import type { MemoryProviderInfo } from "./homer";
 import { t } from "../shared/i18n";
 import { getAppLocale } from "./locale";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";

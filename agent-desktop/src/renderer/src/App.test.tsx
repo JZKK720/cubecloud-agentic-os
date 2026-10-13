@@ -52,6 +52,10 @@ vi.mock("./screens/Welcome/Welcome", () => ({
   default: () => <div>Welcome screen</div>,
 }));
 
+vi.mock("./screens/FirstRunScan/FirstRunScan", () => ({
+  default: () => <div>First-run scan screen</div>,
+}));
+
 vi.mock("./screens/Install/Install", () => ({
   default: () => <div>Install screen</div>,
 }));
@@ -122,18 +126,52 @@ beforeEach(() => {
 });
 
 describe("App startup gating", () => {
-  it("stays on Welcome when Hermes is installed but no runtime was discovered", async () => {
+  it("routes local mode with no discovered runtime to the first-run scan (scan-first onboarding)", async () => {
     render(<App />);
 
     await waitFor(
       () => {
-        expect(screen.getByText("Welcome screen")).toBeInTheDocument();
+        expect(
+          screen.getByText("First-run scan screen"),
+        ).toBeInTheDocument();
       },
       { timeout: 5000 },
     );
 
     expect(screen.queryByText("Main layout")).toBeNull();
+    expect(screen.queryByText("Setup screen")).toBeNull();
     expect(hermesAPI.autoDiscoveryScan).toHaveBeenCalledTimes(1);
-    expect(hermesAPI.checkInstall).toHaveBeenCalledTimes(1);
+  });
+
+  it("lands in main when a healthy runtime was auto-discovered (silent attach preserved)", async () => {
+    hermesAPI.autoDiscoveryScan.mockResolvedValue({
+      healthyCount: 1,
+      discovered: [
+        {
+          url: "http://127.0.0.1:8642",
+          runtime: "hermes",
+          healthy: true,
+          authRequired: false,
+          statusCode: 200,
+          latencyMs: 5,
+        },
+      ],
+    });
+
+    render(<App />);
+
+    await waitFor(
+      () => {
+        expect(screen.getByText("Main layout")).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
+
+    expect(hermesAPI.setConnectionConfig).toHaveBeenCalledWith(
+      "remote",
+      "http://127.0.0.1:8642",
+      "",
+      "hermes",
+    );
   });
 });

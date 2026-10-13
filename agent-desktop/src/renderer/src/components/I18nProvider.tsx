@@ -7,6 +7,14 @@ import {
   sharedI18n,
   type AppLocale,
 } from "../../../shared/i18n";
+
+/** True only for a real locale string. The browser-shell shim degrades
+ *  unseeded bridge methods to `{ success: false, degraded: true }`
+ *  objects; applying one as a locale crashes i18next
+ *  ("codes.forEach is not a function") and blanks the screen. */
+function isAppLocale(value: unknown): value is AppLocale {
+  return typeof value === "string" && (APP_LOCALES as string[]).includes(value);
+}
 import { I18nContext, type I18nContextValue } from "./I18nContext";
 
 void sharedI18n.use(initReactI18next);
@@ -54,7 +62,8 @@ export function I18nProvider({
 
     void getMainLocale()
       .then((mainLocale) => {
-        if (cancelled || !mainLocale || userSelectedLocale.current) return;
+        if (cancelled || !isAppLocale(mainLocale) || userSelectedLocale.current)
+          return;
         setLocaleState(mainLocale);
       })
       .catch(() => {

@@ -1,0 +1,58 @@
+# C2 — compose weave (doctrine §3): the kernel joins the AI Workspace
+# fabric. Mirrors cubecloud-agent's deploy/docker compose conventions
+# (healthchecks, .env cascade, host-attach override).
+#
+# Two ways to run:
+#
+#   1. Standalone (kernel attaches to a workspace on the HOST):
+#        docker compose -p cubecloud-console -f compose.console.yaml up -d
+#      The kernel probes http://host.docker.internal:6767 (the host's
+#      cubecloud-agent quickstart stack) via extra_hosts.
+#
+#   2. Joined to the workspace fabric (kernel + workspace on one network):
+#        docker compose -p cubecloud-agent-full \
+#          -f <workspace>/deploy/docker/docker-compose.quickstart.yaml \
+#          -f compose.console.yaml up -d
+#      Set CONSOLE_WORKSPACE_URL=http://agent-meow-server:6767 in .env —
+#      service DNS replaces the host-gateway hop.
+#
+# Browser shell: http://localhost:6770 (serves out/renderer + /shim.js).
+
+services:
+  console-backend:
+    build:
+      context: ./
+      dockerfile: agent-desktop/console-backend/Dockerfile
+    image: ${CONSOLE_IMAGE:-cubecloud-console-backend}:${CONSOLE_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      CONSOLE_KERNEL_PORT: "6770"
+      # Row-A probe target. Standalone default: the host's workspace via
+      # host-gateway. Fabric-joined deployments override with service DNS.
+      CUBECLOUD_AGENT_URL: ${CONSOLE_WORKSPACE_URL:-http://host.docker.internal:6767}
+      # Kernel home (profiles, memories, wiki, decisions.jsonl) persists
+      # in a named volume — the second brain's substance survives restarts.
+      HERMES_HOME: /data/hermes
+    extra_hosts:
+      # Standalone mode: reach the host's workspace + local LLM runtimes
+      # (Ollama :11434, LM Studio :1234) through the host loopback.
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - console-data:/data/hermes
+    ports:
+      - "${CONSOLE_PORT:-6770}:6770"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:6770/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  console-data: {}

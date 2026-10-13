@@ -4,6 +4,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Welcome from "./screens/Welcome/Welcome";
 import Install from "./screens/Install/Install";
 import Setup from "./screens/Setup/Setup";
+import FirstRunScan from "./screens/FirstRunScan/FirstRunScan";
 import Layout from "./screens/Layout/Layout";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import { captureScreenView } from "./utils/analytics";
@@ -14,7 +15,13 @@ import {
 } from "../../shared/gateway-runtime-presets";
 import { setCachedGatewayRuntimePreset } from "./utils/gatewayRuntimePresetCache";
 
-type Screen = "splash" | "welcome" | "installing" | "setup" | "main";
+type Screen =
+  | "splash"
+  | "firstrun"
+  | "welcome"
+  | "installing"
+  | "setup"
+  | "main";
 
 type DiscoveredRuntime = {
   url: string;
@@ -138,27 +145,17 @@ function App(): React.JSX.Element {
               scan.discovered.filter((d) => d.healthy || d.authRequired),
             );
 
-            const status = await window.hermesAPI.checkInstall();
-            if (!status.installed) {
-              next = "welcome";
-            } else if (!status.hasApiKey) {
-              next = "setup";
-            } else {
-              // A local install plus API key is not enough to land in chat.
-              // If no runtime was discovered, keep the user in onboarding so
-              // they can wire Hermes or IronClaw before the main surface opens.
-              next = "welcome";
-            }
+            // Scan-first onboarding (docs/plans/2026-10-07-scan-first-
+            // onboarding-redesign.md): with no runtime auto-discovered,
+            // the first-run surface is the visible AI-Workspace scan —
+            // not the install/API-key ladder. The workspace owns gateway
+            // and LLM wiring; the console only needs to find and attach.
+            next = "firstrun";
           }
         } catch {
-          const status = await window.hermesAPI.checkInstall();
-          if (!status.installed) {
-            next = "welcome";
-          } else if (!status.hasApiKey) {
-            next = "setup";
-          } else {
-            next = "welcome";
-          }
+          // Discovery itself failed — same scan-first surface, which
+          // carries its own re-scan door.
+          next = "firstrun";
         }
       }
     } catch {
@@ -182,7 +179,7 @@ function App(): React.JSX.Element {
     // which don't exist on machines that only use a remote backend. Without
     // this guard the user is bounced back to Welcome with an "installBroken"
     // error immediately after a successful remote connect. (#47, #41, #30)
-    if ((next === "main" || next === "setup") && !isRemote) {
+    if (next === "main" && !isRemote) {
       window.hermesAPI.verifyInstall().then((ok) => {
         // Files exist (checkInstall passed) but the probe failed. Surface
         // a soft warning instead of bouncing to Welcome — see #130.
@@ -256,6 +253,13 @@ function App(): React.JSX.Element {
     switch (screen) {
       case "splash":
         return <SplashScreen onFinished={handleSplashFinished} />;
+      case "firstrun":
+        return (
+          <FirstRunScan
+            onComplete={() => setScreen("main")}
+            onLegacySetup={() => setScreen("setup")}
+          />
+        );
       case "welcome":
         return (
           <Welcome
@@ -278,6 +282,8 @@ function App(): React.JSX.Element {
           />
         );
       case "setup":
+        // Demoted legacy gateway wizard (scan-first redesign §3): only
+        // reachable via FirstRunScan's footer link or remote/SSH flows.
         return (
           <Setup
             onComplete={() => setScreen("main")}

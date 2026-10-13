@@ -43,7 +43,7 @@
 import { spawn, spawnSync, type ChildProcess } from "child_process";
 import { readFile, writeFile } from "fs/promises";
 import { delimiter } from "path";
-import { getEnhancedPath, HERMES_HOME } from "./installer";
+import { getEnhancedPath, HERMES_HOME } from "./homer";
 import { appendLearning } from "./learnings";
 
 // ─── Public types ─────────────────────────────────────────────────

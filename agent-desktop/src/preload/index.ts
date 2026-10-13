@@ -1637,6 +1637,45 @@ const hermesAPI = {
     totalBytes: number;
   }> => ipcRenderer.invoke("workspace-supervisor-log-tail"),
 
+  // Workspace read-only session/agent mirrors — contract row D/R1.
+  // NEW-WIRING (C1): the sessions module shipped in V2.10.80 with no
+  // preload bridge; the console kernel was its first caller. These
+  // complete the desktop-side wire-up so the FirstRunScan screen can
+  // show live counts. Read-only; never throws (stable result shapes).
+  listWorkspaceSessions: (
+    baseUrl: string,
+    options?: { limit?: number; searchQuery?: string },
+  ): Promise<{
+    success: boolean;
+    data: Array<{
+      id: string;
+      agentId: string | null;
+      agentName: string | null;
+      status: string;
+      title: string | null;
+      createdAt: number | null;
+      runnerId: string | null;
+      runnerOnline: boolean | null;
+      hostOnline: boolean | null;
+      externalSessionId: string | null;
+      modelOverride: string | null;
+      gitBranch: string | null;
+    }>;
+    hasMore: boolean;
+    error?: string;
+  }> => ipcRenderer.invoke("workspace-sessions-list", baseUrl, options),
+  listWorkspaceAgents: (baseUrl: string): Promise<{
+    success: boolean;
+    data: Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      createdAt: number | null;
+    }>;
+    hasMore: boolean;
+    error?: string;
+  }> => ipcRenderer.invoke("workspace-agents-list", baseUrl),
+
   // Workspace console embed — contract row C (P2).
   workspaceConsoleUrl: (): Promise<string> =>
     ipcRenderer.invoke("workspace-console-url"),

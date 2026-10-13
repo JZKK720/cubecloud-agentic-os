@@ -3,7 +3,7 @@ import type { ExecFileOptions } from "child_process";
 import { existsSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import { getEnhancedPath, HERMES_HOME } from "./installer";
+import { getEnhancedPath, HERMES_HOME } from "./homer";
 import { compressCodeGraphBundle } from "./headroom-bundle";
 
 const CODEGRAPH_DOCS_URL = "https://colbymchenry.github.io/codegraph/";

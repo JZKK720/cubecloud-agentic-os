@@ -1,0 +1,1574 @@
+{
+  "generatedAt": "2026-10-09T03:14:35.063Z",
+  "totals": {
+    "methods": 309,
+    "withChannel": 308,
+    "withoutChannel": 1,
+    "pushChannels": 16
+  },
+  "methods": [
+    {
+      "name": "checkInstall",
+      "channel": "check-install",
+      "kind": "invoke"
+    },
+    {
+      "name": "verifyInstall",
+      "channel": "verify-install",
+      "kind": "invoke"
+    },
+    {
+      "name": "startInstall",
+      "channel": "start-install",
+      "kind": "invoke"
+    },
+    {
+      "name": "inspectInstallTarget",
+      "channel": "inspect-install-target",
+      "kind": "invoke"
+    },
+    {
+      "name": "validateHermesHome",
+      "channel": "validate-hermes-home",
+      "kind": "invoke"
+    },
+    {
+      "name": "adoptHermesHome",
+      "channel": "adopt-hermes-home",
+      "kind": "invoke"
+    },
+    {
+      "name": "quitApp",
+      "channel": "quit-app",
+      "kind": "invoke"
+    },
+    {
+      "name": "onInstallProgress",
+      "channel": "install-progress",
+      "kind": "push"
+    },
+    {
+      "name": "getHermesVersion",
+      "channel": "get-hermes-version",
+      "kind": "invoke"
+    },
+    {
+      "name": "refreshHermesVersion",
+      "channel": "refresh-hermes-version",
+      "kind": "invoke"
+    },
+    {
+      "name": "runHermesDoctor",
+      "channel": "run-hermes-doctor",
+      "kind": "invoke"
+    },
+    {
+      "name": "runHermesUpdate",
+      "channel": "run-hermes-update",
+      "kind": "invoke"
+    },
+    {
+      "name": "checkOpenClaw",
+      "channel": "check-openclaw",
+      "kind": "invoke"
+    },
+    {
+      "name": "runClawMigrate",
+      "channel": "run-claw-migrate",
+      "kind": "invoke"
+    },
+    {
+      "name": "oauthLogin",
+      "channel": "oauth-login",
+      "kind": "invoke"
+    },
+    {
+      "name": "cancelOAuthLogin",
+      "channel": "oauth-login-cancel",
+      "kind": "invoke"
+    },
+    {
+      "name": "onOAuthLoginProgress",
+      "channel": "oauth-login-progress",
+      "kind": "push"
+    },
+    {
+      "name": "getLocale",
+      "channel": "get-locale",
+      "kind": "invoke"
+    },
+    {
+      "name": "setLocale",
+      "channel": "set-locale",
+      "kind": "invoke"
+    },
+    {
+      "name": "getEnv",
+      "channel": "get-env",
+      "kind": "invoke"
+    },
+    {
+      "name": "setEnv",
+      "channel": "set-env",
+      "kind": "invoke"
+    },
+    {
+      "name": "getConfig",
+      "channel": "get-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "setConfig",
+      "channel": "set-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "getHermesHome",
+      "channel": "get-hermes-home",
+      "kind": "invoke"
+    },
+    {
+      "name": "getModelConfig",
+      "channel": "get-model-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "setModelConfig",
+      "channel": "set-model-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "isRemoteMode",
+      "channel": "is-remote-mode",
+      "kind": "invoke"
+    },
+    {
+      "name": "isRemoteOnlyMode",
+      "channel": "is-remote-only-mode",
+      "kind": "invoke"
+    },
+    {
+      "name": "getConnectionConfig",
+      "channel": "get-connection-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "setConnectionConfig",
+      "channel": "set-connection-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "setSshConfig",
+      "channel": "set-ssh-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "diagnoseRemoteConnection",
+      "channel": "diagnose-remote-connection",
+      "kind": "invoke"
+    },
+    {
+      "name": "testRemoteConnection",
+      "channel": "test-remote-connection",
+      "kind": "invoke"
+    },
+    {
+      "name": "discoverDockerRuntimes",
+      "channel": "discover-docker-runtimes",
+      "kind": "invoke"
+    },
+    {
+      "name": "discoverAgentClis",
+      "channel": "discover-agent-clis",
+      "kind": "invoke"
+    },
+    {
+      "name": "discoverBrowserHarness",
+      "channel": "discover-browser-harness",
+      "kind": "invoke"
+    },
+    {
+      "name": "browserHarnessDoctor",
+      "channel": "browser-harness-doctor",
+      "kind": "invoke"
+    },
+    {
+      "name": "listAllOutputs",
+      "channel": "list-all-outputs",
+      "kind": "invoke"
+    },
+    {
+      "name": "listThreadOutputs",
+      "channel": "list-thread-outputs",
+      "kind": "invoke"
+    },
+    {
+      "name": "ensureThreadOutputDir",
+      "channel": "ensure-thread-output-dir",
+      "kind": "invoke"
+    },
+    {
+      "name": "clearThreadOutputs",
+      "channel": "clear-thread-outputs",
+      "kind": "invoke"
+    },
+    {
+      "name": "listSwarmAgents",
+      "channel": "list-swarm-agents",
+      "kind": "invoke"
+    },
+    {
+      "name": "getSwarmMessages",
+      "channel": "get-swarm-messages",
+      "kind": "invoke"
+    },
+    {
+      "name": "createSwarmSubagent",
+      "channel": "create-swarm-subagent",
+      "kind": "invoke"
+    },
+    {
+      "name": "terminateSwarmAgent",
+      "channel": "terminate-swarm-agent",
+      "kind": "invoke"
+    },
+    {
+      "name": "clearSwarm",
+      "channel": "clear-swarm",
+      "kind": "invoke"
+    },
+    {
+      "name": "listVaultFiles",
+      "channel": "list-vault-files",
+      "kind": "invoke"
+    },
+    {
+      "name": "readVaultFile",
+      "channel": "read-vault-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "addVaultFile",
+      "channel": "add-vault-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "updateVaultFile",
+      "channel": "update-vault-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "deleteVaultFile",
+      "channel": "delete-vault-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "searchVault",
+      "channel": "search-vault",
+      "kind": "invoke"
+    },
+    {
+      "name": "approvalCreate",
+      "channel": "approval-create",
+      "kind": "invoke"
+    },
+    {
+      "name": "approvalApprove",
+      "channel": "approval-approve",
+      "kind": "invoke"
+    },
+    {
+      "name": "approvalDeny",
+      "channel": "approval-deny",
+      "kind": "invoke"
+    },
+    {
+      "name": "approvalList",
+      "channel": "approval-list",
+      "kind": "invoke"
+    },
+    {
+      "name": "approvalHasPending",
+      "channel": "approval-has-pending",
+      "kind": "invoke"
+    },
+    {
+      "name": "listRuntimeProviders",
+      "channel": "list-runtime-providers",
+      "kind": "invoke"
+    },
+    {
+      "name": "runRuntimeProviderAction",
+      "channel": "run-runtime-provider-action",
+      "kind": "invoke"
+    },
+    {
+      "name": "listTaskOrchestrators",
+      "channel": "list-task-orchestrators",
+      "kind": "invoke"
+    },
+    {
+      "name": "diagnoseSshConnection",
+      "channel": "diagnose-ssh-connection",
+      "kind": "invoke"
+    },
+    {
+      "name": "testSshConnection",
+      "channel": "test-ssh-connection",
+      "kind": "invoke"
+    },
+    {
+      "name": "isSshTunnelActive",
+      "channel": "is-ssh-tunnel-active",
+      "kind": "invoke"
+    },
+    {
+      "name": "startSshTunnel",
+      "channel": "start-ssh-tunnel",
+      "kind": "invoke"
+    },
+    {
+      "name": "stopSshTunnel",
+      "channel": "stop-ssh-tunnel",
+      "kind": "invoke"
+    },
+    {
+      "name": "sendMessage",
+      "channel": "send-message",
+      "kind": "invoke"
+    },
+    {
+      "name": "abortChat",
+      "channel": "abort-chat",
+      "kind": "invoke"
+    },
+    {
+      "name": "getApiServerKeyStatus",
+      "channel": "get-api-server-key-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "generateApiServerKey",
+      "channel": "generate-api-server-key",
+      "kind": "invoke"
+    },
+    {
+      "name": "copyToClipboard",
+      "channel": "copy-to-clipboard",
+      "kind": "invoke"
+    },
+    {
+      "name": "readMediaFile",
+      "channel": "read-media-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "saveMediaFile",
+      "channel": "save-media-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "mediaFileExists",
+      "channel": "media-file-exists",
+      "kind": "invoke"
+    },
+    {
+      "name": "showMediaMenu",
+      "channel": "show-media-menu",
+      "kind": "send"
+    },
+    {
+      "name": "getPathForFile",
+      "channel": null,
+      "kind": "none"
+    },
+    {
+      "name": "stageAttachment",
+      "channel": "stage-attachment",
+      "kind": "invoke"
+    },
+    {
+      "name": "clearStagedAttachments",
+      "channel": "clear-staged-attachments",
+      "kind": "invoke"
+    },
+    {
+      "name": "discoverProviderModels",
+      "channel": "discover-provider-models",
+      "kind": "invoke"
+    },
+    {
+      "name": "scanLocalServers",
+      "channel": "scan-local-servers",
+      "kind": "invoke"
+    },
+    {
+      "name": "probeLocalModelHealth",
+      "channel": "probe-local-model-health",
+      "kind": "invoke"
+    },
+    {
+      "name": "ironclawProbe",
+      "channel": "ironclaw-probe",
+      "kind": "invoke"
+    },
+    {
+      "name": "ironclawModels",
+      "channel": "ironclaw-models",
+      "kind": "invoke"
+    },
+    {
+      "name": "ironclawDispatch",
+      "channel": "ironclaw-dispatch",
+      "kind": "invoke"
+    },
+    {
+      "name": "agentReachProbe",
+      "channel": "agent-reach-probe",
+      "kind": "invoke"
+    },
+    {
+      "name": "autoDiscoveryScan",
+      "channel": "auto-discovery-scan",
+      "kind": "invoke"
+    },
+    {
+      "name": "onChatChunk",
+      "channel": "chat-chunk",
+      "kind": "push"
+    },
+    {
+      "name": "onChatReasoningChunk",
+      "channel": "chat-reasoning-chunk",
+      "kind": "push"
+    },
+    {
+      "name": "onChatDone",
+      "channel": "chat-done",
+      "kind": "push"
+    },
+    {
+      "name": "onContextMenuCopyChat",
+      "channel": "context-menu-copy-chat",
+      "kind": "push"
+    },
+    {
+      "name": "onContextMenuSelectBubble",
+      "channel": "context-menu-select-bubble",
+      "kind": "push"
+    },
+    {
+      "name": "onChatToolProgress",
+      "channel": "chat-tool-progress",
+      "kind": "push"
+    },
+    {
+      "name": "onChatUsage",
+      "channel": "chat-usage",
+      "kind": "push"
+    },
+    {
+      "name": "onChatError",
+      "channel": "chat-error",
+      "kind": "push"
+    },
+    {
+      "name": "startGateway",
+      "channel": "start-gateway",
+      "kind": "invoke"
+    },
+    {
+      "name": "stopGateway",
+      "channel": "stop-gateway",
+      "kind": "invoke"
+    },
+    {
+      "name": "gatewayStatus",
+      "channel": "gateway-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "getPlatformEnabled",
+      "channel": "get-platform-enabled",
+      "kind": "invoke"
+    },
+    {
+      "name": "setPlatformEnabled",
+      "channel": "set-platform-enabled",
+      "kind": "invoke"
+    },
+    {
+      "name": "listSessions",
+      "channel": "list-sessions",
+      "kind": "invoke"
+    },
+    {
+      "name": "getSessionMessages",
+      "channel": "get-session-messages",
+      "kind": "invoke"
+    },
+    {
+      "name": "listProfiles",
+      "channel": "list-profiles",
+      "kind": "invoke"
+    },
+    {
+      "name": "createProfile",
+      "channel": "create-profile",
+      "kind": "invoke"
+    },
+    {
+      "name": "deleteProfile",
+      "channel": "delete-profile",
+      "kind": "invoke"
+    },
+    {
+      "name": "setActiveProfile",
+      "channel": "set-active-profile",
+      "kind": "invoke"
+    },
+    {
+      "name": "readMemory",
+      "channel": "read-memory",
+      "kind": "invoke"
+    },
+    {
+      "name": "addMemoryEntry",
+      "channel": "add-memory-entry",
+      "kind": "invoke"
+    },
+    {
+      "name": "updateMemoryEntry",
+      "channel": "update-memory-entry",
+      "kind": "invoke"
+    },
+    {
+      "name": "removeMemoryEntry",
+      "channel": "remove-memory-entry",
+      "kind": "invoke"
+    },
+    {
+      "name": "writeUserProfile",
+      "channel": "write-user-profile",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiGetStatus",
+      "channel": "wiki-get-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiBootstrap",
+      "channel": "wiki-bootstrap",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiReadIndex",
+      "channel": "wiki-read-index",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiWriteIndex",
+      "channel": "wiki-write-index",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiReadLog",
+      "channel": "wiki-read-log",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiAppendLog",
+      "channel": "wiki-append-log",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiListSources",
+      "channel": "wiki-list-sources",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiReadSchema",
+      "channel": "wiki-read-schema",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiReadPage",
+      "channel": "wiki-read-page",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiWritePage",
+      "channel": "wiki-write-page",
+      "kind": "invoke"
+    },
+    {
+      "name": "readSoul",
+      "channel": "read-soul",
+      "kind": "invoke"
+    },
+    {
+      "name": "writeSoul",
+      "channel": "write-soul",
+      "kind": "invoke"
+    },
+    {
+      "name": "resetSoul",
+      "channel": "reset-soul",
+      "kind": "invoke"
+    },
+    {
+      "name": "getToolsets",
+      "channel": "get-toolsets",
+      "kind": "invoke"
+    },
+    {
+      "name": "setToolsetEnabled",
+      "channel": "set-toolset-enabled",
+      "kind": "invoke"
+    },
+    {
+      "name": "convertFileToMarkdown",
+      "channel": "convert-file-to-markdown",
+      "kind": "invoke"
+    },
+    {
+      "name": "isMarkitdownAvailable",
+      "channel": "is-markitdown-available",
+      "kind": "invoke"
+    },
+    {
+      "name": "wikiIngestFileAsMarkdown",
+      "channel": "wiki-ingest-file-as-markdown",
+      "kind": "invoke"
+    },
+    {
+      "name": "getDesignDials",
+      "channel": "get-design-dials",
+      "kind": "invoke"
+    },
+    {
+      "name": "setDesignDials",
+      "channel": "set-design-dials",
+      "kind": "invoke"
+    },
+    {
+      "name": "listInstalledSkills",
+      "channel": "list-installed-skills",
+      "kind": "invoke"
+    },
+    {
+      "name": "listBundledSkills",
+      "channel": "list-bundled-skills",
+      "kind": "invoke"
+    },
+    {
+      "name": "getSkillContent",
+      "channel": "get-skill-content",
+      "kind": "invoke"
+    },
+    {
+      "name": "getDesktopBundledSkillPath",
+      "channel": "get-desktop-bundled-skill-path",
+      "kind": "invoke"
+    },
+    {
+      "name": "installSkill",
+      "channel": "install-skill",
+      "kind": "invoke"
+    },
+    {
+      "name": "uninstallSkill",
+      "channel": "uninstall-skill",
+      "kind": "invoke"
+    },
+    {
+      "name": "listCachedSessions",
+      "channel": "list-cached-sessions",
+      "kind": "invoke"
+    },
+    {
+      "name": "syncSessionCache",
+      "channel": "sync-session-cache",
+      "kind": "invoke"
+    },
+    {
+      "name": "updateSessionTitle",
+      "channel": "update-session-title",
+      "kind": "invoke"
+    },
+    {
+      "name": "deleteSession",
+      "channel": "delete-session",
+      "kind": "invoke"
+    },
+    {
+      "name": "searchSessions",
+      "channel": "search-sessions",
+      "kind": "invoke"
+    },
+    {
+      "name": "getCredentialPool",
+      "channel": "get-credential-pool",
+      "kind": "invoke"
+    },
+    {
+      "name": "setCredentialPool",
+      "channel": "set-credential-pool",
+      "kind": "invoke"
+    },
+    {
+      "name": "addCredentialPoolEntry",
+      "channel": "add-credential-pool-entry",
+      "kind": "invoke"
+    },
+    {
+      "name": "listModels",
+      "channel": "list-models",
+      "kind": "invoke"
+    },
+    {
+      "name": "addModel",
+      "channel": "add-model",
+      "kind": "invoke"
+    },
+    {
+      "name": "removeModel",
+      "channel": "remove-model",
+      "kind": "invoke"
+    },
+    {
+      "name": "updateModel",
+      "channel": "update-model",
+      "kind": "invoke"
+    },
+    {
+      "name": "checkForUpdates",
+      "channel": "check-for-updates",
+      "kind": "invoke"
+    },
+    {
+      "name": "downloadUpdate",
+      "channel": "download-update",
+      "kind": "invoke"
+    },
+    {
+      "name": "installUpdate",
+      "channel": "install-update",
+      "kind": "invoke"
+    },
+    {
+      "name": "getAppVersion",
+      "channel": "get-app-version",
+      "kind": "invoke"
+    },
+    {
+      "name": "onUpdateAvailable",
+      "channel": "update-available",
+      "kind": "push"
+    },
+    {
+      "name": "onUpdateDownloadProgress",
+      "channel": "update-download-progress",
+      "kind": "push"
+    },
+    {
+      "name": "onUpdateDownloaded",
+      "channel": "update-downloaded",
+      "kind": "push"
+    },
+    {
+      "name": "onUpdateError",
+      "channel": "update-error",
+      "kind": "push"
+    },
+    {
+      "name": "onMenuNewChat",
+      "channel": "menu-new-chat",
+      "kind": "push"
+    },
+    {
+      "name": "onMenuSearchSessions",
+      "channel": "menu-search-sessions",
+      "kind": "push"
+    },
+    {
+      "name": "listCronJobs",
+      "channel": "list-cron-jobs",
+      "kind": "invoke"
+    },
+    {
+      "name": "createCronJob",
+      "channel": "create-cron-job",
+      "kind": "invoke"
+    },
+    {
+      "name": "removeCronJob",
+      "channel": "remove-cron-job",
+      "kind": "invoke"
+    },
+    {
+      "name": "pauseCronJob",
+      "channel": "pause-cron-job",
+      "kind": "invoke"
+    },
+    {
+      "name": "resumeCronJob",
+      "channel": "resume-cron-job",
+      "kind": "invoke"
+    },
+    {
+      "name": "triggerCronJob",
+      "channel": "trigger-cron-job",
+      "kind": "invoke"
+    },
+    {
+      "name": "kanbanCreateTask",
+      "channel": "kanban-create-task",
+      "kind": "invoke"
+    },
+    {
+      "name": "kanbanDispatchOnce",
+      "channel": "kanban-dispatch-once",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphCliStatus",
+      "channel": "codegraph-cli-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphInstallCli",
+      "channel": "codegraph-install-cli",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphSetupHermes",
+      "channel": "codegraph-setup-hermes",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphProjectStatus",
+      "channel": "codegraph-project-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphInitProject",
+      "channel": "codegraph-init-project",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphBuildContext",
+      "channel": "codegraph-build-context",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphRuntimeStatus",
+      "channel": "codegraph-runtime-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphRuntimeOpen",
+      "channel": "codegraph-runtime-open",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphRuntimeClose",
+      "channel": "codegraph-runtime-close",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphRuntimeSearch",
+      "channel": "codegraph-runtime-search",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphRuntimeImpact",
+      "channel": "codegraph-runtime-impact",
+      "kind": "invoke"
+    },
+    {
+      "name": "codegraphRuntimeStats",
+      "channel": "codegraph-runtime-stats",
+      "kind": "invoke"
+    },
+    {
+      "name": "selectFolder",
+      "channel": "select-folder",
+      "kind": "invoke"
+    },
+    {
+      "name": "readDirectory",
+      "channel": "read-directory",
+      "kind": "invoke"
+    },
+    {
+      "name": "readFile",
+      "channel": "read-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "openFileInEditor",
+      "channel": "open-file-in-editor",
+      "kind": "invoke"
+    },
+    {
+      "name": "readImageFile",
+      "channel": "read-image-file",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosGetConfig",
+      "channel": "everos-get-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSaveConfig",
+      "channel": "everos-save-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosPing",
+      "channel": "everos-ping",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosAddMemory",
+      "channel": "everos-add-memory",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSearch",
+      "channel": "everos-search",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosListRecent",
+      "channel": "everos-list-recent",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSidecarStatus",
+      "channel": "everos-sidecar-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSidecarStart",
+      "channel": "everos-sidecar-start",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSidecarStop",
+      "channel": "everos-sidecar-stop",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSidecarRestart",
+      "channel": "everos-sidecar-restart",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSidecarLogTail",
+      "channel": "everos-sidecar-log-tail",
+      "kind": "invoke"
+    },
+    {
+      "name": "everosSidecarClearLogs",
+      "channel": "everos-sidecar-clear-logs",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceProbe",
+      "channel": "workspace-probe",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceProbeUrl",
+      "channel": "workspace-probe-url",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceSupervisorStatus",
+      "channel": "workspace-supervisor-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceSupervisorStart",
+      "channel": "workspace-supervisor-start",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceSupervisorStop",
+      "channel": "workspace-supervisor-stop",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceSupervisorLogTail",
+      "channel": "workspace-supervisor-log-tail",
+      "kind": "invoke"
+    },
+    {
+      "name": "listWorkspaceSessions",
+      "channel": "workspace-sessions-list",
+      "kind": "invoke"
+    },
+    {
+      "name": "listWorkspaceAgents",
+      "channel": "workspace-agents-list",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceConsoleUrl",
+      "channel": "workspace-console-url",
+      "kind": "invoke"
+    },
+    {
+      "name": "layaProbe",
+      "channel": "laya-probe",
+      "kind": "invoke"
+    },
+    {
+      "name": "layaMcpRegistration",
+      "channel": "laya-mcp-registration",
+      "kind": "invoke"
+    },
+    {
+      "name": "weknoraProbe",
+      "channel": "weknora-probe",
+      "kind": "invoke"
+    },
+    {
+      "name": "openvikingProbe",
+      "channel": "openviking-probe",
+      "kind": "invoke"
+    },
+    {
+      "name": "agentBundlePromote",
+      "channel": "agent-bundle-promote",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceProvisionEnv",
+      "channel": "workspace-provision-env",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceProvisionFingerprint",
+      "channel": "workspace-provision-fingerprint",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceGovernanceElicitations",
+      "channel": "workspace-governance-elicitations",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceGovernanceResolve",
+      "channel": "workspace-governance-resolve",
+      "kind": "invoke"
+    },
+    {
+      "name": "workspaceGovernanceSurfaces",
+      "channel": "workspace-governance-surfaces",
+      "kind": "invoke"
+    },
+    {
+      "name": "decisionPrescreenApproval",
+      "channel": "decision-prescreen-approval",
+      "kind": "invoke"
+    },
+    {
+      "name": "decisionTriageSkill",
+      "channel": "decision-triage-skill",
+      "kind": "invoke"
+    },
+    {
+      "name": "decisionAuditPath",
+      "channel": "decision-audit-path",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomGetConfig",
+      "channel": "headroom-get-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomSaveConfig",
+      "channel": "headroom-save-config",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomPing",
+      "channel": "headroom-ping",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomCompress",
+      "channel": "headroom-compress",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomRetrieve",
+      "channel": "headroom-retrieve",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomStats",
+      "channel": "headroom-stats",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomSidecarStatus",
+      "channel": "headroom-sidecar-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomSidecarStart",
+      "channel": "headroom-sidecar-start",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomSidecarStop",
+      "channel": "headroom-sidecar-stop",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomSidecarRestart",
+      "channel": "headroom-sidecar-restart",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomSidecarLogTail",
+      "channel": "headroom-sidecar-log-tail",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomSidecarClearLogs",
+      "channel": "headroom-sidecar-clear-logs",
+      "kind": "invoke"
+    },
+    {
+      "name": "gbrainProbe",
+      "channel": "gbrain-probe",
+      "kind": "invoke"
+    },
+    {
+      "name": "voiceTranscribe",
+      "channel": "voice-transcribe",
+      "kind": "invoke"
+    },
+    {
+      "name": "voiceSynthesize",
+      "channel": "voice-synthesize",
+      "kind": "invoke"
+    },
+    {
+      "name": "handyDetect",
+      "channel": "handy-detect",
+      "kind": "invoke"
+    },
+    {
+      "name": "handyToggle",
+      "channel": "handy-toggle",
+      "kind": "invoke"
+    },
+    {
+      "name": "handyCancel",
+      "channel": "handy-cancel",
+      "kind": "invoke"
+    },
+    {
+      "name": "graphifyDiscover",
+      "channel": "graphify-discover",
+      "kind": "invoke"
+    },
+    {
+      "name": "graphifyVersion",
+      "channel": "graphify-version",
+      "kind": "invoke"
+    },
+    {
+      "name": "evalRun",
+      "channel": "eval-run",
+      "kind": "invoke"
+    },
+    {
+      "name": "skillInstallGit",
+      "channel": "skill-install-git",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomMcpStatus",
+      "channel": "headroom-mcp-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomMcpLogTail",
+      "channel": "headroom-mcp-log-tail",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomMcpClearLogs",
+      "channel": "headroom-mcp-clear-logs",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomMcpStart",
+      "channel": "headroom-mcp-start",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomMcpStop",
+      "channel": "headroom-mcp-stop",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomMcpRestart",
+      "channel": "headroom-mcp-restart",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomLearnRun",
+      "channel": "headroom-learn-run",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomLearnLastReport",
+      "channel": "headroom-learn-last-report",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomLearnStop",
+      "channel": "headroom-learn-stop",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomLearnCommit",
+      "channel": "headroom-learn-commit",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomLearnApply",
+      "channel": "headroom-learn-apply",
+      "kind": "invoke"
+    },
+    {
+      "name": "headroomLearnRevert",
+      "channel": "headroom-learn-revert",
+      "kind": "invoke"
+    },
+    {
+      "name": "openExternal",
+      "channel": "open-external",
+      "kind": "invoke"
+    },
+    {
+      "name": "openDataFolder",
+      "channel": "open-data-folder",
+      "kind": "invoke"
+    },
+    {
+      "name": "runHermesBackup",
+      "channel": "run-hermes-backup",
+      "kind": "invoke"
+    },
+    {
+      "name": "runHermesImport",
+      "channel": "run-hermes-import",
+      "kind": "invoke"
+    },
+    {
+      "name": "runHermesDump",
+      "channel": "run-hermes-dump",
+      "kind": "invoke"
+    },
+    {
+      "name": "discoverMemoryProviders",
+      "channel": "discover-memory-providers",
+      "kind": "invoke"
+    },
+    {
+      "name": "discoverCodebaseMemory",
+      "channel": "discover-codebase-memory",
+      "kind": "invoke"
+    },
+    {
+      "name": "listCodebaseMemoryProjects",
+      "channel": "list-codebase-memory-projects",
+      "kind": "invoke"
+    },
+    {
+      "name": "discoverLast30Days",
+      "channel": "discover-last30days",
+      "kind": "invoke"
+    },
+    {
+      "name": "mooTasksSidecarStatus",
+      "channel": "moo-tasks-sidecar-status",
+      "kind": "invoke"
+    },
+    {
+      "name": "mooTasksSidecarStart",
+      "channel": "moo-tasks-sidecar-start",
+      "kind": "invoke"
+    },
+    {
+      "name": "mooTasksSidecarStop",
+      "channel": "moo-tasks-sidecar-stop",
+      "kind": "invoke"
+    },
+    {
+      "name": "mooTasksSidecarRestart",
+      "channel": "moo-tasks-sidecar-restart",
+      "kind": "invoke"
+    },
+    {
+      "name": "mooTasksSidecarLogTail",
+      "channel": "moo-tasks-sidecar-log-tail",
+      "kind": "invoke"
+    },
+    {
+      "name": "mooTasksSidecarClearLogs",
+      "channel": "moo-tasks-sidecar-clear-logs",
+      "kind": "invoke"
+    },
+    {
+      "name": "listMcpServers",
+      "channel": "list-mcp-servers",
+      "kind": "invoke"
+    },
+    {
+      "name": "setMcpServerEnabled",
+      "channel": "set-mcp-server-enabled",
+      "kind": "invoke"
+    },
+    {
+      "name": "addMcpServer",
+      "channel": "add-mcp-server",
+      "kind": "invoke"
+    },
+    {
+      "name": "removeMcpServer",
+      "channel": "remove-mcp-server",
+      "kind": "invoke"
+    },
+    {
+      "name": "readLogs",
+      "channel": "read-logs",
+      "kind": "invoke"
+    },
+    {
+      "name": "plansParse",
+      "channel": "plans-parse",
+      "kind": "invoke"
+    },
+    {
+      "name": "plansSave",
+      "channel": "plans-save",
+      "kind": "invoke"
+    },
+    {
+      "name": "plansList",
+      "channel": "plans-list",
+      "kind": "invoke"
+    },
+    {
+      "name": "plansGet",
+      "channel": "plans-get",
+      "kind": "invoke"
+    },
+    {
+      "name": "plansDelete",
+      "channel": "plans-delete",
+      "kind": "invoke"
+    },
+    {
+      "name": "plansDispatch",
+      "channel": "plans-dispatch",
+      "kind": "invoke"
+    },
+    {
+      "name": "carefulCheck",
+      "channel": "careful-check",
+      "kind": "invoke"
+    },
+    {
+      "name": "carefulFindInBody",
+      "channel": "careful-find-in-body",
+      "kind": "invoke"
+    },
+    {
+      "name": "carefulIsDestructive",
+      "channel": "careful-is-destructive",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsRead",
+      "channel": "learnings-read",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsSearch",
+      "channel": "learnings-search",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsStats",
+      "channel": "learnings-stats",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsExport",
+      "channel": "learnings-export",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsFindStale",
+      "channel": "learnings-find-stale",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsClear",
+      "channel": "learnings-clear",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsFileInfo",
+      "channel": "learnings-file-info",
+      "kind": "invoke"
+    },
+    {
+      "name": "learningsAppend",
+      "channel": "learnings-append",
+      "kind": "invoke"
+    },
+    {
+      "name": "retroSummarize",
+      "channel": "retro-summarize",
+      "kind": "invoke"
+    },
+    {
+      "name": "retroBuildContext",
+      "channel": "retro-build-context",
+      "kind": "invoke"
+    },
+    {
+      "name": "retroCommit",
+      "channel": "retro-commit",
+      "kind": "invoke"
+    },
+    {
+      "name": "retroExport",
+      "channel": "retro-export",
+      "kind": "invoke"
+    },
+    {
+      "name": "triageItems",
+      "channel": "triage-items",
+      "kind": "invoke"
+    },
+    {
+      "name": "triageRecentSessions",
+      "channel": "triage-recent-sessions",
+      "kind": "invoke"
+    },
+    {
+      "name": "handoffBuild",
+      "channel": "handoff-build",
+      "kind": "invoke"
+    },
+    {
+      "name": "handoffSave",
+      "channel": "handoff-save",
+      "kind": "invoke"
+    },
+    {
+      "name": "handoffBuildAndSave",
+      "channel": "handoff-build-and-save",
+      "kind": "invoke"
+    },
+    {
+      "name": "schemasListBundled",
+      "channel": "schemas-list-bundled",
+      "kind": "invoke"
+    },
+    {
+      "name": "schemasGetActive",
+      "channel": "schemas-get-active",
+      "kind": "invoke"
+    },
+    {
+      "name": "schemasGetActiveId",
+      "channel": "schemas-get-active-id",
+      "kind": "invoke"
+    },
+    {
+      "name": "schemasSetActive",
+      "channel": "schemas-set-active",
+      "kind": "invoke"
+    },
+    {
+      "name": "schemasInferType",
+      "channel": "schemas-infer-type",
+      "kind": "invoke"
+    },
+    {
+      "name": "synthesisBuild",
+      "channel": "synthesis-build",
+      "kind": "invoke"
+    },
+    {
+      "name": "knowledgeToolManifest",
+      "channel": "knowledge-tool-manifest",
+      "kind": "invoke"
+    },
+    {
+      "name": "knowledgeSearch",
+      "channel": "knowledge-search",
+      "kind": "invoke"
+    },
+    {
+      "name": "knowledgeGet",
+      "channel": "knowledge-get",
+      "kind": "invoke"
+    },
+    {
+      "name": "knowledgeList",
+      "channel": "knowledge-list",
+      "kind": "invoke"
+    },
+    {
+      "name": "knowledgeSources",
+      "channel": "knowledge-sources",
+      "kind": "invoke"
+    },
+    {
+      "name": "autoplanBuildBriefs",
+      "channel": "autoplan-build-briefs",
+      "kind": "invoke"
+    },
+    {
+      "name": "autoplanRecordFailure",
+      "channel": "autoplan-record-failure",
+      "kind": "invoke"
+    }
+  ],
+  "pushChannels": [
+    "install-progress",
+    "oauth-login-progress",
+    "chat-chunk",
+    "chat-reasoning-chunk",
+    "chat-done",
+    "context-menu-copy-chat",
+    "context-menu-select-bubble",
+    "chat-tool-progress",
+    "chat-usage",
+    "chat-error",
+    "update-available",
+    "update-download-progress",
+    "update-downloaded",
+    "update-error",
+    "menu-new-chat",
+    "menu-search-sessions"
+  ]
+}

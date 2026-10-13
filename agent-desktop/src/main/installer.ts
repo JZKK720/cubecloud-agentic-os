@@ -17,7 +17,7 @@ import {
 } from "./config";
 import { providerDoesNotNeedApiKey } from "./providers";
 import { getActiveProfileNameSync, profileHome, stripAnsi } from "./utils";
-import { setupAskpass, AskpassHandle } from "./askpass";
+import { setupAskpass, type AskpassHandle } from "./askpass";
 import { precacheSudoCredentials } from "./sudoCreds";
 import { HIDDEN_SUBPROCESS_OPTIONS } from "./process-options";
 import { resolveCommandOnPath } from "./agent-clis";
@@ -1383,13 +1383,11 @@ export function runHermesDump(): Promise<string> {
 //  Memory provider discovery
 // ────────────────────────────────────────────────────
 
-export interface MemoryProviderInfo {
-  name: string;
-  description: string;
-  installed: boolean;
-  active: boolean;
-  envVars: string[];
-}
+/** Back-compat re-export + local-scope import (interface now lives in
+ *  homer.ts — kernel side; this module's own discovery functions
+ *  still form signatures with it). */
+import type { MemoryProviderInfo } from "./homer";
+export type { MemoryProviderInfo } from "./homer";
 
 /**
  * Discover available memory providers by scanning the plugins directory

@@ -1,11 +1,11 @@
-import { execFile, ExecFileOptions } from "child_process";
+import { execFile, type ExecFileOptions } from "child_process";
 import { join } from "path";
 import {
   HERMES_HOME,
   HERMES_PYTHON,
   hermesCliArgs,
   getEnhancedPath,
-} from "./installer";
+} from "./homer";
 import { isRemoteOnlyMode } from "./hermes";
 import { getConnectionConfig } from "./config";
 import { sshRunKanban } from "./ssh-remote";

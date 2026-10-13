@@ -14,7 +14,7 @@ import { existsSync, readFileSync } from "fs";
 import { basename, extname } from "path";
 
 import { resolveCommandOnPath } from "./agent-clis";
-import { getEnhancedPath } from "./installer";
+import { getEnhancedPath } from "./homer";
 
 const execFileAsync = promisify(execFile);
 
