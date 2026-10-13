@@ -10,6 +10,7 @@ export default {
   memory: "记忆",
   tools: "工具",
   workspace: "代码工作区",
+  workspaceConsole: "AI 工作区",
   schedules: "计划任务",
   codegraph: "CodeGraph",
   everos: "EverOS",

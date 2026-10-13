@@ -10,6 +10,7 @@ export default {
   memory: "Memory",
   tools: "Tools",
   workspace: "Workspace",
+  workspaceConsole: "AI Workspace",
   schedules: "Schedules",
   codegraph: "CodeGraph",
   everos: "EverOS",

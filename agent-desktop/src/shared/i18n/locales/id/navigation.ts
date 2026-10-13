@@ -10,6 +10,7 @@ export default {
   memory: "Memori",
   tools: "Alat",
   workspace: "Ruang kerja",
+  workspaceConsole: "AI Workspace",
   schedules: "Jadwal",
   codegraph: "CodeGraph",
   everos: "EverOS",
