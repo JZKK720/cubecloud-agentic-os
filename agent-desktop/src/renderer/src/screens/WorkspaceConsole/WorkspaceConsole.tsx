@@ -1,94 +1,115 @@
-// WorkspaceConsole screen — the embedded AI Workspace (contract row C, P2).
+// WorkspaceConsole — the AI Workspace management surface (design §3,
+// mechanisms M1–M4). Five tabs over the shipped workspace IPC.
 //
-// Renders a hardened `<webview>` pointed at the loopback workspace origin
-// (from `workspaceConsoleUrl`). Security rules (all enforced):
-//   - Only loopback http origins (ports 1024–65535) — the same allow-list
-//     class as `isAllowedWebviewUrl`, which the main process already gates
-//     on `will-attach-webview`.
-//   - Guest keeps no preload; sandbox/contextIsolation/webSecurity are
-//     forced by `hardenWebviewPreferences` in the main process.
-//   - window.open denied; navigation gated via `hardenAttachedWebContents`.
+// There is NO <webview> here: the console manages the workspace
+// (lifecycle, provisioning, mirrors, governance) while the workspace's
+// own chat/file UI stays in the browser (openExternal). Session truth
+// is workspace-owned; this screen is a viewer plus the single approval
+// verdict write.
 //
-// The supervisor card on Tools owns lifecycle; this screen only embeds.
-//
-// Cubecloud original work (2026). Distributed under the repo's dual license
-// per `LICENSE`; see `BRANDING_AND_LICENSE.md` for provenance.
+// Cubecloud original work (2026). Distributed under the repo's dual
+// license per `LICENSE`; see `BRANDING_AND_LICENSE.md` for provenance.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ExternalLink, Refresh } from "../../assets/icons";
 import { useI18n } from "../../components/useI18n";
+import ApprovalsPanel from "./ApprovalsPanel";
+import OverviewPanel from "./OverviewPanel";
+import PoliciesPanel from "./PoliciesPanel";
+import SessionsPanel from "./SessionsPanel";
+import SettingsPanel from "./SettingsPanel";
+import { useWorkspaceConsoleData } from "./useWorkspaceConsoleData";
+
+type Tab = "overview" | "settings" | "sessions" | "policies" | "approvals";
+
+const TABS: Array<{ id: Tab; labelKey: string; fallback: string }> = [
+  { id: "overview", labelKey: "workspaceConsole.tabOverview", fallback: "Overview" },
+  { id: "settings", labelKey: "workspaceConsole.tabSettings", fallback: "Settings" },
+  { id: "sessions", labelKey: "workspaceConsole.tabSessions", fallback: "Sessions & agents" },
+  { id: "policies", labelKey: "workspaceConsole.tabPolicies", fallback: "Policies & sharing" },
+  { id: "approvals", labelKey: "workspaceConsole.tabApprovals", fallback: "Approvals" },
+];
 
 export default function WorkspaceConsole(): React.JSX.Element {
   const { t } = useI18n();
-  const [embedUrl, setEmbedUrl] = useState<string | null>(null);
-  const [reloadKey, setReloadKey] = useState(0);
-  const [loadFailed, setLoadFailed] = useState(false);
+  const [tab, setTab] = useState<Tab>("overview");
+  // Governance session id — set in Settings; drives the approvals inbox.
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const data = useWorkspaceConsoleData(sessionId);
 
-  useEffect(() => {
-    let cancelled = false;
-    window.hermesAPI
-      .workspaceConsoleUrl()
-      .then((url) => {
-        if (!cancelled) setEmbedUrl(url);
-      })
-      .catch(() => {
-        if (!cancelled) setLoadFailed(true);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const openExternal = useCallback(() => {
-    if (embedUrl) {
-      window.hermesAPI.openExternal(embedUrl);
+  const openExternal = useCallback((): void => {
+    if (data.probe?.baseUrl) {
+      window.hermesAPI.openExternal(data.probe.baseUrl);
     }
-  }, [embedUrl]);
-
-  if (loadFailed || !embedUrl) {
-    return (
-      <div className="screen workspace-console">
-        <h2>{t("workspaceConsole.title", { defaultValue: "AI Workspace" })}</h2>
-        <p className="workspace-console-hint">
-          {t("workspaceConsole.unavailable", {
-            defaultValue:
-              "The AI Workspace origin is unavailable. Start the server from Tools → AI Workspace.",
-          })}
-        </p>
-      </div>
-    );
-  }
+  }, [data.probe?.baseUrl]);
 
   return (
     <div className="screen workspace-console">
       <div className="workspace-console-header">
-        <h2>{t("workspaceConsole.title", { defaultValue: "AI Workspace" })}</h2>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div>
+          <h2>{t("workspaceConsole.title", { defaultValue: "AI Workspace" })}</h2>
+          <p className="workspace-console-subtitle">
+            {t("workspaceConsole.subtitle", {
+              defaultValue:
+                "Attach, supervise, configure, and govern the workspace. Chat and files stay in the workspace.",
+            })}
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
           <button
             className="btn btn-secondary"
-            onClick={() => setReloadKey((k) => k + 1)}
-            title={t("workspaceConsole.reload", { defaultValue: "Reload" })}
+            title={t("workspaceConsole.refresh", { defaultValue: "Refresh" })}
+            onClick={() => void data.reload()}
           >
             <Refresh size={14} />
-            {t("workspaceConsole.reload", { defaultValue: "Reload" })}
+            {t("workspaceConsole.refresh", { defaultValue: "Refresh" })}
           </button>
           <button
             className="btn btn-secondary"
+            title={t("workspaceConsole.openExternal", {
+              defaultValue: "Open in browser",
+            })}
             onClick={openExternal}
-            title={t("workspaceConsole.openExternal", { defaultValue: "Open in browser" })}
           >
             <ExternalLink size={14} />
             {t("workspaceConsole.openExternal", { defaultValue: "Open in browser" })}
           </button>
         </div>
       </div>
-      <webview
-        key={reloadKey}
-        src={embedUrl}
-        className="workspace-console-embed"
-        // Hardened in the main process via hardenWebviewPreferences
-        // (will-attach-webview) and hardenAttachedWebContents.
-      />
+
+      <div className="workspace-console-tabs">
+        {TABS.map((entry) => (
+          <button
+            key={entry.id}
+            className={`workspace-console-tab ${tab === entry.id ? "active" : ""}`}
+            onClick={() => setTab(entry.id)}
+          >
+            {t(entry.labelKey, { defaultValue: entry.fallback })}
+          </button>
+        ))}
+      </div>
+
+      {data.loading ? (
+        <p className="workspace-console-muted">
+          {t("common.loading", { defaultValue: "Loading…" })}
+        </p>
+      ) : (
+        <div className="workspace-console-panel">
+          {tab === "overview" && <OverviewPanel data={data} />}
+          {tab === "settings" && (
+            <SettingsPanel
+              data={data}
+              sessionId={sessionId}
+              onSessionId={setSessionId}
+            />
+          )}
+          {tab === "sessions" && <SessionsPanel data={data} />}
+          {tab === "policies" && <PoliciesPanel data={data} />}
+          {tab === "approvals" && (
+            <ApprovalsPanel data={data} sessionId={sessionId} />
+          )}
+        </div>
+      )}
     </div>
   );
 }

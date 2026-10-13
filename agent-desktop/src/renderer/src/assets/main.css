@@ -12814,3 +12814,131 @@ select:focus-visible {
 .firstrun-pill-fail {
   color: var(--error);
 }
+
+/* Workspace control panel (Phase C, design §3) — the AI Workspace
+   management surface. Mirrors the firstrun-* card language and uses
+   the shared design tokens. */
+.workspace-console {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.workspace-console-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.workspace-console-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.workspace-console-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 560px;
+}
+
+.workspace-console-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.workspace-console-tab {
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.workspace-console-tab:hover {
+  color: var(--text-primary);
+}
+
+.workspace-console-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-text);
+}
+
+.workspace-console-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.workspace-console-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workspace-console-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.workspace-console-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.workspace-console-muted {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.workspace-console-error {
+  color: var(--error);
+  font-size: 12px;
+}
+
+.workspace-console-log {
+  max-height: 160px;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: pre-wrap;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.workspace-console-input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.workspace-console-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
