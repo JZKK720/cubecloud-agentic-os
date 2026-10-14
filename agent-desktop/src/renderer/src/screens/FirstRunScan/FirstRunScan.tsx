@@ -30,6 +30,10 @@ import {
 } from "../../assets/icons";
 import cubecloudWordmark from "../../assets/cubecloud-wordmark.svg";
 import { useI18n } from "../../components/useI18n";
+import {
+  WORKSPACE_MANUAL_PROBE_TIMEOUT_MS,
+  WORKSPACE_PROBE_CLIENT_TIMEOUT_MS,
+} from "../../../../shared/workspace-probe-timing";
 
 type Phase = "scanning" | "found" | "not-found" | "connected";
 
@@ -47,7 +51,7 @@ const DOCKER_QUICKSTART_CMD =
 
 /** Per-probe timeout for the scan phase (doc §7: the not-found screen
  *  must always be reachable, so every probe is bounded). */
-const SCAN_TIMEOUT_MS = 3_000;
+const SCAN_TIMEOUT_MS = WORKSPACE_PROBE_CLIENT_TIMEOUT_MS;
 
 /** Session-list page size for the found-card count. The card shows the
  *  live first page as an activity indicator, not an audit total. */
@@ -181,7 +185,7 @@ function FirstRunScan({
       // so the user gets a real verdict instead of a silent attach.
       const result = await withTimeout(
         window.hermesAPI.workspaceProbe(raw),
-        SCAN_TIMEOUT_MS,
+        WORKSPACE_MANUAL_PROBE_TIMEOUT_MS,
       );
       if (!result.reachable) {
         setManualError(result.error || t("firstrun.invalidUrl"));

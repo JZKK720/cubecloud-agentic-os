@@ -14,7 +14,15 @@
 // (IPC handlers, renderer cards) get a stable `reachable` shape and render
 // state from it.
 
-export const CUBECLOUD_AGENT_PROBE_TIMEOUT_MS = 4_000;
+import {
+  WORKSPACE_PROBE_INNER_BUDGET_MS,
+  WORKSPACE_PROBE_REQUEST_TIMEOUT_MS,
+} from "../shared/workspace-probe-timing";
+/** Per-request timeout for one probe call. Re-exported for existing callers;
+ *  the value lives in the shared timing contract so the caller's own wait
+ *  budget can be derived from it rather than drifting (see
+ *  `src/shared/workspace-probe-timing.ts` for the bug that motivated this). */
+export const CUBECLOUD_AGENT_PROBE_TIMEOUT_MS = WORKSPACE_PROBE_REQUEST_TIMEOUT_MS;
 
 /** The workspace origin used when no explicit URL is supplied.
  *
@@ -201,9 +209,10 @@ export async function probeCubecloudAgent(
   try {
     return await withTimeoutRace(
       healthProbe(),
-      // Bounded: health window + slack. A server that accepts HTTP but
-      // never answers cannot hang the probe longer than this.
-      CUBECLOUD_AGENT_PROBE_TIMEOUT_MS + 2_000,
+      // The probe's own worst-case budget. Derived from the shared contract
+      // so it can never again exceed the caller's wait (the bug that made a
+      // healthy workspace render as "not found").
+      WORKSPACE_PROBE_INNER_BUDGET_MS,
     );
   } catch (err) {
     // Unreachable via race timeout too — degrade gracefully.
