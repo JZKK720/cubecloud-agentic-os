@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { GATEWAY_SECTIONS, GATEWAY_PLATFORMS } from "../../constants";
 import { useI18n } from "../../components/useI18n";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
 import BrandLogo from "../../components/common/BrandLogo";
 import { Container, RefreshCw, CheckCircle2 } from "lucide-react";
 import {
@@ -24,6 +25,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
   const platformStatusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const [confirmStopOpen, setConfirmStopOpen] = useState(false);
 
   const loadConfig = useCallback(async (): Promise<void> => {
     try {
@@ -49,13 +51,24 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
         const status = await window.hermesAPI.gatewayStatus();
         setGatewayRunning(status);
       } catch {
-        // Transient IPC failure — leave previous state
+        // Transient IPC failure �?leave previous state
       }
     }, 10000);
     return () => clearInterval(interval);
   }, []);
 
   async function toggleGateway(): Promise<void> {
+    // Stopping the gateway silently takes every enabled IM platform
+    // offline, so it is gated behind an explicit confirmation. Starting is
+    // non-destructive and stays one-click.
+    if (gatewayRunning) {
+      setConfirmStopOpen(true);
+      return;
+    }
+    await applyGatewayToggle();
+  }
+
+  async function applyGatewayToggle(): Promise<void> {
     if (gatewayStatusTimeoutRef.current) {
       clearTimeout(gatewayStatusTimeoutRef.current);
       gatewayStatusTimeoutRef.current = null;
@@ -304,8 +317,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
               {gatewayRunning ? t("common.stop") : t("common.start")}
             </button>
           </div>
-          <div className="settings-field-hint">{t("gateway.gatewayHint")}</div>
-          <div className="settings-field-hint settings-field-hint--secondary">
+          <div className="settings-field-hint">{t("gateway.gatewayHint")}</div>          <div className="settings-field-hint settings-field-hint--secondary">
             {t("gateway.platformsHint")}
           </div>
         </div>
@@ -413,7 +425,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
         )}
       </div>
 
-      {/* IM Channels (G1 — WeCom, DingTalk, Feishu) */}
+      {/* IM Channels (G1 �?WeCom, DingTalk, Feishu) */}
       <div className="settings-section">
         <div className="settings-section-title">
           {t("gateway.imChannels.title")}
@@ -426,7 +438,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             {
               key: "feishu",
               label: "Feishu (飞书)",
-              desc: "Lark Suite — WebSocket long-connection",
+              desc: "Lark Suite �?WebSocket long-connection",
               configFields: [
                 {
                   key: "IM_FEISHU_APP_ID",
@@ -443,7 +455,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             {
               key: "dingtalk",
               label: "DingTalk (钉钉)",
-              desc: "Stream Mode — WebSocket long-connection",
+              desc: "Stream Mode �?WebSocket long-connection",
               configFields: [
                 {
                   key: "IM_DINGTALK_APP_KEY",
@@ -460,7 +472,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             {
               key: "wecom",
               label: "WeCom (企业微信)",
-              desc: "HTTP callback — webhook + AES decrypt",
+              desc: "HTTP callback �?webhook + AES decrypt",
               configFields: [
                 {
                   key: "IM_WECOM_CORP_ID",
@@ -819,6 +831,21 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
           ))}
         </div>
       ))}
+
+      {confirmStopOpen && (
+        <ConfirmDialog
+          title={t("gateway.confirmStopTitle")}
+          body={t("gateway.confirmStopBody")}
+          confirmLabel={t("gateway.confirmStopConfirm")}
+          cancelLabel={t("common.cancel")}
+          destructive
+          onConfirm={() => {
+            setConfirmStopOpen(false);
+            void applyGatewayToggle();
+          }}
+          onCancel={() => setConfirmStopOpen(false)}
+        />
+      )}
     </div>
   );
 }

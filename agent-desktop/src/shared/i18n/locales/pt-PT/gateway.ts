@@ -5,6 +5,10 @@ export default {
   status: "Estado",
   running: "Em execução",
   stopped: "Parado",
+  confirmStopTitle: "Parar o gateway?",
+  confirmStopBody:
+    "Todas as plataformas de IM ativas perdem a ligação e o agente deixa de receber mensagens até o reiniciar.",
+  confirmStopConfirm: "Parar gateway",
   gatewayHint: "Liga o Hermes ao Telegram, Discord, Slack e outras plataformas",
   kicker: "Plano de controlo pós-configuração",
   heroSummary:

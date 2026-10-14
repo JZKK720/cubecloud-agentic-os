@@ -5,6 +5,10 @@ export default {
   status: "Estado",
   running: "En ejecución",
   stopped: "Detenido",
+  confirmStopTitle: "¿Detener la pasarela?",
+  confirmStopBody:
+    "Todas las plataformas de mensajería habilitadas perderán la conexión y el agente dejará de recibir mensajes hasta que la inicies de nuevo.",
+  confirmStopConfirm: "Detener pasarela",
   gatewayHint:
     "Conecta Hermes con Telegram, Discord, Slack y otras plataformas",
   kicker: "Plano de control post-configuración",

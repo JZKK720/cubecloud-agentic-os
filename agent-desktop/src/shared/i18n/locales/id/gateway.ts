@@ -5,6 +5,10 @@ export default {
   status: "Status",
   running: "Berjalan",
   stopped: "Berhenti",
+  confirmStopTitle: "Hentikan gateway?",
+  confirmStopBody:
+    "Semua platform IM yang aktif akan kehilangan koneksi dan agen berhenti menerima pesan sampai Anda memulainya kembali.",
+  confirmStopConfirm: "Hentikan gateway",
   gatewayHint:
     "Menghubungkan Hermes ke Telegram, Discord, Slack, dan platform lainnya",
   kicker: "Bidang kendali pasca-pengaturan",

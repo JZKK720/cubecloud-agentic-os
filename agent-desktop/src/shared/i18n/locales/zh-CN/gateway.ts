@@ -5,6 +5,10 @@ export default {
   status: "状态",
   running: "运行中",
   stopped: "已停止",
+  confirmStopTitle: "停止网关？",
+  confirmStopBody:
+    "所有已启用的 IM 平台都会断开连接，在你重新启动之前，代理将不再接收消息。",
+  confirmStopConfirm: "停止网关",
   gatewayHint: "将 Hermes 连接到 Telegram、Discord、Slack 等平台",
   kicker: "设置后的控制平面",
   heroSummary:

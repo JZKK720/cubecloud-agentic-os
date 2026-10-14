@@ -8769,6 +8769,16 @@ select:focus-visible {
   font-style: italic;
 }
 
+/* ConfirmDialog — destructive-action confirmation (ConfirmDialog.tsx).
+   Reuses the models-modal shell and its footer row; only the body copy
+   needs its own treatment. */
+.confirm-dialog-body {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
 /* Tighten the Models page heading so the subtitle hugs the title.
    Replaces an inline `style={{ marginBottom: 4 }}`. */
 .models-title-tight {

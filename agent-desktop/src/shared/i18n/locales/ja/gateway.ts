@@ -5,6 +5,10 @@ export default {
   status: "ステータス",
   running: "稼働中",
   stopped: "停止中",
+  confirmStopTitle: "ゲートウェイを停止しますか？",
+  confirmStopBody:
+    "有効なすべての IM プラットフォームが接続を失い、再度起動するまでエージェントはメッセージを受信しません。",
+  confirmStopConfirm: "ゲートウェイを停止",
   gatewayHint:
     "Hermes を Telegram・Discord・Slack などのプラットフォームに接続します",
   kicker: "セットアップ後のコントロールプレーン",
