@@ -1,6 +1,26 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+/** Wait for the REAL UI condition, not a proxy.
+ *
+ *  The screen renders only a spinner while `loading` is true, so
+ *  `.skills-tab` does not exist until the lists have resolved AND React has
+ *  re-rendered. Waiting on a mock (`expect(listBundledSkills).toHaveBeenCalled`)
+ *  is true the moment the effect fires — before that render — so the DOM query
+ *  that follows can find nothing and `fireEvent.click(undefined)` throws. That
+ *  is a load-sensitive race, not a product bug. Always wait on the element the
+ *  next step actually uses. */
+async function waitForBrowseTab(
+  container: HTMLElement,
+): Promise<HTMLButtonElement> {
+  let tab: HTMLButtonElement | null = null;
+  await waitFor(() => {
+    tab = container.querySelectorAll(".skills-tab")[1] as HTMLButtonElement | null;
+    expect(tab).toBeTruthy();
+  });
+  return tab!;
+}
+
 // useI18n needs an I18nProvider; pass-through `t` keeps the test focused
 // on the install-click → IPC contract.
 vi.mock("../../components/useI18n", () => ({
@@ -51,10 +71,9 @@ describe("Skills.tsx — Install button (issue #310 diagnosis)", () => {
       expect(listInstalledSkills).toHaveBeenCalled();
     });
 
-    // Default tab is "installed"; switch to Browse so the bundled card renders.
-    const tabs = view.container.querySelectorAll(".skills-tab");
-    const browseTab = tabs[1] as HTMLButtonElement;
-    expect(browseTab).toBeTruthy();
+    // Wait for the loaded UI (the tab only renders once `loading` clears),
+    // then switch to Browse so the bundled card renders.
+    const browseTab = await waitForBrowseTab(view.container);
     await act(async () => {
       fireEvent.click(browseTab);
     });
@@ -110,9 +129,7 @@ describe("Skills.tsx — Install button (issue #310 diagnosis)", () => {
     const view = render(<Skills />);
     await waitFor(() => expect(listBundledSkills).toHaveBeenCalled());
 
-    const browseTab = view.container.querySelectorAll(
-      ".skills-tab",
-    )[1] as HTMLButtonElement;
+    const browseTab = await waitForBrowseTab(view.container);
     await act(async () => {
       fireEvent.click(browseTab);
     });
