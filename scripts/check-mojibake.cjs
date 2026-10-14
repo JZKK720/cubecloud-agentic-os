@@ -33,7 +33,7 @@ const SKIP_FILES = new Set([
   // the drift report quotes CP1252 markers as illustrative examples
   path.join('docs', 'i18n', 'EN-ZH-DRIFT-REPORT.md'),
 ]);
-const EXTS = new Set(['.md', '.ts', '.tsx', '.js', '.cjs', '.mjs', '.json']);
+const EXTS = new Set(['.md', '.ts', '.tsx', '.js', '.cjs', '.mjs', '.json', '.css']);
 
 const CP1252_MARKERS = [
   'â€', 'â€™', 'â€œ', 'â€',
