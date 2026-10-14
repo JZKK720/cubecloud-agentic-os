@@ -121,15 +121,14 @@ export function createConsoleServer(
     try {
       const url = new URL(req.url ?? "/", "http://127.0.0.1");
       // ── Transport security gate ──────────────────────────────────
-      // Exempt: /health (the container HEALTHCHECK has no token) and
-      // /shim.js (loaded by the shell page before any credential exists;
-      // it must not carry the token, or a cross-origin <script src> could
-      // read it). Everything else is refused when cross-origin (the CSRF
-      // path a browser reaches without a preflight) or when the token is
-      // configured and neither the header nor the SameSite cookie matches.
-      const unauthenticated =
-        url.pathname === "/health" || url.pathname === "/shim.js";
-      if (!unauthenticated) {
+      // Applies to the DATA routes only, i.e. /api/*. The static shell
+      // (/, /shim.js, assets) must stay open: the SPA load is what
+      // establishes the SameSite bootstrap cookie, so gating it is a
+      // chicken-and-egg deadlock where the browser receives 401 instead of
+      // the app and no user can ever authenticate. /health is likewise open
+      // for the container HEALTHCHECK, which holds no credential.
+      const gated = url.pathname.startsWith("/api/");
+      if (gated) {
         if (!originAllowed(req)) {
           res.statusCode = 403;
           res.end(

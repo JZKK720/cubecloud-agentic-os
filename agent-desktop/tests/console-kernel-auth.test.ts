@@ -179,6 +179,42 @@ describe("console kernel transport security", () => {
     });
   });
 
+  it("keeps the shell HTML reachable WITHOUT a token", async () => {
+    // Regression guard. The gate must apply to the DATA routes (/api/*), not
+    // to the static shell: the SPA load is what establishes the SameSite
+    // cookie in the first place. Gating it is a chicken-and-egg deadlock —
+    // the browser gets a 401 instead of the app, and no user can ever
+    // authenticate. Caught live: `GET /` returned 401 against a real
+    // container.
+    await withKernel({ authToken: TOKEN }, async (base) => {
+      const res = await request(`${base}/`);
+      expect(res.status).not.toBe(401);
+      expect(res.status).not.toBe(403);
+    });
+  });
+
+  it("still sets the bootstrap cookie on the shell load", async () => {
+    await withKernel({ authToken: TOKEN }, async (base) => {
+      const res = await request(`${base}/`);
+      const setCookie = res.headers["set-cookie"];
+      const cookie = Array.isArray(setCookie) ? setCookie.join(";") : setCookie;
+      expect(cookie).toContain("console_token=");
+    });
+  });
+
+  it("gates the data routes (what actually matters)", async () => {
+    await withKernel({ authToken: TOKEN }, async (base) => {
+      // /api/* carries data and must stay gated.
+      expect(
+        (await request(`${base}/api/console/kernelHome`, { method: "POST", body: "[]" }))
+          .status,
+      ).toBe(401);
+      expect(
+        (await request(`${base}/api/events/chat`)).status,
+      ).toBe(401);
+    });
+  });
+
   it("still blocks cross-origin when no token is configured", async () => {
     // Backward-compatible mode: tokenless kernels keep working for local
     // tooling, but the CSRF hole must stay closed.
