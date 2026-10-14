@@ -51,7 +51,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
         const status = await window.hermesAPI.gatewayStatus();
         setGatewayRunning(status);
       } catch {
-        // Transient IPC failure �?leave previous state
+        // Transient IPC failure — leave previous state
       }
     }, 10000);
     return () => clearInterval(interval);
@@ -425,7 +425,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
         )}
       </div>
 
-      {/* IM Channels (G1 �?WeCom, DingTalk, Feishu) */}
+      {/* IM Channels (G1 — WeCom, DingTalk, Feishu) */}
       <div className="settings-section">
         <div className="settings-section-title">
           {t("gateway.imChannels.title")}
@@ -438,7 +438,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             {
               key: "feishu",
               label: "Feishu (飞书)",
-              desc: "Lark Suite �?WebSocket long-connection",
+              desc: "Lark Suite — WebSocket long-connection",
               configFields: [
                 {
                   key: "IM_FEISHU_APP_ID",
@@ -455,7 +455,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             {
               key: "dingtalk",
               label: "DingTalk (钉钉)",
-              desc: "Stream Mode �?WebSocket long-connection",
+              desc: "Stream Mode — WebSocket long-connection",
               configFields: [
                 {
                   key: "IM_DINGTALK_APP_KEY",
@@ -472,7 +472,7 @@ function Gateway({ profile }: { profile?: string }): React.JSX.Element {
             {
               key: "wecom",
               label: "WeCom (企业微信)",
-              desc: "HTTP callback �?webhook + AES decrypt",
+              desc: "HTTP callback — webhook + AES decrypt",
               configFields: [
                 {
                   key: "IM_WECOM_CORP_ID",

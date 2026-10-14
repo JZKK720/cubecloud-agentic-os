@@ -1,11 +1,11 @@
-// ConfirmDialog �?destructive-action confirmation.
+// ConfirmDialog — destructive-action confirmation.
 //
 // Why it exists: stopping the messaging gateway is a process-affecting,
 // operator-visible action, and the Gateway screen did it on a single click
 // with no confirmation. The gateway serves every enabled IM platform, so a
 // mis-click silently takes the operator's agent offline.
 //
-// The transport is non-forgeable since d70fcd5; this is the other half �?
+// The transport is non-forgeable since d70fcd5; this is the other half — 
 // an explicit intent check on the action that actually stops something.
 //
 // Follows the project's existing modal pattern (models-modal-overlay /
@@ -45,7 +45,7 @@ export function ConfirmDialog({
     cancelRef.current?.focus();
   }, []);
 
-  // Escape cancels �?the conventional "get me out of here" affordance.
+  // Escape cancels — the conventional "get me out of here" affordance.
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent): void {
       if (e.key === "Escape") onCancel();
