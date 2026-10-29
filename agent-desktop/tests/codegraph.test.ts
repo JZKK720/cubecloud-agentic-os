@@ -37,11 +37,14 @@ describe("CodeGraph workspace integration", () => {
     existsSyncSpy.mockReset();
   });
 
-  it("detects a Windows npm-style codegraph launcher and reads its version", async () => {
+  it("resolves the codegraph launcher and reads its version", async () => {
+    const isWindows = process.platform === "win32";
     spawnSyncSpy.mockReturnValue({
       error: null,
       status: 0,
-      stdout: "C:\\Users\\test\\AppData\\Roaming\\npm\\codegraph.cmd\r\n",
+      stdout: isWindows
+        ? "C:\\Users\\test\\AppData\\Roaming\\npm\\codegraph.cmd\r\n"
+        : "/usr/local/bin/codegraph\n",
     });
     execFileSpy.mockImplementation(
       (
@@ -56,17 +59,34 @@ describe("CodeGraph workspace integration", () => {
     const status = await getCodeGraphCliStatus();
 
     expect(status.installed).toBe(true);
-    expect(status.command).toContain("codegraph.cmd");
     expect(status.version).toBe("0.9.8");
     expect(execFileSpy).toHaveBeenCalledTimes(1);
-    expect(execFileSpy.mock.calls[0]?.[1]).toEqual(
-      expect.arrayContaining([
-        "/d",
-        "/s",
-        "/c",
-        expect.stringContaining("codegraph.cmd"),
-      ]),
+    // The lookup binary is platform-specific. Pinning it stops a
+    // Windows-only lookup from shipping silently on Linux.
+    expect(spawnSyncSpy.mock.calls[0]?.[0]).toBe(
+      isWindows ? "where.exe" : "which",
     );
+
+    if (isWindows) {
+      // A .cmd launcher only runs through cmd.exe with the /d /s /c prefix.
+      expect(status.command).toContain("codegraph.cmd");
+      expect(execFileSpy.mock.calls[0]?.[0]).toBe(
+        process.env.ComSpec || "cmd.exe",
+      );
+      expect(execFileSpy.mock.calls[0]?.[1]).toEqual(
+        expect.arrayContaining([
+          "/d",
+          "/s",
+          "/c",
+          expect.stringContaining("codegraph.cmd"),
+        ]),
+      );
+    } else {
+      // A POSIX executable is spawned directly with its args untouched.
+      expect(status.command).toBe("/usr/local/bin/codegraph");
+      expect(execFileSpy.mock.calls[0]?.[0]).toBe("/usr/local/bin/codegraph");
+      expect(execFileSpy.mock.calls[0]?.[1]).toEqual(["--version"]);
+    }
   });
 
   it("returns an uninitialized project status without spawning the CLI", async () => {
@@ -85,10 +105,13 @@ describe("CodeGraph workspace integration", () => {
   });
 
   it("installs CodeGraph globally through npm when requested", async () => {
+    const isWindows = process.platform === "win32";
     spawnSyncSpy.mockReturnValue({
       error: null,
       status: 0,
-      stdout: "C:\\Users\\test\\AppData\\Roaming\\npm\\npm.cmd\r\n",
+      stdout: isWindows
+        ? "C:\\Users\\test\\AppData\\Roaming\\npm\\npm.cmd\r\n"
+        : "/usr/local/bin/npm\n",
     });
     existsSyncSpy.mockReturnValue(false);
     execFileSpy.mockImplementation(
@@ -105,21 +128,34 @@ describe("CodeGraph workspace integration", () => {
 
     expect(result.success).toBe(true);
     expect(execFileSpy).toHaveBeenCalledTimes(2);
-    expect(execFileSpy.mock.calls[0]?.[1]).toEqual(
-      expect.arrayContaining([
-        "/d",
-        "/s",
-        "/c",
-        expect.stringContaining("npm.cmd"),
-      ]),
-    );
+    if (isWindows) {
+      expect(execFileSpy.mock.calls[0]?.[1]).toEqual(
+        expect.arrayContaining([
+          "/d",
+          "/s",
+          "/c",
+          expect.stringContaining("npm.cmd"),
+        ]),
+      );
+    } else {
+      // POSIX spawns npm directly, so the cmd.exe wrapper must be absent.
+      expect(execFileSpy.mock.calls[0]?.[0]).toBe("/usr/local/bin/npm");
+      expect(execFileSpy.mock.calls[0]?.[1]).toEqual([
+        "install",
+        "-g",
+        "@colbymchenry/codegraph@latest",
+      ]);
+    }
   });
 
   it("configures the Hermes target through CodeGraph install", async () => {
+    const isWindows = process.platform === "win32";
     spawnSyncSpy.mockReturnValue({
       error: null,
       status: 0,
-      stdout: "C:\\Users\\test\\AppData\\Roaming\\npm\\codegraph.cmd\r\n",
+      stdout: isWindows
+        ? "C:\\Users\\test\\AppData\\Roaming\\npm\\codegraph.cmd\r\n"
+        : "/usr/local/bin/codegraph\n",
     });
     execFileSpy.mockImplementation(
       (
@@ -137,12 +173,16 @@ describe("CodeGraph workspace integration", () => {
     expect(execFileSpy).toHaveBeenCalledTimes(1);
     expect(execFileSpy.mock.calls[0]?.[1]).toEqual(
       expect.arrayContaining([
-        "/d",
-        "/s",
-        "/c",
+        isWindows ? "/d" : "install",
         expect.stringContaining("--target=hermes"),
       ]),
     );
+    if (isWindows) {
+      expect(execFileSpy.mock.calls[0]?.[1]).toEqual(
+        expect.arrayContaining(["/s", "/c"]),
+      );
+    }
+    // The install must point CodeGraph at this profile's Hermes home.
     expect(
       (execFileSpy.mock.calls[0]?.[2] as { env?: Record<string, string> }).env
         ?.HERMES_HOME,

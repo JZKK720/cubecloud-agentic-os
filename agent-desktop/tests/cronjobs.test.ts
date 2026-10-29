@@ -26,9 +26,14 @@ vi.mock("../src/main/hermes", () => ({
   getRemoteAuthHeader: () => ({}),
 }));
 
-vi.mock("../src/main/installer", () => ({
+// cronjobs.ts imports these from "./homer" (the module was renamed from
+// installer). Mocking the old path left this a dead mock, so the real
+// platform-branching hermesCliArgs() ran and the assertion only held on
+// Windows.
+vi.mock("../src/main/homer", () => ({
   HERMES_HOME: "C:/hermes",
   HERMES_PYTHON: "C:/hermes/hermes-agent/venv/Scripts/pythonw.exe",
+  HERMES_SCRIPT: "C:/hermes/hermes-agent/venv/bin/hermes",
   hermesCliArgs: (args: string[] = []) => ["-m", "hermes_cli.main", ...args],
 }));
 
