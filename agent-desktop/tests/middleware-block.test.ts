@@ -42,7 +42,9 @@ describe("tool policy middleware — blocking", () => {
 
   it("require_approval with an approver returning deny blocks", async () => {
     const onRequireApproval = vi.fn().mockResolvedValue("deny");
-    const mw = createToolPolicyMiddleware([approvalRule], { onRequireApproval });
+    const mw = createToolPolicyMiddleware([approvalRule], {
+      onRequireApproval,
+    });
     const result = await mw(ctxFor("git push origin main"));
 
     expect(onRequireApproval).toHaveBeenCalledOnce();
@@ -52,14 +54,18 @@ describe("tool policy middleware — blocking", () => {
 
   it("require_approval with an approver returning approve does NOT block", async () => {
     const onRequireApproval = vi.fn().mockResolvedValue("approve");
-    const mw = createToolPolicyMiddleware([approvalRule], { onRequireApproval });
+    const mw = createToolPolicyMiddleware([approvalRule], {
+      onRequireApproval,
+    });
     const result = await mw(ctxFor("git push origin main"));
     expect(result.blocked).toBeUndefined();
   });
 
   it("require_approval with a THROWING approver blocks (fail closed)", async () => {
     const onRequireApproval = vi.fn().mockRejectedValue(new Error("ipc down"));
-    const mw = createToolPolicyMiddleware([approvalRule], { onRequireApproval });
+    const mw = createToolPolicyMiddleware([approvalRule], {
+      onRequireApproval,
+    });
     const result = await mw(ctxFor("git push origin main"));
     expect(result.blocked).toBeDefined();
   });
@@ -74,7 +80,11 @@ describe("tool policy middleware — blocking", () => {
   it("a policy evaluation error blocks instead of allowing (fail closed)", async () => {
     // An invalid regex makes RegExp construction/evaluation throw.
     const badRule = {
-      pattern: { test: () => { throw new Error("boom"); } } as unknown as RegExp,
+      pattern: {
+        test: () => {
+          throw new Error("boom");
+        },
+      } as unknown as RegExp,
       decision: "deny" as const,
       label: "broken-rule",
     };
@@ -92,7 +102,9 @@ describe("before_model chain — short-circuit", () => {
       label: "second",
     });
 
-    const chain = createBeforeModelChain(undefined, { toolPolicyRules: [denyRule] });
+    const chain = createBeforeModelChain(undefined, {
+      toolPolicyRules: [denyRule],
+    });
     chain.push(second);
 
     const results: string[] = [];

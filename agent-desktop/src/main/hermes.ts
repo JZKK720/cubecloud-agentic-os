@@ -278,7 +278,8 @@ function isOpenClawModelsResponse(body: string): boolean {
     return Array.isArray(parsed.data)
       ? parsed.data.some(
           (entry) =>
-            typeof entry?.id === "string" && /^openclaw(?:\/|$)/i.test(entry.id),
+            typeof entry?.id === "string" &&
+            /^openclaw(?:\/|$)/i.test(entry.id),
         )
       : false;
   } catch {
@@ -372,10 +373,7 @@ export async function diagnoseRemoteConnection(
     }
   })();
   if (expectedRuntime === "raven" || (useCache && isRavenPort)) {
-    const ravenResponse = await requestText(
-      `${baseUrl}/health`,
-      headers,
-    );
+    const ravenResponse = await requestText(`${baseUrl}/health`, headers);
     if (
       ravenResponse?.statusCode === 200 &&
       (ravenResponse.body.includes('"runtime":"raven"') ||
@@ -487,7 +485,9 @@ export async function detectGatewayRuntime(
   return diagnostic.ok ? diagnostic.runtime : null;
 }
 
-function resolveOpenClawModelOverride(model: string | undefined): string | null {
+function resolveOpenClawModelOverride(
+  model: string | undefined,
+): string | null {
   const trimmed = (model || "").trim();
   if (!trimmed || trimmed === "hermes-agent") {
     return null;
@@ -1102,9 +1102,7 @@ function sendMessageViaApi(
     // to skip the async work entirely when Headroom is off;
     // this keeps the hot path zero-cost for users who
     // haven't opted in.
-    const hasNonTextContent = messages.some((m) =>
-      Array.isArray(m.content),
-    );
+    const hasNonTextContent = messages.some((m) => Array.isArray(m.content));
     try {
       const headroomCfg = await loadHeadroomConfig(HERMES_HOME);
       if (headroomCfg.enabled && !hasNonTextContent) {
@@ -1114,12 +1112,10 @@ function sendMessageViaApi(
         // Coerce local messages to Headroom's stricter
         // shape. Content is always a string here because
         // we gated on `hasNonTextContent` above.
-        const headroomInput: HeadroomChatMessage[] = messages.map(
-          (m) => ({
-            role: m.role as HeadroomChatMessage["role"],
-            content: m.content as string,
-          }),
-        );
+        const headroomInput: HeadroomChatMessage[] = messages.map((m) => ({
+          role: m.role as HeadroomChatMessage["role"],
+          content: m.content as string,
+        }));
         const result = await compressForChat(headroomInput, {
           model: selectedModel,
           providerHint,
@@ -1196,15 +1192,10 @@ function sendMessageViaApi(
       const chain = createBeforeModelChain(_harnessRegistry, {
         memoryRecallFn,
       });
-      const middlewareMessages: MiddlewareChatMessage[] = messages.map(
-        (m) => ({
-          role: m.role as MiddlewareChatMessage["role"],
-          content:
-            typeof m.content === "string"
-              ? m.content
-              : null,
-        }),
-      );
+      const middlewareMessages: MiddlewareChatMessage[] = messages.map((m) => ({
+        role: m.role as MiddlewareChatMessage["role"],
+        content: typeof m.content === "string" ? m.content : null,
+      }));
       const providerHint = isOllamaLikeProvider(mc.provider)
         ? `local:${mc.provider}`
         : mc.provider || "openai";
@@ -1402,105 +1393,106 @@ function sendMessageViaApi(
   }
 
   function startPreparedRequest(): void {
-      const chatUrl = `${apiUrl}/v1/chat/completions`;
-      const requester =
-        chatUrl.startsWith("https") ? https.request : http.request;
-      const req = requester(
-        chatUrl,
-        {
-          method: "POST",
-          headers,
-          signal: controller.signal,
-          timeout: 120000,
-        },
-        (res) => {
-          const sid = res.headers["x-hermes-session-id"];
-          if (sid && typeof sid === "string") sessionId = sid;
+    const chatUrl = `${apiUrl}/v1/chat/completions`;
+    const requester = chatUrl.startsWith("https")
+      ? https.request
+      : http.request;
+    const req = requester(
+      chatUrl,
+      {
+        method: "POST",
+        headers,
+        signal: controller.signal,
+        timeout: 120000,
+      },
+      (res) => {
+        const sid = res.headers["x-hermes-session-id"];
+        if (sid && typeof sid === "string") sessionId = sid;
 
-          if (res.statusCode !== 200) {
-            let errBody = "";
-            res.on("data", (d) => {
-              errBody += d.toString();
-            });
-            res.on("end", () => {
-              try {
-                const err = JSON.parse(errBody);
-                finish(err.error?.message || `API error ${res.statusCode}`);
-              } catch {
-                finish(
-                  `API server returned ${res.statusCode}: ${errBody.slice(0, 200)}`,
-                );
-              }
-            });
-            return;
-          }
-
-          let buffer = "";
-
-          /** Parse an SSE block which may contain `event:` and `data:` lines. */
-          function processSseBlock(block: string): boolean {
-            let eventType = "";
-            let dataLine = "";
-            for (const line of block.split("\n")) {
-              if (line.startsWith("event: ")) {
-                eventType = line.slice(7).trim();
-              } else if (line.startsWith("data: ")) {
-                dataLine = line.slice(6);
-              }
+        if (res.statusCode !== 200) {
+          let errBody = "";
+          res.on("data", (d) => {
+            errBody += d.toString();
+          });
+          res.on("end", () => {
+            try {
+              const err = JSON.parse(errBody);
+              finish(err.error?.message || `API error ${res.statusCode}`);
+            } catch {
+              finish(
+                `API server returned ${res.statusCode}: ${errBody.slice(0, 200)}`,
+              );
             }
-            if (!dataLine) return false;
-            if (eventType) {
-              // Custom event (e.g. hermes.tool.progress) — never signals [DONE]
-              processCustomEvent(eventType, dataLine);
-              return false;
+          });
+          return;
+        }
+
+        let buffer = "";
+
+        /** Parse an SSE block which may contain `event:` and `data:` lines. */
+        function processSseBlock(block: string): boolean {
+          let eventType = "";
+          let dataLine = "";
+          for (const line of block.split("\n")) {
+            if (line.startsWith("event: ")) {
+              eventType = line.slice(7).trim();
+            } else if (line.startsWith("data: ")) {
+              dataLine = line.slice(6);
             }
-            return processSseData(dataLine);
           }
+          if (!dataLine) return false;
+          if (eventType) {
+            // Custom event (e.g. hermes.tool.progress) — never signals [DONE]
+            processCustomEvent(eventType, dataLine);
+            return false;
+          }
+          return processSseData(dataLine);
+        }
 
-          res.on("data", (chunk: Buffer) => {
-            buffer += chunk.toString();
-            const parts = buffer.split("\n\n");
-            buffer = parts.pop() || "";
+        res.on("data", (chunk: Buffer) => {
+          buffer += chunk.toString();
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
 
-            for (const part of parts) {
+          for (const part of parts) {
+            if (processSseBlock(part)) return;
+          }
+        });
+
+        res.on("end", () => {
+          if (buffer.trim()) {
+            for (const part of buffer.split("\n\n")) {
               if (processSseBlock(part)) return;
             }
-          });
+          }
+          // Signal completion — even when no content was received
+          if (!hasContent && !lastError) {
+            probeRealError();
+            return;
+          }
+          finish(hasContent ? undefined : lastError);
+        });
 
-          res.on("end", () => {
-            if (buffer.trim()) {
-              for (const part of buffer.split("\n\n")) {
-                if (processSseBlock(part)) return;
-              }
-            }
-            // Signal completion — even when no content was received
-            if (!hasContent && !lastError) {
-              probeRealError();
-              return;
-            }
-            finish(hasContent ? undefined : lastError);
-          });
+        res.on("error", (err) => {
+          if (err.message === "aborted" || err.name === "AbortError") return;
+          finish(`Stream error: ${err.message}`);
+        });
+      },
+    );
 
-          res.on("error", (err) => {
-            if (err.message === "aborted" || err.name === "AbortError") return;
-            finish(`Stream error: ${err.message}`);
-          });
-        },
+    req.on("error", (err) => {
+      if (err.name === "AbortError") return;
+      finish(`API request failed: ${err.message}`);
+    });
+    req.on("timeout", () => {
+      req.destroy();
+      finish(
+        "API request timed out. Check the SSH tunnel and remote runtime gateway.",
       );
+    });
 
-      req.on("error", (err) => {
-        if (err.name === "AbortError") return;
-        finish(`API request failed: ${err.message}`);
-      });
-      req.on("timeout", () => {
-        req.destroy();
-        finish(
-          "API request timed out. Check the SSH tunnel and remote runtime gateway.",
-        );
-      });
-
-      req.write(bodyBuf);
-      req.end();
+    req.write(bodyBuf);
+    req.end();
   }
 
   const cachedRuntime = isRemoteMode() ? getCachedGatewayRuntime(apiUrl) : null;
