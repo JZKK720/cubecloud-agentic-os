@@ -74,6 +74,15 @@ export interface AfterModelContext {
   hermesHome: string;
 }
 
+/** A reason a before_model middleware refused to proceed. */
+export interface BeforeModelBlock {
+  /** Human-readable reason (the matched rule's label, or a failure note). */
+  reason: string;
+  /** The policy rule that triggered the block, when there was one. */
+  rule?: string;
+  decision: "deny" | "require_approval" | "error";
+}
+
 /** Result of a before_model middleware. */
 export interface BeforeModelResult {
   /** The (possibly modified) messages. */
@@ -84,6 +93,11 @@ export interface BeforeModelResult {
   label: string;
   /** Optional stats block (e.g. Headroom token savings). */
   stats?: Record<string, unknown>;
+  /**
+   * Present when this middleware refuses to let the request proceed.
+   * A caller MUST NOT dispatch the model request when this is set.
+   */
+  blocked?: BeforeModelBlock;
 }
 
 /** Result of an after_model middleware. */
@@ -417,8 +431,19 @@ const DEFAULT_TOOL_POLICY_RULES: CommandPolicyRule[] = [
   { pattern: /\bcurl\s+.*\|\s*(bash|sh)\b/i, decision: "require_approval", label: "approve:curl-pipe" },
 ];
 
+export interface ToolPolicyDeps {
+  /**
+   * Ask a human whether a `require_approval` match may proceed.
+   * Absent, throwing, or resolving to anything but "approve" blocks the
+   * request. This is deliberately fail-closed: a missing approver is a
+   * wiring bug, not permission.
+   */
+  onRequireApproval?: (ctx: BeforeModelContext) => Promise<"approve" | "deny">;
+}
+
 export function createToolPolicyMiddleware(
   customRules?: CommandPolicyRule[],
+  deps: ToolPolicyDeps = {},
 ): BeforeModelMiddleware {
   const policy = createCommandPolicy(customRules ?? DEFAULT_TOOL_POLICY_RULES);
 
@@ -437,18 +462,54 @@ export function createToolPolicyMiddleware(
         return { messages: ctx.messages, applied: false, label: "tool-policy:allow" };
       }
 
-      // Annotate the context — don't block, just report
+      if (result.decision === "deny") {
+        return {
+          messages: ctx.messages,
+          applied: true,
+          label: `tool-policy:deny:${result.label}`,
+          stats: { decision: "deny", rule: result.label },
+          blocked: { reason: result.label, rule: result.label, decision: "deny" },
+        };
+      }
+
+      // require_approval — the only branch that may proceed, and only on an
+      // explicit "approve". Every other outcome blocks.
+      const decision = deps.onRequireApproval
+        ? await deps.onRequireApproval(ctx).catch(() => "deny" as const)
+        : ("deny" as const);
+
+      if (decision === "approve") {
+        return {
+          messages: ctx.messages,
+          applied: true,
+          label: `tool-policy:approval-approved:${result.label}`,
+          stats: { decision: "require_approval", rule: result.label, approved: true },
+        };
+      }
+
       return {
         messages: ctx.messages,
         applied: true,
-        label: `tool-policy:${result.decision}:${result.label}`,
-        stats: {
-          decision: result.decision,
+        label: `tool-policy:approval-${decision}:${result.label}`,
+        stats: { decision: "require_approval", rule: result.label, approved: false },
+        blocked: {
+          reason: result.label,
           rule: result.label,
+          decision: "require_approval",
         },
       };
-    } catch {
-      return { messages: ctx.messages, applied: false, label: "tool-policy:error" };
+    } catch (err) {
+      // Fail CLOSED. A policy that cannot be evaluated must not wave the
+      // request through — that is how a gate silently becomes a no-op.
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "tool-policy:error",
+        blocked: {
+          reason: err instanceof Error ? err.message : "policy evaluation failed",
+          decision: "error",
+        },
+      };
     }
   };
 }
@@ -544,22 +605,39 @@ export function createReflectionMiddleware(
 export async function runBeforeModelChain(
   ctx: BeforeModelContext,
   middlewares: BeforeModelMiddleware[],
-): Promise<{ messages: ChatMessage[]; results: BeforeModelResult[] }> {
+): Promise<{
+  messages: ChatMessage[];
+  results: BeforeModelResult[];
+  /** Present when a middleware refused to proceed. Callers MUST NOT dispatch. */
+  blocked?: BeforeModelBlock;
+}> {
   let messages = ctx.messages;
   const results: BeforeModelResult[] = [];
 
   for (const mw of middlewares) {
+    let result: BeforeModelResult;
     try {
-      const result = await mw({ ...ctx, messages });
-      messages = result.messages;
-      results.push(result);
-    } catch {
-      // Middleware failure must never break the chat path.
+      result = await mw({ ...ctx, messages });
+    } catch (err) {
+      // Middleware failure must never break the chat path — but it also must
+      // not silently permit. The tool-policy middleware catches its own
+      // errors and blocks; any other middleware failing is treated as no-op.
       results.push({
         messages,
         applied: false,
         label: `${mw.name ?? "middleware"}:error`,
+        stats: { error: err instanceof Error ? err.message : String(err) },
       });
+      continue;
+    }
+
+    messages = result.messages;
+    results.push(result);
+
+    // STOP on a block. Previously the loop ran every middleware and returned
+    // no value a caller could test, so a denial could not prevent dispatch.
+    if (result.blocked) {
+      return { messages, results, blocked: result.blocked };
     }
   }
 
@@ -607,10 +685,14 @@ export function createBeforeModelChain(
     memoryRecallFn?: () => Array<{ content: string; label: string }>;
     compactionSummaryFn?: (entries: TurnEntry[]) => Promise<string>;
     toolPolicyRules?: CommandPolicyRule[];
+    /** Passed through to the tool-policy middleware. Absent ⇒ fail closed. */
+    onRequireApproval?: (ctx: BeforeModelContext) => Promise<"approve" | "deny">;
   },
 ): BeforeModelMiddleware[] {
   return [
-    createToolPolicyMiddleware(options?.toolPolicyRules),
+    createToolPolicyMiddleware(options?.toolPolicyRules, {
+      onRequireApproval: options?.onRequireApproval,
+    }),
     createMemoryInjectMiddleware(options?.memoryRecallFn),
     headroomCompressMiddleware,
     createCompactionMiddleware(options?.compactionSummaryFn),
