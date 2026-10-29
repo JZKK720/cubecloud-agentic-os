@@ -54,144 +54,24 @@ export function createSteeringQueue(): SteeringQueue {
   };
 }
 
-// ── ApprovalInbox ─────────────────────────────────────────
+// ── ApprovalInbox (moved) ─────────────────────────────────
+//
+// The synchronous store that used to live here could record a decision but
+// could never make anything WAIT for one — see approval/inbox.ts for the
+// deferred-resolution replacement. Re-exported so existing imports keep
+// working; new code should import from "./approval/inbox".
 
-/** The status of an approval entry. */
-export type ApprovalStatus = "pending" | "approved" | "denied" | "expired";
-
-/** A single approval entry in the inbox. */
-export interface ApprovalEntry {
-  id: string;
-  sessionId: string;
-  toolName: string;
-  command: string;
-  reason: string;
-  status: ApprovalStatus;
-  createdAt: number;
-  resolvedAt: number | null;
-  /** Auto-expire timeout in ms (undefined = no auto-expire). */
-  timeoutMs?: number;
-}
-
-/** Input for creating a new approval entry. */
-export interface ApprovalInput {
-  sessionId: string;
-  toolName: string;
-  command: string;
-  reason: string;
-  timeoutMs?: number;
-}
-
-/** The approval inbox interface. */
-export interface ApprovalInbox {
-  /** Create a new pending approval entry. */
-  create(input: ApprovalInput): ApprovalEntry;
-  /** Approve a pending entry. Returns false if not found or not pending. */
-  approve(id: string): boolean;
-  /** Deny a pending entry. Returns false if not found or not pending. */
-  deny(id: string): boolean;
-  /** Get an entry by id (regardless of status). */
-  get(id: string): ApprovalEntry | undefined;
-  /** List entries. By default only pending; use includeAll for all. */
-  list(includeAll?: boolean): ApprovalEntry[];
-  /** Check if there are any pending approvals. */
-  hasPending(): boolean;
-  /** Clear all entries. */
-  clear(): void;
-}
-
-/** Create an approval inbox. */
-export function createApprovalInbox(): ApprovalInbox {
-  const _entries = new Map<string, ApprovalEntry>();
-  const _timers = new Map<string, ReturnType<typeof setTimeout>>();
-
-  function expireIfNeeded(entry: ApprovalEntry): void {
-    if (entry.timeoutMs && entry.status === "pending") {
-      const timer = setTimeout(() => {
-        const current = _entries.get(entry.id);
-        if (current && current.status === "pending") {
-          _entries.set(entry.id, {
-            ...current,
-            status: "expired",
-            resolvedAt: Date.now(),
-          });
-        }
-        _timers.delete(entry.id);
-      }, entry.timeoutMs);
-      _timers.set(entry.id, timer);
-    }
-  }
-
-  return {
-    create(input: ApprovalInput): ApprovalEntry {
-      const id = `approval-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const entry: ApprovalEntry = {
-        id,
-        sessionId: input.sessionId,
-        toolName: input.toolName,
-        command: input.command,
-        reason: input.reason,
-        status: "pending",
-        createdAt: Date.now(),
-        resolvedAt: null,
-        timeoutMs: input.timeoutMs,
-      };
-      _entries.set(id, entry);
-      expireIfNeeded(entry);
-      return entry;
-    },
-
-    approve(id: string): boolean {
-      const entry = _entries.get(id);
-      if (!entry || entry.status !== "pending") return false;
-      const timer = _timers.get(id);
-      if (timer) clearTimeout(timer);
-      _timers.delete(id);
-      _entries.set(id, {
-        ...entry,
-        status: "approved",
-        resolvedAt: Date.now(),
-      });
-      return true;
-    },
-
-    deny(id: string): boolean {
-      const entry = _entries.get(id);
-      if (!entry || entry.status !== "pending") return false;
-      const timer = _timers.get(id);
-      if (timer) clearTimeout(timer);
-      _timers.delete(id);
-      _entries.set(id, {
-        ...entry,
-        status: "denied",
-        resolvedAt: Date.now(),
-      });
-      return true;
-    },
-
-    get(id: string): ApprovalEntry | undefined {
-      return _entries.get(id);
-    },
-
-    list(includeAll?: boolean): ApprovalEntry[] {
-      const all = Array.from(_entries.values());
-      if (includeAll) return all;
-      return all.filter((e) => e.status === "pending");
-    },
-
-    hasPending(): boolean {
-      for (const entry of _entries.values()) {
-        if (entry.status === "pending") return true;
-      }
-      return false;
-    },
-
-    clear(): void {
-      for (const timer of _timers.values()) {
-        clearTimeout(timer);
-      }
-      _timers.clear();
-      _entries.clear();
-    },
-  };
-}
+export {
+  createApprovalInbox,
+  getApprovalInbox,
+  setApprovalInbox,
+  __resetApprovalInboxForTests,
+} from "./approval/inbox";
+export type {
+  ApprovalDecision,
+  ApprovalEntry,
+  ApprovalInput,
+  ApprovalInbox,
+  ApprovalStatus,
+  ApprovalInboxOptions,
+} from "./approval/inbox";

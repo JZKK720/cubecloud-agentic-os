@@ -150,7 +150,9 @@ describe("ApprovalInbox", () => {
     return new Promise<void>((resolve) => {
       setTimeout(() => {
         const expired = inbox.get(entry.id);
-        expect(expired?.status).toBe("expired");
+        // Renamed "expired" -> "timeout": a timed-out approval is a denial,
+        // and the status must say so rather than implying a passive lapse.
+        expect(expired?.status).toBe("timeout");
         expect(inbox.hasPending()).toBe(false);
         resolve();
       }, 60);

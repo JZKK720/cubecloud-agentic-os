@@ -241,10 +241,11 @@ import {
   getApiServerKey,
 } from "./config";
 import { profileHome } from "./utils";
-import {
-  createApprovalInbox,
-  type ApprovalInbox,
-} from "./steering-inbox";
+// The approval inbox lives in ./approval/inbox so that every consumer —
+// the IPC handlers here and the harness that requests a decision — shares
+// ONE process-wide instance. A second store here would mean a decision
+// recorded over IPC never reached the waiting turn.
+import { getApprovalInbox } from "./approval/inbox";
 import {
   listSessions,
   getSessionMessages,
@@ -1065,13 +1066,9 @@ function setupIPC(): void {
   // created in the inbox. The renderer polls for pending entries and
   // shows an approval dialog. The user approves/denies, and the chat
   // stream resumes or cancels accordingly.
-  let _approvalInbox: ApprovalInbox | null = null;
-  function getApprovalInbox(): ApprovalInbox {
-    if (!_approvalInbox) {
-      _approvalInbox = createApprovalInbox();
-    }
-    return _approvalInbox;
-  }
+  //
+  // `getApprovalInbox` is imported from ./approval/inbox — do NOT create a
+  // second instance here. The harness awaits the same object.
 
   ipcMain.handle("approval-create", (_e, input: {
     sessionId: string;
