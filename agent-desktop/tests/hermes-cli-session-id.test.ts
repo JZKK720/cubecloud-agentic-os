@@ -127,12 +127,24 @@ vi.mock("child_process", () => ({
   }),
 }));
 
-vi.mock("../src/main/installer", () => ({
+// hermes.ts imports HERMES_HOME/HERMES_PYTHON/hermesCliArgs/getEnhancedPath
+// from "./homer" (renamed from installer). Mocking the old path left this a
+// dead mock: the real HERMES_PYTHON was used, existsSync() found no Python
+// interpreter on CI, and startGateway() bailed out at
+// "Cannot start: Python interpreter not found" before spawning.
+vi.mock("../src/main/homer", () => ({
   HERMES_HOME: TEST_HOME,
-  HERMES_PYTHON: process.execPath,
   HERMES_REPO: process.cwd(),
+  HERMES_VENV: TEST_HOME,
+  HERMES_PYTHON: process.execPath,
+  HERMES_SCRIPT: process.execPath,
+  HERMES_ENV_FILE: `${TEST_HOME}/.env`,
+  HERMES_CONFIG_FILE: `${TEST_HOME}/config.yaml`,
+  HERMES_AUTH_FILE: `${TEST_HOME}/auth.json`,
   hermesCliArgs: (extra?: string[]) => ["/dev/null", ...(extra || [])],
   getEnhancedPath: () => process.env.PATH || "",
+  expectedEnvKeyForModel: () => undefined,
+  checkOpenClawExists: () => ({ exists: false }),
 }));
 
 vi.mock("../src/main/config", () => ({
