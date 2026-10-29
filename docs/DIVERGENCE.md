@@ -91,6 +91,35 @@ An earlier attempt to prove this used a `git worktree`, which reported
 `@cubecloud/platform-core`, so that run proved nothing and is superseded by
 the same-directory checkout above.
 
+### CI: `desktop-shell-checks` was already red on main
+
+The Linux CI job reports **6** failures, not 2 — 4 more than Windows shows,
+because `codegraph` and `cronjobs` are platform-sensitive. None are from
+this work:
+
+Run on `main` at `9230943` (the commit this branch merged from), job
+`38530129025`, failed with **exactly the same 6 tests, same names**:
+
+| # | Test file | Test |
+|---|---|---|
+| 1 | `codegraph.test.ts` | detects a Windows npm-style codegraph launcher and reads its version |
+| 2 | `codegraph.test.ts` | installs CodeGraph globally through npm when requested |
+| 3 | `codegraph.test.ts` | configures the Hermes target through CodeGraph install |
+| 4 | `cronjobs.test.ts` | passes the prompt as the cron create positional argument before flags |
+| 5 | `hermes-cli-session-id.test.ts` | waits for a cold gateway to become API-ready instead of falling back to CLI |
+| 6 | `hermes-cli-session-id.test.ts` | re-checks health when a previously-ready local gateway is restarted cold |
+
+Tests 1–4 are Linux-vs-Windows assumptions: `codegraph` expects Windows
+launcher paths, and `cronjobs` expects `-m hermes_cli.main` while the
+runner resolves the shell wrapper `/home/runner/.hermes/hermes-agent/hermes`.
+Tests 5–6 are the cold-gateway timing pair.
+
+`gh run list --branch main` shows the last 6 runs on `main` **all**
+`failure`. This branch therefore does not regress CI; it inherits a red
+baseline. Fixing the four platform-sensitive tests is a separate piece of
+work and is **not** claimed here.
+
+
 
 ## Test-quality note
 
