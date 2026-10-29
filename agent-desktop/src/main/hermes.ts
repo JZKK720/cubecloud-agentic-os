@@ -29,6 +29,7 @@ import { loadHeadroomConfig } from "./headroom";
 import {
   runBeforeModelChain,
   createBeforeModelChain,
+  type BeforeModelBlock,
   type ChatMessage as MiddlewareChatMessage,
 } from "./chat-middleware";
 import { createHarnessRegistry } from "./harnesses/registry";
@@ -978,6 +979,21 @@ function sendMessageViaApi(
     }
   }
 
+  /**
+   * Surface a preflight block to the user instead of sending the request.
+   *
+   * The message is deliberately plain: a blocked request is a policy outcome,
+   * not a failure, and the user should be able to see which rule stopped it.
+   */
+  function blockRequest(blocked: BeforeModelBlock): void {
+    const detail = blocked.rule ? ` (${blocked.rule})` : "";
+    finish(
+      blocked.decision === "require_approval"
+        ? `This request needs your approval before it can run${detail}. Nothing was sent.`
+        : `This request was blocked by a security rule${detail}. Nothing was sent.`,
+    );
+  }
+
   function buildRequestBody(stream: boolean): Buffer {
     const body = JSON.stringify({
       model: selectedModel,
@@ -1009,7 +1025,9 @@ function sendMessageViaApi(
     return Buffer.from(body, "utf-8");
   }
 
-  async function finalizePreparedRequest(runtimeOverride?: GatewayRuntimeKind | null): Promise<void> {
+  async function finalizePreparedRequest(
+    runtimeOverride?: GatewayRuntimeKind | null,
+  ): Promise<BeforeModelBlock | null> {
     if (runtimeOverride) {
       runtimeKind = runtimeOverride;
     }
@@ -1187,7 +1205,7 @@ function sendMessageViaApi(
       const providerHint = isOllamaLikeProvider(mc.provider)
         ? `local:${mc.provider}`
         : mc.provider || "openai";
-      const { results } = await runBeforeModelChain(
+      const { results, blocked } = await runBeforeModelChain(
         {
           messages: middlewareMessages,
           model: selectedModel,
@@ -1197,11 +1215,25 @@ function sendMessageViaApi(
         chain,
       );
       middlewareStats = results;
+
+      // A block must stop the request BEFORE it is built or sent. Returning
+      // here (rather than only recording stats) is the gate.
+      if (blocked) {
+        return blocked;
+      }
     } catch {
-      // Middleware chain failure must never break the chat path.
+      // The chain itself failing must not silently permit the request.
+      // runBeforeModelChain already converts individual middleware errors
+      // into non-blocking results, so reaching this catch means something
+      // structural broke — fail closed and let the caller surface it.
+      return {
+        reason: "policy chain failed",
+        decision: "error",
+      };
     }
 
     headers["Content-Length"] = String(bodyBuf.length);
+    return null;
   }
 
   function probeRealError(): void {
@@ -1471,12 +1503,14 @@ function sendMessageViaApi(
   const cachedRuntime = isRemoteMode() ? getCachedGatewayRuntime(apiUrl) : null;
   if (!isRemoteMode() || cachedRuntime !== null) {
     void (async () => {
-      await finalizePreparedRequest(cachedRuntime);
+      const blocked = await finalizePreparedRequest(cachedRuntime);
+      if (blocked) return blockRequest(blocked);
       startPreparedRequest();
     })();
   } else {
     void (async () => {
-      await finalizePreparedRequest(null);
+      const blocked = await finalizePreparedRequest(null);
+      if (blocked) return blockRequest(blocked);
       startPreparedRequest();
       void detectGatewayRuntime(apiUrl).catch(() => {
         /* best effort cache warm for the next send */
