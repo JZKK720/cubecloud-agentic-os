@@ -84,6 +84,17 @@ export function createHermesHarness(): Harness {
           flush();
         },
         onToolProgress: undefined,
+        // The gateway reports tool progress after it has run the tool. We
+        // forward it as an observation event; approval decisions happen in the
+        // preflight policy chain, not here.
+        onToolApprovalObserved: (toolName: string, command: string) => {
+          queue.push({
+            type: "approval_observed",
+            toolName,
+            command,
+          } as never);
+          flush();
+        },
       };
 
       // Call sendMessage — it returns a Promise<ChatHandle> with abort()

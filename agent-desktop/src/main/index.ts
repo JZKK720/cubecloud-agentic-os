@@ -246,6 +246,7 @@ import { profileHome } from "./utils";
 // ONE process-wide instance. A second store here would mean a decision
 // recorded over IPC never reached the waiting turn.
 import { getApprovalInbox } from "./approval/inbox";
+import { createApprovalIpc } from "./approval/ipc";
 import {
   listSessions,
   getSessionMessages,
@@ -1068,7 +1069,9 @@ function setupIPC(): void {
   // stream resumes or cancels accordingly.
   //
   // `getApprovalInbox` is imported from ./approval/inbox — do NOT create a
-  // second instance here. The harness awaits the same object.
+  // second instance here. The harness awaits the same object. Handler bodies
+  // delegate to createApprovalIpc so they are testable without Electron.
+  const approvalIpc = createApprovalIpc(getApprovalInbox());
 
   ipcMain.handle("approval-create", (_e, input: {
     sessionId: string;
@@ -1076,18 +1079,18 @@ function setupIPC(): void {
     command: string;
     reason: string;
     timeoutMs?: number;
-  }) => getApprovalInbox().create(input));
+  }) => approvalIpc.create(input));
   ipcMain.handle("approval-approve", (_e, id: string) =>
-    getApprovalInbox().approve(id),
+    approvalIpc.approve(id),
   );
   ipcMain.handle("approval-deny", (_e, id: string) =>
-    getApprovalInbox().deny(id),
+    approvalIpc.deny(id),
   );
   ipcMain.handle("approval-list", (_e, includeAll?: boolean) =>
-    getApprovalInbox().list(includeAll),
+    approvalIpc.list(includeAll),
   );
   ipcMain.handle("approval-has-pending", () =>
-    getApprovalInbox().hasPending(),
+    approvalIpc.hasPending(),
   );
 
   ipcMain.handle("list-runtime-providers", () => listRuntimeProviders());
@@ -1301,6 +1304,25 @@ function setupIPC(): void {
           },
           onToolProgress: (tool) => {
             safeSend("chat-tool-progress", tool);
+          },
+          // Post-hoc observation: the gateway already ran the tool. We record
+          // it so the transcript can say "ran without pre-approval" instead of
+          // implying nothing happened. This is NOT the gate — see
+          // finalizePreparedRequest for the preflight policy check.
+          onToolApprovalObserved: (toolName, command) => {
+            const entry = getApprovalInbox().create({
+              sessionId: resumeSessionId || "",
+              toolName,
+              command,
+              reason: "observed after execution (gateway did not pre-authorise)",
+              timeoutMs: 0,
+            });
+            safeSend("chat-tool-approval-observed", {
+              id: entry.id,
+              toolName,
+              command,
+              postHoc: true,
+            });
           },
           onUsage: (usage) => {
             safeSend("chat-usage", usage);

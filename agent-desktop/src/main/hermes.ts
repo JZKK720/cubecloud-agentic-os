@@ -717,11 +717,14 @@ export interface ChatCallbacks {
   onToolProgress?: (tool: string) => void;
   /** Called when a tool call in the SSE stream requires human approval
    *  (per the tool policy rules). The callback receives the tool name
-   *  and the command/parameters. The caller should create an approval
-   *  entry in the ApprovalInbox and wait for the user's decision before
-   *  allowing the tool to proceed. If the callback is not provided,
-   *  tool calls proceed without approval (backward compatibility). */
-  onToolApprovalRequired?: (toolName: string, command: string) => void;
+   *  and the command/parameters.
+   *
+   *  IMPORTANT: this fires AFTER the gateway has already run the tool. It is
+   *  an observation for the transcript, not a gate — awaiting it cannot stop
+   *  anything. The real gate is the before_model policy chain, which decides
+   *  before a request is sent. Named `onToolApprovalObserved` so no caller
+   *  can mistake it for permission control. */
+  onToolApprovalObserved?: (toolName: string, command: string) => void;
   onUsage?: (usage: {
     promptTokens: number;
     completionTokens: number;
@@ -1307,15 +1310,15 @@ function sendMessageViaApi(
           cb.onToolProgress(emoji ? `${emoji} ${label}` : label);
         }
         // Fire approval callback if the tool requires it.
-        // The Hermes gateway can include `requires_approval: true` in
-        // the tool progress event when the tool matches an approval rule.
-        // The desktop creates an ApprovalInbox entry and waits for the
-        // user's decision. The gateway itself doesn't block — it's the
-        // desktop's responsibility to intercept and pause if needed.
-        if (payload.requires_approval && cb.onToolApprovalRequired) {
+        // The gateway includes `requires_approval: true` in the tool
+        // progress event when the tool matched an approval rule. The tool has
+        // ALREADY RUN at this point — this is post-hoc telemetry, not a gate.
+        // We surface it so the transcript can say "ran without pre-approval",
+        // which is the truth. See onToolApprovalObserved's doc comment.
+        if (payload.requires_approval && cb.onToolApprovalObserved) {
           const toolName = payload.tool || label || "unknown";
           const command = payload.command || payload.args || "";
-          cb.onToolApprovalRequired(toolName, command);
+          cb.onToolApprovalObserved(toolName, command);
         }
       } catch {
         /* malformed — skip */

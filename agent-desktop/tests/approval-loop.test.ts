@@ -1,121 +1,135 @@
-// approval-loop.test.ts — round-trip test for the P8 approval loop (G1).
+// approval-loop.test.ts — behavioural regression test for the approval loop.
 //
-// Proves the human-in-the-loop approval feature is wired end-to-end:
-//   1. Main process registers the 5 approval IPC handlers.
-//   2. Preload exposes the 5 matching bridge methods.
-//   3. hermes.ts fires onToolApprovalRequired when a tool progress event
-//      carries requires_approval: true.
-//   4. The ApprovalDialog component exists and calls approve/deny.
-//   5. Chat.tsx renders the dialog and passes entries.
+// REPLACES the previous version, which asserted that certain strings appeared
+// in source files:
 //
-// This is the "trust loop" regression test: tool call → badge → dialog →
-// approve/deny. If any link breaks, the approval feature is a dead end.
+//     expect(indexSrc).toContain(`ipcMain.handle("${ch}"`);
+//     expect(preloadSrc).toContain(`ipcRenderer.invoke("${ch}"`);
+//
+// That test would have passed if every handler were `() => {}` — it certified
+// wiring that could not work, and it is why the feature shipped un-gated.
+//
+// This version invokes the code and asserts observed behaviour. The gate
+// itself (deny stops a request) is proven in middleware-block.test.ts,
+// chat-gate.test.ts and hermes-preflight.test.ts; this file covers the
+// decision store and its end-to-end round-trip.
 
-import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { describe, it, expect, beforeEach } from "vitest";
+import {
+  createApprovalInbox,
+  getApprovalInbox,
+  __resetApprovalInboxForTests,
+  type ApprovalInbox,
+} from "../src/main/approval/inbox";
+import { createApprovalIpc } from "../src/main/approval/ipc";
 
-const ROOT = join(__dirname, "..");
-const indexSrc = readFileSync(join(ROOT, "src/main/index.ts"), "utf-8");
-const preloadSrc = readFileSync(join(ROOT, "src/preload/index.ts"), "utf-8");
-const hermesSrc = readFileSync(join(ROOT, "src/main/hermes.ts"), "utf-8");
-const chatSrc = readFileSync(
-  join(ROOT, "src/renderer/src/screens/Chat/Chat.tsx"),
-  "utf-8",
-);
-const dialogPath = join(
-  ROOT,
-  "src/renderer/src/screens/Chat/ApprovalDialog.tsx",
-);
+const input = {
+  sessionId: "session-1",
+  toolName: "shell",
+  command: "rm -rf build",
+  reason: "destructive command",
+};
 
-describe("Approval loop — IPC wiring", () => {
-  const approvalChannels = [
-    "approval-create",
-    "approval-approve",
-    "approval-deny",
-    "approval-list",
-    "approval-has-pending",
-  ];
+describe("approval loop — store round-trip", () => {
+  let inbox: ApprovalInbox;
 
-  it("main process registers all 5 approval IPC handlers", () => {
-    for (const ch of approvalChannels) {
-      expect(indexSrc).toContain(`"${ch}"`);
-    }
+  beforeEach(() => {
+    inbox = createApprovalInbox({ timeoutMs: 60_000 });
   });
 
-  it("preload exposes all 5 approval bridge methods", () => {
-    const bridges = [
-      "approvalCreate",
-      "approvalApprove",
-      "approvalDeny",
-      "approvalList",
-      "approvalHasPending",
-    ];
-    for (const b of bridges) {
-      expect(preloadSrc).toContain(`${b}:`);
-    }
+  it("create → pending → approve resolves the waiting caller", async () => {
+    const entry = inbox.create(input);
+    expect(entry.status).toBe("pending");
+
+    const waiting = inbox.awaitDecision(entry.id);
+    inbox.approve(entry.id);
+
+    await expect(waiting).resolves.toBe("approve");
+    expect(inbox.get(entry.id)!.status).toBe("approved");
+    expect(inbox.hasPending()).toBe(false);
   });
 
-  it("every approval preload invoke has a matching main handler", () => {
-    for (const ch of approvalChannels) {
-      expect(indexSrc).toContain(`ipcMain.handle("${ch}"`);
-      expect(preloadSrc).toContain(`ipcRenderer.invoke("${ch}"`);
-    }
-  });
-});
+  it("create → pending → deny resolves the waiting caller", async () => {
+    const entry = inbox.create(input);
+    const waiting = inbox.awaitDecision(entry.id);
+    inbox.deny(entry.id);
 
-describe("Approval loop — SSE callback wiring", () => {
-  it("ChatCallbacks declares onToolApprovalRequired", () => {
-    expect(hermesSrc).toContain("onToolApprovalRequired");
+    await expect(waiting).resolves.toBe("deny");
+    expect(inbox.get(entry.id)!.status).toBe("denied");
   });
 
-  it("processCustomEvent checks requires_approval on tool progress", () => {
-    expect(hermesSrc).toContain("requires_approval");
-    expect(hermesSrc).toContain("cb.onToolApprovalRequired");
-  });
-});
+  it("pending entries are listable while unresolved and gone after", () => {
+    const a = inbox.create(input);
+    inbox.create(input);
+    expect(inbox.list()).toHaveLength(2);
 
-describe("Approval loop — UI wiring (G1)", () => {
-  it("ApprovalDialog component exists", () => {
-    expect(existsSync(dialogPath)).toBe(true);
-  });
-
-  it("ApprovalDialog calls approvalApprove and approvalDeny", () => {
-    const dialogSrc = readFileSync(dialogPath, "utf-8");
-    expect(dialogSrc).toContain("window.hermesAPI.approvalApprove");
-    expect(dialogSrc).toContain("window.hermesAPI.approvalDeny");
-  });
-
-  it("Chat.tsx imports and renders ApprovalDialog", () => {
-    expect(chatSrc).toContain('import { ApprovalDialog }');
-    expect(chatSrc).toContain("<ApprovalDialog");
-  });
-
-  it("Chat.tsx polls approvalList and renders the dialog on demand", () => {
-    expect(chatSrc).toContain("window.hermesAPI.approvalList");
-    expect(chatSrc).toContain("showApprovalDialog");
-  });
-
-  it("ChatHeader badge opens the approval dialog", () => {
-    expect(chatSrc).toContain("onOpenApprovals");
-    const headerSrc = readFileSync(
-      join(ROOT, "src/renderer/src/screens/Chat/ChatHeader.tsx"),
-      "utf-8",
-    );
-    expect(headerSrc).toContain("onOpenApprovals");
-    // The badge is a button that triggers the dialog
-    expect(headerSrc).toContain("onClick={onOpenApprovals}");
+    inbox.approve(a.id);
+    expect(inbox.list()).toHaveLength(1);
+    expect(inbox.list(true)).toHaveLength(2);
   });
 });
 
-describe("Approval loop — middleware wiring (G2)", () => {
-  it("hermes.ts passes memoryRecallFn into createBeforeModelChain", () => {
-    expect(hermesSrc).toContain("memoryRecallFn");
-    expect(hermesSrc).toContain("createBeforeModelChain(_harnessRegistry, {");
+describe("approval loop — IPC surface", () => {
+  let inbox: ApprovalInbox;
+  let ipc: ReturnType<typeof createApprovalIpc>;
+
+  beforeEach(() => {
+    inbox = createApprovalInbox({ timeoutMs: 60_000 });
+    ipc = createApprovalIpc(inbox);
   });
 
-  it("hermes.ts reads profile memory for the recall source", () => {
-    expect(hermesSrc).toContain('import { readMemory } from "./memory"');
-    expect(hermesSrc).toContain("readMemory()");
+  it("create returns an id the renderer can act on immediately", () => {
+    const entry = ipc.create(input);
+    expect(entry.id).toBeTruthy();
+    // The renderer needs the id BEFORE it can render approve/deny buttons.
+    expect(inbox.get(entry.id)).toBeDefined();
+  });
+
+  it("approve via IPC resolves a decision the harness is awaiting", async () => {
+    const entry = ipc.create(input);
+    const waiting = inbox.awaitDecision(entry.id);
+
+    expect(ipc.approve(entry.id)).toBe(true);
+    await expect(waiting).resolves.toBe("approve");
+  });
+
+  it("deny via IPC resolves a decision the harness is awaiting", async () => {
+    const entry = ipc.create(input);
+    const waiting = inbox.awaitDecision(entry.id);
+
+    expect(ipc.deny(entry.id)).toBe(true);
+    await expect(waiting).resolves.toBe("deny");
+  });
+
+  it("hasPending reflects the decision", () => {
+    const entry = ipc.create(input);
+    expect(ipc.hasPending()).toBe(true);
+    ipc.approve(entry.id);
+    expect(ipc.hasPending()).toBe(false);
+  });
+
+  it("a second decision on the same id is refused", () => {
+    const entry = ipc.create(input);
+    expect(ipc.approve(entry.id)).toBe(true);
+    expect(ipc.deny(entry.id)).toBe(false);
+  });
+});
+
+describe("approval loop — singleton sharing", () => {
+  beforeEach(() => __resetApprovalInboxForTests());
+
+  it("IPC and the requesting harness observe the same store", async () => {
+    // Two independent getApprovalInbox() calls must return the SAME object.
+    // If they did not, a decision recorded over IPC would never reach the
+    // waiting turn — a silently broken gate.
+    const ipcSide = getApprovalInbox();
+    const harnessSide = getApprovalInbox();
+    expect(ipcSide).toBe(harnessSide);
+
+    const entry = ipcSide.create(input);
+    const waiting = harnessSide.awaitDecision(entry.id);
+    createApprovalIpc(ipcSide).approve(entry.id);
+
+    await expect(waiting).resolves.toBe("approve");
   });
 });
