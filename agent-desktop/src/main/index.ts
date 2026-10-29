@@ -293,10 +293,12 @@ import {
   getApiServerKey,
 } from "./config";
 import { profileHome } from "./utils";
-import {
-  createApprovalInbox,
-  type ApprovalInbox,
-} from "./steering-inbox";
+// The approval inbox lives in ./approval/inbox so that every consumer —
+// the IPC handlers here and the harness that requests a decision — shares
+// ONE process-wide instance. A second store here would mean a decision
+// recorded over IPC never reached the waiting turn.
+import { getApprovalInbox } from "./approval/inbox";
+import { createApprovalIpc } from "./approval/ipc";
 import {
   listSessions,
   getSessionMessages,
@@ -1087,25 +1089,27 @@ function setupIPC(): void {
 
   ipcMain.handle("discover-agent-clis", () => discoverAgentClis());
 
-  ipcMain.handle("discover-browser-harness", () =>
-    discoverBrowserHarness(),
-  );
+  ipcMain.handle("discover-browser-harness", () => discoverBrowserHarness());
 
-  ipcMain.handle("browser-harness-doctor", () =>
-    runBrowserHarnessDoctor(),
-  );
+  ipcMain.handle("browser-harness-doctor", () => runBrowserHarnessDoctor());
 
   ipcMain.handle("list-all-outputs", (_e, profile?: string) =>
     listAllOutputs(profile),
   );
-  ipcMain.handle("list-thread-outputs", (_e, threadId: string, profile?: string) =>
-    listThreadOutputs(threadId, profile),
+  ipcMain.handle(
+    "list-thread-outputs",
+    (_e, threadId: string, profile?: string) =>
+      listThreadOutputs(threadId, profile),
   );
-  ipcMain.handle("ensure-thread-output-dir", (_e, threadId: string, profile?: string) =>
-    ensureThreadOutputDir(threadId, profile),
+  ipcMain.handle(
+    "ensure-thread-output-dir",
+    (_e, threadId: string, profile?: string) =>
+      ensureThreadOutputDir(threadId, profile),
   );
-  ipcMain.handle("clear-thread-outputs", (_e, threadId: string, profile?: string) =>
-    clearThreadOutputs(threadId, profile),
+  ipcMain.handle(
+    "clear-thread-outputs",
+    (_e, threadId: string, profile?: string) =>
+      clearThreadOutputs(threadId, profile),
   );
 
   // ── Swarm IPC handlers (G2) ─────────────────────────────
@@ -1119,7 +1123,10 @@ function setupIPC(): void {
       // middleware chain. For now, a simple stub.
       const stubRouter = {
         async *runTurn(_sessionId: string, input: { message: string }) {
-          yield { type: "text" as const, content: `subagent result: ${input.message}` };
+          yield {
+            type: "text" as const,
+            content: `subagent result: ${input.message}`,
+          };
           yield { type: "done" as const, sessionId: _sessionId };
         },
         getActiveProvider: () => "hermes",
@@ -1181,33 +1188,33 @@ function setupIPC(): void {
   // created in the inbox. The renderer polls for pending entries and
   // shows an approval dialog. The user approves/denies, and the chat
   // stream resumes or cancels accordingly.
-  let _approvalInbox: ApprovalInbox | null = null;
-  function getApprovalInbox(): ApprovalInbox {
-    if (!_approvalInbox) {
-      _approvalInbox = createApprovalInbox();
-    }
-    return _approvalInbox;
-  }
+  //
+  // `getApprovalInbox` is imported from ./approval/inbox — do NOT create a
+  // second instance here. The harness awaits the same object. Handler bodies
+  // delegate to createApprovalIpc so they are testable without Electron.
+  const approvalIpc = createApprovalIpc(getApprovalInbox());
 
-  ipcMain.handle("approval-create", (_e, input: {
-    sessionId: string;
-    toolName: string;
-    command: string;
-    reason: string;
-    timeoutMs?: number;
-  }) => getApprovalInbox().create(input));
+  ipcMain.handle(
+    "approval-create",
+    (
+      _e,
+      input: {
+        sessionId: string;
+        toolName: string;
+        command: string;
+        reason: string;
+        timeoutMs?: number;
+      },
+    ) => approvalIpc.create(input),
+  );
   ipcMain.handle("approval-approve", (_e, id: string) =>
-    getApprovalInbox().approve(id),
+    approvalIpc.approve(id),
   );
-  ipcMain.handle("approval-deny", (_e, id: string) =>
-    getApprovalInbox().deny(id),
-  );
+  ipcMain.handle("approval-deny", (_e, id: string) => approvalIpc.deny(id));
   ipcMain.handle("approval-list", (_e, includeAll?: boolean) =>
-    getApprovalInbox().list(includeAll),
+    approvalIpc.list(includeAll),
   );
-  ipcMain.handle("approval-has-pending", () =>
-    getApprovalInbox().hasPending(),
-  );
+  ipcMain.handle("approval-has-pending", () => approvalIpc.hasPending());
 
   ipcMain.handle("list-runtime-providers", () => listRuntimeProviders());
 
@@ -1421,6 +1428,26 @@ function setupIPC(): void {
           onToolProgress: (tool) => {
             safeSend("chat-tool-progress", tool);
           },
+          // Post-hoc observation: the gateway already ran the tool. We record
+          // it so the transcript can say "ran without pre-approval" instead of
+          // implying nothing happened. This is NOT the gate — see
+          // finalizePreparedRequest for the preflight policy check.
+          onToolApprovalObserved: (toolName, command) => {
+            const entry = getApprovalInbox().create({
+              sessionId: resumeSessionId || "",
+              toolName,
+              command,
+              reason:
+                "observed after execution (gateway did not pre-authorise)",
+              timeoutMs: 0,
+            });
+            safeSend("chat-tool-approval-observed", {
+              id: entry.id,
+              toolName,
+              command,
+              postHoc: true,
+            });
+          },
           onUsage: (usage) => {
             safeSend("chat-usage", usage);
           },
@@ -1554,20 +1581,20 @@ function setupIPC(): void {
   // list available models, and dispatch sandbox tasks. The bearer
   // token is passed from the renderer's connection form and is
   // never persisted or logged.
-  ipcMain.handle(
-    "ironclaw-probe",
-    (_event, url: string, token?: string) =>
-      probeIronClawGateway(url, token),
+  ipcMain.handle("ironclaw-probe", (_event, url: string, token?: string) =>
+    probeIronClawGateway(url, token),
   );
-  ipcMain.handle(
-    "ironclaw-models",
-    (_event, url: string, token?: string) =>
-      listIronClawModels(url, token),
+  ipcMain.handle("ironclaw-models", (_event, url: string, token?: string) =>
+    listIronClawModels(url, token),
   );
   ipcMain.handle(
     "ironclaw-dispatch",
-    (_event, url: string, token: string | undefined, task: { model: string; message: string; contextFolder?: string }) =>
-      dispatchSandboxTask(url, token, task),
+    (
+      _event,
+      url: string,
+      token: string | undefined,
+      task: { model: string; message: string; contextFolder?: string },
+    ) => dispatchSandboxTask(url, token, task),
   );
 
   // V2.10.66 — Agent-Reach internet capability status probe.
@@ -1740,8 +1767,10 @@ function setupIPC(): void {
   ipcMain.handle("wiki-read-index", (_event, profile?: string) =>
     readWikiIndex(profile),
   );
-  ipcMain.handle("wiki-write-index", (_event, content: string, profile?: string) =>
-    writeWikiIndex(content, profile),
+  ipcMain.handle(
+    "wiki-write-index",
+    (_event, content: string, profile?: string) =>
+      writeWikiIndex(content, profile),
   );
   ipcMain.handle("wiki-read-log", (_event, profile?: string) =>
     readWikiLog(profile),
@@ -1792,7 +1821,11 @@ function setupIPC(): void {
       profile?: string,
     ): Promise<{
       success: boolean;
-      conversion?: ReturnType<typeof convertFileToMarkdown> extends Promise<infer T> ? T : never;
+      conversion?: ReturnType<typeof convertFileToMarkdown> extends Promise<
+        infer T
+      >
+        ? T
+        : never;
       relPath?: string;
       size?: number;
       error?: string;
@@ -1868,12 +1901,9 @@ function setupIPC(): void {
       return convertFileToMarkdown(filePath);
     },
   );
-  ipcMain.handle(
-    "is-markitdown-available",
-    (): { available: boolean } => ({
-      available: isMarkitdownAvailable(),
-    }),
-  );
+  ipcMain.handle("is-markitdown-available", (): { available: boolean } => ({
+    available: isMarkitdownAvailable(),
+  }));
 
   // Design Dials (Step 5 of the harvest rollout). The Welcome
   // screen lets the user adjust three numbers (variance, motion,
@@ -1886,11 +1916,8 @@ function setupIPC(): void {
   );
   ipcMain.handle(
     "set-design-dials",
-    (
-      _event,
-      dials: Partial<DesignDials>,
-      profile?: string,
-    ): DesignDials => setDesignDials(dials, profile),
+    (_event, dials: Partial<DesignDials>, profile?: string): DesignDials =>
+      setDesignDials(dials, profile),
   );
 
   // Careful (Step 9 of the V2 rollout, ported from gstack's /careful).
@@ -1904,12 +1931,10 @@ function setupIPC(): void {
   );
   ipcMain.handle(
     "careful-find-in-body",
-    (_event, body: string): string | null =>
-      findDestructiveCommandInBody(body),
+    (_event, body: string): string | null => findDestructiveCommandInBody(body),
   );
-  ipcMain.handle(
-    "careful-is-destructive",
-    (_event, command: string): boolean => isDestructive(command),
+  ipcMain.handle("careful-is-destructive", (_event, command: string): boolean =>
+    isDestructive(command),
   );
 
   // /learn (Step 10 of the V2 rollout, ported from gstack's
@@ -1918,9 +1943,8 @@ function setupIPC(): void {
   // decisions. The renderer shows recent / search / stats /
   // export / prune / manual-add screens; this IPC is the
   // thin wrapper.
-  ipcMain.handle(
-    "learnings-read",
-    (_event, profile?: string): Learning[] => readLearnings(profile),
+  ipcMain.handle("learnings-read", (_event, profile?: string): Learning[] =>
+    readLearnings(profile),
   );
   ipcMain.handle(
     "learnings-search",
@@ -1932,10 +1956,8 @@ function setupIPC(): void {
     (_event, profile?: string): LearningStats =>
       statsLearnings(readLearnings(profile)),
   );
-  ipcMain.handle(
-    "learnings-export",
-    (_event, profile?: string): string =>
-      exportLearningsAsMarkdown(readLearnings(profile)),
+  ipcMain.handle("learnings-export", (_event, profile?: string): string =>
+    exportLearningsAsMarkdown(readLearnings(profile)),
   );
   ipcMain.handle(
     "learnings-find-stale",
@@ -1972,8 +1994,11 @@ function setupIPC(): void {
   // kept entries on demand. See retro.ts for the heuristics.
   ipcMain.handle(
     "retro-summarize",
-    (_event, profile?: string, lookback?: number): ReturnType<typeof summarizeRetro> =>
-      summarizeRetro(profile, lookback),
+    (
+      _event,
+      profile?: string,
+      lookback?: number,
+    ): ReturnType<typeof summarizeRetro> => summarizeRetro(profile, lookback),
   );
   ipcMain.handle(
     "retro-build-context",
@@ -1982,15 +2007,11 @@ function setupIPC(): void {
   );
   ipcMain.handle(
     "retro-commit",
-    (
-      _event,
-      proposals: RetroLearning[],
-      profile?: string,
-    ): Learning[] => commitRetro(proposals, profile),
+    (_event, proposals: RetroLearning[], profile?: string): Learning[] =>
+      commitRetro(proposals, profile),
   );
-  ipcMain.handle(
-    "retro-export",
-    (_event, profile?: string): string => exportRetroMarkdown(profile),
+  ipcMain.handle("retro-export", (_event, profile?: string): string =>
+    exportRetroMarkdown(profile),
   );
 
   // V2.2 — /triage (gstack). Run a triage pass on a batch of
@@ -2132,15 +2153,12 @@ function setupIPC(): void {
       return sshGetSkillContent(conn.ssh, skillPath);
     return getSkillContent(skillPath);
   });
-  ipcMain.handle(
-    "get-desktop-bundled-skill-path",
-    (_event, name: string) => {
-      // Local-only: desktop-bundled skills live on the user's machine
-      // next to the app, not on a remote gateway.
-      if (getConnectionConfig().mode === "ssh") return null;
-      return getDesktopBundledSkillPath(name);
-    },
-  );
+  ipcMain.handle("get-desktop-bundled-skill-path", (_event, name: string) => {
+    // Local-only: desktop-bundled skills live on the user's machine
+    // next to the app, not on a remote gateway.
+    if (getConnectionConfig().mode === "ssh") return null;
+    return getDesktopBundledSkillPath(name);
+  });
   ipcMain.handle(
     "install-skill",
     (_event, identifier: string, _profile?: string) => {
@@ -2317,15 +2335,15 @@ function setupIPC(): void {
   // thrown exception.
   ipcMain.handle(
     "plans-parse",
-    (_event, title: string, markdown: string): Plan => parsePlan(title, markdown),
+    (_event, title: string, markdown: string): Plan =>
+      parsePlan(title, markdown),
   );
   ipcMain.handle(
     "plans-save",
     (_event, plan: Plan, profile?: string): Plan => savePlan(plan, profile),
   );
-  ipcMain.handle(
-    "plans-list",
-    (_event, profile?: string): Plan[] => listPlans(profile),
+  ipcMain.handle("plans-list", (_event, profile?: string): Plan[] =>
+    listPlans(profile),
   );
   ipcMain.handle(
     "plans-get",
@@ -2333,18 +2351,18 @@ function setupIPC(): void {
   );
   ipcMain.handle(
     "plans-delete",
-    (_event, id: string, profile?: string): { success: boolean; existed: boolean } => {
+    (
+      _event,
+      id: string,
+      profile?: string,
+    ): { success: boolean; existed: boolean } => {
       const existed = deletePlan(id, profile);
       return { success: true, existed };
     },
   );
   ipcMain.handle(
     "plans-dispatch",
-    async (
-      _event,
-      id: string,
-      profile?: string,
-    ): Promise<DispatchResult> => {
+    async (_event, id: string, profile?: string): Promise<DispatchResult> => {
       const conn = getConnectionConfig();
       if (conn.mode === "ssh" || conn.mode === "remote") {
         // Dispatch shells out to kanbanCreateTask, which is local-only.
@@ -2447,21 +2465,14 @@ function setupIPC(): void {
     title: string,
     profileArg: string | undefined,
   ): import("./plans").PlanStep | null {
-    return findPlanStepByPredicate(
-      (s) => s.title === title,
-      profileArg,
-    );
+    return findPlanStepByPredicate((s) => s.title === title, profileArg);
   }
   function findPlanStepById(
     stepId: string,
     planId: string,
     profileArg: string | undefined,
   ): import("./plans").PlanStep | null {
-    return findPlanStepByPredicate(
-      (s) => s.id === stepId,
-      profileArg,
-      planId,
-    );
+    return findPlanStepByPredicate((s) => s.id === stepId, profileArg, planId);
   }
   function findPlanStepByPredicate(
     predicate: (s: import("./plans").PlanStep) => boolean,
@@ -2697,15 +2708,18 @@ function setupIPC(): void {
   ipcMain.handle("everos-save-config", (_event, patch: Partial<EverOsConfig>) =>
     saveEverOsConfig(getHermesHome(), patch),
   );
-  ipcMain.handle("everos-ping", async (_event, patch?: Partial<EverOsConfig>) => {
-    if (patch && Object.keys(patch).length > 0) {
-      // Caller is asking "would this config be reachable?" —merge
-      // with the on-disk config so a partial edit still pings.
-      const merged = { ...DEFAULT_EVEROS_CONFIG, ...patch };
-      return pingEverOs(merged);
-    }
-    return pingEverOs(await loadEverOsConfig(getHermesHome()));
-  });
+  ipcMain.handle(
+    "everos-ping",
+    async (_event, patch?: Partial<EverOsConfig>) => {
+      if (patch && Object.keys(patch).length > 0) {
+        // Caller is asking "would this config be reachable?" —merge
+        // with the on-disk config so a partial edit still pings.
+        const merged = { ...DEFAULT_EVEROS_CONFIG, ...patch };
+        return pingEverOs(merged);
+      }
+      return pingEverOs(await loadEverOsConfig(getHermesHome()));
+    },
+  );
   ipcMain.handle(
     "everos-add-memory",
     async (
@@ -3037,7 +3051,9 @@ function setupIPC(): void {
   // install returns `state: "stopped"` + `reason` rather than
   // throwing.
   ipcMain.handle("headroom-sidecar-status", () => getHeadroomSidecarStatus());
-  ipcMain.handle("headroom-sidecar-log-tail", () => getHeadroomSidecarLogTail());
+  ipcMain.handle("headroom-sidecar-log-tail", () =>
+    getHeadroomSidecarLogTail(),
+  );
   ipcMain.handle("headroom-sidecar-clear-logs", () => {
     clearHeadroomSidecarLogs();
     return { success: true };
@@ -3115,10 +3131,7 @@ function setupIPC(): void {
   // gateway and scores the responses. Returns a structured report.
   ipcMain.handle(
     "eval-run",
-    async (
-      _event,
-      options: EvalOptions,
-    ): Promise<EvalReport> =>
+    async (_event, options: EvalOptions): Promise<EvalReport> =>
       runEvalSuite(DEFAULT_EVAL_CASES, options),
   );
 
@@ -3156,13 +3169,10 @@ function setupIPC(): void {
       return compressMessages(cfg, messages, model);
     },
   );
-  ipcMain.handle(
-    "headroom-retrieve",
-    async (_event, cacheKey: string) => {
-      const cfg = await loadHeadroomConfig(getHermesHome());
-      return retrieveOriginal(cfg, cacheKey);
-    },
-  );
+  ipcMain.handle("headroom-retrieve", async (_event, cacheKey: string) => {
+    const cfg = await loadHeadroomConfig(getHermesHome());
+    return retrieveOriginal(cfg, cacheKey);
+  });
   ipcMain.handle("headroom-stats", async () => {
     const cfg = await loadHeadroomConfig(getHermesHome());
     return getHeadroomStats(cfg);
@@ -3189,10 +3199,9 @@ function setupIPC(): void {
     },
     async retrieve(cacheKey) {
       const cfg = await loadHeadroomConfig(getHermesHome());
-      return retrieveOriginal(
-        cfg,
-        cacheKey,
-      ) as unknown as Promise<Record<string, unknown>>;
+      return retrieveOriginal(cfg, cacheKey) as unknown as Promise<
+        Record<string, unknown>
+      >;
     },
     async stats() {
       const cfg = await loadHeadroomConfig(getHermesHome());
@@ -3239,11 +3248,8 @@ function setupIPC(): void {
   });
   ipcMain.handle(
     "headroom-learn-commit",
-    (
-      _event,
-      proposals: HeadroomLearnProposal[],
-      profile?: string,
-    ): unknown[] => commitHeadroomLearn(proposals, profile),
+    (_event, proposals: HeadroomLearnProposal[], profile?: string): unknown[] =>
+      commitHeadroomLearn(proposals, profile),
   );
   // Headroom learn — apply (`--apply`): runs the upstream
   // CLI's apply pass and returns per-file before/after
@@ -3298,13 +3304,19 @@ function setupIPC(): void {
       name: string,
       enabled: boolean,
       profile?: string,
-    ): { ok: boolean; error?: string } => setMcpServerEnabled(name, enabled, profile),
+    ): { ok: boolean; error?: string } =>
+      setMcpServerEnabled(name, enabled, profile),
   );
   ipcMain.handle(
     "add-mcp-server",
     (
       _event,
-      entry: { name: string; type: "http" | "stdio"; enabled: boolean; detail: string },
+      entry: {
+        name: string;
+        type: "http" | "stdio";
+        enabled: boolean;
+        detail: string;
+      },
       profile?: string,
     ): { ok: boolean; error?: string } => addMcpServer(entry, profile),
   );
@@ -3323,24 +3335,18 @@ function setupIPC(): void {
   });
 
   // Codebase Memory binary discovery
-  ipcMain.handle("discover-codebase-memory", () =>
-    discoverCodebaseMemory(),
-  );
+  ipcMain.handle("discover-codebase-memory", () => discoverCodebaseMemory());
   ipcMain.handle("list-codebase-memory-projects", () =>
     listCodebaseMemoryProjects(),
   );
-  ipcMain.handle("discover-last30days", () =>
-    discoverLast30Days(),
-  );
+  ipcMain.handle("discover-last30days", () => discoverLast30Days());
 
   // Moo Tasks sidecar (agent-native kanban board with MCP server).
   // The desktop spawns the Nuxt server as a child process and
   // manages its lifecycle. The MCP endpoint at /mcp is added
   // to config.yaml via the MCP registry so Hermes can use the
   // 14 task tools (list-tasks, create-task, accept-task, etc.).
-  ipcMain.handle("moo-tasks-sidecar-status", () =>
-    getMooTasksSidecarStatus(),
-  );
+  ipcMain.handle("moo-tasks-sidecar-status", () => getMooTasksSidecarStatus());
   ipcMain.handle("moo-tasks-sidecar-log-tail", () =>
     getMooTasksSidecarLogTail(),
   );
@@ -3353,9 +3359,7 @@ function setupIPC(): void {
     (_event, options?: MooTasksSidecarStartOptions) =>
       startMooTasksSidecar(options ?? {}),
   );
-  ipcMain.handle("moo-tasks-sidecar-stop", () =>
-    stopMooTasksSidecar(),
-  );
+  ipcMain.handle("moo-tasks-sidecar-stop", () => stopMooTasksSidecar());
   ipcMain.handle(
     "moo-tasks-sidecar-restart",
     (_event, options?: MooTasksSidecarStartOptions) =>
@@ -3464,7 +3468,9 @@ function buildMenu(): void {
         {
           label: "Agent Desktop Issues",
           click: (): void => {
-            openExternalUrl("https://github.com/JZKK720/cubecloud-agentic-os/issues");
+            openExternalUrl(
+              "https://github.com/JZKK720/cubecloud-agentic-os/issues",
+            );
           },
         },
       ],

@@ -36,6 +36,9 @@ export default {
     approve: "Setujui",
     deny: "Tolak",
     working: "Memproses…",
+    postHocTitle: "Sudah dijalankan",
+    postHocHint:
+      "Tindakan ini dijalankan sebelum desktop dapat bertanya. Tidak dapat dibatalkan dari sini.",
   },
   attachUnsupported: "{{name}}: tipe file tidak didukung",
   attachImageTooLarge: "{{name}}: gambar terlalu besar (maks. 50 MB)",

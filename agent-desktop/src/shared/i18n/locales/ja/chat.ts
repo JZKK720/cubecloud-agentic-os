@@ -34,6 +34,9 @@ export default {
     approve: "承認",
     deny: "拒否",
     working: "処理中…",
+    postHocTitle: "実行済み",
+    postHocHint:
+      "これらの操作はデスクトップが確認する前に実行されました。ここから取り消すことはできません。",
   },
   attachUnsupported: "{{name}}: 対応していないファイル形式です",
   attachImageTooLarge: "{{name}}: 画像が大きすぎます（最大 50 MB）",

@@ -42,6 +42,8 @@ export default {
     approve: "批准",
     deny: "拒绝",
     working: "处理中…",
+    postHocTitle: "已执行",
+    postHocHint: "这些操作在桌面端来得及询问之前就已经执行，无法在此撤销。",
   },
   attachUnsupported: "{{name}}：不支持的文件类型",
   attachImageTooLarge: "{{name}}：图片过大（最大 50 MB）",

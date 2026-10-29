@@ -29,6 +29,7 @@ import { loadHeadroomConfig } from "./headroom";
 import {
   runBeforeModelChain,
   createBeforeModelChain,
+  type BeforeModelBlock,
   type ChatMessage as MiddlewareChatMessage,
 } from "./chat-middleware";
 import {
@@ -282,7 +283,8 @@ function isOpenClawModelsResponse(body: string): boolean {
     return Array.isArray(parsed.data)
       ? parsed.data.some(
           (entry) =>
-            typeof entry?.id === "string" && /^openclaw(?:\/|$)/i.test(entry.id),
+            typeof entry?.id === "string" &&
+            /^openclaw(?:\/|$)/i.test(entry.id),
         )
       : false;
   } catch {
@@ -376,10 +378,7 @@ export async function diagnoseRemoteConnection(
     }
   })();
   if (expectedRuntime === "raven" || (useCache && isRavenPort)) {
-    const ravenResponse = await requestText(
-      `${baseUrl}/health`,
-      headers,
-    );
+    const ravenResponse = await requestText(`${baseUrl}/health`, headers);
     if (
       ravenResponse?.statusCode === 200 &&
       (ravenResponse.body.includes('"runtime":"raven"') ||
@@ -491,7 +490,9 @@ export async function detectGatewayRuntime(
   return diagnostic.ok ? diagnostic.runtime : null;
 }
 
-function resolveOpenClawModelOverride(model: string | undefined): string | null {
+function resolveOpenClawModelOverride(
+  model: string | undefined,
+): string | null {
   const trimmed = (model || "").trim();
   if (!trimmed || trimmed === "hermes-agent") {
     return null;
@@ -721,11 +722,14 @@ export interface ChatCallbacks {
   onToolProgress?: (tool: string) => void;
   /** Called when a tool call in the SSE stream requires human approval
    *  (per the tool policy rules). The callback receives the tool name
-   *  and the command/parameters. The caller should create an approval
-   *  entry in the ApprovalInbox and wait for the user's decision before
-   *  allowing the tool to proceed. If the callback is not provided,
-   *  tool calls proceed without approval (backward compatibility). */
-  onToolApprovalRequired?: (toolName: string, command: string) => void;
+   *  and the command/parameters.
+   *
+   *  IMPORTANT: this fires AFTER the gateway has already run the tool. It is
+   *  an observation for the transcript, not a gate — awaiting it cannot stop
+   *  anything. The real gate is the before_model policy chain, which decides
+   *  before a request is sent. Named `onToolApprovalObserved` so no caller
+   *  can mistake it for permission control. */
+  onToolApprovalObserved?: (toolName: string, command: string) => void;
   onUsage?: (usage: {
     promptTokens: number;
     completionTokens: number;
@@ -983,6 +987,21 @@ function sendMessageViaApi(
     }
   }
 
+  /**
+   * Surface a preflight block to the user instead of sending the request.
+   *
+   * The message is deliberately plain: a blocked request is a policy outcome,
+   * not a failure, and the user should be able to see which rule stopped it.
+   */
+  function blockRequest(blocked: BeforeModelBlock): void {
+    const detail = blocked.rule ? ` (${blocked.rule})` : "";
+    finish(
+      blocked.decision === "require_approval"
+        ? `This request needs your approval before it can run${detail}. Nothing was sent.`
+        : `This request was blocked by a security rule${detail}. Nothing was sent.`,
+    );
+  }
+
   function buildRequestBody(stream: boolean): Buffer {
     const body = JSON.stringify({
       model: selectedModel,
@@ -1014,7 +1033,9 @@ function sendMessageViaApi(
     return Buffer.from(body, "utf-8");
   }
 
-  async function finalizePreparedRequest(runtimeOverride?: GatewayRuntimeKind | null): Promise<void> {
+  async function finalizePreparedRequest(
+    runtimeOverride?: GatewayRuntimeKind | null,
+  ): Promise<BeforeModelBlock | null> {
     if (runtimeOverride) {
       runtimeKind = runtimeOverride;
     }
@@ -1086,9 +1107,7 @@ function sendMessageViaApi(
     // to skip the async work entirely when Headroom is off;
     // this keeps the hot path zero-cost for users who
     // haven't opted in.
-    const hasNonTextContent = messages.some((m) =>
-      Array.isArray(m.content),
-    );
+    const hasNonTextContent = messages.some((m) => Array.isArray(m.content));
     try {
       const headroomCfg = await loadHeadroomConfig(HERMES_HOME);
       if (headroomCfg.enabled && !hasNonTextContent) {
@@ -1098,12 +1117,10 @@ function sendMessageViaApi(
         // Coerce local messages to Headroom's stricter
         // shape. Content is always a string here because
         // we gated on `hasNonTextContent` above.
-        const headroomInput: HeadroomChatMessage[] = messages.map(
-          (m) => ({
-            role: m.role as HeadroomChatMessage["role"],
-            content: m.content as string,
-          }),
-        );
+        const headroomInput: HeadroomChatMessage[] = messages.map((m) => ({
+          role: m.role as HeadroomChatMessage["role"],
+          content: m.content as string,
+        }));
         const result = await compressForChat(headroomInput, {
           model: selectedModel,
           providerHint,
@@ -1243,7 +1260,7 @@ function sendMessageViaApi(
       const providerHint = isOllamaLikeProvider(mc.provider)
         ? `local:${mc.provider}`
         : mc.provider || "openai";
-      const { results } = await runBeforeModelChain(
+      const { results, blocked } = await runBeforeModelChain(
         {
           messages: middlewareMessages,
           model: selectedModel,
@@ -1253,11 +1270,30 @@ function sendMessageViaApi(
         chain,
       );
       middlewareStats = results;
-    } catch {
-      // Middleware chain failure must never break the chat path.
+
+      // A block must stop the request BEFORE it is built or sent. Returning
+      // here (rather than only recording stats) is the gate.
+      if (blocked) {
+        return blocked;
+      }
+    } catch (err) {
+      // Only the POLICY verdict may block. A throw here can come from any
+      // surrounding setup (config getters, harness registry, optional
+      // middlewares) and has nothing to do with whether the request is safe.
+      //
+      // Blocking on every throw turned unrelated failures into false denials:
+      // a test harness that stubs `config` without `getConfigValue` made every
+      // request "blocked by a security rule". The tool-policy middleware
+      // already fails closed for its own evaluation errors (see
+      // chat-middleware.ts), so this catch only logs and continues.
+      console.warn(
+        "[hermes] preflight chain error (not a policy denial):",
+        err instanceof Error ? err.message : String(err),
+      );
     }
 
     headers["Content-Length"] = String(bodyBuf.length);
+    return null;
   }
 
   function probeRealError(): void {
@@ -1331,15 +1367,15 @@ function sendMessageViaApi(
           cb.onToolProgress(emoji ? `${emoji} ${label}` : label);
         }
         // Fire approval callback if the tool requires it.
-        // The Hermes gateway can include `requires_approval: true` in
-        // the tool progress event when the tool matches an approval rule.
-        // The desktop creates an ApprovalInbox entry and waits for the
-        // user's decision. The gateway itself doesn't block — it's the
-        // desktop's responsibility to intercept and pause if needed.
-        if (payload.requires_approval && cb.onToolApprovalRequired) {
+        // The gateway includes `requires_approval: true` in the tool
+        // progress event when the tool matched an approval rule. The tool has
+        // ALREADY RUN at this point — this is post-hoc telemetry, not a gate.
+        // We surface it so the transcript can say "ran without pre-approval",
+        // which is the truth. See onToolApprovalObserved's doc comment.
+        if (payload.requires_approval && cb.onToolApprovalObserved) {
           const toolName = payload.tool || label || "unknown";
           const command = payload.command || payload.args || "";
-          cb.onToolApprovalRequired(toolName, command);
+          cb.onToolApprovalObserved(toolName, command);
         }
       } catch {
         /* malformed — skip */
@@ -1423,116 +1459,119 @@ function sendMessageViaApi(
   }
 
   function startPreparedRequest(): void {
-      const chatUrl = `${apiUrl}/v1/chat/completions`;
-      const requester =
-        chatUrl.startsWith("https") ? https.request : http.request;
-      const req = requester(
-        chatUrl,
-        {
-          method: "POST",
-          headers,
-          signal: controller.signal,
-          timeout: 120000,
-        },
-        (res) => {
-          const sid = res.headers["x-hermes-session-id"];
-          if (sid && typeof sid === "string") sessionId = sid;
+    const chatUrl = `${apiUrl}/v1/chat/completions`;
+    const requester = chatUrl.startsWith("https")
+      ? https.request
+      : http.request;
+    const req = requester(
+      chatUrl,
+      {
+        method: "POST",
+        headers,
+        signal: controller.signal,
+        timeout: 120000,
+      },
+      (res) => {
+        const sid = res.headers["x-hermes-session-id"];
+        if (sid && typeof sid === "string") sessionId = sid;
 
-          if (res.statusCode !== 200) {
-            let errBody = "";
-            res.on("data", (d) => {
-              errBody += d.toString();
-            });
-            res.on("end", () => {
-              try {
-                const err = JSON.parse(errBody);
-                finish(err.error?.message || `API error ${res.statusCode}`);
-              } catch {
-                finish(
-                  `API server returned ${res.statusCode}: ${errBody.slice(0, 200)}`,
-                );
-              }
-            });
-            return;
-          }
-
-          let buffer = "";
-
-          /** Parse an SSE block which may contain `event:` and `data:` lines. */
-          function processSseBlock(block: string): boolean {
-            let eventType = "";
-            let dataLine = "";
-            for (const line of block.split("\n")) {
-              if (line.startsWith("event: ")) {
-                eventType = line.slice(7).trim();
-              } else if (line.startsWith("data: ")) {
-                dataLine = line.slice(6);
-              }
+        if (res.statusCode !== 200) {
+          let errBody = "";
+          res.on("data", (d) => {
+            errBody += d.toString();
+          });
+          res.on("end", () => {
+            try {
+              const err = JSON.parse(errBody);
+              finish(err.error?.message || `API error ${res.statusCode}`);
+            } catch {
+              finish(
+                `API server returned ${res.statusCode}: ${errBody.slice(0, 200)}`,
+              );
             }
-            if (!dataLine) return false;
-            if (eventType) {
-              // Custom event (e.g. hermes.tool.progress) — never signals [DONE]
-              processCustomEvent(eventType, dataLine);
-              return false;
+          });
+          return;
+        }
+
+        let buffer = "";
+
+        /** Parse an SSE block which may contain `event:` and `data:` lines. */
+        function processSseBlock(block: string): boolean {
+          let eventType = "";
+          let dataLine = "";
+          for (const line of block.split("\n")) {
+            if (line.startsWith("event: ")) {
+              eventType = line.slice(7).trim();
+            } else if (line.startsWith("data: ")) {
+              dataLine = line.slice(6);
             }
-            return processSseData(dataLine);
           }
+          if (!dataLine) return false;
+          if (eventType) {
+            // Custom event (e.g. hermes.tool.progress) — never signals [DONE]
+            processCustomEvent(eventType, dataLine);
+            return false;
+          }
+          return processSseData(dataLine);
+        }
 
-          res.on("data", (chunk: Buffer) => {
-            buffer += chunk.toString();
-            const parts = buffer.split("\n\n");
-            buffer = parts.pop() || "";
+        res.on("data", (chunk: Buffer) => {
+          buffer += chunk.toString();
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
 
-            for (const part of parts) {
+          for (const part of parts) {
+            if (processSseBlock(part)) return;
+          }
+        });
+
+        res.on("end", () => {
+          if (buffer.trim()) {
+            for (const part of buffer.split("\n\n")) {
               if (processSseBlock(part)) return;
             }
-          });
+          }
+          // Signal completion — even when no content was received
+          if (!hasContent && !lastError) {
+            probeRealError();
+            return;
+          }
+          finish(hasContent ? undefined : lastError);
+        });
 
-          res.on("end", () => {
-            if (buffer.trim()) {
-              for (const part of buffer.split("\n\n")) {
-                if (processSseBlock(part)) return;
-              }
-            }
-            // Signal completion — even when no content was received
-            if (!hasContent && !lastError) {
-              probeRealError();
-              return;
-            }
-            finish(hasContent ? undefined : lastError);
-          });
+        res.on("error", (err) => {
+          if (err.message === "aborted" || err.name === "AbortError") return;
+          finish(`Stream error: ${err.message}`);
+        });
+      },
+    );
 
-          res.on("error", (err) => {
-            if (err.message === "aborted" || err.name === "AbortError") return;
-            finish(`Stream error: ${err.message}`);
-          });
-        },
+    req.on("error", (err) => {
+      if (err.name === "AbortError") return;
+      finish(`API request failed: ${err.message}`);
+    });
+    req.on("timeout", () => {
+      req.destroy();
+      finish(
+        "API request timed out. Check the SSH tunnel and remote runtime gateway.",
       );
+    });
 
-      req.on("error", (err) => {
-        if (err.name === "AbortError") return;
-        finish(`API request failed: ${err.message}`);
-      });
-      req.on("timeout", () => {
-        req.destroy();
-        finish(
-          "API request timed out. Check the SSH tunnel and remote runtime gateway.",
-        );
-      });
-
-      req.write(bodyBuf);
-      req.end();
+    req.write(bodyBuf);
+    req.end();
   }
 
   const cachedRuntime = isRemoteMode() ? getCachedGatewayRuntime(apiUrl) : null;
   if (!isRemoteMode() || cachedRuntime !== null) {
     void (async () => {
-      await finalizePreparedRequest(cachedRuntime);
+      const blocked = await finalizePreparedRequest(cachedRuntime);
+      if (blocked) return blockRequest(blocked);
       startPreparedRequest();
     })();
   } else {
     void (async () => {
-      await finalizePreparedRequest(null);
+      const blocked = await finalizePreparedRequest(null);
+      if (blocked) return blockRequest(blocked);
       startPreparedRequest();
       void detectGatewayRuntime(apiUrl).catch(() => {
         /* best effort cache warm for the next send */

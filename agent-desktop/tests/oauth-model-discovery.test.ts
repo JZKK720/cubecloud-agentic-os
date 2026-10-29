@@ -44,6 +44,10 @@ vi.mock("../src/main/installer", () => ({
 }));
 
 vi.mock("../src/main/config", () => ({
+  // Present so code paths that read operator toggles (agent.laya_guard,
+  // agent.laya_route) do not throw. Undefined means 'off', which is the
+  // documented default.
+  getConfigValue: (): string | undefined => undefined,
   readEnv: () => ({}),
 }));
 

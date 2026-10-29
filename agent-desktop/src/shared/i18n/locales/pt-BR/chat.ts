@@ -36,6 +36,9 @@ export default {
     approve: "Aprovar",
     deny: "Rejeitar",
     working: "Processando…",
+    postHocTitle: "Já executado",
+    postHocHint:
+      "Estas ações foram executadas antes que o desktop pudesse perguntar. Não podem ser desfeitas aqui.",
   },
   attachUnsupported: "{{name}}: tipo de arquivo não suportado",
   attachImageTooLarge: "{{name}}: imagem muito grande (máx. 50 MB)",

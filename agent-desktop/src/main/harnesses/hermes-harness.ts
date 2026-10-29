@@ -8,10 +8,7 @@
 // The adapter is created via createHermesHarness() so tests can
 // mock the sendMessage dependency.
 
-import {
-  sendMessage,
-  type ChatCallbacks,
-} from "../hermes";
+import { sendMessage, type ChatCallbacks } from "../hermes";
 import type {
   Harness,
   HarnessAdapterProfile,
@@ -36,9 +33,7 @@ export function createHermesHarness(): Harness {
   };
 
   const turns: HarnessTurnController = {
-    async *runTurn(
-      input: HarnessTurnInput,
-    ): AsyncIterable<HarnessTurnDelta> {
+    async *runTurn(input: HarnessTurnInput): AsyncIterable<HarnessTurnDelta> {
       // Bridge the callback-based sendMessage to an async iterable.
       // We accumulate deltas in a queue and yield them as they arrive.
       const queue: HarnessTurnDelta[] = [];
@@ -84,6 +79,17 @@ export function createHermesHarness(): Harness {
           flush();
         },
         onToolProgress: undefined,
+        // The gateway reports tool progress after it has run the tool. We
+        // forward it as an observation event; approval decisions happen in the
+        // preflight policy chain, not here.
+        onToolApprovalObserved: (toolName: string, command: string) => {
+          queue.push({
+            type: "approval_observed",
+            toolName,
+            command,
+          } as never);
+          flush();
+        },
       };
 
       // Call sendMessage — it returns a Promise<ChatHandle> with abort()

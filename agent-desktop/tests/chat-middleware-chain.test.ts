@@ -77,7 +77,11 @@ describe("createToolPolicyMiddleware", () => {
     ]);
     const result = await mw(ctx);
     expect(result.applied).toBe(true);
-    expect(result.label).toContain("require_approval");
+    // require_approval now BLOCKS unless an approver says otherwise; a
+    // missing approver is a wiring bug, not permission (fail closed).
+    expect(result.blocked).toBeDefined();
+    expect(result.blocked!.decision).toBe("require_approval");
+    expect(result.blocked!.rule).toBe("approve:git-push");
   });
 
   it("flags npm install for approval", async () => {
@@ -87,7 +91,9 @@ describe("createToolPolicyMiddleware", () => {
     ]);
     const result = await mw(ctx);
     expect(result.applied).toBe(true);
-    expect(result.label).toContain("require_approval");
+    expect(result.blocked).toBeDefined();
+    expect(result.blocked!.decision).toBe("require_approval");
+    expect(result.blocked!.rule).toBe("approve:package-install");
   });
 
   it("never throws — degrades gracefully on error", async () => {

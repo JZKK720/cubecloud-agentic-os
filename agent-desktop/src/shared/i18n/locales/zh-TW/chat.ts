@@ -26,6 +26,8 @@ export default {
     approve: "核准",
     deny: "拒絕",
     working: "處理中…",
+    postHocTitle: "已執行",
+    postHocHint: "這些操作在桌面端來得及詢問之前就已經執行，無法在此復原。",
   },
   newChat: "新聊天 (Cmd+N)",
   clearChat: "清除聊天",
