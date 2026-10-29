@@ -4046,6 +4046,22 @@ select:focus-visible {
   flex-wrap: wrap;
 }
 
+/* Post-hoc observation: the tool already ran. Muted, and deliberately has no
+   action buttons — a decision here would be about the past. */
+.approval-dialog-item--observed {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.approval-dialog-section {
+  margin: 18px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .approval-dialog-tool {
   font-size: 13px;
   font-weight: 600;

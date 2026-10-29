@@ -16,7 +16,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = join(__dirname, "..");
-const read = (p: string) => readFileSync(join(ROOT, p), "utf-8");
+const read = (p: string): string => readFileSync(join(ROOT, p), "utf-8");
 
 describe("production ChatCallbacks literals supply the approval observer", () => {
   it("the chat path (main/index.ts) supplies onToolApprovalObserved", () => {
@@ -53,6 +53,8 @@ describe("the gate is on the request path, not the event stream", () => {
   });
 
   it("the policy middleware has a blocked channel", () => {
-    expect(read("src/main/chat-middleware.ts")).toMatch(/blocked\?: BeforeModelBlock/);
+    expect(read("src/main/chat-middleware.ts")).toMatch(
+      /blocked\?: BeforeModelBlock/,
+    );
   });
 });

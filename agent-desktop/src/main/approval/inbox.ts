@@ -48,9 +48,15 @@ export interface ApprovalInbox {
   /** Resolve a pending entry. Returns false if unknown or already settled. */
   settle(id: string, decision: ApprovalDecision): boolean;
   /** Await the decision for an entry. Unknown id → "deny". */
-  awaitDecision(id: string, opts?: { timeoutMs?: number }): Promise<ApprovalDecision>;
+  awaitDecision(
+    id: string,
+    opts?: { timeoutMs?: number },
+  ): Promise<ApprovalDecision>;
   /** Convenience: create + await. */
-  request(input: ApprovalInput, opts?: { timeoutMs?: number }): Promise<ApprovalDecision>;
+  request(
+    input: ApprovalInput,
+    opts?: { timeoutMs?: number },
+  ): Promise<ApprovalDecision>;
 
   // Legacy boolean API, preserved so existing IPC callers keep working.
   approve(id: string): boolean;
@@ -71,7 +77,9 @@ export interface ApprovalInboxOptions {
 const DEFAULT_TIMEOUT_MS = 30 * 60 * 1000;
 
 /** Create an approval inbox. */
-export function createApprovalInbox(options: ApprovalInboxOptions = {}): ApprovalInbox {
+export function createApprovalInbox(
+  options: ApprovalInboxOptions = {},
+): ApprovalInbox {
   const defaultTimeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
   const entries = new Map<string, ApprovalEntry>();
@@ -143,7 +151,10 @@ export function createApprovalInbox(options: ApprovalInboxOptions = {}): Approva
       return settleInternal(id, decision === "approve" ? "approved" : "denied");
     },
 
-    awaitDecision(id: string, opts?: { timeoutMs?: number }): Promise<ApprovalDecision> {
+    awaitDecision(
+      id: string,
+      opts?: { timeoutMs?: number },
+    ): Promise<ApprovalDecision> {
       const entry = entries.get(id);
 
       // Unknown id: fail closed rather than hang.
@@ -151,7 +162,9 @@ export function createApprovalInbox(options: ApprovalInboxOptions = {}): Approva
 
       // Already settled: answer immediately.
       if (entry.status !== "pending") {
-        return Promise.resolve(entry.status === "approved" ? "approve" : "deny");
+        return Promise.resolve(
+          entry.status === "approved" ? "approve" : "deny",
+        );
       }
 
       return new Promise<ApprovalDecision>((resolve) => {
@@ -160,7 +173,10 @@ export function createApprovalInbox(options: ApprovalInboxOptions = {}): Approva
       });
     },
 
-    async request(input: ApprovalInput, opts?: { timeoutMs?: number }): Promise<ApprovalDecision> {
+    async request(
+      input: ApprovalInput,
+      opts?: { timeoutMs?: number },
+    ): Promise<ApprovalDecision> {
       const entry = this.create(input);
       return this.awaitDecision(entry.id, opts);
     },

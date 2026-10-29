@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { createApprovalInbox, getApprovalInbox, __resetApprovalInboxForTests } from "./inbox";
+import {
+  createApprovalInbox,
+  getApprovalInbox,
+  __resetApprovalInboxForTests,
+} from "./inbox";
 
 const input = {
   sessionId: "s1",

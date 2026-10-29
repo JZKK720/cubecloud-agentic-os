@@ -47,6 +47,9 @@ export default {
     approve: "Approve",
     deny: "Deny",
     working: "Working…",
+    postHocTitle: "Already ran",
+    postHocHint:
+      "These actions ran before the desktop could ask. They cannot be undone from here.",
   },
   attachUnsupported: "{{name}}: file type not supported",
   attachImageTooLarge: "{{name}}: image too large (max 50 MB)",

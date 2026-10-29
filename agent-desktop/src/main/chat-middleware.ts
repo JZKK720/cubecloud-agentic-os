@@ -287,19 +287,30 @@ export function createCompactionMiddleware(
       }));
 
     // Estimate budget from model name (rough heuristic)
-    const budget = ctx.model.includes("128k") ? 128_000
-      : ctx.model.includes("200k") ? 200_000
-      : ctx.model.includes("1m") || ctx.model.includes("1000k") ? 1_000_000
-      : DEFAULT_TOKEN_BUDGET;
+    const budget = ctx.model.includes("128k")
+      ? 128_000
+      : ctx.model.includes("200k")
+        ? 200_000
+        : ctx.model.includes("1m") || ctx.model.includes("1000k")
+          ? 1_000_000
+          : DEFAULT_TOKEN_BUDGET;
 
     if (!shouldCompact(history, budget)) {
-      return { messages, applied: false, label: "compaction:skip(below-threshold)" };
+      return {
+        messages,
+        applied: false,
+        label: "compaction:skip(below-threshold)",
+      };
     }
 
     try {
       const boundary = pickBoundary(history, budget);
       if (boundary <= 0) {
-        return { messages, applied: false, label: "compaction:skip(no-boundary)" };
+        return {
+          messages,
+          applied: false,
+          label: "compaction:skip(no-boundary)",
+        };
       }
 
       const workingState = extractWorkingState(history);
@@ -314,7 +325,9 @@ export function createCompactionMiddleware(
         // Mechanical summary (no LLM call) — just list working state
         const parts: string[] = ["[Context Summary]"];
         if (workingState.pendingTodos.length > 0) {
-          parts.push(`Pending: ${workingState.pendingTodos.map((t) => `[ ] ${t}`).join(", ")}`);
+          parts.push(
+            `Pending: ${workingState.pendingTodos.map((t) => `[ ] ${t}`).join(", ")}`,
+          );
         }
         if (workingState.activeFiles.length > 0) {
           parts.push(`Files: ${workingState.activeFiles.join(", ")}`);
@@ -334,8 +347,14 @@ export function createCompactionMiddleware(
         })),
       ];
 
-      const tokensBefore = history.reduce((s, e) => s + estimateTokens(e.content), 0);
-      const tokensAfter = compacted.reduce((s, m) => s + estimateTokens(m.content ?? ""), 0);
+      const tokensBefore = history.reduce(
+        (s, e) => s + estimateTokens(e.content),
+        0,
+      );
+      const tokensAfter = compacted.reduce(
+        (s, m) => s + estimateTokens(m.content ?? ""),
+        0,
+      );
 
       return {
         messages: compacted,
@@ -365,19 +384,25 @@ export function createMemoryInjectMiddleware(
 ): BeforeModelMiddleware {
   return async (ctx) => {
     if (!recallFn) {
-      return { messages: ctx.messages, applied: false, label: "memory:skip(no-recall-fn)" };
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "memory:skip(no-recall-fn)",
+      };
     }
 
     try {
       const memories = recallFn();
       if (memories.length === 0) {
-        return { messages: ctx.messages, applied: false, label: "memory:skip(empty)" };
+        return {
+          messages: ctx.messages,
+          applied: false,
+          label: "memory:skip(empty)",
+        };
       }
 
       // Build a memory context block to prepend to the system message
-      const memoryBlock = memories
-        .map((m) => `- ${m.content}`)
-        .join("\n");
+      const memoryBlock = memories.map((m) => `- ${m.content}`).join("\n");
       const memoryPrefix = `[Persistent Memory]\n${memoryBlock}\n[/Persistent Memory]\n\n`;
 
       const messages = ctx.messages.map((m) => {
@@ -422,13 +447,29 @@ const DEFAULT_TOOL_POLICY_RULES: CommandPolicyRule[] = [
   // Deny destructive shell commands
   { pattern: /\brm\s+-rf\s+\//i, decision: "deny", label: "deny:rm-rf-root" },
   { pattern: /\bmkfs\./i, decision: "deny", label: "deny:mkfs" },
-  { pattern: /\bdd\s+if=.*of=\/dev\//i, decision: "deny", label: "deny:dd-to-device" },
+  {
+    pattern: /\bdd\s+if=.*of=\/dev\//i,
+    decision: "deny",
+    label: "deny:dd-to-device",
+  },
   // Require approval for package installs
-  { pattern: /\bnpm\s+install\b|\bpip\s+install\b|\bapt\s+install\b/i, decision: "require_approval", label: "approve:package-install" },
+  {
+    pattern: /\bnpm\s+install\b|\bpip\s+install\b|\bapt\s+install\b/i,
+    decision: "require_approval",
+    label: "approve:package-install",
+  },
   // Require approval for git push
-  { pattern: /\bgit\s+push\b/i, decision: "require_approval", label: "approve:git-push" },
+  {
+    pattern: /\bgit\s+push\b/i,
+    decision: "require_approval",
+    label: "approve:git-push",
+  },
   // Require approval for network operations
-  { pattern: /\bcurl\s+.*\|\s*(bash|sh)\b/i, decision: "require_approval", label: "approve:curl-pipe" },
+  {
+    pattern: /\bcurl\s+.*\|\s*(bash|sh)\b/i,
+    decision: "require_approval",
+    label: "approve:curl-pipe",
+  },
 ];
 
 export interface ToolPolicyDeps {
@@ -448,9 +489,15 @@ export function createToolPolicyMiddleware(
   const policy = createCommandPolicy(customRules ?? DEFAULT_TOOL_POLICY_RULES);
 
   return async (ctx) => {
-    const lastUserMsg = [...ctx.messages].reverse().find((m) => m.role === "user" && m.content);
+    const lastUserMsg = [...ctx.messages]
+      .reverse()
+      .find((m) => m.role === "user" && m.content);
     if (!lastUserMsg?.content) {
-      return { messages: ctx.messages, applied: false, label: "tool-policy:skip(no-user-msg)" };
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "tool-policy:skip(no-user-msg)",
+      };
     }
 
     try {
@@ -459,7 +506,11 @@ export function createToolPolicyMiddleware(
       const result = policy.evaluate(scannable);
 
       if (result.decision === "allow") {
-        return { messages: ctx.messages, applied: false, label: "tool-policy:allow" };
+        return {
+          messages: ctx.messages,
+          applied: false,
+          label: "tool-policy:allow",
+        };
       }
 
       if (result.decision === "deny") {
@@ -468,7 +519,11 @@ export function createToolPolicyMiddleware(
           applied: true,
           label: `tool-policy:deny:${result.label}`,
           stats: { decision: "deny", rule: result.label },
-          blocked: { reason: result.label, rule: result.label, decision: "deny" },
+          blocked: {
+            reason: result.label,
+            rule: result.label,
+            decision: "deny",
+          },
         };
       }
 
@@ -483,7 +538,11 @@ export function createToolPolicyMiddleware(
           messages: ctx.messages,
           applied: true,
           label: `tool-policy:approval-approved:${result.label}`,
-          stats: { decision: "require_approval", rule: result.label, approved: true },
+          stats: {
+            decision: "require_approval",
+            rule: result.label,
+            approved: true,
+          },
         };
       }
 
@@ -491,7 +550,11 @@ export function createToolPolicyMiddleware(
         messages: ctx.messages,
         applied: true,
         label: `tool-policy:approval-${decision}:${result.label}`,
-        stats: { decision: "require_approval", rule: result.label, approved: false },
+        stats: {
+          decision: "require_approval",
+          rule: result.label,
+          approved: false,
+        },
         blocked: {
           reason: result.label,
           rule: result.label,
@@ -506,7 +569,8 @@ export function createToolPolicyMiddleware(
         applied: false,
         label: "tool-policy:error",
         blocked: {
-          reason: err instanceof Error ? err.message : "policy evaluation failed",
+          reason:
+            err instanceof Error ? err.message : "policy evaluation failed",
           decision: "error",
         },
       };
@@ -686,7 +750,9 @@ export function createBeforeModelChain(
     compactionSummaryFn?: (entries: TurnEntry[]) => Promise<string>;
     toolPolicyRules?: CommandPolicyRule[];
     /** Passed through to the tool-policy middleware. Absent ⇒ fail closed. */
-    onRequireApproval?: (ctx: BeforeModelContext) => Promise<"approve" | "deny">;
+    onRequireApproval?: (
+      ctx: BeforeModelContext,
+    ) => Promise<"approve" | "deny">;
   },
 ): BeforeModelMiddleware[] {
   return [
