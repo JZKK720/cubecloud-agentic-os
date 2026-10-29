@@ -58,12 +58,39 @@ before anything is sent.
 
 Run: `cd agent-desktop && npx vitest run`
 
-Suite totals after merging `origin/main`: **1,639 passed, 2 failed, 10
-skipped** (1,651 tests). The 2 failures are in
-`tests/hermes-cli-session-id.test.ts` — cold-gateway timing where
-`startGateway()` returns false. They are unrelated to approval: that file
-was last touched by main's own `cbd1dc3`, and the approval branch never
-modified it. Recorded here rather than quietly attributed to the merge.
+Suite totals at this commit: **1,639 passed, 2 failed, 10 skipped**
+(1,651 tests).
+
+### The 2 failures are pre-existing (verified, not assumed)
+
+Both are in `tests/hermes-cli-session-id.test.ts` — cold-gateway timing
+where `startGateway()` returns false.
+
+Proven by checking out **pure `origin/main` (`9230943`)** in the same
+working directory (so real `node_modules`, no worktree shims) and running
+the file. The approval branch's files are absent at that commit
+(`src/main/approval/inbox.ts` and `tests/middleware-block.test.ts` both do
+not exist), and the same 2 tests fail with the same names:
+
+```
+FAIL tests/hermes-cli-session-id.test.ts > CLI fallback session id
+     propagation > waits for a cold gateway to become API-ready instead
+     of falling back to CLI
+FAIL tests/hermes-cli-session-id.test.ts > CLI fallback session id
+     propagation > re-checks health when a previously-ready local gateway
+     is restarted cold
+```
+
+`git log -- agent-desktop/tests/hermes-cli-session-id.test.ts` shows it was
+last touched by main's own `cbd1dc3`; the approval branch never modified
+it. So these 2 are **upstream breakage, not introduced by this work** —
+stated plainly because "pre-existing" is a claim that deserves evidence.
+
+An earlier attempt to prove this used a `git worktree`, which reported
+"no tests" — the worktree needed junction links for `node_modules` and
+`@cubecloud/platform-core`, so that run proved nothing and is superseded by
+the same-directory checkout above.
+
 
 ## Test-quality note
 
