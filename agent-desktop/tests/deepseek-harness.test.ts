@@ -145,4 +145,33 @@ describe("createDeepSeekHarness", () => {
     );
     expect(deltas.some((d) => d.type === "done")).toBe(true);
   });
+
+  it("reports a completed turn with the session id", async () => {
+    const deltas = await collect(
+      fixtureHarness().turns.runTurn({ sessionId: "s1", message: "hello" }),
+    );
+
+    const done = deltas[deltas.length - 1] as { type: string; sessionId?: string };
+    expect(done.type).toBe("done");
+    expect(done.sessionId).toBe("s1");
+  });
+
+  it("does not report an aborted turn as a clean completion", async () => {
+    // turn/end carries a TurnEndReason of { kind: 'completed' | 'aborted' |
+    // 'blocked' }. An aborted turn must not look like success, so the final
+    // delta carries no session id.
+    const harness = createDeepSeekHarness({
+      command: process.execPath,
+      args: [FIXTURE],
+      env: { DSH_FIXTURE_ABORT: "1" },
+    });
+
+    const deltas = await collect(
+      harness.turns.runTurn({ sessionId: "s1", message: "hello" }),
+    );
+
+    const done = deltas[deltas.length - 1] as { type: string; sessionId?: string };
+    expect(done.type).toBe("done");
+    expect(done.sessionId).toBeUndefined();
+  });
 });

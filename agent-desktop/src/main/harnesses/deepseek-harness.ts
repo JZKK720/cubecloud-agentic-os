@@ -102,6 +102,8 @@ export function createDeepSeekHarness(
       const queue: HarnessTurnDelta[] = [];
       let finished = false;
       let wake: (() => void) | null = null;
+      /** Set when `turn/end` reports aborted/blocked instead of completed. */
+      let turnEndReason: string | null = null;
 
       const push = (delta: HarnessTurnDelta): void => {
         queue.push(delta);
@@ -149,8 +151,19 @@ export function createDeepSeekHarness(
           }
         }
 
-        // A closed turn is the natural end of one chat turn.
+        // A closed turn is the natural end of one chat turn. `reason` is a
+        // TurnEndReason: { kind: 'completed' | 'aborted' | 'blocked' }.
+        // A turn that ended aborted or blocked must not be reported as a
+        // clean finish, so remember why it closed and let the caller surface
+        // it through the normal error path.
         if (event.type === "turn/end") {
+          const reason = (event.data ?? {}).reason as
+            | { kind?: string }
+            | undefined;
+          const kind = reason?.kind;
+          if (kind && kind !== "completed") {
+            turnEndReason = kind;
+          }
           finished = true;
           const fn = wake;
           wake = null;
@@ -198,18 +211,14 @@ export function createDeepSeekHarness(
         while (queue.length > 0) {
           yield queue.shift()!;
         }
-      } catch (err) {
+      } catch {
         // Mirror the other adapters: a transport failure ends the turn with a
         // final `done` rather than throwing out of the generator, so the chat
         // path's error contract stays uniform.
-        push({ type: "done", sessionId: undefined });
         while (queue.length > 0) {
           yield queue.shift()!;
         }
-        // Surface the reason through the error channel the router watches.
-        if (err instanceof Error) {
-          yield { type: "done", sessionId: undefined };
-        }
+        yield { type: "done", sessionId: undefined };
         return;
       } finally {
         unlisten?.();
@@ -218,7 +227,13 @@ export function createDeepSeekHarness(
         });
       }
 
-      yield { type: "done", sessionId: input.sessionId };
+      // A turn that closed aborted or blocked is not a success. Report it on
+      // the same terminal delta the caller already understands rather than
+      // pretending the answer completed.
+      yield {
+        type: "done",
+        sessionId: turnEndReason ? undefined : input.sessionId,
+      };
     },
 
     async resetSession(_sessionId: string): Promise<void> {

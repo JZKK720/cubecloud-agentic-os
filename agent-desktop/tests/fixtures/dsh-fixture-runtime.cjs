@@ -40,8 +40,15 @@ function handle(line) {
   if (method === "session/prompt") {
     // Receipt first, then the stream — the real runtime enqueues durably.
     send({ jsonrpc: "2.0", id, result: { messageId: "msg-1" } });
+    // DSH_FIXTURE_ABORT=1 makes the turn close with reason aborted instead of
+    // completed, so the adapter's non-success path is exercised.
+    const aborting = process.env.DSH_FIXTURE_ABORT === "1";
     setImmediate(() => {
       event("turn/start", { turn: 1 });
+      if (aborting) {
+        event("turn/end", { turn: 1, reason: { kind: "aborted" } });
+        return;
+      }
       event("tool/call", {
         turn: 1,
         step: 1,
@@ -76,7 +83,7 @@ function handle(line) {
         ],
         usage: { inputTokens: 12, outputTokens: 4 },
       });
-      event("turn/end", { turn: 1, reason: "stop" });
+      event("turn/end", { turn: 1, reason: { kind: "completed" } });
     });
     return;
   }

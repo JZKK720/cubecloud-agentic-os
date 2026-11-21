@@ -122,6 +122,14 @@
   migrationDismiss: "不再显示",
   migrationComplete: "迁移完成。",
   migrationFailed: "迁移失败。",
+  runtimeLane: {
+    title: "运行时通道",
+    label: "当前运行时",
+    hint:
+      "由哪个运行时处理对话请求。没有可用适配器的运行时会回退到 Hermes 网关，而不会直接报错。",
+    noAdapter: "该运行时暂无可用适配器，对话仍走 Hermes 网关。",
+    saveFailed: "无法保存运行时选择。",
+  },
   migrating: "迁移中...",
   migrateToHermes: "迁移到 Hermes",
   skip: "跳过",

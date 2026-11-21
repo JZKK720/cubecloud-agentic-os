@@ -128,6 +128,14 @@ export default {
   migrationDismiss: "Don't show again",
   migrationComplete: "Migration complete.",
   migrationFailed: "Migration failed.",
+  runtimeLane: {
+    title: "Runtime lane",
+    label: "Active runtime",
+    hint:
+      "Which runtime serves chat turns. Runtimes without a working adapter fall back to the Hermes gateway rather than failing.",
+    noAdapter: "This runtime has no working adapter yet; chat stays on the Hermes gateway.",
+    saveFailed: "Could not save the runtime choice.",
+  },
   migrating: "Migrating...",
   migrateToHermes: "Migrate to Hermes",
   skip: "Skip",

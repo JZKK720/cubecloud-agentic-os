@@ -132,6 +132,12 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     TaskOrchestratorSnapshot[]
   >([]);
 
+  // Active runtime lane. `runtime.provider` is read by the harness resolver;
+  // until this control existed nothing in the product ever wrote it, so every
+  // adapter beyond Hermes was unreachable.
+  const [activeRuntimeProvider, setActiveRuntimeProvider] = useState("hermes");
+  const [runtimeLaneError, setRuntimeLaneError] = useState<string | null>(null);
+
   // Connection mode
   const [connMode, setConnMode] = useState<"local" | "remote" | "ssh">("local");
   const [connRemoteUrl, setConnRemoteUrl] = useState("");
@@ -298,11 +304,44 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     } catch {
       /* ignore */
     }
+
+    // Read the persisted lane so the selector reflects reality rather than
+    // defaulting to Hermes on every mount.
+    try {
+      const saved = await window.hermesAPI.getConfig(
+        "runtime.provider",
+        profile,
+      );
+      if (typeof saved === "string" && saved.trim()) {
+        setActiveRuntimeProvider(saved.trim());
+      }
+    } catch {
+      /* keep the default */
+    }
   }
 
   async function refreshTaskOrchestrators(): Promise<void> {
     const orchestrators = await window.hermesAPI.listTaskOrchestrators();
     setTaskOrchestrators(orchestrators);
+  }
+
+  /** Persist the active runtime lane and refresh the snapshots so the
+   *  detected/not-detected hint reflects the new choice. */
+  async function handleRuntimeProviderChange(providerId: string): Promise<void> {
+    setActiveRuntimeProvider(providerId);
+    setRuntimeLaneError(null);
+    try {
+      const ok = await window.hermesAPI.setConfig(
+        "runtime.provider",
+        providerId,
+        profile,
+      );
+      if (!ok) {
+        setRuntimeLaneError(t("settings.runtimeLane.saveFailed"));
+      }
+    } catch (err) {
+      setRuntimeLaneError(String(err));
+    }
   }
 
   async function refreshProfiles(): Promise<void> {
@@ -1031,6 +1070,59 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           command. This panel lets you test the matcher ad-hoc.
         </div>
         <CarefulTester profile={profile} />
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-title">{t("settings.runtimeLane.title")}</div>
+        <div className="settings-field-hint settings-field-hint--spaced-md">
+          {t("settings.runtimeLane.hint")}
+        </div>
+        <label className="settings-field">
+          <label className="settings-field-label">
+            {t("settings.runtimeLane.label")}
+          </label>
+          <select
+            className="input"
+            value={activeRuntimeProvider}
+            onChange={(e) => void handleRuntimeProviderChange(e.target.value)}
+          >
+            {runtimeProviders.map((provider) => (
+              <option key={provider.definition.id} value={provider.definition.id}>
+                {provider.definition.displayName}
+                {provider.detected ? "" : " — not detected"}
+              </option>
+            ))}
+          </select>
+          <div className="settings-field-hint">
+            {(() => {
+              const active = runtimeProviders.find(
+                (p) => p.definition.id === activeRuntimeProvider,
+              );
+              return active ? active.summary : "";
+            })()}
+          </div>
+          {(() => {
+            const active = runtimeProviders.find(
+              (p) => p.definition.id === activeRuntimeProvider,
+            );
+            // A provider with no working adapter would silently fall back to
+            // the HTTP path. Say so rather than letting the operator believe
+            // the switch took effect.
+            if (active && active.definition.id !== "hermes" && active.definition.id !== "raven" && active.definition.id !== "deepseek-harness") {
+              return (
+                <div className="settings-field-hint settings-field-hint--warning">
+                  {t("settings.runtimeLane.noAdapter")}
+                </div>
+              );
+            }
+            return null;
+          })()}
+          {runtimeLaneError && (
+            <div className="settings-field-hint settings-field-hint--warning">
+              {runtimeLaneError}
+            </div>
+          )}
+        </label>
       </div>
 
       <div className="settings-section">
