@@ -28,6 +28,7 @@ export function createHermesHarness(): Harness {
     supportsToolCalls: true,
     supportsCompaction: false, // P5 will enable this
     supportsSessionReset: true,
+    supportsTurnExecution: true,
     providerId: "hermes",
     displayName: "Hermes Agent",
   };

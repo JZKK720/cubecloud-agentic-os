@@ -32,6 +32,10 @@ function createStubHarness(
       supportsToolCalls: true,
       supportsCompaction: false,
       supportsSessionReset: true,
+      // Stub: no adapter exists yet, so runTurn throws. Declaring the
+      // capability honestly lets the chat path pick the HTTP route up front
+      // instead of surfacing a thrown error to the operator.
+      supportsTurnExecution: false,
       providerId,
       displayName,
     },

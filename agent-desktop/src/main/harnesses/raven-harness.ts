@@ -130,6 +130,7 @@ export function createRavenHarness(): Harness {
     supportsToolCalls: true,
     supportsCompaction: false,
     supportsSessionReset: true,
+    supportsTurnExecution: true,
     providerId: "raven",
     displayName: "Raven",
   };

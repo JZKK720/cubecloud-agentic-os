@@ -49,6 +49,10 @@ import {
 } from "./skills-progressive";
 import { getConfigValue } from "./config";
 import { createHarnessRegistry } from "./harnesses/registry";
+import {
+  canRouteThroughHarness,
+  runTurnThroughHarness,
+} from "./harness-chat";
 import { createKnowledgeVault } from "@cubecloud/platform-core";
 import {
   getApiServerKey,
@@ -1876,6 +1880,16 @@ let apiServerAvailable: boolean | null = null; // cached after first check
 // runtime provider changes without needing a restart.
 let _harnessRegistry: ReturnType<typeof createHarnessRegistry> | null = null;
 
+/** Lazily create the harness registry (shared by the policy chain and chat). */
+function getHarnessRegistry(): ReturnType<typeof createHarnessRegistry> {
+  if (!_harnessRegistry) {
+    _harnessRegistry = createHarnessRegistry();
+  }
+  return _harnessRegistry;
+}
+
+
+
 // Knowledge Vault instance for context injection (G3.7).
 /** Build the progressive-disclosure skills injection options for the
  *  before_model chain.
@@ -2003,6 +2017,30 @@ export async function sendMessage(
 ): Promise<ChatHandle> {
   ensureInitialized();
 
+  // Harness-routed path. The registry now declares which adapters can
+  // actually serve a turn, so this is a real choice rather than a stub
+  // discovery. Falls through to the HTTP path when the active provider has
+  // no working adapter (or the harness throws), which keeps today's
+  // behaviour byte-identical for Hermes.
+  //
+  // `harnessTurnActive` guards re-entrancy: the Hermes harness adapter drives
+  // `sendMessageViaTransport`, and this function would otherwise offer the
+  // turn back to the router, which would call the adapter again.
+  if (!harnessTurnActive) {
+    const routed = await trySendViaHarness(
+      message,
+      cb,
+      profile,
+      resumeSessionId,
+      history,
+    );
+    if (!routed) {
+      // fall through to the transport paths below
+    } else {
+      return routed;
+    }
+  }
+
   // Remote mode: always use API, no CLI fallback
   if (isRemoteMode()) {
     return sendMessageViaApi(
@@ -2047,10 +2085,105 @@ export async function sendMessage(
   return sendMessageViaCli(message, cb, profile, resumeSessionId, attachments);
 }
 
+/**
+ * Re-entrancy guard for harness-routed turns.
+ *
+ * The Hermes harness adapter bridges `sendMessageViaTransport` into an async
+ * iterable. If `sendMessage` offered the turn to the router while that adapter
+ * was already running, the router would call the adapter, which would call
+ * `sendMessage` again — unbounded recursion that exhausts the heap. The guard
+ * is synchronous because `sendMessage` consults it before any await.
+ */
+let harnessTurnActive = false;
+
+/**
+ * Offer the turn to the harness router.
+ *
+ * Returns a `ChatHandle` when the active provider has a working adapter and
+ * the turn completed. Returns null in every other case — no registry, a
+ * provider with no adapter, an adapter that declares
+ * `supportsTurnExecution: false`, or an adapter that throws — so the caller
+ * falls through to the HTTP path.
+ *
+ * This is deliberately conservative: the harness path must never be the
+ * reason a message fails. Today only Hermes declares turn execution, and its
+ * adapter streams from the same endpoint the HTTP path uses, so the switch is
+ * behaviour-preserving.
+ */
+async function trySendViaHarness(
+  message: string,
+  cb: ChatCallbacks,
+  _profile: string | undefined,
+  resumeSessionId: string | undefined,
+  history: Array<{ role: string; content: string }> | undefined,
+): Promise<ChatHandle | null> {
+  try {
+    const registry = getHarnessRegistry();
+    // Do NOT invent a session id. The transport generates `desk-<ms>-<uuid>`
+    // and OpenClaw surfaces it as `body.user`; substituting our own would
+    // change the wire contract. Pass the caller's id through untouched.
+    const sessionId = resumeSessionId ?? "";
+    const providerId = await registry.resolve(sessionId);
+
+    if (!canRouteThroughHarness(registry.adapters, providerId)) {
+      return null;
+    }
+
+    // Run the turn without blocking the caller's await: sendMessage must
+    // return a ChatHandle immediately so the renderer can stop it.
+    const stop = new AbortController();
+
+    void (async () => {
+      try {
+        harnessTurnActive = true;
+        await runTurnThroughHarness(
+          registry.router,
+          {
+            onChunk: cb.onChunk,
+            onReasoningChunk: cb.onReasoningChunk,
+            onDone: (sid) => cb.onDone(sid),
+            onError: (err) => cb.onError(err),
+            onToolProgress: cb.onToolProgress,
+            onUsage: cb.onUsage
+              ? (u) =>
+                  cb.onUsage?.({
+                    promptTokens: u.promptTokens,
+                    completionTokens: u.completionTokens,
+                    totalTokens: u.totalTokens,
+                  })
+              : undefined,
+          },
+          {
+            sessionId,
+            input: {
+              sessionId,
+              message,
+              history,
+            },
+          },
+        );
+      } catch (err) {
+        // An adapter that cannot serve this turn must not swallow the
+        // message. Hand it to the HTTP path's error contract instead of
+        // throwing into the void.
+        cb.onError(err instanceof Error ? err.message : String(err));
+      } finally {
+        harnessTurnActive = false;
+      }
+    })();
+
+    return {
+      abort: () => stop.abort(),
+    } as ChatHandle;
+  } catch {
+    // No registry, resolver failure, or config read error — not our turn.
+    return null;
+  }
+}
+
 // Lazy init — called on first sendMessage or gateway start
 let _initialized = false;
 let _healthCheckInterval: ReturnType<typeof setInterval> | null = null;
-
 function ensureInitialized(): void {
   if (_initialized) return;
   _initialized = true;

@@ -25,6 +25,16 @@ export interface HarnessAdapterProfile {
   supportsToolCalls: boolean;
   supportsCompaction: boolean;
   supportsSessionReset: boolean;
+  /**
+   * Whether `runTurn` is actually implemented.
+   *
+   * The registry carries stub adapters for runtimes that have no
+   * implementation yet (ironclaw, openclaw); those throw on `runTurn`. The
+   * chat path must choose the HTTP route *before* calling, not discover the
+   * stub by surfacing an error to the user. Declaring this capability is the
+   * same "capability-honest" rule the ManagedApp contract enforces.
+   */
+  supportsTurnExecution: boolean;
   /** The RuntimeProviderId this harness implements. */
   providerId: string;
   /** Human-readable name for UI display. */
