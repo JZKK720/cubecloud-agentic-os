@@ -36,6 +36,17 @@ import {
   createLayaBeforeModelChain,
   type LayaDecideFn,
 } from "./laya-middlewares";
+import {
+  findInstalledSkillDir,
+  getSkillContent,
+  listBundledSkills,
+  listInstalledSkills,
+} from "./skills";
+import {
+  buildSkillCatalog,
+  type SkillCatalog,
+  type SkillCatalogEntry,
+} from "./skills-progressive";
 import { getConfigValue } from "./config";
 import { createHarnessRegistry } from "./harnesses/registry";
 import { createKnowledgeVault } from "@cubecloud/platform-core";
@@ -1246,6 +1257,7 @@ function sendMessageViaApi(
         ...createLayaBeforeModelChain(layaToggles, layaDecide),
         ...createBeforeModelChain(_harnessRegistry, {
           memoryRecallFn,
+          skills: skillsInjectionOptions(),
         }),
       ];
       const middlewareMessages: MiddlewareChatMessage[] = messages.map(
@@ -1865,6 +1877,79 @@ let apiServerAvailable: boolean | null = null; // cached after first check
 let _harnessRegistry: ReturnType<typeof createHarnessRegistry> | null = null;
 
 // Knowledge Vault instance for context injection (G3.7).
+/** Build the progressive-disclosure skills injection options for the
+ *  before_model chain.
+ *
+ *  Progressive disclosure keeps the system prompt small: the model sees
+ *  `name — description` for every installed skill, and a full SKILL.md
+ *  body is appended only when the turn names that skill. With 48 bundled
+ *  skills the catalog costs roughly 50 tokens each instead of loading
+ *  500-2000 token bodies up front.
+ *
+ *  Returns undefined when no skills are available, so the chain stays a
+ *  no-op on a fresh install rather than injecting an empty section. */
+function skillsInjectionOptions(): {
+  catalog: () => SkillCatalog;
+  body: (name: string) => string | null;
+} {
+  return {
+    catalog: () => {
+      // Installed skills win over bundled ones with the same name — the
+      // operator's copy is the one the runtime will actually read.
+      const seen = new Set<string>();
+      const entries: SkillCatalogEntry[] = [];
+
+      const push = (
+        source: SkillCatalogEntry["source"],
+        rows: Array<{ name: string; description: string; category: string }>,
+      ): void => {
+        for (const row of rows) {
+          if (seen.has(row.name)) continue;
+          seen.add(row.name);
+          entries.push({
+            name: row.name,
+            description: row.description,
+            category: row.category,
+            source,
+          });
+        }
+      };
+
+      try {
+        push("user-installed", listInstalledSkills());
+      } catch {
+        // ignore — fall through to bundled
+      }
+      try {
+        push("bundled", listBundledSkills());
+      } catch {
+        // ignore — catalog may be empty
+      }
+
+      return buildSkillCatalog(entries);
+    },
+    body: (name: string): string | null => {
+      try {
+        const dir = findInstalledSkillDir(name);
+        if (!dir) return null;
+        const content = getSkillContent(dir);
+        if (!content) return null;
+        return stripSkillFrontmatter(content);
+      } catch {
+        return null;
+      }
+    },
+  };
+}
+
+/** Drop the YAML frontmatter block (`---…---`) from a SKILL.md body.
+ *  The catalog already carries name/description, so repeating them in the
+ *  injected body only burns context. */
+function stripSkillFrontmatter(content: string): string {
+  const match = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/.exec(content);
+  return match ? content.slice(match[0].length).trim() : content.trim();
+}
+
 // Lazy-initialized on first use. The vault is populated by the
 // Knowledge screen IPC handlers.
 let _vaultForContext: ReturnType<typeof createKnowledgeVault> | null = null;

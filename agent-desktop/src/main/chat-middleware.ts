@@ -32,6 +32,12 @@
 
 import { compressMessages, loadHeadroomConfig } from "./headroom";
 import { getHeadroomSidecarStatus } from "./headroom-sidecar";
+import {
+  buildFullBodyInjection,
+  formatCatalogForSystemPrompt,
+  shouldLoadFullBody,
+  type SkillCatalog,
+} from "./skills-progressive";
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -429,6 +435,99 @@ export function createMemoryInjectMiddleware(
   };
 }
 
+// ── Middleware 7: Skills catalog (before_model) ────────────
+
+/** Build a skills-catalog middleware.
+ *
+ *  Progressive disclosure: instead of injecting every SKILL.md body
+ *  (48 skills × ~500-2000 tokens would blow the budget), inject only
+ *  `name — description`. The full body is appended only when the user
+ *  message references a skill by name.
+ *
+ *  The skill list is supplied by the caller so this module stays free
+ *  of filesystem access and stays trivially testable. `skills.ts` and
+ *  `skills-progressive.ts` supply the data and the formatting.
+ *
+ *  Degrades to a no-op when no skills are provided (fresh install). */
+export function createSkillsCatalogMiddleware(
+  buildCatalog: () => SkillCatalog,
+  describeBody: (name: string) => string | null,
+): BeforeModelMiddleware {
+  return async (ctx) => {
+    let catalog: SkillCatalog;
+    try {
+      catalog = buildCatalog();
+    } catch {
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "skills:skip(catalog-error)",
+      };
+    }
+
+    if (catalog.totalCount === 0) {
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "skills:skip(empty)",
+      };
+    }
+
+    const catalogBlock = formatCatalogForSystemPrompt(catalog);
+    if (!catalogBlock) {
+      return {
+        messages: ctx.messages,
+        applied: false,
+        label: "skills:skip(empty-block)",
+      };
+    }
+
+    // Only pull full bodies when the turn actually references a skill.
+    // The latest user message is the trigger; earlier turns were already
+    // given their chance in their own turn.
+    const latestUser = [...ctx.messages]
+      .reverse()
+      .find((m) => m.role === "user" && m.content);
+
+    const bodyBlocks: string[] = [];
+    if (latestUser?.content && shouldLoadFullBody(latestUser.content)) {
+      for (const entry of catalog.entries) {
+        if (!new RegExp(`\\b${escapeRegExp(entry.name)}\\b`).test(latestUser.content)) {
+          continue;
+        }
+        const body = describeBody(entry.name);
+        if (body) bodyBlocks.push(buildFullBodyInjection(entry.name, body));
+      }
+    }
+
+    const injected = [catalogBlock, ...bodyBlocks].join("\n\n");
+
+    const messages = ctx.messages.map((m) => {
+      if (m.role === "system" && m.content) {
+        return { ...m, content: `${m.content}\n\n${injected}` };
+      }
+      return m;
+    });
+
+    if (!messages.some((m) => m.role === "system")) {
+      messages.unshift({ role: "system", content: injected });
+    }
+
+    return {
+      messages,
+      applied: true,
+      label:
+        bodyBlocks.length > 0
+          ? `skills:catalog(${catalog.totalCount})+bodies(${bodyBlocks.length})`
+          : `skills:catalog(${catalog.totalCount})`,
+    };
+  };
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 // ── Middleware 5: Tool policy screen (before_model) ────────
 //
 // Uses P3 tool policy to screen the user's message for commands that
@@ -753,6 +852,12 @@ export function createBeforeModelChain(
     onRequireApproval?: (
       ctx: BeforeModelContext,
     ) => Promise<"approve" | "deny">;
+    /** Progressive-disclosure skills. Absent ⇒ skills are not injected
+     *  (the runtime falls back to reading `<profileHome>/skills/` itself). */
+    skills?: {
+      catalog: () => SkillCatalog;
+      body: (name: string) => string | null;
+    };
   },
 ): BeforeModelMiddleware[] {
   return [
@@ -762,6 +867,9 @@ export function createBeforeModelChain(
     createMemoryInjectMiddleware(options?.memoryRecallFn),
     headroomCompressMiddleware,
     createCompactionMiddleware(options?.compactionSummaryFn),
+    ...(options?.skills
+      ? [createSkillsCatalogMiddleware(options.skills.catalog, options.skills.body)]
+      : []),
     createRuntimeRouteMiddleware(registry),
   ];
 }
