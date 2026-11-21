@@ -1,4 +1,9 @@
-export type RuntimeProviderId = "hermes" | "ironclaw" | "openclaw" | "raven";
+export type RuntimeProviderId =
+  | "hermes"
+  | "ironclaw"
+  | "openclaw"
+  | "raven"
+  | "deepseek-harness";
 
 export type TaskOrchestratorId = "hermes" | "openclaw";
 
@@ -163,6 +168,35 @@ export const RUNTIME_PROVIDER_CATALOG = [
     notes: [
       "Default Agent Desktop runtime and gateway owner.",
       "Already has truthful onboarding for local install, existing localhost gateway attach, remote endpoint attach, and SSH tunnel attach.",
+    ],
+  },
+  {
+    id: "deepseek-harness",
+    displayName: "DeepSeek Harness",
+    role: "primary-runtime",
+    integrationStatus: "optional",
+    onboardingSurface: "settings",
+    connectionModes: ["embedded-local", "local-gateway"],
+    capabilities: {
+      canInstallLocally: true,
+      canAttachToExistingLocalGateway: false,
+      canAttachToRemoteGateway: false,
+      canAttachViaSshTunnel: false,
+      canDiscoverViaDocker: true,
+      canImportExistingState: false,
+      canDiscoverLocalCli: true,
+      // dsh exposes no OpenAI-compatible gateway: its inbound surface is the
+      // SDK wire protocol over stdio. Declaring `exposesChatGateway` here
+      // would be the exact capability lie the ManagedApp contract forbids.
+      exposesChatGateway: false,
+      supportsTaskExecution: true,
+      supportsWorkflowDispatch: false,
+    },
+    preferredTaskOrchestratorIds: ["hermes"],
+    notes: [
+      "DeepSeek Harness is a Cordis-based, everything-is-a-plugin harness. It speaks JSON-RPC 2.0 over stdio via `dsh --profile sdk`, not HTTP.",
+      "Marked developer preview upstream: the repo warns of compatibility-breaking changes, so the adapter pins the profile and treats frame drift as a CI-visible failure.",
+      "Launch is a child process owned by the desktop, so the lifecycle is per-turn rather than a long-lived gateway.",
     ],
   },
   {
@@ -358,6 +392,15 @@ const DOCKER_DISCOVERY_TARGETS: Record<
     displayName: "Raven",
     keywords: ["raven", "evermind-raven"],
     preferredPorts: [8855, 3000, 8080],
+  },
+  "deepseek-harness": {
+    id: "deepseek-harness",
+    displayName: "DeepSeek Harness",
+    keywords: ["deepseek-harness", "deepseek_harness", "dsh"],
+    // dsh runs as a stdio child process; a containerised deployment exposes
+    // no chat port, so these exist only so a container match can be reported
+    // honestly rather than left undiscoverable.
+    preferredPorts: [],
   },
 };
 

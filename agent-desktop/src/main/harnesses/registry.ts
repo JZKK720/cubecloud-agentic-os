@@ -18,6 +18,7 @@ import {
 } from "@cubecloud/platform-core";
 import { createHermesHarness } from "./hermes-harness";
 import { createRavenHarness } from "./raven-harness";
+import { createDeepSeekHarness } from "./deepseek-harness";
 import { getConfigValue } from "../config";
 
 /** A stub harness for runtimes that don't have a full adapter yet. */
@@ -85,6 +86,8 @@ export function createHarnessRegistry(): HarnessRegistry {
     // I-phase: the real adapter replaced the throwing stub — Raven is
     // an OpenAI-compatible gateway (8855) the desktop can stream from.
     ["raven", createRavenHarness()],
+    // Fifth lane: dsh speaks JSON-RPC 2.0 over stdio, not HTTP.
+    ["deepseek-harness", createDeepSeekHarness()],
   ]);
 
   const resolve: HarnessResolver = async (_sessionId: string) => {

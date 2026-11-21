@@ -542,6 +542,47 @@ gives us a defensible answer to "do you speak AG-UI?" — yes, at the edge.
 chat does **not** stream through the harness router. `createHarnessRegistry()`
 is wired only into `createBeforeModelChain` — i.e. the harness is consulted for
 pre-model *policy*, then `hermes.ts` streams from `/v1/chat/completions`
+
+**STATUS (2026-11-21): 1.1, 1.2 and the blocker are IMPLEMENTED.**
+
+The blocker was real and is closed by `573c12f`: `harness-chat.ts` drives
+`router.runTurn(...)` and adapts the delta stream onto `ChatCallbacks`, and
+`HarnessAdapterProfile` gained `supportsTurnExecution` so stub runtimes stay on
+the HTTP path instead of failing at the user.
+
+With that in place the lane itself landed:
+
+- **`dsh-jsonrpc-client.ts`** — a line-framed JSON-RPC 2.0 client over stdio,
+  written against the verified upstream contract (`packages/sdk/protocol`):
+  one message per `\n`, malformed lines ignored, `id`+`method` = request,
+  `id` alone = response, `method` alone = notification; methods `initialize`,
+  `session/prompt`, `session/query`, `session/resume`, `session/wait`,
+  `shutdown`; server notifications `session.event` and `session.status`.
+  stderr is drained so the pipe cannot deadlock the child, and every pending
+  request rejects on transport loss rather than hanging.
+- **`harnesses/deepseek-harness.ts`** — the adapter. Turns are genuinely
+  streaming: the reply arrives as `session.event` notifications and each
+  `assistant/message` carries the exact timed model stream
+  (`text-chunks` batches and `text-delta` chunks), which maps to `text`;
+  `reasoning-chunks` maps to `reasoning`; `tool/call` and `tool/result` map to
+  the tool deltas; `turn/end` closes the turn.
+- **`RuntimeProviderId`** += `"deepseek-harness"`; catalog entry with
+  `exposesChatGateway: false` (honest: dsh has no HTTP gateway — all six
+  `chat/completions` hits upstream are *outbound* LLM clients),
+  `onboardingSurface: "settings"`, `integrationStatus: "optional"`; a
+  `DockerRuntimeTarget` so a container match is reported rather than ignored;
+  `runtime-registry.ts` case that probes for the `dsh` binary and explains
+  stdio-over-child-process in its detail text.
+- Registry wires the adapter as the fifth lane.
+
+**9 tests** in `tests/deepseek-harness.test.ts` drive a **real child process**
+(`tests/fixtures/dsh-fixture-runtime.cjs`) speaking the actual wire protocol —
+not a fetch mock, because dsh never uses HTTP. They cover text batching,
+reasoning separation, tool call/result, usage, and the cannot-start fallback.
+
+**Not done: 1.4's UI badge.** The developer-preview status is recorded in the
+catalog `notes` and the registry `detail`, which the Settings screen renders;
+a dedicated badge is cosmetic on top of that.
 directly (`hermes.ts:1462`). Adding a `stdio`-transport harness therefore
 requires routing `runTurn` through the chat path, which is a larger change than
 "add a union member". Sequence 1.2 *before* 1.1.

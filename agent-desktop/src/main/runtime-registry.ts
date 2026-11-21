@@ -176,6 +176,38 @@ export async function listRuntimeProviders(): Promise<
             "Raven (EverMind) is Apache-2.0 and ships its own four built-in agents plus an Evolver. The desktop attaches to the gateway on port 8855 with the same chat contract as the other lanes. The Raven harness adapter is a later phase — until then the gateway lane is chat-capable. Hermes remains the default runtime.",
         } satisfies RuntimeProviderSnapshot;
       }
+      case "deepseek-harness": {
+        // dsh is a child process launched per turn over stdio JSON-RPC, so
+        // there is no gateway port to probe and no remote attach lane. The
+        // only truthful signals are "is the package resolvable" and "is the
+        // profile configured".
+        const dshCommand = resolveCommandOnPath("dsh", getEnhancedPath());
+        return {
+          definition,
+          status: dshCommand ? "ready" : "available",
+          available: true,
+          detected: !!dshCommand,
+          detectedCount: dshCommand ? 1 : 0,
+          detectedPath: null,
+          detectedCommand: dshCommand,
+          currentConnectionMode: null,
+          actions: [
+            {
+              id: "open-install-guide",
+              kind: "docs",
+              label: dshCommand ? "Open DeepSeek Harness docs" : "Install DeepSeek Harness",
+              detail:
+                "DeepSeek Harness runs as `npx @deepseek-ai/dsh --profile sdk`, driven over stdio JSON-RPC. There is no gateway port and no remote attach: the desktop owns the child process for the duration of a turn.",
+              primary: !dshCommand,
+            },
+          ],
+          summary: dshCommand
+            ? `${definition.displayName} CLI was detected on the current PATH and can serve turns over stdio.`
+            : `${definition.displayName} is optional. It launches on demand through npx; no separate install step is required.`,
+          detail:
+            "DeepSeek Harness is a developer-preview, everything-is-a-plugin runtime built on Cordis. It exposes no OpenAI-compatible gateway — its inbound surface is the SDK wire protocol (JSON-RPC 2.0, newline-delimited, over stdio), which the desktop's harness adapter speaks directly. Hermes remains the default runtime.",
+        } satisfies RuntimeProviderSnapshot;
+      }
     }
   });
 }
