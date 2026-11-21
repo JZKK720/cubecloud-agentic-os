@@ -337,6 +337,7 @@ not copy content from these sources — link to them:
 - Security policy: `SECURITY.md`
 - Brand and license: `BRANDING_AND_LICENSE.md`
 - Translation inventory: `README.i18n.md`
+- Plans index (which plan is current of record): `docs/plans/README.md`
 - Workflow skill (docs i18n): `.github/skills/docs-i18n-refresh/SKILL.md`
 - Workflow skill (Headroom): `.github/skills/headroom-workflow/SKILL.md`
 

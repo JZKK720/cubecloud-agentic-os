@@ -578,23 +578,39 @@ it**. The 48 bundled skills reached the runtime only as files the installer had
 copied to `<profileHome>/skills/`; the progressive-disclosure catalog — the
 mechanism with the ~80% context saving — was dead code.
 
+Fixing that exposed a second, deeper gap. The frontmatter parser read every
+scalar with the character class `[^"'\n]+`, which excludes quotes from the
+middle of a value. 25 of the 48 skills embed quoted trigger phrases:
+
+```
+description: Use when writing code. Triggers: "TDD this", "red-green".
+```
+
+so the match failed and those skills came back with an **empty description** —
+present in the catalog by name, invisible to the model. Measured against the
+real parser before the fix: **22 of 48** had both fields.
+
 | # | Task | Seam | Verify |
 |---|---|---|---|
 | 2.5.1 | `createSkillsCatalogMiddleware` in `chat-middleware.ts` | S1 | catalog injected; body only when named; degrades on error |
 | 2.5.2 | Wire it into `createBeforeModelChain` behind `options.skills` | S1 | chain omits it entirely when unconfigured |
 | 2.5.3 | `skillsInjectionOptions()` in `hermes.ts` builds the catalog from `listInstalledSkills` + `listBundledSkills` | S1 | installed copy wins over bundled on name collision |
+| 2.5.4 | Fix `parseSkillFrontmatter` to read YAML scalars properly | S1 | all 48 skills yield name **and** description |
 
-**STATUS (2026-11-21): IMPLEMENTED.**
+**STATUS (2026-11-21): IMPLEMENTED — all four.**
 
 - `createSkillsCatalogMiddleware(buildCatalog, describeBody)` — injects
   `name — description` for every skill, appends a full SKILL.md body only when
   the latest user turn names that skill, preserves any existing system prompt,
   and returns `applied: false` with a reason label on empty/error rather than
-  breaking the chat path.
+  breaking the chat path. 6 tests.
 - `hermes.ts` supplies the data: installed skills first (operator's copy wins),
   bundled second, bodies stripped of YAML frontmatter since the catalog already
   carries name and description.
-- 6 tests in `agent-desktop/tests/skills-catalog-middleware.test.ts`.
+- `parseSkillFrontmatter` now reads plain, double-quoted and single-quoted
+  scalars via `readFrontmatterScalar`, including escaped quotes and ` #`
+  comments. 8 tests, one of which walks `.agents/skills/` and asserts every
+  bundled skill yields both fields — the regression guard for the whole class.
 - **Still open:** the runtime also reads `<profileHome>/skills/` off disk, so
   the catalog is additive today. Removing the on-disk duplication is a separate
   change and should wait until we know whether non-Hermes harnesses ever read
