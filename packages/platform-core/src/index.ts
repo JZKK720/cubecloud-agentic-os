@@ -1,3 +1,44 @@
+// ── AG-UI protocol codec (edge adapter) ─────────────────────────────────────
+// Frozen 1.0 event model ⇄ HarnessTurnDelta. Pure functions; the caller
+// owns the transport. See docs/plans/2026-11-21-external-harness-protocol-
+// adoption-plan.md for why this is the edge protocol and not the internal one.
+export {
+  AG_UI_EVENT_TYPES,
+  type AgUiEventType,
+  type AgUiBaseEvent,
+  type AgUiEvent,
+  type AgUiRunStarted,
+  type AgUiRunFinished,
+  type AgUiRunFinishedOutcome,
+  type AgUiRunError,
+  type AgUiTextMessageStart,
+  type AgUiTextMessageContent,
+  type AgUiTextMessageEnd,
+  type AgUiToolCallStart,
+  type AgUiToolCallArgs,
+  type AgUiToolCallEnd,
+  type AgUiToolCallResult,
+  type AgUiReasoningStart,
+  type AgUiReasoningMessageStart,
+  type AgUiReasoningContent,
+  type AgUiReasoningMessageEnd,
+  type AgUiReasoningEnd,
+  type AgUiStepStarted,
+  type AgUiStepFinished,
+  type AgUiInterrupt,
+  type AgUiRunAgentInput,
+  type AgUiResumeEntry,
+  type AgUiEncoder,
+  type AgUiEncoderOptions,
+  createAgUiEncoder,
+  type AgUiDecoded,
+  decodeAgUiEvent,
+  type ApprovalLike,
+  approvalToInterrupt,
+  resumeToVerdict,
+  validateResumeCoverage,
+} from "./ag-ui";
+
 // ── Harness interface (P1) ──────────────────────────────────────────────────
 export {
   type Harness,
