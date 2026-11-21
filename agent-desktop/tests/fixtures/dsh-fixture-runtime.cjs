@@ -1,15 +1,30 @@
-// Fixture DeepSeek Harness runtime. Speaks the SDK wire protocol:
-// JSON-RPC 2.0, one message per newline, over stdio.
+// Fixture DeepSeek Harness runtime — modelled on the REAL protocol, verified
+// against @deepseek-ai/dsh@0.2.2-rc.5 over stdio.
 //
-// The adapter test drives this so the wire contract is exercised for real
-// rather than mocked at the fetch() level — dsh does not use HTTP at all.
+// What the first fixture got wrong (and this one fixes):
+//   1. `initialize` requires cwd, provider and model. The old fixture accepted
+//      anything, which is exactly why the client shipped without them and the
+//      real runtime answered '"paths[0]" must be of type string'.
+//   2. An unknown provider answers 'no adapter registered for provider "X"'.
+//   3. The model must come from the shipped catalog (deepseek-flash /
+//      deepseek-v4-pro); deepseek-chat is accepted by the runtime but is not
+//      an advertised model.
+//   4. A provider failure emits assistant/attempt with a finish chunk of
+//      reason.kind 'error' and NO text, then turn/end with reason.kind 'error'.
+//      An adapter that ignores that reports a clean but empty turn — which is
+//      what happened on the first real run.
 //
-// Emits the upstream event vocabulary
-// (packages/core/session/src/types.ts): turn/start, assistant/message
-// carrying the exact timed model stream, then turn/end.
+// Env knobs:
+//   DSH_FIXTURE_ABORT=1    -> turn/end reason {kind:'aborted'}
+//   DSH_FIXTURE_ERROR=1    -> the real ACCOUNT_SIGN_IN_REQUIRED failure shape
+//   DSH_FIXTURE_BADPROTO=1 -> a non-JSON line instead of a reply
 
 let buffer = "";
 let seq = 1;
+let initialized = false;
+
+const PROVIDERS = new Set(["deepseek-account", "deepseek-api-key"]);
+const MODELS = new Set(["deepseek-flash", "deepseek-v4-pro"]);
 
 function send(frame) {
   process.stdout.write(`${JSON.stringify(frame)}\n`);
@@ -19,7 +34,10 @@ function event(type, data) {
   send({
     jsonrpc: "2.0",
     method: "session.event",
-    params: { sessionId: "s1", event: { type, seq: seq++, time: Date.now(), data } },
+    params: {
+      sessionId: "s1",
+      event: { type, seq: seq++, time: Date.now(), data },
+    },
   });
 }
 
@@ -30,25 +48,114 @@ function handle(line) {
   } catch {
     return;
   }
-  const { id, method } = frame;
+  const { id, method, params = {} } = frame;
 
   if (method === "initialize") {
-    send({ jsonrpc: "2.0", id, result: { protocolVersion: "1" } });
+    if (process.env.DSH_FIXTURE_BADPROTO === "1") {
+      process.stdout.write("this is not json-rpc\n");
+      return;
+    }
+    if (typeof params.cwd !== "string") {
+      send({
+        jsonrpc: "2.0",
+        id,
+        error: {
+          code: -32603,
+          message:
+            'The "paths[0]" argument must be of type string. Received undefined',
+        },
+      });
+      return;
+    }
+    if (!PROVIDERS.has(params.provider)) {
+      send({
+        jsonrpc: "2.0",
+        id,
+        error: {
+          code: -32603,
+          message: `no adapter registered for provider "${params.provider}"`,
+        },
+      });
+      return;
+    }
+    if (!MODELS.has(params.model)) {
+      send({
+        jsonrpc: "2.0",
+        id,
+        error: {
+          code: -32603,
+          message: `unknown model "${params.model}" for provider "${params.provider}"`,
+        },
+      });
+      return;
+    }
+    initialized = true;
+    send({
+      jsonrpc: "2.0",
+      id,
+      result: {
+        serverInfo: { name: "deepseek-harness-sdk-runtime", version: "0.0.1" },
+      },
+    });
     return;
   }
 
   if (method === "session/prompt") {
-    // Receipt first, then the stream — the real runtime enqueues durably.
+    if (!initialized) {
+      send({
+        jsonrpc: "2.0",
+        id,
+        error: { code: -32603, message: "initialize first" },
+      });
+      return;
+    }
     send({ jsonrpc: "2.0", id, result: { messageId: "msg-1" } });
-    // DSH_FIXTURE_ABORT=1 makes the turn close with reason aborted instead of
-    // completed, so the adapter's non-success path is exercised.
-    const aborting = process.env.DSH_FIXTURE_ABORT === "1";
+
     setImmediate(() => {
       event("turn/start", { turn: 1 });
-      if (aborting) {
+
+      if (process.env.DSH_FIXTURE_ERROR === "1") {
+        event("assistant/attempt", {
+          turn: 1,
+          step: 1,
+          stream: [
+            {
+              type: "chunk",
+              time: Date.now(),
+              chunk: {
+                type: "finish",
+                reason: {
+                  kind: "error",
+                  failure: {
+                    message:
+                      "Sign in to DeepSeek to use the account provider. The request destination must allow account authentication.",
+                    code: "ACCOUNT_SIGN_IN_REQUIRED",
+                  },
+                },
+              },
+            },
+          ],
+        });
+        event("step/end", { turn: 1, step: 1 });
+        event("turn/end", {
+          turn: 1,
+          reason: {
+            kind: "error",
+            error: {
+              message:
+                "Sign in to DeepSeek to use the account provider. The request destination must allow account authentication.",
+              code: "ACCOUNT_SIGN_IN_REQUIRED",
+            },
+          },
+        });
+        return;
+      }
+
+      if (process.env.DSH_FIXTURE_ABORT === "1") {
         event("turn/end", { turn: 1, reason: { kind: "aborted" } });
         return;
       }
+
       event("tool/call", {
         turn: 1,
         step: 1,
@@ -83,6 +190,7 @@ function handle(line) {
         ],
         usage: { inputTokens: 12, outputTokens: 4 },
       });
+      event("step/end", { turn: 1, step: 1 });
       event("turn/end", { turn: 1, reason: { kind: "completed" } });
     });
     return;

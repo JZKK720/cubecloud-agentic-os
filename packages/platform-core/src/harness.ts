@@ -60,6 +60,18 @@ export type HarnessTurnDelta =
   | { type: "tool_call"; callId: string; name: string; args: string }
   | { type: "tool_result"; callId: string; content: string }
   | { type: "usage"; promptTokens: number; completionTokens: number }
+  /**
+   * The turn failed. `message` is user-facing (a provider's own text where one
+   * exists); `code` is the provider-neutral routing code when the adapter can
+   * supply one.
+   *
+   * This exists because a provider can fail without emitting any text — the
+   * real DeepSeek Harness surfaces `ACCOUNT_SIGN_IN_REQUIRED` as a `finish`
+   * chunk inside `assistant/attempt`, never as a delta. Without an error
+   * delta the adapter could only end the turn silently, which reads to the
+   * operator as "the model said nothing".
+   */
+  | { type: "error"; message: string; code?: string }
   | { type: "done"; sessionId?: string };
 
 /** Controller for turn execution lifecycle. */

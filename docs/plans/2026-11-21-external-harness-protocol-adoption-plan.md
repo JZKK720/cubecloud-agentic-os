@@ -583,6 +583,44 @@ reasoning separation, tool call/result, usage, and the cannot-start fallback.
 **Not done: 1.4's UI badge.** The developer-preview status is recorded in the
 catalog `notes` and the registry `detail`, which the Settings screen renders;
 a dedicated badge is cosmetic on top of that.
+
+### Phase 1.5 — Real-runtime verification (2026-11-22)
+
+The fixture-based tests passed while the adapter was **broken against the real
+runtime**. Running `@deepseek-ai/dsh@0.2.2-rc.5` directly found five defects that
+a self-authored fixture structurally cannot catch:
+
+| # | Defect | How it surfaced |
+|---|---|---|
+| 1 | `initialize` requires `cwd`, `provider`, `model` | Real runtime: `"paths[0]" must be of type string. Received undefined` |
+| 2 | Only `deepseek-account` is registered in the default `sdk` profile | `no adapter registered for provider "deepseek-api-key"` |
+| 3 | `deepseek-chat` is not in the advertised catalog | Catalog is `deepseek-flash` / `deepseek-v4-pro` |
+| 4 | A provider failure emits **no text** — a `finish` chunk with `reason.kind: 'error'` inside `assistant/attempt`, then `turn/end` `'error'` | First real run reported `ACCOUNT_SIGN_IN_REQUIRED` as a clean, empty turn |
+| 5 | Sessions persist in `$DSH_HOME/storages/sessions/<id>.json` | Reusing an id: `session "<id>" already exists` |
+
+All five are fixed. Two structural consequences:
+
+- **`HarnessTurnDelta` gained an `error` variant.** Without it an adapter could
+  only end a failed turn silently, which reads to the operator as "the model
+  said nothing". The AG-UI codec maps it to `RUN_ERROR`.
+- **`dsh-jsonrpc-client.ts` fails fast on non-JSON stdout** instead of waiting
+  out a 30s timeout. The serving contract says stdout carries only frames, so a
+  non-frame means the deployment composed a stdout logger — bounded failure, not
+  a hang.
+
+`scripts/dsh-real-smoke.cjs` makes this repeatable. It runs two paths against the
+real runtime, needs no credentials, and skips with exit 0 when the package is
+absent (so it can sit in the local audit ladder but never in required CI):
+
+- **failure path** — `deepseek-account` without sign-in must surface
+  `ACCOUNT_SIGN_IN_REQUIRED`, not a false success;
+- **success path** — `deepseek-official` pointed at a local Messages-shaped fake
+  via `DEEPSEEK_BASE_URL` must stream text, report usage, and close with a
+  session id.
+
+Both pass. The provider is configurable (`runtime.dsh_provider`,
+`runtime.dsh_model`, `runtime.dsh_profile`) because the right adapter depends on
+how the operator's deployment is composed.
 directly (`hermes.ts:1462`). Adding a `stdio`-transport harness therefore
 requires routing `runTurn` through the chat path, which is a larger change than
 "add a union member". Sequence 1.2 *before* 1.1.

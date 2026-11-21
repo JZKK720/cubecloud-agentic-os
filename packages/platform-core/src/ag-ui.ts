@@ -435,6 +435,18 @@ export function createAgUiEncoder(options: AgUiEncoderOptions): AgUiEncoder {
           return events;
         }
 
+        case "error": {
+          // AG-UI models a failed run as RUN_ERROR, which is exactly this.
+          events.push(...closeText(), ...closeReasoning());
+          events.push({
+            type: "RUN_ERROR",
+            message: delta.message,
+            ...(delta.code ? { code: delta.code } : {}),
+          } satisfies AgUiRunError);
+          started = false;
+          return events;
+        }
+
         case "done": {
           events.push(...closeText(), ...closeReasoning());
           events.push({

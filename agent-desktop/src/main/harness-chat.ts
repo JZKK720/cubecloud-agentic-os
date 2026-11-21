@@ -91,6 +91,7 @@ export async function runTurnThroughHarness(
 ): Promise<RoutedTurnResult> {
   let producedContent = false;
   let resolvedSessionId: string | undefined;
+  let failed = false;
 
   for await (const delta of router.runTurn(options.sessionId, options.input)) {
     switch (delta.type) {
@@ -128,11 +129,20 @@ export async function runTurnThroughHarness(
         break;
       }
 
+      case "error": {
+        // A provider failure carries no text; without this the operator would
+        // see a completed turn with an empty answer.
+        cb.onError(delta.code ? `${delta.message} (${delta.code})` : delta.message);
+        failed = true;
+        break;
+      }
+
       case "done": {
         resolvedSessionId = delta.sessionId;
         // The run is finished; stop consuming so a misbehaving adapter that
-        // keeps yielding cannot hang the UI.
-        cb.onDone(delta.sessionId);
+        // keeps yielding cannot hang the UI. An already-reported failure must
+        // not be followed by a success callback.
+        if (!failed) cb.onDone(delta.sessionId);
         return { producedContent, sessionId: resolvedSessionId };
       }
 
@@ -148,7 +158,7 @@ export async function runTurnThroughHarness(
 
   // The stream ended without a `done` delta. Treat that as completion so the
   // UI never spins forever, but report it so the caller can log the adapter.
-  cb.onDone(resolvedSessionId);
+  if (!failed) cb.onDone(resolvedSessionId);
   return { producedContent, sessionId: resolvedSessionId };
 }
 

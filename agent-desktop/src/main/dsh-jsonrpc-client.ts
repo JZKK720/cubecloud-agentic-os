@@ -36,22 +36,52 @@ export interface DshSessionEvent {
   data?: Record<string, unknown>;
 }
 
+/**
+ * `initialize` params, verified against the installed package
+ * (`dsh-sdk-protocol/lib/types/types.d.ts`). `cwd`, `provider` and `model`
+ * are **required**; sending only `approvalRequests` makes the real runtime
+ * answer `-32603 "paths[0] must be of type string"`.
+ *
+ * `provider` must name a registered adapter. The default `sdk` profile ships
+ * `deepseek-account` (needs sign-in) and `deepseek-api-key` (needs a key);
+ * an unknown id answers "no adapter registered for provider ...".
+ */
+export interface DshInitializeParams {
+  cwd: string;
+  provider: string;
+  model: string;
+  approvalRequests?: boolean;
+  reasoningEffort?: string;
+  maxTokens?: number;
+  capabilities?: { userQuestions?: boolean };
+}
+
 export interface DshClientOptions {
   /** Command to launch. Defaults to `npx`. */
   command?: string;
   /** Arguments. Defaults to the sdk profile invocation. */
   args?: string[];
-  /** Working directory for the runtime. */
+  /** Working directory for the runtime. Also sent as `initialize.cwd`. */
   cwd?: string;
   /** Extra environment for the child. */
   env?: Record<string, string>;
   /** Per-request timeout. */
   requestTimeoutMs?: number;
+  /** Provider adapter id. Defaults to `deepseek-account`. */
+  provider?: string;
+  /** Model id. Defaults to `deepseek-flash` (the package's own catalog entry). */
+  model?: string;
 }
 
 const DEFAULT_COMMAND = "npx";
 const DEFAULT_ARGS = ["-y", "@deepseek-ai/dsh", "--profile", "sdk"];
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
+
+/** Provider adapter that ships enabled in the default `sdk` profile. */
+export const DSH_DEFAULT_PROVIDER = "deepseek-account";
+
+/** First entry of `DEFAULT_MODELS` in `dsh-llm-deepseek`. */
+export const DSH_DEFAULT_MODEL = "deepseek-flash";
 
 interface PendingRequest {
   resolve: (value: unknown) => void;
@@ -89,6 +119,7 @@ export class DshJsonRpcClient {
   >();
   private disposed = false;
   private transportError: Error | null = null;
+  private nonProtocolLines = 0;
 
   constructor(private readonly options: DshClientOptions = {}) {}
 
@@ -138,8 +169,13 @@ export class DshJsonRpcClient {
     });
 
     await this.request("initialize", {
+      cwd: this.options.cwd ?? process.cwd(),
+      provider: this.options.provider ?? DSH_DEFAULT_PROVIDER,
+      model: this.options.model ?? DSH_DEFAULT_MODEL,
+      // Decline server-to-client approvals: the desktop's own preflight
+      // policy chain is the gate, not a second one inside the runtime.
       approvalRequests: false,
-    });
+    } satisfies DshInitializeParams);
   }
 
   /** Register a listener for `session.event` notifications. */
@@ -190,6 +226,14 @@ export class DshJsonRpcClient {
     this.child = null;
   }
 
+  /** Terminate the child without a graceful shutdown handshake. */
+  kill(): void {
+    this.disposed = true;
+    this.child?.kill();
+    this.fail(new Error("dsh client killed"));
+    this.child = null;
+  }
+
   // ── transport ────────────────────────────────────────────
 
   private onStdout(chunk: string): void {
@@ -208,9 +252,23 @@ export class DshJsonRpcClient {
     try {
       frame = JSON.parse(lineRaw) as Record<string, unknown>;
     } catch {
-      // "malformed lines are ignored" — per the protocol.
+      // The protocol says malformed lines are ignored, and that is right for
+      // a stray line. But the serving contract also says "stdout carries only
+      // JSON-RPC frames", so a non-frame on stdout means the deployment is
+      // misconfigured (a stdout logger was composed in). Ignoring it forever
+      // would leave every request waiting for a reply that can never come, so
+      // surface it as a transport failure — bounded, not a 30s hang.
+      this.nonProtocolLines += 1;
+      if (this.nonProtocolLines >= 1) {
+        this.fail(
+          new Error(
+            `dsh wrote non-JSON to stdout (${lineRaw.slice(0, 80)}); the runtime must not log to stdout`,
+          ),
+        );
+      }
       return;
     }
+    this.nonProtocolLines = 0;
 
     const hasId = typeof frame.id === "number";
     const hasMethod = typeof frame.method === "string";
@@ -368,4 +426,66 @@ export function dshEventToReasoning(event: DshSessionEvent): string | null {
     }
   }
   return parts.length ? parts.join("") : null;
+}
+
+/**
+ * Extract a provider failure from one session event.
+ *
+ * VERIFIED against the real runtime: a model call that cannot complete emits
+ * no text at all. The failure arrives as either
+ *   - `assistant/attempt` whose stream holds a `{type:'chunk', chunk:{type:
+ *     'finish', reason:{kind:'error', failure:{message, code}}}}`, or
+ *   - `turn/end` with `reason:{kind:'error', error:{message, code}}`.
+ *
+ * Without this the adapter saw only `turn/end` with an unfamiliar kind and
+ * reported a clean — but completely empty — turn. The first real run produced
+ * exactly that: `ACCOUNT_SIGN_IN_REQUIRED` surfaced as nothing at all.
+ *
+ * Returns null when the event carries no failure.
+ */
+export function dshEventToFailure(
+  event: DshSessionEvent,
+): { message: string; code?: string } | null {
+  const data = event.data ?? {};
+
+  // Chunk-level finish reason (the model attempt).
+  if (Array.isArray(data.stream)) {
+    for (const record of data.stream) {
+      const r = record as Record<string, unknown>;
+      if (r.type !== "chunk") continue;
+      const chunk = r.chunk as Record<string, unknown> | undefined;
+      if (chunk?.type !== "finish") continue;
+      const reason = chunk.reason as
+        | { kind?: string; failure?: { message?: string; code?: string } }
+        | undefined;
+      if (reason?.kind === "error" || reason?.kind === "aborted") {
+        return {
+          message: reason.failure?.message ?? `model call ${reason.kind}`,
+          code: reason.failure?.code,
+        };
+      }
+    }
+  }
+
+  // Turn-level reason. `TurnEndReason` is merge-extensible, so treat any kind
+  // outside the success set as a failure rather than assuming the union.
+  if (event.type === "turn/end") {
+    const reason = data.reason as
+      | {
+          kind?: string;
+          error?: { message?: string; code?: string };
+          failure?: { message?: string; code?: string };
+        }
+      | undefined;
+    const kind = reason?.kind;
+    if (kind && kind !== "completed" && kind !== "stop") {
+      const detail = reason?.error ?? reason?.failure;
+      return {
+        message: detail?.message ?? `turn ended: ${kind}`,
+        code: detail?.code,
+      };
+    }
+  }
+
+  return null;
 }

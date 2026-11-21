@@ -35,7 +35,10 @@ import type {
   CompactionResult,
 } from "@cubecloud/platform-core";
 import {
+  DSH_DEFAULT_MODEL,
+  DSH_DEFAULT_PROVIDER,
   DshJsonRpcClient,
+  dshEventToFailure,
   dshEventToReasoning,
   dshEventToText,
   type DshSessionEvent,
@@ -54,6 +57,10 @@ export interface DeepSeekHarnessOptions {
   args?: string[];
   cwd?: string;
   env?: Record<string, string>;
+  /** Provider adapter id. Defaults to `deepseek-account`. */
+  provider?: string;
+  /** Model id. Defaults to `deepseek-flash`. */
+  model?: string;
 }
 
 /** Resolve the dsh profile from config so an operator can pick sdk-minimal. */
@@ -67,6 +74,35 @@ function resolveProfile(): string {
     /* fall through */
   }
   return "sdk";
+}
+
+/**
+ * Resolve the provider adapter.
+ *
+ * VERIFIED against the real runtime: the default `sdk` profile registers
+ * **only `deepseek-account`**. `deepseek-api-key` answers "no adapter
+ * registered for provider" unless a deployment composes that plugin. The
+ * operator can point at another id via `runtime.dsh_provider`.
+ */
+function resolveProvider(): string {
+  try {
+    const raw = getConfigValue("runtime.dsh_provider");
+    if (typeof raw === "string" && raw.trim()) return raw.trim();
+  } catch {
+    /* fall through */
+  }
+  return DSH_DEFAULT_PROVIDER;
+}
+
+/** Resolve the model id, defaulting to the package's own catalog entry. */
+function resolveModel(): string {
+  try {
+    const raw = getConfigValue("runtime.dsh_model");
+    if (typeof raw === "string" && raw.trim()) return raw.trim();
+  } catch {
+    /* fall through */
+  }
+  return DSH_DEFAULT_MODEL;
 }
 
 /** Create the DeepSeek Harness adapter. */
@@ -96,14 +132,16 @@ export function createDeepSeekHarness(
         ],
         cwd: options.cwd,
         env: options.env,
+        provider: options.provider ?? resolveProvider(),
+        model: options.model ?? resolveModel(),
       });
 
       // Collect deltas from notifications. The generator awaits this queue.
       const queue: HarnessTurnDelta[] = [];
       let finished = false;
       let wake: (() => void) | null = null;
-      /** Set when `turn/end` reports aborted/blocked instead of completed. */
-      let turnEndReason: string | null = null;
+      /** Set when the runtime reports a provider failure. */
+      let failure: { message: string; code?: string } | null = null;
 
       const push = (delta: HarnessTurnDelta): void => {
         queue.push(delta);
@@ -151,19 +189,19 @@ export function createDeepSeekHarness(
           }
         }
 
-        // A closed turn is the natural end of one chat turn. `reason` is a
-        // TurnEndReason: { kind: 'completed' | 'aborted' | 'blocked' }.
-        // A turn that ended aborted or blocked must not be reported as a
-        // clean finish, so remember why it closed and let the caller surface
-        // it through the normal error path.
+        // A provider failure produces no text at all: it surfaces as a
+        // `finish` chunk with reason.kind 'error' inside assistant/attempt, or
+        // as turn/end with reason.kind 'error'. Capture it so the turn is not
+        // reported as a clean but empty answer.
+        const eventFailure = dshEventToFailure(event);
+        if (eventFailure && !failure) {
+          failure = eventFailure;
+        }
+
+        // A closed turn is the natural end of one chat turn. `reason` is
+        // TurnEndReason, which is merge-extensible upstream — do not assume a
+        // closed union.
         if (event.type === "turn/end") {
-          const reason = (event.data ?? {}).reason as
-            | { kind?: string }
-            | undefined;
-          const kind = reason?.kind;
-          if (kind && kind !== "completed") {
-            turnEndReason = kind;
-          }
           finished = true;
           const fn = wake;
           wake = null;
@@ -211,13 +249,18 @@ export function createDeepSeekHarness(
         while (queue.length > 0) {
           yield queue.shift()!;
         }
-      } catch {
-        // Mirror the other adapters: a transport failure ends the turn with a
-        // final `done` rather than throwing out of the generator, so the chat
-        // path's error contract stays uniform.
+      } catch (err) {
+        // A transport or initialize failure must be REPORTED, not turned into
+        // a silent empty turn. The first real runs showed exactly that: an
+        // initialize rejection became a bare `done`, so the operator saw nothing.
         while (queue.length > 0) {
           yield queue.shift()!;
         }
+        yield {
+          type: "error",
+          message: err instanceof Error ? err.message : String(err),
+          code: "DSH_TRANSPORT",
+        };
         yield { type: "done", sessionId: undefined };
         return;
       } finally {
@@ -227,13 +270,15 @@ export function createDeepSeekHarness(
         });
       }
 
-      // A turn that closed aborted or blocked is not a success. Report it on
-      // the same terminal delta the caller already understands rather than
-      // pretending the answer completed.
-      yield {
-        type: "done",
-        sessionId: turnEndReason ? undefined : input.sessionId,
-      };
+      // A turn that failed at the provider level is not a success. Emit the
+      // failure so the operator sees WHY, then close the turn.
+      if (failure) {
+        yield { type: "error", message: failure.message, code: failure.code };
+        yield { type: "done", sessionId: undefined };
+        return;
+      }
+
+      yield { type: "done", sessionId: input.sessionId };
     },
 
     async resetSession(_sessionId: string): Promise<void> {
@@ -269,6 +314,8 @@ export function createDeepSeekHarness(
         ],
         cwd: options.cwd,
         env: options.env,
+        provider: options.provider ?? resolveProvider(),
+        model: options.model ?? resolveModel(),
       });
 
       const parts: string[] = [];
