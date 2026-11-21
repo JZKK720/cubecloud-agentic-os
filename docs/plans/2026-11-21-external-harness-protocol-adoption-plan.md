@@ -44,10 +44,47 @@ are things the product must explicitly refuse.
    ([`harness.ts`](../../packages/platform-core/src/harness.ts)) map 1:1 onto
    `TEXT_MESSAGE_*`, `REASONING_MESSAGE_*`, `TOOL_CALL_*`/`TOOL_CALL_RESULT`,
    `STEP_FINISHED`, `RUN_FINISHED`. We are already 80% AG-UI-shaped internally.
+   **Built in Phase 0 — see §3.**
 3. **Omnara is not a runtime; it is our competitor.** It is a control plane that
    *hosts* agents on machines via an outbound daemon (`omnarad`). Attaching to it
    would make the Agentic OS a *client of another control plane* — the exact
    inversion of our positioning. Two of its ideas are worth stealing regardless.
+
+### 0.1 A third perspective: is the OS still a desktop shell?
+
+The first draft of this document judged each repo against the four seams and
+refused whatever did not fit. That is circular: the seams were themselves derived
+from the original Hermes-desktop shape. Three facts say the shape has moved
+further than the seams admit:
+
+1. **`fabric-attach` is the default, not the exception.** The AI Workspace adapter
+   is `mode: "fabric-attach"` — "container era" in its own header — and four of
+   the sixteen managed apps are fabric. The desktop is already one peer talking to
+   containerised services, not the owner of local processes.
+2. **The seams exist but are under-used.** `HarnessTransport` already models
+   `stdio`, `subprocess` and `in-process`; only `http` is used. `ManagedAppCapability`
+   already models `governance`; the adapters barely use it. The architecture is
+   more general than the code exercising it.
+3. **`HarnessTurnDelta` was designed protocol-shaped by accident.** It is one
+   `RUN_STARTED` away from AG-UI — the sign of an agent-stream abstraction, not a
+   chat-panel abstraction.
+
+**Revised posture: the OS is a multi-surface operating layer in which the desktop
+is the operator console.** That changes three verdicts and confirms two:
+
+| Repo | First-draft verdict | Revised verdict | Why it moved |
+|---|---|---|---|
+| `ag-ui` | adapter at the edge | **the spine, edge-exposed** | If several surfaces must render the same run, one event model is a requirement, not a nicety. Phase 0 built it. |
+| `omnara` | refuse | **refuse the control plane, adopt the event-log model** | Multi-surface means runs must be readable after the surface that started them closes. Omnara's `sequence`-ordered, resumable timeline is the right storage contract; its hosted daemon is not. |
+| `deepseek-harness` | 5th lane | **5th lane, gated on the routing fix** | Confirmed, but the work is in `hermes.ts` streaming, not in a new adapter. |
+| `OpenIntelligentUI` | A2UI only | **A2UI only** (unchanged) | A validated component tree is surface-agnostic; OGU's sandbox and a hosted router are not. |
+| `kitesurf` | opt-in | **opt-in** (unchanged) | Its own docs forbid the untrusted-page case that multi-surface would want it for. |
+| `univer` / `astryx` / `DataFlow` | tool / tokens / MCP | **unchanged** | None of them is affected by the surface question. |
+
+What this does **not** license is adopting Omnara wholesale. A desktop-first,
+sovereign product that hands its run store to another control plane has traded
+away the thing it sells. The line is: **adopt the data contract, keep the
+execution local.**
 
 ---
 
@@ -476,6 +513,22 @@ Ordered by leverage ÷ effort, with the gate that proves each step.
 Phase 0 has **zero user-visible change** and unlocks everything else. It also
 gives us a defensible answer to "do you speak AG-UI?" — yes, at the edge.
 
+**STATUS (2026-11-21): 0.1 and 0.3's mapping helpers are IMPLEMENTED.**
+
+- `packages/platform-core/src/ag-ui.ts` ships the codec: 27 event types,
+  `createAgUiEncoder` (delta → events, with correct START/CONTENT/END
+  bracketing and the omit-never-null rule), `decodeAgUiEvent` (events →
+  delta / interrupt / error), plus `approvalToInterrupt`, `resumeToVerdict`
+  and `validateResumeCoverage` for the inbox mapping.
+- Exported from `packages/platform-core/src/index.ts`.
+- 20 tests in `packages/platform-core/tests/ag-ui.test.ts`.
+- 0.2 (SSE dialect selector) is **deferred**: the renderer never parses SSE
+  itself — main process does via `sse-parser.ts` — so the AG-UI dialect
+  belongs next to whatever first *consumes* an external AG-UI stream. Building
+  it now would be speculative.
+- 0.4 (vendor + checksum the frozen schema) is **deferred** until a consumer
+  exists; pinning a spec we do not yet parse end-to-end buys nothing.
+
 ### Phase 1 — A fifth runtime lane
 
 | # | Task | Seam | Verify |
@@ -485,6 +538,14 @@ gives us a defensible answer to "do you speak AG-UI?" — yes, at the edge.
 | 1.3 | `DockerRuntimeTarget` for a containerised `dsh` | S2 | `discoverDockerRuntimes()` finds a fixture container row |
 | 1.4 | Version pin + a "developer preview" badge in the UI | S4 | badge renders from a capability flag, not a hard-coded string |
 
+**Blocker found while implementing Phase 0 (this is the real work in Phase 1):**
+chat does **not** stream through the harness router. `createHarnessRegistry()`
+is wired only into `createBeforeModelChain` — i.e. the harness is consulted for
+pre-model *policy*, then `hermes.ts` streams from `/v1/chat/completions`
+directly (`hermes.ts:1462`). Adding a `stdio`-transport harness therefore
+requires routing `runTurn` through the chat path, which is a larger change than
+"add a union member". Sequence 1.2 *before* 1.1.
+
 ### Phase 2 — MCP transport parity
 
 | # | Task | Seam | Verify |
@@ -492,6 +553,52 @@ gives us a defensible answer to "do you speak AG-UI?" — yes, at the edge.
 | 2.1 | `addMcpServer` accepts `"sse"`; client implements the SSE handshake | S3 | a fixture SSE server exposes tools; list/add/enable cycle passes |
 | 2.2 | DataFlow `ManagedApp` adapter (`local-spawn` + `fabric-attach`) | S2 | contract tests: 20 tools enumerated, "not installed" is honest, loopback warning present |
 | 2.3 | Render the "no auth / arbitrary code execution" warning on the card | S4 | snapshot contains the warning text |
+
+**STATUS (2026-11-21): 2.1 is IMPLEMENTED (registration half).**
+
+- `McpServerType` is now `"http" | "stdio" | "sse"` in `installer.ts`, with
+  `sse` written as an explicit `type:` and read back explicitly (older configs
+  still infer from URL-vs-command shape).
+- `validateMcpDetail` accepts `sse` and requires an http(s) URL for both
+  remote transports.
+- MCP screen: `sse` in the transport select, a transport badge label, and
+  `mcp.addTypeSse` / `mcp.sse` in en + zh-CN.
+- Preload `addMcpServer` type widened.
+- 4 new tests in `tests/installer-mcp-mutate.test.ts` (16 total) pin the
+  write, the round-trip, the inference fallback, and the URL requirement.
+- **Not done:** the MCP *client* still has to perform the SSE handshake at
+  connect time. Registration and transport are separate halves; this commit
+  ships registration.
+
+### Phase 2.5 — Skills actually reach the model
+
+This was not in the first draft of this plan because the gap was invisible from
+the outside: `skills-progressive.ts` shipped in `219f664` and **nothing called
+it**. The 48 bundled skills reached the runtime only as files the installer had
+copied to `<profileHome>/skills/`; the progressive-disclosure catalog — the
+mechanism with the ~80% context saving — was dead code.
+
+| # | Task | Seam | Verify |
+|---|---|---|---|
+| 2.5.1 | `createSkillsCatalogMiddleware` in `chat-middleware.ts` | S1 | catalog injected; body only when named; degrades on error |
+| 2.5.2 | Wire it into `createBeforeModelChain` behind `options.skills` | S1 | chain omits it entirely when unconfigured |
+| 2.5.3 | `skillsInjectionOptions()` in `hermes.ts` builds the catalog from `listInstalledSkills` + `listBundledSkills` | S1 | installed copy wins over bundled on name collision |
+
+**STATUS (2026-11-21): IMPLEMENTED.**
+
+- `createSkillsCatalogMiddleware(buildCatalog, describeBody)` — injects
+  `name — description` for every skill, appends a full SKILL.md body only when
+  the latest user turn names that skill, preserves any existing system prompt,
+  and returns `applied: false` with a reason label on empty/error rather than
+  breaking the chat path.
+- `hermes.ts` supplies the data: installed skills first (operator's copy wins),
+  bundled second, bodies stripped of YAML frontmatter since the catalog already
+  carries name and description.
+- 6 tests in `agent-desktop/tests/skills-catalog-middleware.test.ts`.
+- **Still open:** the runtime also reads `<profileHome>/skills/` off disk, so
+  the catalog is additive today. Removing the on-disk duplication is a separate
+  change and should wait until we know whether non-Hermes harnesses ever read
+  that directory.
 
 ### Phase 3 — Conditional / opt-in (only on operator demand)
 
@@ -507,7 +614,7 @@ gives us a defensible answer to "do you speak AG-UI?" — yes, at the edge.
 
 | Concept | Source | Why not |
 |---|---|---|
-| Omnara control plane / `omnarad` daemon | omnara | Makes us a client of a competing control plane; inverts desktop-first topology |
+| Omnara control plane / `omnarad` daemon | omnara | Makes us a client of a competing control plane; inverts desktop-first topology. **The event-log contract is adopted instead — see §0.1.** |
 | Omnara `agent.yaml` as our config format | omnara | We have `desktop.json` + profile `config.yaml`; a third format is churn |
 | OGU (sandboxed HTML/JS from the model) | OpenIntelligentUI | Executes model-authored code in a credentialed shell; our posture forbids it |
 | Jev / hosted visualization router | OpenIntelligentUI | Breaks offline; we have Laya locally |
