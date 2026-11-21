@@ -26,12 +26,47 @@ export default {
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },
   mcpServers: "MCP 服务器",
+  workspace: {
+    subtitle:
+      "对话式运行底座：会话、文件，以及驱动各家 CLI 适配器的执行层。想让它受控于控制台时再连接。",
+    start: "启动",
+    stop: "停止",
+    probing: "探测中……",
+    reachable: "已连接",
+    unreachable: "AI Workspace 无法连接：",
+    attachedAt: "连接时间",
+  },
   mcpDescription:
     "在 config.yaml 中配置的模型上下文协议服务器。在终端中使用 <code>hermes mcp add/remove</code> 管理。",
   http: "HTTP",
   stdio: "标准IO",
   disabled: "已禁用",
   panels: {
+    laya: {
+      subtitle:
+        "本地 System-1 决策引擎 — 带置信度与弃权的 typed choice/score/noul 决策，通过 MCP 暴露给控制台。",
+      ready: "就绪",
+      broken: "已安装，但版本探测失败",
+    },
+    weknora: {
+      subtitle:
+        "可选的企业级 RAG 知识平台。控制台侧只做检索，数据由你自己的 WeKnora 服务器持有。",
+      reachable: "已连接",
+      unreachable: "无法连接",
+    },
+    governance: {
+      title: "工作区治理",
+      subtitle:
+        "来自 AI Workspace 的策略注册表、计划任务与共享设置 — 即控制台的治理视图。审批结论由你投递到工作区的 resolve 接口。",
+      visible: "可见",
+      unavailable: "治理界面无法连接",
+    },
+    openviking: {
+      subtitle:
+        "可选的智能体上下文数据库 — 资源、记忆与技能统一存放在可浏览的 viking:// 文件系统中（仅互操作；核心为 AGPL）。",
+      reachable: "已连接",
+      unreachable: "无法连接",
+    },
     gbrain: {
       title: "GBrain（持久记忆）",
       subtitle:
@@ -84,4 +119,12 @@ export default {
         "Graphify 未安装。使用 <code>uv tool install 'graphifyy[mcp]'</code> 安装（Python 3.12+）。",
     },
   },
+  agentReachTitle: "互联网能力（Agent-Reach）",
+  agentReachSubtitle:
+    "Agent-Reach 让运行时智能体具备联网能力 — Twitter、Reddit、YouTube、GitHub、RSS、网页搜索等。在网关机器上安装：python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+  agentReachRefresh: "刷新",
+  agentReachScanning: "扫描中……",
+  agentReachInstalled: "已安装",
+  agentReachNotInstalled:
+    "Agent-Reach 未安装。运行时智能体没有联网能力工具。",
 } as const;

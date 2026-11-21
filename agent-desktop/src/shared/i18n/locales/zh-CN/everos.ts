@@ -56,5 +56,25 @@ export default {
   "error": {
     "searchFailed": "搜索失败。",
     "recentFailed": "无法列出最近的记忆。"
+  },
+  "sidecar": {
+    "title": "本地 sidecar",
+    "body": "EverOS 未在 {{baseUrl}} 运行。启动 sidecar 即可让记忆保留在本机。",
+    "reason": "原因",
+    "lastError": "最近错误",
+    "pid": "进程 ID",
+    "port": "端口",
+    "crashCount": "崩溃次数",
+    "uptime": "运行时长",
+    "start": "启动 sidecar",
+    "stop": "停止 sidecar",
+    "restart": "重启",
+    "refreshLogs": "刷新日志",
+    "logsSummary": "日志（{{count}} 行）",
+    "clearLogs": "清空日志"
+  },
+  "windowsNote": {
+    "title": "Windows 提示",
+    "body": "在 Windows 上，由桌面端托管的本地 EverOS 可能仍需要 WSL 或远程主机。如果本地 sidecar 启动失败，请继续用本页面连接运行在 WSL 或远程主机上的 EverOS 地址。"
   }
 };

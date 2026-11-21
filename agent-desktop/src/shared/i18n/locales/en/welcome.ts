@@ -135,4 +135,11 @@ export default {
     reset: "Reset to defaults",
     saved: "Saved.",
   },
+  detectedRuntimesTitle: "We found running agents",
+  detectedRuntimesHealthy:
+    "Choose a running runtime to connect now. Installing a local runtime is optional.",
+  detectedRuntimesAuth:
+    "We found runtimes that require a key. Pick one to prefill the remote connection form.",
+  authRequiredHint:
+    "These runtimes are reachable but require an API server key or gateway token before Agent Desktop can attach.",
 } as const;

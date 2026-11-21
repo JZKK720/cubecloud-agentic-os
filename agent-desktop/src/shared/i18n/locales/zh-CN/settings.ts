@@ -120,6 +120,8 @@
   migrationDesc:
     "在 <code>{{path}}</code> 发现 OpenClaw。你可以将配置、API Key、会话和技能迁移到 Hermes。",
   migrationDismiss: "不再显示",
+  migrationComplete: "迁移完成。",
+  migrationFailed: "迁移失败。",
   migrating: "迁移中...",
   migrateToHermes: "迁移到 Hermes",
   skip: "跳过",

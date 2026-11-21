@@ -29,6 +29,9 @@ import everosen from "./locales/en/everos";
 import workspaceEn from "./locales/en/workspace";
 import firstrunEn from "./locales/en/firstrun";
 import workspaceConsoleEn from "./locales/en/workspaceConsole";
+import codegraphEn from "./locales/en/codegraph";
+import toolSuggestionsEn from "./locales/en/toolSuggestions";
+import worktreeEn from "./locales/en/worktree";
 import commonEs from "./locales/es/common";
 import navigationEs from "./locales/es/navigation";
 import welcomeEs from "./locales/es/welcome";
@@ -238,6 +241,27 @@ import workspaceZhCn from "./locales/zh-CN/workspace";
 import workspaceConsoleZhCn from "./locales/zh-CN/workspaceConsole";
 import workspaceZhTw from "./locales/zh-TW/workspace";
 import workspaceConsoleZhTw from "./locales/zh-TW/workspaceConsole";
+import codegraphEs from "./locales/es/codegraph";
+import codegraphId from "./locales/id/codegraph";
+import codegraphJa from "./locales/ja/codegraph";
+import codegraphPtBr from "./locales/pt-BR/codegraph";
+import codegraphPtPt from "./locales/pt-PT/codegraph";
+import codegraphZhCn from "./locales/zh-CN/codegraph";
+import codegraphZhTw from "./locales/zh-TW/codegraph";
+import toolSuggestionsEs from "./locales/es/toolSuggestions";
+import toolSuggestionsId from "./locales/id/toolSuggestions";
+import toolSuggestionsJa from "./locales/ja/toolSuggestions";
+import toolSuggestionsPtBr from "./locales/pt-BR/toolSuggestions";
+import toolSuggestionsPtPt from "./locales/pt-PT/toolSuggestions";
+import toolSuggestionsZhCn from "./locales/zh-CN/toolSuggestions";
+import toolSuggestionsZhTw from "./locales/zh-TW/toolSuggestions";
+import worktreeEs from "./locales/es/worktree";
+import worktreeId from "./locales/id/worktree";
+import worktreeJa from "./locales/ja/worktree";
+import worktreePtBr from "./locales/pt-BR/worktree";
+import worktreePtPt from "./locales/pt-PT/worktree";
+import worktreeZhCn from "./locales/zh-CN/worktree";
+import worktreeZhTw from "./locales/zh-TW/worktree";
 
 export const resources = {
   en: {
@@ -271,6 +295,9 @@ export const resources = {
       plans: plansEn,
       mcp: mcpEn,
       firstrun: firstrunEn,
+      codegraph: codegraphEn,
+      toolSuggestions: toolSuggestionsEn,
+      worktree: worktreeEn,
     },
   },
   es: {
@@ -301,6 +328,9 @@ export const resources = {
       everos: everoses,      workspace: workspaceEs,      workspaceConsole: workspaceConsoleEs,      plans: plansEs,
       mcp: mcpEs,
       firstrun: firstrunEs,
+      codegraph: codegraphEs,
+      toolSuggestions: toolSuggestionsEs,
+      worktree: worktreeEs,
     },
   },
   id: {
@@ -334,6 +364,9 @@ export const resources = {
       plans: plansId,
       mcp: mcpId,
       firstrun: firstrunId,
+      codegraph: codegraphId,
+      toolSuggestions: toolSuggestionsId,
+      worktree: worktreeId,
     },
   },
   "zh-CN": {
@@ -367,6 +400,9 @@ export const resources = {
       plans: plansZhCn,
       mcp: mcpZhCn,
       firstrun: firstrunZhCn,
+      codegraph: codegraphZhCn,
+      toolSuggestions: toolSuggestionsZhCn,
+      worktree: worktreeZhCn,
     },
   },
   "zh-TW": {
@@ -400,6 +436,9 @@ export const resources = {
       swarm: swarmZhTw,
       knowledge: knowledgeZhTw,
       firstrun: firstrunZhTw,
+      codegraph: codegraphZhTw,
+      toolSuggestions: toolSuggestionsZhTw,
+      worktree: worktreeZhTw,
     },
   },
   "pt-BR": {
@@ -433,6 +472,9 @@ export const resources = {
       swarm: swarmPtBr,
       knowledge: knowledgePtBr,
       firstrun: firstrunPtBr,
+      codegraph: codegraphPtBr,
+      toolSuggestions: toolSuggestionsPtBr,
+      worktree: worktreePtBr,
     },
   },
   "pt-PT": {
@@ -466,6 +508,9 @@ export const resources = {
       swarm: swarmPtPt,
       knowledge: knowledgePtPt,
       firstrun: firstrunPtPt,
+      codegraph: codegraphPtPt,
+      toolSuggestions: toolSuggestionsPtPt,
+      worktree: worktreePtPt,
     },
   },
   ja: {
@@ -499,6 +544,9 @@ export const resources = {
       swarm: swarmJa,
       knowledge: knowledgeJa,
       firstrun: firstrunJa,
+      codegraph: codegraphJa,
+      toolSuggestions: toolSuggestionsJa,
+      worktree: worktreeJa,
     },
   },
 } satisfies Resource;

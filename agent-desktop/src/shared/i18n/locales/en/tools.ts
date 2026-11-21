@@ -68,12 +68,47 @@ export default {
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, …) to clean Markdown for the agent to ingest.",
   },
   mcpServers: "MCP Servers",
+  workspace: {
+    subtitle:
+      "The conversational operating fabric — sessions, files, and the runner fabric that drives the CLI adapters. Attach when you want the console to govern it.",
+    start: "Start",
+    stop: "Stop",
+    probing: "Probing…",
+    reachable: "Reachable",
+    unreachable: "AI Workspace not reachable on",
+    attachedAt: "Attached at",
+  },
   mcpDescription:
     "Model Context Protocol servers configured in config.yaml. Manage via <code>hermes mcp add/remove</code> in the terminal.",
   http: "HTTP",
   stdio: "stdio",
   disabled: "disabled",
   panels: {
+    laya: {
+      subtitle:
+        "Local System-1 decision engine — typed choice/score/noul decisions with confidence and abstention, exposed to the console via MCP.",
+      ready: "Ready",
+      broken: "Installed but version probe failed",
+    },
+    weknora: {
+      subtitle:
+        "Optional enterprise RAG knowledge platform. Retrieval-only on the console side; your WeKnora server owns its data.",
+      reachable: "Reachable",
+      unreachable: "Not reachable",
+    },
+    governance: {
+      title: "Workspace governance",
+      subtitle:
+        "Policy registry, scheduled tasks, and sharing from the AI Workspace — the console's governance view. Approval verdicts are delivered by you, to the workspace's resolve endpoint.",
+      visible: "Visible",
+      unavailable: "Governance surfaces not reachable",
+    },
+    openviking: {
+      subtitle:
+        "Optional agent context database — resources, memories, and skills in one browsable viking:// filesystem (interop-only; AGPL core).",
+      reachable: "Reachable",
+      unreachable: "Not reachable",
+    },
     gbrain: {
       title: "GBrain (Persistent Memory)",
       subtitle:
@@ -126,4 +161,12 @@ export default {
         "Graphify is not installed. Install with: <code>uv tool install 'graphifyy[mcp]'</code> (Python 3.12+).",
     },
   },
+  agentReachTitle: "Internet Capabilities (Agent-Reach)",
+  agentReachSubtitle:
+    "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+  agentReachRefresh: "Refresh",
+  agentReachScanning: "Scanning...",
+  agentReachInstalled: "Installed",
+  agentReachNotInstalled:
+    "Agent-Reach is not installed. The runtime agent does not have internet capability tools.",
 } as const;

@@ -118,4 +118,11 @@ export default {
     reset: "Reset to defaults",
     saved: "Saved.",
   },
+  detectedRuntimesTitle: "发现正在运行的智能体",
+  detectedRuntimesHealthy:
+    "选择一个正在运行的运行时立即连接。安装本地运行时是可选的。",
+  detectedRuntimesAuth:
+    "发现了一些需要密钥的运行时。选择一个以预填远程连接表单。",
+  authRequiredHint:
+    "这些运行时可以访问，但需要 API 服务端密钥或网关令牌才能让 Agent Desktop 连接。",
 } as const;

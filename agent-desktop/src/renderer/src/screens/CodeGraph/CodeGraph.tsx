@@ -361,7 +361,7 @@ function CodeGraph({ visible }: CodeGraphProps = {}): React.JSX.Element {
           </article>
 
           <article className="panel-card">
-            <h2>{t("codegraph.repos")}</h2>
+            <h2>{t("codegraph.repos.title")}</h2>
             {repos.length === 0 ? (
               <p className="workspace-copy">{t("codegraph.repos.empty")}</p>
             ) : (

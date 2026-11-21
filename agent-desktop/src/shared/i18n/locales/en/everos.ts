@@ -56,5 +56,25 @@ export default {
   "error": {
     "searchFailed": "Search failed.",
     "recentFailed": "Could not list recent memories."
+  },
+  "sidecar": {
+    "title": "Local sidecar",
+    "body": "EverOS is not running at {{baseUrl}}. Start the sidecar to keep memory on this machine.",
+    "reason": "Reason",
+    "lastError": "Last error",
+    "pid": "PID",
+    "port": "Port",
+    "crashCount": "Crashes",
+    "uptime": "Uptime",
+    "start": "Start sidecar",
+    "stop": "Stop sidecar",
+    "restart": "Restart",
+    "refreshLogs": "Refresh logs",
+    "logsSummary": "Logs ({{count}} lines)",
+    "clearLogs": "Clear logs"
+  },
+  "windowsNote": {
+    "title": "Windows note",
+    "body": "Managed local EverOS may still require WSL or a remote host on Windows. If the local sidecar fails to start, keep using this screen against a WSL-hosted or remote EverOS base URL."
   }
 };

@@ -20,4 +20,6 @@ export default {
   failed: "Failed",
   reply: "Reply",
   toolCalls: "Tool calls (WASM sandbox)",
+  tokenRequiredHint:
+    "Gateway is reachable. Add a gateway token and reconnect to load models.",
 } as const;

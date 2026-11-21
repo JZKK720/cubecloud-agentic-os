@@ -19,4 +19,5 @@ export default {
   failed: "失败",
   reply: "回复",
   toolCalls: "工具调用（WASM 沙箱）",
+  tokenRequiredHint: "网关可以访问。请添加网关令牌并重新连接以加载模型。",
 } as const;

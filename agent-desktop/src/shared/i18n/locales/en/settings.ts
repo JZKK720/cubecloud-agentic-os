@@ -126,6 +126,8 @@ export default {
   migrationDesc:
     "Found OpenClaw at <code>{{path}}</code>. You can migrate your configuration, API keys, sessions, and skills to Hermes.",
   migrationDismiss: "Don't show again",
+  migrationComplete: "Migration complete.",
+  migrationFailed: "Migration failed.",
   migrating: "Migrating...",
   migrateToHermes: "Migrate to Hermes",
   skip: "Skip",
