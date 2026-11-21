@@ -44,12 +44,60 @@ import {
   type DshSessionEvent,
 } from "../dsh-jsonrpc-client";
 import { getConfigValue } from "../config";
+import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 const TURN_IDLE_TIMEOUT_MS = 180_000;
 
 /** Provider id for the runtime union. Kept as a const so the registry, the
  *  runtime catalog and the tests cannot drift. */
 export const DEEPSEEK_HARNESS_PROVIDER_ID = "deepseek-harness";
+
+/**
+ * Mount the api-key adapter into a profile home.
+ *
+ * MEASURED, not assumed: the `sdk` profile alone registers only
+ * `deepseek-account`, whose first turn fails with ACCOUNT_SIGN_IN_REQUIRED
+ * unless a human signs in through a browser. Adding this patch row to
+ * `profiles/sdk/cordis.patch.yml` registers `deepseek-official` as a second
+ * provider, and the `sdk` tool surface (31 tools) stays intact. `sdk-minimal`
+ * also offers `deepseek-official` but ships only 3 tools, so it is not a
+ * substitute.
+ *
+ * Idempotent: a no-op when the row is already present.
+ *
+ * @returns true when the patch is in place.
+ */
+export function ensureApiKeyProviderMounted(dshHome: string): boolean {
+  try {
+    const dir = join(dshHome, "profiles", "sdk");
+    mkdirSync(dir, { recursive: true });
+    const patchPath = join(dir, "cordis.patch.yml");
+
+    const row =
+      "- id: llm-deepseek-api-key\n" +
+      "  name: '@deepseek-ai/dsh-llm-deepseek-api-key'\n";
+
+    let existing = "";
+    if (existsSync(patchPath)) {
+      existing = readFileSync(patchPath, "utf-8");
+      if (existing.includes("dsh-llm-deepseek-api-key")) return true;
+    }
+
+    writeFileSync(
+      patchPath,
+      existing.endsWith("\n") || existing === ""
+        ? existing + row
+        : existing + "\n" + row,
+      "utf-8",
+    );
+    return true;
+  } catch {
+    // A read-only or absent home is not fatal: the adapter still works with
+    // whatever providers the deployment already mounts.
+    return false;
+  }
+}
 
 export interface DeepSeekHarnessOptions {
   /** Override the launch command (tests pass a fixture script). */
@@ -79,10 +127,16 @@ function resolveProfile(): string {
 /**
  * Resolve the provider adapter.
  *
- * VERIFIED against the real runtime: the default `sdk` profile registers
- * **only `deepseek-account`**. `deepseek-api-key` answers "no adapter
- * registered for provider" unless a deployment composes that plugin. The
- * operator can point at another id via `runtime.dsh_provider`.
+ * VERIFIED against the real runtime (0.2.2-rc.5):
+ *   `sdk` profile          → registers `deepseek-account` only (31 tools)
+ *   `sdk-minimal` profile  → registers `deepseek-official` only (3 tools)
+ *
+ * Neither is right on its own: the account provider needs an interactive
+ * browser sign-in, and sdk-minimal drops the file/edit/bash tool set. The
+ * adapter therefore defaults to the **`sdk` profile plus an api-key patch**,
+ * which measured 31 tools and a completing turn against a local endpoint.
+ *
+ * Overridable via `runtime.dsh_provider`.
  */
 function resolveProvider(): string {
   try {
@@ -105,6 +159,31 @@ function resolveModel(): string {
   return DSH_DEFAULT_MODEL;
 }
 
+/** True when the operator pinned a provider explicitly, so we must not patch. */
+function providerIsPinned(): boolean {
+  try {
+    const raw = getConfigValue("runtime.dsh_provider");
+    return typeof raw === "string" && !!raw.trim();
+  } catch {
+    return false;
+  }
+}
+
+/** Resolve the DSH home the runtime will use (mirrors the child's DSH_HOME). */
+function resolveDshHome(options: DeepSeekHarnessOptions): string | null {
+  const fromEnv = options.env?.DSH_HOME ?? process.env.DSH_HOME;
+  if (fromEnv && fromEnv.trim()) return fromEnv.trim();
+  try {
+    const configured = getConfigValue("runtime.dsh_home");
+    if (typeof configured === "string" && configured.trim()) {
+      return configured.trim();
+    }
+  } catch {
+    /* fall through */
+  }
+  return null;
+}
+
 /** Create the DeepSeek Harness adapter. */
 export function createDeepSeekHarness(
   options: DeepSeekHarnessOptions = {},
@@ -122,6 +201,14 @@ export function createDeepSeekHarness(
 
   const turns: HarnessTurnController = {
     async *runTurn(input: HarnessTurnInput): AsyncIterable<HarnessTurnDelta> {
+      // Mount the api-key provider unless the operator pinned one. Without it
+      // the sdk profile offers only deepseek-account, whose turns fail with
+      // ACCOUNT_SIGN_IN_REQUIRED until a human signs in through a browser.
+      if (!providerIsPinned()) {
+        const home = resolveDshHome(options);
+        if (home) ensureApiKeyProviderMounted(home);
+      }
+
       const client = new DshJsonRpcClient({
         command: options.command,
         args: options.args ?? [

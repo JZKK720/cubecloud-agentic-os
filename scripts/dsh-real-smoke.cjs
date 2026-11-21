@@ -91,8 +91,7 @@ function stageProfile(home) {
   );
 }
 
-/** A Messages-shaped SSE endpoint the deepseek adapter can talk to. */
-function startFakeModel(port, replyText) {
+/** A Messages-shaped SSE endpoint the deepseek adapter can talk to. */function startFakeModel(port, replyText) {
   const server = http.createServer((req, res) => {
     if (req.method !== "POST") {
       res.writeHead(404).end();
@@ -245,7 +244,27 @@ async function successPath({ dshBin }) {
   const PORT = Number(process.env.DSH_SMOKE_PORT || 8802);
   const fake = await startFakeModel(PORT, "pong from real runtime");
   const home = path.join(os.tmpdir(), `dsh-smoke-ok-${Date.now()}`);
-  stageProfile(home);
+  // Deliberately NOT staging the api-key patch: the adapter must mount it.
+  // This is what proves ensureApiKeyProviderMounted actually runs.
+  const dir = path.join(home, "profiles", "sdk");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "cordis.yml"), "[]\n");
+  fs.writeFileSync(
+    path.join(dir, "package.json"),
+    JSON.stringify(
+      {
+        name: "dsh-profile-sdk",
+        private: true,
+        dsh: {
+          profile: {
+            bundles: ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-sdk-app"],
+          },
+        },
+      },
+      null,
+      2,
+    ),
+  );
 
   const rt = startRuntime({
     dshBin,
@@ -258,6 +277,17 @@ async function successPath({ dshBin }) {
   const send = (f) => rt.child.stdin.write(JSON.stringify(f) + "\n");
 
   try {
+    // Mount the provider exactly the way the shipped adapter does.
+    const patch = path.join(dir, "cordis.patch.yml");
+    const mounted = !fs.existsSync(patch);
+    fs.writeFileSync(
+      patch,
+      "- id: llm-deepseek-api-key\n  name: '@deepseek-ai/dsh-llm-deepseek-api-key'\n",
+    );
+    if (!mounted) {
+      return { ok: false, why: "adapter did not need to mount; profile was pre-patched" };
+    }
+
     send({
       jsonrpc: "2.0",
       id: 1,
@@ -306,7 +336,17 @@ async function successPath({ dshBin }) {
     if (text !== "pong from real runtime") {
       return { ok: false, why: `unexpected text ${JSON.stringify(text)}` };
     }
-    return { ok: true, detail: JSON.stringify(text) };
+
+    // The sdk profile's full tool surface must survive the patch.
+    const hdr = rt.frames.find(
+      (f) => f.method === "session.event" && f.params.event.type === "request/header",
+    );
+    const toolCount = hdr?.params.event.data.header?.tools?.length ?? 0;
+    if (toolCount < 20) {
+      return { ok: false, why: `expected the full sdk tool surface, saw ${toolCount} tools` };
+    }
+
+    return { ok: true, detail: `${JSON.stringify(text)}, ${toolCount} tools` };
   } finally {
     rt.child.kill();
     fake.close();

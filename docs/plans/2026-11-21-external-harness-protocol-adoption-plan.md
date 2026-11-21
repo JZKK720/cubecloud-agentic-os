@@ -621,6 +621,26 @@ absent (so it can sit in the local audit ladder but never in required CI):
 Both pass. The provider is configurable (`runtime.dsh_provider`,
 `runtime.dsh_model`, `runtime.dsh_profile`) because the right adapter depends on
 how the operator's deployment is composed.
+
+**Profile decision — measured, not assumed.** The open question from §6 was
+"sdk or sdk-minimal?". Running both against the real runtime answered it:
+
+| Profile | Registered provider | Tools | Turn |
+|---|---|---|---|
+| `sdk` | `deepseek-account` (browser sign-in) | **31** | completes |
+| `sdk-minimal` | `deepseek-official` (API key) | **3** | completes |
+| **`sdk` + api-key patch** | `deepseek-account` **and** `deepseek-official` | **31** | completes |
+
+`sdk-minimal` drops `read`/`edit`/`glob`/`grep`/`bash`/`todo`/`subagent`/`skill`
+— unusable as a coding agent. The account provider needs an interactive
+browser sign-in, which a desktop chat surface cannot perform mid-turn.
+
+So the default is **`sdk` plus a one-row patch** that mounts
+`dsh-llm-deepseek-api-key`, giving 31 tools *and* a non-interactive auth path.
+`ensureApiKeyProviderMounted()` applies it idempotently and preserves any
+existing operator rows; it is skipped when `runtime.dsh_provider` is pinned.
+Verified end to end: a run with no pre-existing patch file produced a streaming
+turn with all 31 tools.
 directly (`hermes.ts:1462`). Adding a `stdio`-transport harness therefore
 requires routing `runTurn` through the chat path, which is a larger change than
 "add a union member". Sequence 1.2 *before* 1.1.

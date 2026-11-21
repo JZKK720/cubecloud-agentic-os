@@ -1,7 +1,13 @@
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { HarnessTurnDelta } from "@cubecloud/platform-core";
-import { createDeepSeekHarness } from "../src/main/harnesses/deepseek-harness";
+import {
+  createDeepSeekHarness,
+  ensureApiKeyProviderMounted,
+} from "../src/main/harnesses/deepseek-harness";
 import {
   dshEventToFailure,
   dshEventToReasoning,
@@ -243,6 +249,57 @@ describe("createDeepSeekHarness", () => {
       harness.turns.runTurn({ sessionId: "s1", message: "hello" }),
     );
     expect(deltas.some((d) => d.type === "done")).toBe(true);
+  });
+});
+
+describe("ensureApiKeyProviderMounted", () => {
+  let home: string;
+
+  beforeEach(() => {
+    home = mkdtempSync(join(tmpdir(), "dsh-home-"));
+  });
+
+  afterEach(() => {
+    rmSync(home, { recursive: true, force: true });
+  });
+
+  it("writes the api-key provider row into the sdk profile patch", () => {
+    expect(ensureApiKeyProviderMounted(home)).toBe(true);
+    const patch = readFileSync(
+      join(home, "profiles", "sdk", "cordis.patch.yml"),
+      "utf8",
+    );
+    expect(patch).toContain("dsh-llm-deepseek-api-key");
+    expect(patch).toContain("llm-deepseek-api-key");
+  });
+
+  it("is idempotent", () => {
+    ensureApiKeyProviderMounted(home);
+    const first = readFileSync(
+      join(home, "profiles", "sdk", "cordis.patch.yml"),
+      "utf8",
+    );
+    expect(ensureApiKeyProviderMounted(home)).toBe(true);
+    const second = readFileSync(
+      join(home, "profiles", "sdk", "cordis.patch.yml"),
+      "utf8",
+    );
+    expect(second).toBe(first);
+    expect(second.match(/dsh-llm-deepseek-api-key/g)).toHaveLength(1);
+  });
+
+  it("preserves an operator's existing patch rows", () => {
+    const dir = join(home, "profiles", "sdk");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      join(dir, "cordis.patch.yml"),
+      "- id: my-custom-plugin\n  name: 'some-package'\n",
+      "utf8",
+    );
+    ensureApiKeyProviderMounted(home);
+    const patch = readFileSync(join(dir, "cordis.patch.yml"), "utf8");
+    expect(patch).toContain("my-custom-plugin");
+    expect(patch).toContain("dsh-llm-deepseek-api-key");
   });
 });
 
