@@ -605,13 +605,13 @@ same server), not a gap to close quietly.
 
 This was not in the first draft of this plan because the gap was invisible from
 the outside: `skills-progressive.ts` shipped in `219f664` and **nothing called
-it**. The 48 bundled skills reached the runtime only as files the installer had
+it**. The {{SKILLS_TOTAL}} bundled skills reached the runtime only as files the installer had
 copied to `<profileHome>/skills/`; the progressive-disclosure catalog — the
 mechanism with the ~80% context saving — was dead code.
 
 Fixing that exposed a second, deeper gap. The frontmatter parser read every
 scalar with the character class `[^"'\n]+`, which excludes quotes from the
-middle of a value. 25 of the 48 skills embed quoted trigger phrases:
+middle of a value. 25 of the {{SKILLS_TOTAL}} skills embed quoted trigger phrases:
 
 ```
 description: Use when writing code. Triggers: "TDD this", "red-green".
@@ -619,14 +619,14 @@ description: Use when writing code. Triggers: "TDD this", "red-green".
 
 so the match failed and those skills came back with an **empty description** —
 present in the catalog by name, invisible to the model. Measured against the
-real parser before the fix: **22 of 48** had both fields.
+real parser before the fix: **22 of {{SKILLS_TOTAL}}** had both fields.
 
 | # | Task | Seam | Verify |
 |---|---|---|---|
 | 2.5.1 | `createSkillsCatalogMiddleware` in `chat-middleware.ts` | S1 | catalog injected; body only when named; degrades on error |
 | 2.5.2 | Wire it into `createBeforeModelChain` behind `options.skills` | S1 | chain omits it entirely when unconfigured |
 | 2.5.3 | `skillsInjectionOptions()` in `hermes.ts` builds the catalog from `listInstalledSkills` + `listBundledSkills` | S1 | installed copy wins over bundled on name collision |
-| 2.5.4 | Fix `parseSkillFrontmatter` to read YAML scalars properly | S1 | all 48 skills yield name **and** description |
+| 2.5.4 | Fix `parseSkillFrontmatter` to read YAML scalars properly | S1 | all {{SKILLS_TOTAL}} skills yield name **and** description |
 
 **STATUS (2026-11-21): IMPLEMENTED — all four.**
 

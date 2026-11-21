@@ -80,7 +80,7 @@ to match the present would destroy its evidential value:
 
 1. **`2026-08-12-external-repo-adoption-plan.md` §P6** describes progressive
    disclosure as "shipped". The module shipped, but nothing called it until
-   `008af13` (2026-11-21), and 26 of 48 skills were uncatalogable until
+   `008af13` (2026-11-21), and 26 of {{SKILLS_TOTAL}} skills were uncatalogable until
    `ef27f41` because the frontmatter parser dropped quoted descriptions.
 2. **`2026-10-14-implementation-start-plan.md`** points at
    `2026-10-07-second-brain-doctrine.md`; the current doctrine is the 10-08 file.
