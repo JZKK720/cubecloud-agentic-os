@@ -18,6 +18,15 @@ interface McpServer {
 /** Mirrors `McpServerType` in main/installer.ts. */
 type McpServerType = "http" | "stdio" | "sse";
 
+/** Mirrors `McpProbeResult` in main/mcp-probe.ts. */
+interface ProbeResult {
+  ok: boolean;
+  tools: string[] | null;
+  detail: string;
+  error: string | null;
+  scannedAt: string;
+}
+
 interface McpProps {
   profile?: string;
 }
@@ -70,6 +79,10 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
+  const [probing, setProbing] = useState<string | null>(null);
+  const [probeResults, setProbeResults] = useState<
+    Record<string, ProbeResult>
+  >({});
   // Prefill values supplied by the search panel when the user clicks
   // "Add" on a bundled registry entry. Cleared after the form reads
   // them (handled inside AddMcpForm).
@@ -150,8 +163,38 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
     [profile, t],
   );
 
-  const enabledCount = servers.filter((s) => s.enabled).length;
+  const handleProbe = useCallback(
+    async (server: McpServer): Promise<void> => {
+      setProbing(server.name);
+      try {
+        const res = await window.hermesAPI.probeMcpServer({
+          name: server.name,
+          type: server.type,
+          detail: server.detail,
+        });
+        setProbeResults((prev) => ({
+          ...prev,
+          [server.name]: res,
+        }));
+      } catch (err) {
+        setProbeResults((prev) => ({
+          ...prev,
+          [server.name]: {
+            ok: false,
+            tools: null,
+            detail: String(err),
+            error: String(err),
+            scannedAt: new Date().toISOString(),
+          },
+        }));
+      } finally {
+        setProbing(null);
+      }
+    },
+    [],
+  );
 
+  const enabledCount = servers.filter((s) => s.enabled).length;
   if (loading) {
     return (
       <div className="mcp-container">
@@ -262,6 +305,15 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
                   />
                   <code className="mcp-row-detail">{s.detail}</code>
                 </div>
+                {probeResults[s.name] && (
+                  <p
+                    className={`mcp-probe-result ${probeResults[s.name].ok ? "ok" : "fail"}`}
+                    role="status"
+                  >
+                    {probeResults[s.name].ok ? "✓ " : "✗ "}
+                    {probeResults[s.name].detail}
+                  </p>
+                )}
               </div>
               <div className="mcp-row-actions">
                 <label
@@ -277,6 +329,14 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
                   />
                   <span className="mcp-toggle-track" />
                 </label>
+                <button
+                  type="button"
+                  className="btn-ghost mcp-remove-btn"
+                  disabled={pending === s.name || probing === s.name}
+                  onClick={() => void handleProbe(s)}
+                >
+                  {probing === s.name ? t("mcp.probing") : t("mcp.probe")}
+                </button>
                 <button
                   type="button"
                   className="btn-ghost mcp-remove-btn"

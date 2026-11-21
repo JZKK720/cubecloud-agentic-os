@@ -45,6 +45,7 @@ import {
   addMcpServer,
   removeMcpServer,
   ensureDefaultMcpServers,
+  type McpServerType,
   discoverMemoryProviders,
   discoverCodebaseMemory,
   listCodebaseMemoryProjects,
@@ -98,6 +99,7 @@ import {
   probeCubecloudAgent,
   type CubecloudAgentProbeResult,
 } from "./cubecloud-agent-probe";
+import { probeMcpServer } from "./mcp-probe";
 import { probeLaya, LAYA_MCP_REGISTRATION, type LayaProbeResult } from "./laya-probe";
 import {
   normalizeWeknoraBaseUrl,
@@ -3313,7 +3315,7 @@ function setupIPC(): void {
       _event,
       entry: {
         name: string;
-        type: "http" | "stdio";
+        type: McpServerType;
         enabled: boolean;
         detail: string;
       },
@@ -3324,6 +3326,17 @@ function setupIPC(): void {
     "remove-mcp-server",
     (_event, name: string, profile?: string): { ok: boolean; error?: string } =>
       removeMcpServer(name, profile),
+  );
+  // Verify a registered server actually answers. The desktop has no
+  // outbound MCP client — the runtime owns the connection — so without
+  // this the UI could only confirm that a line was written to
+  // config.yaml. Probes the endpoint; never throws.
+  ipcMain.handle(
+    "probe-mcp-server",
+    (
+      _event,
+      entry: { name: string; type: string; detail: string },
+    ) => probeMcpServer(entry),
   );
 
   // Memory providers

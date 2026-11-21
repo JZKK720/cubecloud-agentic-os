@@ -2367,6 +2367,9 @@ const hermesAPI = {
   ): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke("remove-mcp-server", name, profile),
 
+  probeMcpServer: (entry: { name: string; type: string; detail: string }) =>
+    ipcRenderer.invoke("probe-mcp-server", entry),
+
   // Log viewer
   readLogs: (
     logFile?: string,

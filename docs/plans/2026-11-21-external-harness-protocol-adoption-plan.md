@@ -554,21 +554,52 @@ requires routing `runTurn` through the chat path, which is a larger change than
 | 2.2 | DataFlow `ManagedApp` adapter (`local-spawn` + `fabric-attach`) | S2 | contract tests: 20 tools enumerated, "not installed" is honest, loopback warning present |
 | 2.3 | Render the "no auth / arbitrary code execution" warning on the card | S4 | snapshot contains the warning text |
 
-**STATUS (2026-11-21): 2.1 is IMPLEMENTED (registration half).**
+**STATUS (2026-11-21): IMPLEMENTED — registration, client dialect, and probe.**
 
-- `McpServerType` is now `"http" | "stdio" | "sse"` in `installer.ts`, with
-  `sse` written as an explicit `type:` and read back explicitly (older configs
-  still infer from URL-vs-command shape).
-- `validateMcpDetail` accepts `sse` and requires an http(s) URL for both
-  remote transports.
-- MCP screen: `sse` in the transport select, a transport badge label, and
-  `mcp.addTypeSse` / `mcp.sse` in en + zh-CN.
-- Preload `addMcpServer` type widened.
-- 4 new tests in `tests/installer-mcp-mutate.test.ts` (16 total) pin the
-  write, the round-trip, the inference fallback, and the URL requirement.
-- **Not done:** the MCP *client* still has to perform the SSE handshake at
-  connect time. Registration and transport are separate halves; this commit
-  ships registration.
+**Correction to the first commit's claim.** I wrote that `sse` registration was
+"the registration half only" and that the client handshake was outstanding. That
+was wrong in a more important way than I realised: **the desktop has no outbound
+MCP client at all.** `addMcpServer` writes `mcp_servers:` into the profile's
+`config.yaml` and the *runtime* (Hermes et al.) makes the connection. The only
+JSON-RPC in this repo is `headroom-mcp-server.ts`, which **serves** MCP to the
+runtime at `127.0.0.1:8788`; nothing here **consumes** an MCP server.
+
+So "registration half" understated the situation twice: there was no second
+half, and adding `sse` to a writer with no reader meant a user could register a
+server that silently never worked.
+
+What now exists:
+
+- `McpServerType` = `"http" | "stdio" | "sse"`; `sse` written as an explicit
+  `type:` and read back explicitly (older configs still infer from shape).
+  `validateMcpDetail` requires an http(s) URL for both remote transports, and
+  `addMcpServer` rejects a transport it does not know. 4 tests.
+- **`mcp-probe.ts`** — a bounded, never-throwing handshake probe:
+  - `normalizeMcpEndpoint` accepts loopback `http` and remote `https`, rejects
+    everything else (mirrors `normalizeWeknoraBaseUrl`'s security floor).
+  - Streamable HTTP: `initialize` → `tools/list`, accepting a bare JSON body or
+    an SSE-framed one.
+  - Legacy SSE: open the stream, require the `endpoint` event, and report
+    reachable-but-unverified when the dialect differs rather than claiming
+    success.
+  - `stdio` returns "the runtime spawns it" instead of faking a health check.
+  - New `probe-mcp-server` IPC channel + preload method; the MCP screen gains a
+    per-row **Verify** button and an inline result line.
+  - 18 tests, including a mocked full handshake, an SSE-framed body, a
+    handshake rejection, and an unreachable host.
+- **`sse-parser.ts` gained the AG-UI dialect** (`SseDialect = "openai" |
+  "ag-ui"`). This was Phase 0.2, deferred earlier for lack of a consumer — the
+  probe is that consumer's sibling, and the dialect is needed the moment we
+  point at an AG-UI producer. `TEXT_MESSAGE_CONTENT` → `onChunk`,
+  `TOOL_CALL_START` → `onToolProgress`, `RUN_ERROR` → `onError`, and a terminal
+  `interrupt` outcome is surfaced to the caller instead of being mistaken for a
+  clean finish. The default stays `"openai"`, so no existing caller changed.
+
+**Still not done, and now honestly scoped:** the probe verifies that a server
+answers and lists tools. It does not invoke tools, and it does not make the
+desktop a general MCP client — the runtime still owns that connection. Making
+the desktop a client would be a product decision (two clients competing for the
+same server), not a gap to close quietly.
 
 ### Phase 2.5 — Skills actually reach the model
 
@@ -615,6 +646,28 @@ real parser before the fix: **22 of 48** had both fields.
   the catalog is additive today. Removing the on-disk duplication is a separate
   change and should wait until we know whether non-Hermes harnesses ever read
   that directory.
+
+**Decision (2026-11-21): keep the on-disk copy; the catalog is additive by
+design, not by accident.**
+
+`skills.ts` copies each skill into `<profileHome>/skills/<category>/<name>/`
+(`"Copy to the profile skills directory"`). That is *Hermes's* delivery
+mechanism — the runtime discovers skills from disk, and our copy is what puts
+them there. Deleting the copy and relying on the catalog alone would leave the
+runtime blind, because the catalog is a *system prompt* injection, not a file
+system.
+
+So the two paths do different jobs and both are required:
+
+| Path | Who reads it | What it does |
+|---|---|---|
+| `<profileHome>/skills/**` | the runtime (Hermes) | lets the runtime load and execute a skill |
+| the catalog middleware | the model | tells the model that a skill exists, ~50 tokens each |
+
+Removing the duplication would mean teaching the runtime to accept skills over
+IPC instead of disk — a runtime change we do not control. Until a non-Hermes
+harness asks for that, the copy stays. The open question is therefore closed as
+**resolved, not deferred.**
 
 ### Phase 3 — Conditional / opt-in (only on operator demand)
 

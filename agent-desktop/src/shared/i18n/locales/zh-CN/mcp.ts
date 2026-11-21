@@ -20,6 +20,8 @@ export default {
   http: "HTTP",
   sse: "SSE",
   stdio: "stdio",
+  probe: "验证",
+  probing: "验证中……",
   enabled: "已启用",
   disabled: "已停用",
   remove: "移除",

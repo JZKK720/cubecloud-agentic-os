@@ -21,6 +21,8 @@ export default {
   http: "HTTP",
   sse: "SSE",
   stdio: "stdio",
+  probe: "Verify",
+  probing: "Verifying…",
   enabled: "Enabled",
   disabled: "Disabled",
   remove: "Remove",

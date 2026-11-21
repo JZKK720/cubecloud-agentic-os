@@ -51,15 +51,116 @@ export interface SseDataResult {
   error?: string;
 }
 
+/** Wire dialects this parser can consume. */
+export type SseDialect = "openai" | "ag-ui";
+
+/**
+ * Process one AG-UI event payload.
+ *
+ * AG-UI is a *typed event* protocol, not an OpenAI-shaped chunk stream:
+ * each SSE `data:` line is one complete event object with a `type`
+ * discriminator. The mapping to `SseCallbacks` is deliberately lossless
+ * where the callback can express it:
+ *
+ *   TEXT_MESSAGE_CONTENT      -> onChunk(delta)
+ *   REASONING_MESSAGE_CONTENT -> onToolProgress("reasoning")
+ *   TOOL_CALL_START           -> onToolProgress(name)
+ *   TOOL_CALL_RESULT          -> onToolProgress("tool result")
+ *   RUN_FINISHED              -> onDone()
+ *   RUN_ERROR                 -> onError(message)
+ *
+ * `RUN_FINISHED.outcome.type === "interrupt"` is surfaced through
+ * `interrupts` so the caller can route it to the approval inbox rather
+ * than treating the run as cleanly complete.
+ */
+export function processAgUiData(
+  data: string,
+  cb: SseCallbacks,
+  state: { hasContent: boolean; lastError: string },
+): SseDataResult & { interrupts?: unknown[]; type?: string } {
+  let event: Record<string, unknown>;
+  try {
+    event = JSON.parse(data) as Record<string, unknown>;
+  } catch {
+    /* malformed chunk — skip */
+    return { done: false, hasContent: state.hasContent };
+  }
+
+  const type = typeof event.type === "string" ? event.type : "";
+
+  switch (type) {
+    case "TEXT_MESSAGE_CONTENT": {
+      const delta = typeof event.delta === "string" ? event.delta : "";
+      if (delta) {
+        state.hasContent = true;
+        cb.onChunk(delta);
+      }
+      return { done: false, hasContent: state.hasContent, type };
+    }
+
+    case "REASONING_MESSAGE_CONTENT":
+      cb.onToolProgress?.("reasoning");
+      return { done: false, hasContent: state.hasContent, type };
+
+    case "TOOL_CALL_START":
+      cb.onToolProgress?.(
+        typeof event.toolCallName === "string" ? event.toolCallName : "tool",
+      );
+      return { done: false, hasContent: state.hasContent, type };
+
+    case "TOOL_CALL_RESULT":
+      cb.onToolProgress?.("tool result");
+      return { done: false, hasContent: state.hasContent, type };
+
+    case "RUN_ERROR": {
+      const message =
+        typeof event.message === "string" ? event.message : "run failed";
+      state.lastError = message;
+      cb.onError?.(message);
+      return { done: false, hasContent: state.hasContent, error: message, type };
+    }
+
+    case "RUN_FINISHED": {
+      const outcome = event.outcome as { type?: string; interrupts?: unknown[] } | undefined;
+      if (outcome?.type === "interrupt") {
+        // The run ended waiting for the operator. Not an error, and not
+        // a clean done either — hand the interrupts to the caller.
+        return {
+          done: false,
+          hasContent: state.hasContent,
+          interrupts: outcome.interrupts ?? [],
+          type,
+        };
+      }
+      if (state.hasContent) cb.onDone?.();
+      return { done: true, hasContent: state.hasContent, type };
+    }
+
+    default:
+      // START/END bookends, STATE_*, ACTIVITY_*, SUBAGENT_*, RAW,
+      // CUSTOM — carried by the protocol but not meaningful to the
+      // text-streaming callbacks.
+      return { done: false, hasContent: state.hasContent, type };
+  }
+}
+
 /**
  * Process a single SSE data payload (after `data: ` prefix is stripped).
  * Returns parsing result.
+ *
+ * `dialect` selects the wire shape. The default stays `"openai"` so every
+ * existing caller is untouched.
  */
 export function processSseData(
   data: string,
   cb: SseCallbacks,
   state: { hasContent: boolean; lastError: string },
+  dialect: SseDialect = "openai",
 ): SseDataResult {
+  if (dialect === "ag-ui") {
+    return processAgUiData(data, cb, state);
+  }
+
   if (data === "[DONE]") {
     if (state.hasContent) {
       cb.onDone?.();

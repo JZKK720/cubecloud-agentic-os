@@ -2100,6 +2100,22 @@ interface HermesAPI {
     profile?: string,
   ) => Promise<{ ok: boolean; error?: string }>;
 
+  /** Verify a registered MCP server answers. The desktop has no outbound
+   *  MCP client (the runtime owns the connection), so this is the only
+   *  way the UI can distinguish "written to config.yaml" from "actually
+   *  works". Never throws. */
+  probeMcpServer: (entry: {
+    name: string;
+    type: string;
+    detail: string;
+  }) => Promise<{
+    ok: boolean;
+    tools: string[] | null;
+    detail: string;
+    error: string | null;
+    scannedAt: string;
+  }>;
+
   // Log viewer
   readLogs: (
     logFile?: string,
