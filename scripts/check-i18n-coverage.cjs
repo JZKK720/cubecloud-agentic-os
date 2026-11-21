@@ -6,10 +6,15 @@
 //
 // Locale files are TypeScript that re-import other files; we do not
 // load the module graph (would need a TS transpiler).  Instead we
-// parse the source text and collect all string-literal keys that look
-// like i18n keys.  This is a conservative scan: it may over-report
-// drift when a non-key string looks like a key, but it will never
-// under-report a missing locale file (that's a directory walk).
+// parse the source text and collect every object-literal key, whether
+// it is quoted (`"repos.empty":`) or bare (`empty:`), and prefix it
+// with the enclosing namespace filename so the comparison matches the
+// `namespace.key` form the renderer actually calls.
+//
+// V2.10.82 — the previous regex only matched *quoted* keys, so the 29
+// locale files yielded 57 "parse-keys" out of ~1,470 real keys. That
+// made this gate structurally unable to detect missing copy: it
+// reported "no drift" while 165 renderer keys rendered as raw text.
 //
 // Force UTF-8 throughout.  Exit 0 even if drift is found — drift is
 // informational.  Use --strict to make it a hard fail (CI).
@@ -21,18 +26,19 @@ const LOCALES_DIR = path.join('agent-desktop', 'src', 'shared', 'i18n', 'locales
 const SOURCE_LOCALE = 'en';
 const STRICT = process.argv.includes('--strict');
 
-// Match 'key' or "key" lines that look like i18n keys (followed by
-// a colon, but NOT a colon-then-//, which is a comment).  Dot or no
-// dot both pass — the key tree is the union.
-const KEY_LINE = /^[ \t]+(['"`])([A-Za-z0-9_.\-]+)\1\s*:\s*(?!\/\/)/gm;
+// Capture both quoted and bare object keys, ignoring comment lines.
+// `^\s*` keeps us out of inline strings; the negative lookahead skips
+// `// ...` comments and URL-ish `http://` values.
+const KEY_LINE = /^[ \t]+(?:(['"`])([A-Za-z0-9_.\-]+)\1|([A-Za-z_$][A-Za-z0-9_$]*))\s*:\s*(?!\/\/)/gm;
 
-function collectKeys(file) {
+function collectKeys(file, namespace) {
   const text = fs.readFileSync(file, 'utf8');
   const out = new Set();
   let m;
   KEY_LINE.lastIndex = 0;
   while ((m = KEY_LINE.exec(text))) {
-    out.add(m[2]);
+    const key = m[2] || m[3];
+    out.add(`${namespace}.${key}`);
   }
   return out;
 }
@@ -43,7 +49,8 @@ const srcFiles = fs.readdirSync(srcDir).filter((f) => f.endsWith('.ts')).sort();
 const srcKeysByFile = {};
 let totalEnKeys = 0;
 for (const f of srcFiles) {
-  const k = collectKeys(path.join(srcDir, f));
+  const namespace = f.replace(/\.ts$/, '');
+  const k = collectKeys(path.join(srcDir, f), namespace);
   srcKeysByFile[f] = k;
   totalEnKeys += k.size;
 }
@@ -72,7 +79,8 @@ for (const lang of targetLocales) {
       missingKeys[f] = Array.from(enKeys);
       continue;
     }
-    const tKeys = collectKeys(path.join(dir, f));
+    const namespace = f.replace(/\.ts$/, '');
+    const tKeys = collectKeys(path.join(dir, f), namespace);
     localKeys += tKeys.size;
     const m = [];
     for (const k of enKeys) if (!tKeys.has(k)) m.push(k);
