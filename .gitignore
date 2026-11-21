@@ -39,3 +39,6 @@ agent-desktop/.codegraph/
 # git \u2014 they are just regular files with the same content. On
 # non-Windows clones the sync-docs.ps1 script must re-create them.
 
+# Python bytecode from the ui-ux-pro-max prompt helper scripts.
+__pycache__/
+*.py[cod]
