@@ -227,7 +227,15 @@ describe("Settings orchestration", () => {
     expect(
       screen.getByText("Hermes Kanban and Dispatch"),
     ).toBeInTheDocument();
-    expect(screen.getByText("OpenClaw")).toBeInTheDocument();
+    // "OpenClaw" now appears twice: once as an <option> in the Runtime lane
+    // selector and once as the orchestration entry's label. Scope the
+    // assertion to the orchestration row so the intent (the provider is
+    // listed as an orchestrator) stays explicit.
+    const orchestrationLabel = screen
+      .getAllByText("OpenClaw")
+      .find((el) => el.tagName !== "OPTION");
+    expect(orchestrationLabel).toBeDefined();
+    expect(orchestrationLabel).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", { name: "Import OpenClaw" }),

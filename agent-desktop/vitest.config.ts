@@ -10,6 +10,17 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    // jsdom refuses to expose `localStorage` for an opaque origin, and the
+    // default `about:blank` is exactly that. Without an explicit http URL
+    // every test that touches localStorage dies in `beforeEach` with
+    // "Cannot read properties of undefined (reading 'clear')". This showed up
+    // as 14 unexplained failures on Windows and masked as "baseline noise";
+    // it is a configuration gap, not a product bug.
+    environmentOptions: {
+      jsdom: {
+        url: "http://localhost/",
+      },
+    },
     globals: true,
     passWithNoTests: true,
     setupFiles: ["./src/renderer/src/test/setup.ts"],
