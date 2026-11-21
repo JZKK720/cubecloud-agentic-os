@@ -140,6 +140,66 @@ describe("addMcpServer", () => {
     expect(res.error).toMatch(/already exists/i);
   });
 
+  // `sse` is the legacy HTTP+SSE transport that fastapi-mcp and most
+  // Python MCP servers expose (DataFlow mounts /mcp at :8000). Without
+  // it the only way to register such a server was hand-editing
+  // config.yaml, which is exactly what the MCP screen exists to avoid.
+  it("appends an sse server and writes an explicit type", async () => {
+    const { addMcpServer } = await import("../src/main/installer");
+    const res = addMcpServer({
+      name: "dataflow",
+      type: "sse",
+      enabled: true,
+      detail: "http://127.0.0.1:8000/mcp",
+    });
+    expect(res.ok).toBe(true);
+
+    const { readFileSync } = await import("fs");
+    const yaml = readFileSync(join(TEST_DIR, "config.yaml"), "utf-8");
+    expect(yaml).toContain("dataflow:");
+    expect(yaml).toContain("type: sse");
+    expect(yaml).toContain('url: "http://127.0.0.1:8000/mcp"');
+  });
+
+  it("round-trips an sse server through listMcpServers", async () => {
+    const { addMcpServer, listMcpServers } = await import(
+      "../src/main/installer"
+    );
+    addMcpServer({
+      name: "dataflow",
+      type: "sse",
+      enabled: true,
+      detail: "http://127.0.0.1:8000/mcp",
+    });
+
+    const row = listMcpServers().find((s) => s.name === "dataflow");
+    expect(row?.type).toBe("sse");
+    expect(row?.enabled).toBe(true);
+    expect(row?.detail).toBe("http://127.0.0.1:8000/mcp");
+  });
+
+  it("infers type from shape for configs without an explicit type", async () => {
+    const { listMcpServers } = await import("../src/main/installer");
+    const byName = Object.fromEntries(
+      listMcpServers().map((s) => [s.name, s.type]),
+    );
+    // `exa` has `type: http` + url; `github` has only a command.
+    expect(byName.exa).toBe("http");
+    expect(byName.github).toBe("stdio");
+  });
+
+  it("rejects a remote transport whose detail is not a URL", async () => {
+    const { addMcpServer } = await import("../src/main/installer");
+    const res = addMcpServer({
+      name: "bogus",
+      type: "sse",
+      enabled: true,
+      detail: "npx -y something",
+    });
+    expect(res.ok).toBe(false);
+    expect(res.error).toMatch(/http/i);
+  });
+
   it("rejects names that contain invalid characters", async () => {
     const { addMcpServer } = await import("../src/main/installer");
     const res = addMcpServer({

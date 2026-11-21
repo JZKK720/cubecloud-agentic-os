@@ -15,6 +15,9 @@ interface McpServer {
   detail: string;
 }
 
+/** Mirrors `McpServerType` in main/installer.ts. */
+type McpServerType = "http" | "stdio" | "sse";
+
 interface McpProps {
   profile?: string;
 }
@@ -23,17 +26,20 @@ function TransportBadge({
   type,
   httpLabel,
   stdioLabel,
+  sseLabel,
 }: {
   type: string;
   httpLabel: string;
   stdioLabel: string;
+  sseLabel: string;
 }): React.JSX.Element {
-  const isHttp = type === "http";
+  const isStdio = type === "stdio";
+  const label = isStdio ? stdioLabel : type === "sse" ? sseLabel : httpLabel;
   return (
     <span
-      className={`mcp-transport ${isHttp ? "mcp-transport-http" : "mcp-transport-stdio"}`}
+      className={`mcp-transport ${isStdio ? "mcp-transport-stdio" : "mcp-transport-http"}`}
     >
-      {isHttp ? httpLabel : stdioLabel}
+      {label}
     </span>
   );
 }
@@ -69,7 +75,7 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
   // them (handled inside AddMcpForm).
   const [prefill, setPrefill] = useState<{
     name: string;
-    type: "http" | "stdio";
+    type: McpServerType;
     detail: string;
   } | null>(null);
 
@@ -247,6 +253,7 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
                     type={s.type}
                     httpLabel={t("mcp.http")}
                     stdioLabel={t("mcp.stdio")}
+                    sseLabel={t("mcp.sse")}
                   />
                   <StatusDot
                     enabled={s.enabled}
@@ -291,11 +298,11 @@ interface AddMcpFormProps {
   onCancel: () => void;
   onAdded: () => void | Promise<void>;
   profile?: string;
-  prefill?: { name: string; type: "http" | "stdio"; detail: string } | null;
+  prefill?: { name: string; type: McpServerType; detail: string } | null;
   onPrefillConsumed?: () => void;
 }
 
-type AddType = "http" | "stdio";
+type AddType = McpServerType;
 
 function AddMcpForm({
   onCancel,
@@ -400,6 +407,7 @@ function AddMcpForm({
             disabled={submitting}
           >
             <option value="http">{t("mcp.addTypeHttp")}</option>
+            <option value="sse">{t("mcp.addTypeSse")}</option>
             <option value="stdio">{t("mcp.addTypeStdio")}</option>
           </select>
         </label>

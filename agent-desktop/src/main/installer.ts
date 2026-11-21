@@ -1659,6 +1659,15 @@ export function discoverLast30Days(): Last30DaysStatus {
 //  MCP server management
 // ────────────────────────────────────────────────────
 
+/** MCP transports the desktop can register.
+ *
+ *  `sse` is the legacy HTTP+SSE transport that `fastapi-mcp` and many
+ *  Python MCP servers expose (e.g. DataFlow at `http://host:8000/mcp`).
+ *  It differs from `http` (streamable HTTP) in both handshake and
+ *  content type, so it needs its own value rather than being folded into
+ *  `http`. */
+export type McpServerType = "http" | "stdio" | "sse";
+
 export function listMcpServers(
   profile?: string,
 ): Array<{ name: string; type: string; enabled: boolean; detail: string }> {
@@ -1704,9 +1713,15 @@ export function listMcpServers(
         detail = cmdMatch?.[1] || "stdio";
       }
 
+      // Prefer an explicit `type:` when present so `sse` survives a
+      // read/write round-trip; fall back to inferring from the URL vs
+      // command shape for configs written before the type key existed.
+      const typeMatch = serverBlock.match(/type:\s*(http|stdio|sse)\b/i);
+      const inferred: McpServerType = hasUrl ? "http" : "stdio";
+
       servers.push({
         name,
-        type: hasUrl ? "http" : "stdio",
+        type: typeMatch ? typeMatch[1].toLowerCase() : inferred,
         enabled,
         detail,
       });
@@ -1802,15 +1817,20 @@ function removeMcpServerFromBlock(block: string, name: string): string | null {
   return out.join("\n");
 }
 
-function appendMcpServerToBlock(block: string, entry: { name: string; type: "http" | "stdio"; enabled: boolean; detail: string }): string {
+function appendMcpServerToBlock(
+  block: string,
+  entry: { name: string; type: McpServerType; enabled: boolean; detail: string },
+): string {
   const indent = "  ";
   const inner = "    ";
   const lines: string[] = [`${indent}${entry.name}:`];
-  if (entry.type === "http") {
-    lines.push(`${inner}type: http`);
-    lines.push(`${inner}url: "${entry.detail}"`);
-  } else {
+  if (entry.type === "stdio") {
     lines.push(`${inner}command: "${entry.detail}"`);
+  } else {
+    // Both remote transports carry a URL; `sse` also needs the explicit
+    // type so the client does not attempt a streamable-HTTP handshake.
+    lines.push(`${inner}type: ${entry.type}`);
+    lines.push(`${inner}url: "${entry.detail}"`);
   }
   lines.push(`${inner}enabled: ${entry.enabled ? "true" : "false"}`);
   // Ensure the block ends with a newline before we append.
@@ -1844,7 +1864,7 @@ export function removeMcpServer(
 }
 
 export function addMcpServer(
-  entry: { name: string; type: "http" | "stdio"; enabled: boolean; detail: string },
+  entry: { name: string; type: McpServerType; enabled: boolean; detail: string },
   profile?: string,
 ): { ok: boolean; error?: string } {
   if (!/^[\w-]+$/.test(entry.name)) {
@@ -1852,6 +1872,12 @@ export function addMcpServer(
   }
   if (!entry.detail || entry.detail.length > 2048) {
     return { ok: false, error: "invalid detail (url or command)" };
+  }
+  if (!["http", "stdio", "sse"].includes(entry.type)) {
+    return { ok: false, error: `invalid transport '${entry.type}'` };
+  }
+  if (entry.type !== "stdio" && !/^https?:\/\//i.test(entry.detail)) {
+    return { ok: false, error: "remote MCP transports need an http(s) URL" };
   }
   return mutateMcpServersBlock(profile, (block) => {
     // Reject duplicates.
@@ -1885,7 +1911,7 @@ export function ensureDefaultMcpServers(profile?: string): void {
     // If mcp_servers block already exists, don't touch it.
     if (/^mcp_servers:\s*\n/m.test(content)) return;
 
-    const defaults: Array<{ name: string; type: "http" | "stdio"; enabled: boolean; detail: string }> = [
+    const defaults: Array<{ name: string; type: McpServerType; enabled: boolean; detail: string }> = [
       { name: "filesystem", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-filesystem" },
       { name: "git", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-git" },
       { name: "fetch", type: "stdio", enabled: true, detail: "npx -y @modelcontextprotocol/server-fetch" },

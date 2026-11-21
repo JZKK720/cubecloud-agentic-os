@@ -2089,7 +2089,7 @@ interface HermesAPI {
   addMcpServer: (
     entry: {
       name: string;
-      type: "http" | "stdio";
+      type: "http" | "stdio" | "sse";
       enabled: boolean;
       detail: string;
     },

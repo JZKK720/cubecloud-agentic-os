@@ -507,13 +507,16 @@ export function searchBundledMcpServers(
 /** Validate a user-supplied URL or stdio command. Returns null when
  *  the value looks acceptable; otherwise an error message. */
 export function validateMcpDetail(
-  transport: "http" | "stdio",
+  transport: "http" | "stdio" | "sse",
   detail: string,
 ): string | null {
   const trimmed = detail.trim();
   if (!trimmed) return "empty";
   if (trimmed.length > 2048) return "tooLong";
-  if (transport === "http") {
+  if (transport === "http" || transport === "sse") {
+    // Both remote transports need an http(s) endpoint. `sse` is the
+    // legacy streaming transport that fastapi-mcp and most Python MCP
+    // servers expose (e.g. DataFlow's http://host:8000/mcp).
     if (!/^https?:\/\//i.test(trimmed)) return "httpScheme";
     return null;
   }
