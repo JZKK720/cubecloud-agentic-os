@@ -58,6 +58,29 @@
    re-render the combined PDF with
    `node scripts/v2.10.20-readme-combined-pdf.cjs`.
 
+### In-app UI copy (`agent-desktop/src/shared/i18n/locales/`)
+
+The desktop UI strings are a separate surface from the docs above.
+Each screen has one namespace file per locale, and the English file
+is the source of truth:
+
+- 8 locales: `en`, `es`, `id`, `ja`, `pt-BR`, `pt-PT`, `zh-CN`,
+  `zh-TW`.
+- `en` and `zh-CN` are natively authored. The other six re-export the
+  English file (`export { default } from "../en/<namespace>";`) or
+  spread it, so operators always see real copy instead of a raw key.
+- Every namespace must be registered in
+  `agent-desktop/src/shared/i18n/index.ts` under **all eight**
+  locale `resources` blocks. A namespace that exists on disk but is
+  not registered renders as `namespace.key` on screen.
+- Two gates enforce this:
+  - `agent-desktop/tests/i18n-renderer-keys.test.ts` asserts every
+    literal `t("namespace.key")` call resolves to real copy in `en`
+    and falls back to real copy in the other seven locales.
+  - `node scripts/check-i18n-coverage.cjs --strict` compares locale
+    key trees against `en` (both quoted and bare keys, prefixed with
+    the namespace filename).
+
 ## What lives where?
 
 The outer root and `docs/` now host **monorepo translations**.
