@@ -87,7 +87,79 @@ export interface SkillSearchResult {
  * only used for desktop-bundled skills where the file lives directly
  * under `<root>/<skill>/SKILL.md` (no category subfolder).
  */
-function parseSkillFrontmatter(content: string): {
+/** Read one scalar value from a YAML frontmatter block.
+ *
+ *  Handles the three shapes SKILL.md files actually use:
+ *    - plain:            name: karpathy-guidelines
+ *    - double-quoted:    key: "a value: with a colon"
+ *    - single-quoted:    key: 'it''s escaped'
+ *
+ *  The previous implementation used the character class `[^"'\n]+`,
+ *  which excludes quote characters from the *middle* of the value. 25 of
+ *  the 48 bundled skills carry quoted trigger phrases inside their
+ *  description (`Triggers: "follow the four principles", …`), so the
+ *  match failed and every one of them got an empty description — which
+ *  in turn meant the progressive-disclosure catalog showed them as
+ *  name-only entries.
+ *
+ *  Returns "" when the key is absent. */
+function readFrontmatterScalar(frontmatter: string, key: string): string {
+  const line = new RegExp(`^[ \\t]*${key}[ \\t]*:[ \\t]*(.*)$`, "m").exec(
+    frontmatter,
+  );
+  if (!line) return "";
+
+  const raw = line[1].trim();
+  if (!raw) return "";
+
+  // Double-quoted scalar: unescape the handful of sequences we care about.
+  if (raw.startsWith('"')) {
+    const end = findClosingQuote(raw, '"');
+    if (end > 0) {
+      return raw
+        .slice(1, end)
+        .replace(/\\n/g, "\n")
+        .replace(/\\t/g, "\t")
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, "\\")
+        .trim();
+    }
+    // Unterminated — fall through and take the remainder verbatim.
+    return raw.slice(1).trim();
+  }
+
+  // Single-quoted scalar: '' is an escaped quote.
+  if (raw.startsWith("'")) {
+    const end = findClosingQuote(raw, "'");
+    if (end > 0) {
+      return raw.slice(1, end).replace(/''/g, "'").trim();
+    }
+    return raw.slice(1).trim();
+  }
+
+  // Plain scalar. A trailing ` #` starts a YAML comment.
+  const commentAt = raw.search(/\s#/);
+  return (commentAt === -1 ? raw : raw.slice(0, commentAt)).trim();
+}
+
+/** Index of the quote that closes the scalar that starts at 0. */
+function findClosingQuote(raw: string, quote: string): number {
+  for (let i = 1; i < raw.length; i++) {
+    if (raw[i] === quote) {
+      // A doubled single quote is an escape, not the terminator.
+      if (quote === "'" && raw[i + 1] === "'") {
+        i++;
+        continue;
+      }
+      // A backslash-escaped double quote is not the terminator.
+      if (quote === '"' && raw[i - 1] === "\\") continue;
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function parseSkillFrontmatter(content: string): {
   name: string;
   description: string;
   category: string;
@@ -109,18 +181,9 @@ function parseSkillFrontmatter(content: string): {
 
   const frontmatter = content.slice(3, endIdx);
 
-  const nameMatch = frontmatter.match(/^\s*name:\s*["']?([^"'\n]+)["']?\s*$/m);
-  if (nameMatch) result.name = nameMatch[1].trim();
-
-  const descMatch = frontmatter.match(
-    /^\s*description:\s*["']?([^"'\n]+)["']?\s*$/m,
-  );
-  if (descMatch) result.description = descMatch[1].trim();
-
-  const catMatch = frontmatter.match(
-    /^\s*category:\s*["']?([^"'\n]+)["']?\s*$/m,
-  );
-  if (catMatch) result.category = catMatch[1].trim();
+  result.name = readFrontmatterScalar(frontmatter, "name");
+  result.description = readFrontmatterScalar(frontmatter, "description");
+  result.category = readFrontmatterScalar(frontmatter, "category");
 
   return result;
 }
