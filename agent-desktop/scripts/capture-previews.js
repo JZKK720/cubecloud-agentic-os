@@ -72,14 +72,37 @@ async function clickTab(page, label) {
     .first();
   if (await exact.count()) {
     await exact.scrollIntoViewIfNeeded({ timeout: 3000 });
-    await exact.click({ timeout: 10000 });
-    return true;
+    // Some screens (Tools, Workspace) fire several IPC probes on mount and
+    // the renderer can stay busy long enough that Playwright's actionability
+    // check never settles. `force` skips the stability wait; the click still
+    // lands on the real element. Retry once with a DOM click as a last
+    // resort rather than failing the whole capture run.
+    try {
+      await exact.click({ timeout: 10000, force: true });
+      return true;
+    } catch {
+      try {
+        await exact.dispatchEvent("click", undefined, { timeout: 5000 });
+        return true;
+      } catch {
+        /* fall through to the text fallback */
+      }
+    }
   }
   const fallback = scope.getByText(label, { exact: true }).first();
   if (await fallback.count()) {
     await fallback.scrollIntoViewIfNeeded({ timeout: 3000 });
-    await fallback.click({ timeout: 10000 });
-    return true;
+    try {
+      await fallback.click({ timeout: 10000, force: true });
+      return true;
+    } catch {
+      try {
+        await fallback.dispatchEvent("click", undefined, { timeout: 5000 });
+        return true;
+      } catch {
+        return false;
+      }
+    }
   }
   return false;
 }
