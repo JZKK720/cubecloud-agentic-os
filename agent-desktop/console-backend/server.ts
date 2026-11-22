@@ -28,6 +28,7 @@ import {
   ConsoleRouteRegistry,
 } from "./registry.ts";
 import { createKernelAgUiRunHandler } from "./ag-ui-run.ts";
+import { createHarnessAgUiSource } from "./ag-ui-harness-source.ts";
 import { seedGovernance } from "./governance-seed.ts";
 import type { ServerResponse } from "http";
 import { randomBytes } from "crypto";
@@ -237,9 +238,13 @@ async function main(): Promise<void> {
     pushSinks,
     authToken: tokenGateEnabled ? authToken : null,
     // AG-UI is the kernel's *edge* protocol: an external client drives a
-    // turn over SSE. Wired here so `POST /api/ag-ui/run` answers in a real
-    // boot — an endpoint that only exists inside a test is not a protocol.
-    agUiRun: createKernelAgUiRunHandler(registry),
+    // turn over SSE. Backed by the same harness router the desktop chat path
+    // uses, so a run answers instead of returning NO_TURN_SOURCE. Wired here
+    // so `POST /api/ag-ui/run` works in a real boot — an endpoint that only
+    // exists inside a test is not a protocol.
+    agUiRun: createKernelAgUiRunHandler(registry, {
+      source: createHarnessAgUiSource(),
+    }),
   });
   await new Promise<void>((resolve) => server.listen(PORT, HOST, resolve));
   console.log(`console-backend kernel listening on http://${HOST}:${PORT}`);

@@ -1005,6 +1005,14 @@ outside the app. The join now exists:
   the first version passed the handler only in tests, which is the same
   "endpoint that exists only in a test" failure this whole exercise is about.
 
+**Correction (Phase 1.11): the paragraph above was wrong on two counts.** The
+kernel *can* import the harness registry — it already reaches `hermes.ts` for
+connection diagnostics, and that drags the whole 309-module registry into a
+closure that is Electron-free and boots under strip-only TypeScript. So the
+`agUiTurn` capability is an *escape hatch for slim deployments*, not the
+mechanism a normal boot needs. And "answers NO_TURN_SOURCE" was honest but
+useless: the endpoint was permanently inert. Both are fixed; see Phase 1.11.
+
 Verified against the actual container boot path
 (`node --experimental-strip-types … console-backend/server.ts`): `/health` 200,
 `/api/ag-ui/run` 200 with `RUN_STARTED` then `RUN_ERROR{NO_TURN_SOURCE}`, and 401
@@ -1049,6 +1057,53 @@ supports that syntax. Both are now written out longhand, and
 `tests/console-kernel-electron-free.test.ts` gained a second assertion over the
 same transitive closure: no constructor parameter properties, no `enum`, no
 `namespace` — the strip-only subset, enforced.
+
+### Phase 1.11 — A real turn source for AG-UI (2026-11-22)
+
+`POST /api/ag-ui/run` shipped answering `RUN_ERROR{NO_TURN_SOURCE}`. That was
+honest and still a dead end: a protocol-compliant error instead of a reply.
+Closing it required checking an assumption I had written down without testing.
+
+**The assumption was wrong.** Phase 1.10 said "the console kernel cannot import
+the harness router: that module reaches Electron". Measured, with the same
+transitive-closure walk the gate uses: the kernel's 309-module closure already
+contains `harnesses/registry.ts`, `hermes-harness.ts`, `deepseek-harness.ts` and
+`harness-chat.ts` — because `console-backend/server.ts` imports `hermes.ts` for
+connection diagnostics. The closure is Electron-free and the kernel boots under
+`node --experimental-strip-types`. So the constraint I designed around did not
+exist, and it is exactly what made the endpoint inert.
+
+**What ships now:**
+
+- `console-backend/ag-ui-harness-source.ts` — an `AgUiTurnSource` backed by
+  `createHarnessRegistry()`. It resolves the operator's active runtime the same
+  way the chat path does (`runtime.provider`), runs one turn per AG-UI run, and
+  keeps one registry for the process so a second run does not pay runtime
+  startup again.
+- `console-backend/server.ts` passes it. A real boot therefore streams.
+- `agUiTurn` remains a **fallback**, for a deployment that registers a turn
+  provider without loading the harness registry. `createKernelAgUiRunHandler`
+  prefers a directly supplied source, then the capability. `NO_TURN_SOURCE` now
+  means precisely what it says.
+- AG-UI threads map to runtime sessions 1:1 (`threadId` → `sessionId`), and the
+  AG-UI `messages` array is converted to harness history with the trailing user
+  message dropped — that message is the prompt and is passed separately, so
+  keeping it would deliver the prompt twice.
+
+**Verified against a real boot, not a fixture** — kernel started with
+`node --experimental-strip-types … console-backend/server.ts`, then a POST to
+`/api/ag-ui/run`:
+
+```
+RUN_STARTED{threadId:"live-thread", runId:"live-run"}
+REASONING_START → REASONING_MESSAGE_CONTENT ×N → REASONING_END
+TEXT_MESSAGE_START → TEXT_MESSAGE_CONTENT ×N → TEXT_MESSAGE_END
+RUN_FINISHED{outcome:{type:"success"}}
+```
+
+That output came from the local model server on `127.0.0.1:11434`, so the whole
+chain — AG-UI client → kernel HTTP → harness router → local model → SSE — is
+exercised with no cloud dependency.
 
 ## 7. Provenance of these claims
 

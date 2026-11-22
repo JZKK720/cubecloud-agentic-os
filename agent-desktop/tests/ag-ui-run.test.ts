@@ -22,9 +22,11 @@ import {
 import {
   createAgUiRunHandler,
   createKernelAgUiRunHandler,
+  historyFromMessages,
   lastUserMessage,
   type AgUiTurnSource,
 } from "../console-backend/ag-ui-run";
+import { createHarnessAgUiSource } from "../console-backend/ag-ui-harness-source";
 import type { HarnessTurnDelta } from "@cubecloud/platform-core";
 
 const TOKEN = "ag-ui-test-token";
@@ -271,14 +273,16 @@ describe("AG-UI run endpoint", () => {
  * capability, because the kernel cannot import the harness router without
  * pulling Electron into its closure.
  */
-describe("kernel-sourced AG-UI runs", () => {
-  function fakeRegistry(caps: Record<string, (args: unknown[]) => Promise<unknown>>) {
-    return {
-      get: (name: string) =>
-        caps[name] ? { handler: caps[name] } : undefined,
-    };
-  }
+/** A registry stub: capability name → handler. */
+function fakeRegistry(
+  caps: Record<string, (args: unknown[]) => Promise<unknown>>,
+) {
+  return {
+    get: (name: string) => (caps[name] ? { handler: caps[name] } : undefined),
+  };
+}
 
+describe("kernel-sourced AG-UI runs", () => {
   it("streams a turn provided by the agUiTurn capability", async () => {
     const handler = createKernelAgUiRunHandler(
       fakeRegistry({
@@ -305,7 +309,7 @@ describe("kernel-sourced AG-UI runs", () => {
     });
   });
 
-  it("says so honestly when no harness is attached", async () => {
+  it("says so honestly when no source is configured at all", async () => {
     const handler = createKernelAgUiRunHandler(fakeRegistry({}));
 
     await withKernel(handler, async (base) => {
@@ -320,5 +324,150 @@ describe("kernel-sourced AG-UI runs", () => {
       expect(String(errorEvent?.message)).toContain("agUiTurn");
       expect(errorEvent?.code).toBe("NO_TURN_SOURCE");
     });
+  });
+
+  it("prefers a directly supplied turn source over the capability", async () => {
+    let called = 0;
+    const handler = createKernelAgUiRunHandler(
+      fakeRegistry({
+        agUiTurn: async () => {
+          called += 1;
+          return [{ type: "text", content: "from capability" }];
+        },
+      }),
+      {
+        source: {
+          async *runTurn() {
+            yield { type: "text", content: "from source" } as const;
+          },
+        },
+      },
+    );
+
+    await withKernel(handler, async (base) => {
+      const res = await post(
+        `${base}/api/ag-ui/run`,
+        { threadId: "t", runId: "r", messages: [{ role: "user", content: "hi" }] },
+        { "x-console-token": TOKEN },
+      );
+      const content = sseEvents(res.body)
+        .filter((e) => e.type === "TEXT_MESSAGE_CONTENT")
+        .map((e) => e.delta as string)
+        .join("");
+      expect(content).toBe("from source");
+      expect(called).toBe(0);
+    });
+  });
+});
+
+describe("harness-backed AG-UI runs", () => {
+  it("streams a turn from the harness router", async () => {
+    const seen: Array<{ sessionId: string; message: string; history?: unknown }> = [];
+    const source = createHarnessAgUiSource({
+      createRegistry: () =>
+        ({
+          adapters: new Map(),
+          router: {
+            async *runTurn(sessionId: string, input: any) {
+              seen.push({ sessionId, message: input.message, history: input.history });
+              yield { type: "text", content: "hello " };
+              yield { type: "text", content: "from the harness" };
+              yield { type: "done" };
+            },
+            getActiveProvider: () => "hermes",
+            close: async () => {},
+          },
+        }) as any,
+    });
+
+    const handler = createKernelAgUiRunHandler(fakeRegistry({}), { source });
+
+    await withKernel(handler, async (base) => {
+      const res = await post(
+        `${base}/api/ag-ui/run`,
+        {
+          threadId: "thread-abc",
+          runId: "run-1",
+          messages: [
+            { role: "user", content: "earlier question" },
+            { role: "assistant", content: "earlier answer" },
+            { role: "user", content: "now this" },
+          ],
+        },
+        { "x-console-token": TOKEN },
+      );
+
+      const events = sseEvents(res.body);
+      const content = events
+        .filter((e) => e.type === "TEXT_MESSAGE_CONTENT")
+        .map((e) => e.delta as string)
+        .join("");
+      expect(content).toBe("hello from the harness");
+      expect(events.map((e) => e.type)).toContain("RUN_FINISHED");
+      expect(events.map((e) => e.type)).not.toContain("RUN_ERROR");
+
+      // One thread is one runtime session; the prompt goes once, and prior
+      // turns travel as history rather than being folded into the message.
+      expect(seen).toHaveLength(1);
+      expect(seen[0].sessionId).toBe("thread-abc");
+      expect(seen[0].message).toBe("now this");
+      expect(seen[0].history).toEqual([
+        { role: "user", content: "earlier question" },
+        { role: "assistant", content: "earlier answer" },
+      ]);
+    });
+  });
+
+  it("reports a harness failure instead of an empty success", async () => {
+    const source = createHarnessAgUiSource({
+      createRegistry: () =>
+        ({
+          adapters: new Map(),
+          router: {
+            // eslint-disable-next-line require-yield
+            async *runTurn() {
+              yield { type: "error", message: "runtime refused", code: "X" };
+            },
+            getActiveProvider: () => "hermes",
+            close: async () => {},
+          },
+        }) as any,
+    });
+
+    await withKernel(createKernelAgUiRunHandler(fakeRegistry({}), { source }), async (base) => {
+      const res = await post(
+        `${base}/api/ag-ui/run`,
+        { threadId: "t", runId: "r", messages: [{ role: "user", content: "hi" }] },
+        { "x-console-token": TOKEN },
+      );
+      const types = sseEvents(res.body).map((e) => e.type);
+      expect(types).toContain("RUN_ERROR");
+      expect(types).not.toContain("RUN_FINISHED");
+    });
+  });
+});
+
+describe("historyFromMessages", () => {
+  it("drops the trailing user message that becomes the prompt", () => {
+    expect(
+      historyFromMessages([
+        { role: "user", content: "a" },
+        { role: "assistant", content: "b" },
+        { role: "user", content: "c" },
+      ]),
+    ).toEqual([
+      { role: "user", content: "a" },
+      { role: "assistant", content: "b" },
+    ]);
+  });
+
+  it("ignores non-conversational roles", () => {
+    expect(
+      historyFromMessages([
+        { role: "tool", content: "x" },
+        { role: "user", content: "a" },
+        { role: "user", content: "b" },
+      ]),
+    ).toEqual([{ role: "user", content: "a" }]);
   });
 });
