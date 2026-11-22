@@ -97,13 +97,19 @@ interface PendingRequest {
 
 /** Raised when the runtime rejects a request or the transport dies. */
 export class DshRpcError extends Error {
-  constructor(
-    message: string,
-    readonly code?: number,
-    readonly data?: unknown,
-  ) {
+  // Written out rather than declared as constructor parameter properties:
+  // this module is reachable from the console kernel, which runs under
+  // `node --experimental-strip-types`. Strip-only mode rejects parameter
+  // properties (`readonly code?: number` in a constructor signature) with
+  // ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX, and that crashed the kernel's boot.
+  readonly code?: number;
+  readonly data?: unknown;
+
+  constructor(message: string, code?: number, data?: unknown) {
     super(message);
     this.name = "DshRpcError";
+    this.code = code;
+    this.data = data;
   }
 }
 
@@ -126,8 +132,13 @@ export class DshJsonRpcClient {
   private disposed = false;
   private transportError: Error | null = null;
   private nonProtocolLines = 0;
+  // Not a constructor parameter property: strip-only TS (which the console
+  // kernel runs under) rejects those. See DshRpcError above.
+  private readonly options: DshClientOptions;
 
-  constructor(private readonly options: DshClientOptions = {}) {}
+  constructor(options: DshClientOptions = {}) {
+    this.options = options;
+  }
 
   /** Spawn the runtime and complete the `initialize` handshake. */
   async start(): Promise<void> {

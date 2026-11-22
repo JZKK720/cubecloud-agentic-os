@@ -81,4 +81,45 @@ describe("Phase G — kernel is electron-free", () => {
       `electron reached from the kernel: ${electron.join(", ")}`,
     ).toEqual([]);
   });
+
+  /**
+   * The same closure is loaded by `node --experimental-strip-types` in the
+   * container (see console-backend/Dockerfile), and strip-only mode rejects
+   * TypeScript that needs code generation:
+   *
+   *   - constructor parameter properties (`constructor(private x: T)`)
+   *   - `enum` and `namespace`
+   *
+   * MEASURED: a constructor parameter property in `dsh-jsonrpc-client.ts`
+   * reached the closure through the harness registry and crashed the kernel
+   * at boot with ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX. The kernel served nothing
+   * at all, and no test noticed because the unit tests run through esbuild,
+   * which supports the syntax. This gate is the missing signal.
+   */
+  it("no module in the closure uses syntax strip-only mode cannot run", () => {
+    const { visited } = walkClosure(ENTRY);
+    const offenders: string[] = [];
+    for (const file of visited) {
+      let src: string;
+      try {
+        src = readFileSync(file, "utf8");
+      } catch {
+        continue;
+      }
+      // Parameter properties: a modifier immediately before a parameter name
+      // inside any constructor signature.
+      for (const m of src.matchAll(/constructor\s*\(([\s\S]*?)\)\s*[{:]/g)) {
+        if (/\b(readonly|public|private|protected)\s+\w/.test(m[1])) {
+          offenders.push(`${relative(ROOT, file)} (constructor parameter property)`);
+        }
+      }
+      if (/^\s*(export\s+)?(const\s+)?enum\s+\w/m.test(src)) {
+        offenders.push(`${relative(ROOT, file)} (enum)`);
+      }
+      if (/^\s*(export\s+)?namespace\s+\w/m.test(src)) {
+        offenders.push(`${relative(ROOT, file)} (namespace)`);
+      }
+    }
+    expect(offenders, "strip-only unsupported syntax in the kernel closure").toEqual([]);
+  });
 });
