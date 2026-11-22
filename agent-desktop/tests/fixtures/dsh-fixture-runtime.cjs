@@ -23,8 +23,19 @@ let buffer = "";
 let seq = 1;
 let initialized = false;
 
-const PROVIDERS = new Set(["deepseek-account", "deepseek-api-key"]);
-const MODELS = new Set(["deepseek-flash", "deepseek-v4-pro"]);
+const PROVIDERS = new Set([
+  "ollama",
+  "lmstudio",
+  "llamacpp",
+  "vllm",
+  "deepseek-account",
+  "deepseek-official",
+]);
+// A local server's catalog is whatever the operator pulled, so accept any
+// non-empty model id for the local routes. The cloud routes keep the strict
+// catalog check so the fixture still catches a wrong id there.
+const LOCAL_ROUTES = new Set(["ollama", "lmstudio", "llamacpp", "vllm"]);
+const CLOUD_MODELS = new Set(["deepseek-flash", "deepseek-v4-pro"]);
 
 function send(frame) {
   process.stdout.write(`${JSON.stringify(frame)}\n`);
@@ -78,7 +89,8 @@ function handle(line) {
       });
       return;
     }
-    if (!MODELS.has(params.model)) {
+    const isLocal = LOCAL_ROUTES.has(params.provider);
+    if (isLocal ? typeof params.model !== "string" : !CLOUD_MODELS.has(params.model)) {
       send({
         jsonrpc: "2.0",
         id,

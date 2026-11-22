@@ -136,6 +136,20 @@ export default {
     noAdapter: "This runtime has no working adapter yet; chat stays on the Hermes gateway.",
     saveFailed: "Could not save the runtime choice.",
   },
+  localModel: {
+    title: "Local model endpoint",
+    hint:
+      "The DeepSeek Harness lane runs models through a local OpenAI-compatible server. Ollama is the default; LM Studio, llama.cpp and vLLM work the same way. No cloud provider and no API key is needed — a hosted endpoint can be added later through the same fields.",
+    baseUrl: "Base URL",
+    model: "Model id",
+    modelHint:
+      "Leave empty to use whatever the server advertises first.",
+    probe: "Test connection",
+    probing: "Testing…",
+    save: "Save endpoint",
+    saving: "Saving…",
+    saved: "Endpoint saved.",
+  },
   migrating: "Migrating...",
   migrateToHermes: "Migrate to Hermes",
   skip: "Skip",

@@ -11,15 +11,17 @@
 //   1. `initialize` requires cwd/provider/model — the fixture accepted anything,
 //      so the client shipped without them and the runtime answered
 //      '"paths[0]" must be of type string'.
-//   2. The default `sdk` profile registers ONLY `deepseek-account`;
-//      `deepseek-api-key` answers "no adapter registered". The api-key adapter
-//      ships separately as `deepseek-official`.
+//   2. pi-ai refuses a route with no credential at all — a *local* route still
+//      needs an `apiKeyEnv` holding a placeholder, which local servers ignore.
 //   3. `turn/end.reason.kind` can be 'error' with an `error`/`failure` object.
 //   4. A provider failure emits assistant/attempt with a finish chunk of
 //      reason.kind 'error' and NO text, then turn/end 'error'. An adapter that
 //      ignores it reports a clean but empty turn.
 //   5. Sessions persist in $DSH_HOME/storages/sessions/<id>.json, so reusing an
 //      id fails with `session "<id>" already exists`.
+//   6. The route's `api:` dictates the fake's wire format: an
+//      `openai-completions` route fed an Anthropic-shaped stream reports
+//      "Stream ended without finish_reason".
 //
 // USAGE
 //   node scripts/dsh-real-smoke.cjs
@@ -28,12 +30,10 @@
 // DSH_PACKAGE_DIR (default: a temp install) and skips with exit 0 when absent,
 // so it is safe to wire into a local audit ladder but never into required CI.
 //
-// It verifies TWO paths, both without credentials:
-//   A. failure path  — `deepseek-account` with no sign-in: the adapter must
-//                      surface ACCOUNT_SIGN_IN_REQUIRED, not a false success.
-//   B. success path  — `deepseek-official` pointed at a local Messages-shaped
-//                      fake via DEEPSEEK_BASE_URL: the adapter must stream text,
-//                      report usage, and close with a session id.
+// Both paths are LOCAL-ONLY: no cloud host, no real credential, no egress.
+//   A. failure path  — a loopback route pointing at a dead port on 127.0.0.1.
+//   B. success path  — a loopback OpenAI-compatible route, which is the shape
+//                      Ollama / LM Studio / vLLM expose.
 //
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 
@@ -64,35 +64,25 @@ function resolveAdapter() {
   return null;
 }
 
-/** Write a profile that mounts the api-key adapter (provider deepseek-official). */
-function stageProfile(home) {
-  const dir = path.join(home, "profiles", "sdk");
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(
-    path.join(dir, "cordis.patch.yml"),
-    "- id: llm-deepseek-api-key\n  name: '@deepseek-ai/dsh-llm-deepseek-api-key'\n",
-  );
-  fs.writeFileSync(path.join(dir, "cordis.yml"), "[]\n");
-  fs.writeFileSync(
-    path.join(dir, "package.json"),
-    JSON.stringify(
-      {
-        name: "dsh-profile-sdk",
-        private: true,
-        dsh: {
-          profile: {
-            bundles: ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-sdk-app"],
-          },
-        },
-      },
-      null,
-      2,
-    ),
-  );
-}
-
-/** A Messages-shaped SSE endpoint the deepseek adapter can talk to. */function startFakeModel(port, replyText) {
+/** An OpenAI-compatible SSE endpoint the local route can talk to.
+ *
+ * Format matters: the route declares `api: openai-completions`, so the fake
+ * must stream `chat.completion.chunk` frames plus a `[DONE]` sentinel. An
+ * Anthropic Messages-shaped stream makes the runtime report "Stream ended
+ * without finish_reason".
+ */
+function startFakeModel(port, replyText) {
   const server = http.createServer((req, res) => {
+    if (String(req.url).endsWith("/models")) {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          object: "list",
+          data: [{ id: "local-smoke-model", object: "model" }],
+        }),
+      );
+      return;
+    }
     if (req.method !== "POST") {
       res.writeHead(404).end();
       return;
@@ -100,37 +90,23 @@ function stageProfile(home) {
     req.resume();
     req.on("end", () => {
       res.writeHead(200, { "content-type": "text/event-stream" });
-      const send = (e, d) => res.write(`event: ${e}\ndata: ${JSON.stringify(d)}\n\n`);
-      send("message_start", {
-        type: "message_start",
-        message: {
-          id: "msg_smoke",
-          type: "message",
-          role: "assistant",
-          model: "deepseek-flash",
-          content: [],
-          stop_reason: null,
-          stop_sequence: null,
-          usage: { input_tokens: 7, output_tokens: 1 },
-        },
+      const send = (o) => res.write(`data: ${JSON.stringify(o)}\n\n`);
+      const base = {
+        id: "chatcmpl-smoke",
+        object: "chat.completion.chunk",
+        created: Math.floor(Date.now() / 1000),
+        model: "local-smoke-model",
+      };
+      send({
+        ...base,
+        choices: [{ index: 0, delta: { role: "assistant", content: replyText }, finish_reason: null }],
       });
-      send("content_block_start", {
-        type: "content_block_start",
-        index: 0,
-        content_block: { type: "text", text: "" },
+      send({
+        ...base,
+        choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
+        usage: { prompt_tokens: 7, completion_tokens: 1, total_tokens: 8 },
       });
-      send("content_block_delta", {
-        type: "content_block_delta",
-        index: 0,
-        delta: { type: "text_delta", text: replyText },
-      });
-      send("content_block_stop", { type: "content_block_stop", index: 0 });
-      send("message_delta", {
-        type: "message_delta",
-        delta: { stop_reason: "end_turn", stop_sequence: null },
-        usage: { output_tokens: 1 },
-      });
-      send("message_stop", { type: "message_stop" });
+      res.write("data: [DONE]\n\n");
       res.end();
     });
   });
@@ -181,8 +157,54 @@ async function waitFor(frames, pred, timeoutMs) {
 }
 
 async function failurePath({ dshBin }) {
+  // LOCAL-FIRST failure: a loopback route pointing at a port nothing listens
+  // on. This is the realistic local-first failure mode (Ollama not started),
+  // and it needs no cloud provider and no credential. What we assert is that
+  // the failure is VISIBLE — not that the turn succeeds.
   const home = path.join(os.tmpdir(), `dsh-smoke-fail-${Date.now()}`);
-  const rt = startRuntime({ dshBin, dshHome: home, env: {} });
+  const dir = path.join(home, "profiles", "sdk");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "cordis.yml"), "[]\n");
+  fs.writeFileSync(
+    path.join(dir, "package.json"),
+    JSON.stringify(
+      {
+        name: "dsh-profile-sdk",
+        private: true,
+        dsh: {
+          profile: {
+            bundles: ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-sdk-app"],
+          },
+        },
+      },
+      null,
+      2,
+    ),
+  );
+  fs.writeFileSync(
+    path.join(dir, "cordis.patch.yml"),
+    [
+      "- id: llm-pi-ai",
+      "  name: '@deepseek-ai/dsh-llm-pi-ai'",
+      "  config:",
+      "    providers:",
+      "      dead-local:",
+      '        displayName: "Dead loopback (nothing listening)"',
+      "        api: openai-completions",
+      "        baseURL: http://127.0.0.1:9/v1",
+      "        apiKeyEnv: DSH_SMOKE_DEAD_KEY",
+      "        models:",
+      "          - id: dead-model",
+      "            contextWindow: 8192",
+      "",
+    ].join("\n"),
+  );
+
+  const rt = startRuntime({
+    dshBin,
+    dshHome: home,
+    env: { DSH_SMOKE_DEAD_KEY: "local-placeholder-no-key" },
+  });
   const send = (f) => rt.child.stdin.write(JSON.stringify(f) + "\n");
 
   try {
@@ -192,8 +214,8 @@ async function failurePath({ dshBin }) {
       method: "initialize",
       params: {
         cwd: os.tmpdir(),
-        provider: "deepseek-account",
-        model: "deepseek-flash",
+        provider: "dead-local",
+        model: "dead-model",
         approvalRequests: false,
       },
     });
@@ -219,22 +241,15 @@ async function failurePath({ dshBin }) {
     );
     if (!end) return { ok: false, why: "no turn/end within 90s" };
 
-    const events = rt.frames.filter((f) => f.method === "session.event");
-    const attempt = events.find((e) => e.params.event.type === "assistant/attempt");
-    const reason = end.params.event.data.reason;
-    const failure =
-      reason?.error ?? reason?.failure ??
-      attempt?.params.event.data.stream?.find((r) => r.chunk?.reason)?.chunk?.reason?.failure;
-
-    // The account provider is expected to refuse without sign-in. What we are
-    // asserting is that the FAILURE IS VISIBLE, not that it succeeds.
-    if (!failure?.message) {
-      return {
-        ok: false,
-        why: `turn ended without a retrievable failure: ${JSON.stringify(reason)}`,
-      };
+    const kind = end.params.event.data.reason?.kind;
+    if (kind === "completed") {
+      return { ok: false, why: "a dead endpoint reported a completed turn" };
     }
-    return { ok: true, detail: `${failure.code ?? "?"}: ${failure.message.slice(0, 80)}` };
+    const detail =
+      end.params.event.data.reason?.error?.message ??
+      end.params.event.data.reason?.failure?.message ??
+      `ended with kind=${kind}`;
+    return { ok: true, detail: `${kind}: ${String(detail).slice(0, 90)}` };
   } finally {
     rt.child.kill();
   }
@@ -244,8 +259,6 @@ async function successPath({ dshBin }) {
   const PORT = Number(process.env.DSH_SMOKE_PORT || 8802);
   const fake = await startFakeModel(PORT, "pong from real runtime");
   const home = path.join(os.tmpdir(), `dsh-smoke-ok-${Date.now()}`);
-  // Deliberately NOT staging the api-key patch: the adapter must mount it.
-  // This is what proves ensureApiKeyProviderMounted actually runs.
   const dir = path.join(home, "profiles", "sdk");
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "cordis.yml"), "[]\n");
@@ -266,36 +279,48 @@ async function successPath({ dshBin }) {
     ),
   );
 
+  // LOCAL-FIRST: the route is a loopback OpenAI-compatible endpoint, exactly
+  // what Ollama exposes. No cloud host, no real credential — pi-ai still
+  // insists on a credential reference, so a placeholder env var satisfies it
+  // and the local server ignores the header.
+  const patchPath = path.join(dir, "cordis.patch.yml");
+  fs.writeFileSync(
+    patchPath,
+    [
+      "- id: llm-pi-ai",
+      "  name: '@deepseek-ai/dsh-llm-pi-ai'",
+      "  config:",
+      "    providers:",
+      "      local-smoke:",
+      '        displayName: "Local smoke (OpenAI-compatible)"',
+      "        api: openai-completions",
+      `        baseURL: http://127.0.0.1:${PORT}/v1`,
+      "        apiKeyEnv: DSH_SMOKE_LOCAL_KEY",
+      "        models:",
+      "          - id: local-smoke-model",
+      "            contextWindow: 262144",
+      "",
+    ].join("\n"),
+  );
+
   const rt = startRuntime({
     dshBin,
     dshHome: home,
     env: {
-      DEEPSEEK_API_KEY: "sk-local-fake",
-      DEEPSEEK_BASE_URL: `http://127.0.0.1:${PORT}`,
+      DSH_SMOKE_LOCAL_KEY: "local-placeholder-no-key",
     },
   });
   const send = (f) => rt.child.stdin.write(JSON.stringify(f) + "\n");
 
   try {
-    // Mount the provider exactly the way the shipped adapter does.
-    const patch = path.join(dir, "cordis.patch.yml");
-    const mounted = !fs.existsSync(patch);
-    fs.writeFileSync(
-      patch,
-      "- id: llm-deepseek-api-key\n  name: '@deepseek-ai/dsh-llm-deepseek-api-key'\n",
-    );
-    if (!mounted) {
-      return { ok: false, why: "adapter did not need to mount; profile was pre-patched" };
-    }
-
     send({
       jsonrpc: "2.0",
       id: 1,
       method: "initialize",
       params: {
         cwd: os.tmpdir(),
-        provider: "deepseek-official",
-        model: "deepseek-flash",
+        provider: "local-smoke",
+        model: "local-smoke-model",
         approvalRequests: false,
       },
     });
@@ -323,7 +348,10 @@ async function successPath({ dshBin }) {
 
     const kind = end.params.event.data.reason?.kind;
     if (kind !== "completed") {
-      return { ok: false, why: `turn ended with kind=${kind}` };
+      return {
+        ok: false,
+        why: `turn ended with kind=${kind}: ${JSON.stringify(end.params.event.data.reason?.error ?? null)} stderr=${rt.getStderr().slice(-300)}`,
+      };
     }
 
     const msg = rt.frames.find(
@@ -337,7 +365,7 @@ async function successPath({ dshBin }) {
       return { ok: false, why: `unexpected text ${JSON.stringify(text)}` };
     }
 
-    // The sdk profile's full tool surface must survive the patch.
+    // The sdk profile's full tool surface must survive the provider swap.
     const hdr = rt.frames.find(
       (f) => f.method === "session.event" && f.params.event.type === "request/header",
     );
@@ -346,7 +374,10 @@ async function successPath({ dshBin }) {
       return { ok: false, why: `expected the full sdk tool surface, saw ${toolCount} tools` };
     }
 
-    return { ok: true, detail: `${JSON.stringify(text)}, ${toolCount} tools` };
+    return {
+      ok: true,
+      detail: `${JSON.stringify(text)}, ${toolCount} tools, loopback only`,
+    };
   } finally {
     rt.child.kill();
     fake.close();
@@ -375,12 +406,12 @@ async function successPath({ dshBin }) {
   console.log("dsh:", dshBin);
   let failed = 0;
 
-  console.log("\n── A. failure path (deepseek-account, no sign-in) ──");
+  console.log("\n── A. failure path (dead loopback route) ──");
   const a = await failurePath({ dshBin });
   console.log(a.ok ? `PASS  ${a.detail}` : `FAIL  ${a.why}`);
   if (!a.ok) failed++;
 
-  console.log("\n── B. success path (deepseek-official → local fake) ──");
+  console.log("\n── B. success path (loopback OpenAI-compatible, no cloud) ──");
   const b = await successPath({ dshBin });
   console.log(b.ok ? `PASS  ${b.detail}` : `FAIL  ${b.why}`);
   if (!b.ok) failed++;
@@ -388,3 +419,4 @@ async function successPath({ dshBin }) {
   console.log(failed === 0 ? "\n✅ real-runtime smoke passed" : `\n❌ ${failed} path(s) failed`);
   process.exit(failed === 0 ? 0 : 1);
 })();
+

@@ -195,6 +195,7 @@ export const RUNTIME_PROVIDER_CATALOG = [
     preferredTaskOrchestratorIds: ["hermes"],
     notes: [
       "DeepSeek Harness is a Cordis-based, everything-is-a-plugin harness. It speaks JSON-RPC 2.0 over stdio via `dsh --profile sdk`, not HTTP.",
+      "Model access goes through dsh-llm-pi-ai, mounted with a loopback OpenAI-compatible route (Ollama by default) — no cloud provider and no API key on the default path. A hosted route is something the operator adds deliberately.",
       "Marked developer preview upstream: the repo warns of compatibility-breaking changes, so the adapter pins the profile and treats frame drift as a CI-visible failure.",
       "Launch is a child process owned by the desktop, so the lifecycle is per-turn rather than a long-lived gateway.",
     ],

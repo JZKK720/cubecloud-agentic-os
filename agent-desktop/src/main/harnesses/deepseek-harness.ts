@@ -35,8 +35,6 @@ import type {
   CompactionResult,
 } from "@cubecloud/platform-core";
 import {
-  DSH_DEFAULT_MODEL,
-  DSH_DEFAULT_PROVIDER,
   DshJsonRpcClient,
   dshEventToFailure,
   dshEventToReasoning,
@@ -45,7 +43,12 @@ import {
 } from "../dsh-jsonrpc-client";
 import { getConfigValue } from "../config";
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import {
+  buildDshProviderConfig,
+  writeDshProviderPatch,
+  type CustomDshRoute,
+} from "../dsh-provider-config";
 
 const TURN_IDLE_TIMEOUT_MS = 180_000;
 
@@ -54,49 +57,42 @@ const TURN_IDLE_TIMEOUT_MS = 180_000;
 export const DEEPSEEK_HARNESS_PROVIDER_ID = "deepseek-harness";
 
 /**
- * Mount the api-key adapter into a profile home.
+ * Compose and mount the local-first provider tree into a profile home.
  *
- * MEASURED, not assumed: the `sdk` profile alone registers only
- * `deepseek-account`, whose first turn fails with ACCOUNT_SIGN_IN_REQUIRED
- * unless a human signs in through a browser. Adding this patch row to
- * `profiles/sdk/cordis.patch.yml` registers `deepseek-official` as a second
- * provider, and the `sdk` tool surface (31 tools) stays intact. `sdk-minimal`
- * also offers `deepseek-official` but ships only 3 tools, so it is not a
- * substitute.
+ * The default route is a loopback OpenAI-compatible endpoint (Ollama first),
+ * never a cloud API. `dsh-llm-pi-ai` takes a `providers:` dictionary where each
+ * key is a route name and a route needs only `api: openai-completions` plus a
+ * `baseURL` — which is exactly an Ollama / LM Studio / vLLM / llama.cpp
+ * endpoint.
  *
- * Idempotent: a no-op when the row is already present.
+ * Idempotent: an existing `llm-pi-ai` row is replaced, not duplicated, so
+ * changing the route set does not leave two rows for one plugin id.
  *
- * @returns true when the patch is in place.
+ * @returns the (provider, model) pair the runtime should be initialized with,
+ *          or null when the patch could not be written.
  */
-export function ensureApiKeyProviderMounted(dshHome: string): boolean {
-  try {
-    const dir = join(dshHome, "profiles", "sdk");
-    mkdirSync(dir, { recursive: true });
-    const patchPath = join(dir, "cordis.patch.yml");
+export function ensureLocalProviderMounted(dshHome: string): {
+  provider: string;
+  model: string;
+  env: Record<string, string>;
+} | null {
+  const patchPath = join(dshHome, "profiles", "sdk", "cordis.patch.yml");
+  const config = buildDshProviderConfig({
+    activeRoute: readConfiguredRoute(),
+    model: readConfiguredModel(),
+    customRoutes: readCustomRoutes(),
+  });
 
-    const row =
-      "- id: llm-deepseek-api-key\n" +
-      "  name: '@deepseek-ai/dsh-llm-deepseek-api-key'\n";
+  const ok = writeDshProviderPatch(
+    patchPath,
+    config,
+    { existsSync, readFileSync, writeFileSync, mkdirSync },
+    dirname(patchPath),
+  );
 
-    let existing = "";
-    if (existsSync(patchPath)) {
-      existing = readFileSync(patchPath, "utf-8");
-      if (existing.includes("dsh-llm-deepseek-api-key")) return true;
-    }
-
-    writeFileSync(
-      patchPath,
-      existing.endsWith("\n") || existing === ""
-        ? existing + row
-        : existing + "\n" + row,
-      "utf-8",
-    );
-    return true;
-  } catch {
-    // A read-only or absent home is not fatal: the adapter still works with
-    // whatever providers the deployment already mounts.
-    return false;
-  }
+  return ok
+    ? { provider: config.provider, model: config.model, env: config.env }
+    : null;
 }
 
 export interface DeepSeekHarnessOptions {
@@ -105,9 +101,9 @@ export interface DeepSeekHarnessOptions {
   args?: string[];
   cwd?: string;
   env?: Record<string, string>;
-  /** Provider adapter id. Defaults to `deepseek-account`. */
+  /** Provider route id. Defaults to the composed local route (Ollama). */
   provider?: string;
-  /** Model id. Defaults to `deepseek-flash`. */
+  /** Model id. Defaults to the route's first declared model. */
   model?: string;
 }
 
@@ -124,48 +120,50 @@ function resolveProfile(): string {
   return "sdk";
 }
 
-/**
- * Resolve the provider adapter.
- *
- * VERIFIED against the real runtime (0.2.2-rc.5):
- *   `sdk` profile          → registers `deepseek-account` only (31 tools)
- *   `sdk-minimal` profile  → registers `deepseek-official` only (3 tools)
- *
- * Neither is right on its own: the account provider needs an interactive
- * browser sign-in, and sdk-minimal drops the file/edit/bash tool set. The
- * adapter therefore defaults to the **`sdk` profile plus an api-key patch**,
- * which measured 31 tools and a completing turn against a local endpoint.
- *
- * Overridable via `runtime.dsh_provider`.
- */
-function resolveProvider(): string {
+/** Operator-chosen route, or null to let the composed default decide. */
+function readConfiguredRoute(): string | undefined {
   try {
     const raw = getConfigValue("runtime.dsh_provider");
     if (typeof raw === "string" && raw.trim()) return raw.trim();
   } catch {
     /* fall through */
   }
-  return DSH_DEFAULT_PROVIDER;
+  return undefined;
 }
 
-/** Resolve the model id, defaulting to the package's own catalog entry. */
-function resolveModel(): string {
+/** Operator-chosen model, or undefined to use the route's default. */
+function readConfiguredModel(): string | undefined {
   try {
     const raw = getConfigValue("runtime.dsh_model");
     if (typeof raw === "string" && raw.trim()) return raw.trim();
   } catch {
     /* fall through */
   }
-  return DSH_DEFAULT_MODEL;
+  return undefined;
 }
 
-/** True when the operator pinned a provider explicitly, so we must not patch. */
-function providerIsPinned(): boolean {
+/**
+ * Extra routes from config, for an operator who wants a hosted gateway.
+ *
+ * Stored as `runtime.dsh_routes` JSON so we do not invent a config dialect:
+ *   [{"id":"acme","baseURL":"https://gw.example/v1","apiKeyEnv":"ACME_KEY",
+ *     "models":[{"id":"acme-think"}]}]
+ */
+function readCustomRoutes(): CustomDshRoute[] {
   try {
-    const raw = getConfigValue("runtime.dsh_provider");
-    return typeof raw === "string" && !!raw.trim();
+    const raw = getConfigValue("runtime.dsh_routes");
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (r): r is CustomDshRoute =>
+        typeof r === "object" &&
+        r !== null &&
+        typeof (r as CustomDshRoute).id === "string" &&
+        typeof (r as CustomDshRoute).baseURL === "string",
+    );
   } catch {
-    return false;
+    return [];
   }
 }
 
@@ -201,12 +199,20 @@ export function createDeepSeekHarness(
 
   const turns: HarnessTurnController = {
     async *runTurn(input: HarnessTurnInput): AsyncIterable<HarnessTurnDelta> {
-      // Mount the api-key provider unless the operator pinned one. Without it
-      // the sdk profile offers only deepseek-account, whose turns fail with
-      // ACCOUNT_SIGN_IN_REQUIRED until a human signs in through a browser.
-      if (!providerIsPinned()) {
-        const home = resolveDshHome(options);
-        if (home) ensureApiKeyProviderMounted(home);
+      // Compose the local-first provider tree. The default route is loopback
+      // (Ollama first); a cloud route is something the operator adds, never a
+      // default, because this product is local-first and offline-capable.
+      let provider = options.provider;
+      let model = options.model;
+      let providerEnv: Record<string, string> = {};
+      const home = resolveDshHome(options);
+      if (home && (!provider || !model)) {
+        const composed = ensureLocalProviderMounted(home);
+        if (composed) {
+          provider = provider ?? composed.provider;
+          model = model ?? composed.model;
+          providerEnv = composed.env;
+        }
       }
 
       const client = new DshJsonRpcClient({
@@ -218,9 +224,9 @@ export function createDeepSeekHarness(
           resolveProfile(),
         ],
         cwd: options.cwd,
-        env: options.env,
-        provider: options.provider ?? resolveProvider(),
-        model: options.model ?? resolveModel(),
+        env: { ...options.env, ...providerEnv },
+        provider,
+        model,
       });
 
       // Collect deltas from notifications. The generator awaits this queue.
@@ -391,6 +397,17 @@ export function createDeepSeekHarness(
     async oneShot(prompt: string, _model?: string): Promise<string> {
       // A one-shot is a turn with no tool surface. Reuse the same client so
       // there is one wire implementation to keep correct.
+      let provider = options.provider;
+      let model = options.model;
+      const home = resolveDshHome(options);
+      if (home && (!provider || !model)) {
+        const composed = ensureLocalProviderMounted(home);
+        if (composed) {
+          provider = provider ?? composed.provider;
+          model = model ?? composed.model;
+        }
+      }
+
       const client = new DshJsonRpcClient({
         command: options.command,
         args: options.args ?? [
@@ -401,8 +418,8 @@ export function createDeepSeekHarness(
         ],
         cwd: options.cwd,
         env: options.env,
-        provider: options.provider ?? resolveProvider(),
-        model: options.model ?? resolveModel(),
+        provider,
+        model,
       });
 
       const parts: string[] = [];

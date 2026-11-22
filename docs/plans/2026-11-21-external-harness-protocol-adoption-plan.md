@@ -641,6 +641,50 @@ So the default is **`sdk` plus a one-row patch** that mounts
 existing operator rows; it is skipped when `runtime.dsh_provider` is pinned.
 Verified end to end: a run with no pre-existing patch file produced a streaming
 turn with all 31 tools.
+
+### Phase 1.6 — Local-first correction (2026-11-22)
+
+**The Phase 1.5 default was wrong for this product.** Mounting
+`deepseek-official` made the lane work by adding a *cloud* dependency to a
+runtime whose whole point here is that it is local-first and offline-capable.
+The operator's objection was correct, and the fix is architectural.
+
+The right seam was already upstream. `dsh-llm-pi-ai` routes "model requests to
+multiple pi-ai providers, **OpenAI-compatible gateways, or self-hosted
+servers** from one configuration". Its `providers:` dictionary takes a route
+name and needs only `api: openai-completions` plus a `baseURL` — which is
+exactly an Ollama / LM Studio / llama.cpp / vLLM endpoint.
+
+| Was | Now |
+|---|---|
+| Default route `deepseek-official` (cloud, API key) | Default route `ollama` at `127.0.0.1:11434/v1` |
+| `DEEPSEEK_API_KEY` required | No credential; loopback only |
+| Provider baked into the adapter | Route composed from config, operator-editable |
+| Nothing verified the endpoint existed | `probeLocalLlm()` reports reachable + model catalog |
+
+Three defects found by running this against the real runtime:
+
+1. **pi-ai refuses a route with no credential at all** — `No API key for
+   provider: <route>` (code `PI_AI_ERROR`), before any request. Its
+   OpenAI-compatible provider "still insists on a key or an `Authorization`
+   header of its own". Local servers ignore the header, so each local route
+   gets an `apiKeyEnv` holding a fixed placeholder. Not a secret, not egress.
+2. **The route's `api:` dictates the wire format.** An `openai-completions`
+   route fed an Anthropic-Messages-shaped stream fails with "Stream ended
+   without finish_reason". The smoke's fake now emits `chat.completion.chunk`
+   frames plus `[DONE]`, which is also what Ollama emits.
+3. **A `cordis.patch.yml` row for the same plugin id must be replaced, not
+   appended** — two `llm-pi-ai` rows make the composed tree ambiguous.
+
+`scripts/dsh-real-smoke.cjs` now runs **both** paths loopback-only: a dead port
+(must surface the connection error) and a live OpenAI-compatible server (must
+stream, report usage, keep ≥20 tools). Both pass with no cloud host, no
+credential, and 30 tools intact.
+
+**API keys are a later step, not a prerequisite.** The Settings screen exposes
+Base URL + Model id with a Test-connection button; a hosted route is added
+through the same fields when the operator wants one. Nothing on the default
+path needs a key.
 directly (`hermes.ts:1462`). Adding a `stdio`-transport harness therefore
 requires routing `runTurn` through the chat path, which is a larger change than
 "add a union member". Sequence 1.2 *before* 1.1.

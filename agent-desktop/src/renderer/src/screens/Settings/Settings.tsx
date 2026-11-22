@@ -3,6 +3,7 @@ import { useTheme } from "../../components/ThemeProvider";
 import { THEME_OPTIONS } from "../../constants";
 import { useI18n } from "../../components/useI18n";
 import { APP_LOCALES, type AppLocale } from "../../../../shared/i18n";
+import { OLLAMA_DEFAULT_BASE_URL } from "../../../../shared/runtime-defaults";
 import {
   DEFAULT_SSH_LOCAL_PORT,
   DEFAULT_SSH_REMOTE_PORT,
@@ -137,6 +138,19 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   // adapter beyond Hermes was unreachable.
   const [activeRuntimeProvider, setActiveRuntimeProvider] = useState("hermes");
   const [runtimeLaneError, setRuntimeLaneError] = useState<string | null>(null);
+
+  // Local model endpoint for the DeepSeek Harness lane. Empty base URL means
+  // "use the adapter's composed default" (loopback Ollama).
+  const [localModelBaseUrl, setLocalModelBaseUrl] = useState("");
+  const [localModelId, setLocalModelId] = useState("");
+  const [localModelProbing, setLocalModelProbing] = useState(false);
+  const [localModelSaving, setLocalModelSaving] = useState(false);
+  const [localModelSaved, setLocalModelSaved] = useState(false);
+  const [localModelProbe, setLocalModelProbe] = useState<{
+    reachable: boolean;
+    models: string[] | null;
+    detail: string;
+  } | null>(null);
 
   // Connection mode
   const [connMode, setConnMode] = useState<"local" | "remote" | "ssh">("local");
@@ -341,6 +355,56 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
       }
     } catch (err) {
       setRuntimeLaneError(String(err));
+    }
+  }
+
+  /** Probe the entered (or default) local OpenAI-compatible endpoint. */
+  async function handleProbeLocalModel(): Promise<void> {
+    setLocalModelProbing(true);
+    setLocalModelProbe(null);
+    try {
+      const baseUrl = localModelBaseUrl.trim() || OLLAMA_DEFAULT_BASE_URL;
+      const result = await window.hermesAPI.probeLocalLlm("ollama", baseUrl);
+      setLocalModelProbe({
+        reachable: result.reachable,
+        models: result.models,
+        detail: result.detail,
+      });
+    } catch (err) {
+      setLocalModelProbe({
+        reachable: false,
+        models: null,
+        detail: String(err),
+      });
+    } finally {
+      setLocalModelProbing(false);
+    }
+  }
+
+  /** Persist the local endpoint so the dsh adapter composes it as a route. */
+  async function handleSaveLocalModel(): Promise<void> {
+    setLocalModelSaving(true);
+    setLocalModelSaved(false);
+    try {
+      const baseUrl = localModelBaseUrl.trim();
+      await window.hermesAPI.setConfig(
+        "runtime.dsh_base_url",
+        baseUrl,
+        profile,
+      );
+      if (localModelId.trim()) {
+        await window.hermesAPI.setConfig(
+          "runtime.dsh_model",
+          localModelId.trim(),
+          profile,
+        );
+      }
+      setLocalModelSaved(true);
+      setTimeout(() => setLocalModelSaved(false), 2500);
+    } catch (err) {
+      setRuntimeLaneError(String(err));
+    } finally {
+      setLocalModelSaving(false);
     }
   }
 
@@ -1123,6 +1187,92 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
             </div>
           )}
         </label>
+      </div>
+
+      {/* Local model endpoint for the DeepSeek Harness lane. Keyless by
+          default; a hosted route with an API key is added later through the
+          same fields, which is why the key field is labelled as optional. */}
+      <div className="settings-section">
+        <div className="settings-section-title">
+          {t("settings.localModel.title")}
+        </div>
+        <div className="settings-field-hint settings-field-hint--spaced-md">
+          {t("settings.localModel.hint")}
+        </div>
+
+        <label className="settings-field">
+          <span className="settings-field-label">
+            {t("settings.localModel.baseUrl")}
+          </span>
+          <input
+            className="input"
+            type="text"
+            value={localModelBaseUrl}
+            placeholder={OLLAMA_DEFAULT_BASE_URL}
+            onChange={(e) => setLocalModelBaseUrl(e.target.value)}
+          />
+        </label>
+
+        <label className="settings-field">
+          <span className="settings-field-label">
+            {t("settings.localModel.model")}
+          </span>
+          <input
+            className="input"
+            type="text"
+            value={localModelId}
+            placeholder="qwen3.6:35b-a3b-mtp-q4_K_M"
+            onChange={(e) => setLocalModelId(e.target.value)}
+          />
+          <div className="settings-field-hint">
+            {t("settings.localModel.modelHint")}
+          </div>
+        </label>
+
+        <div className="settings-field">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={localModelProbing}
+            onClick={() => void handleProbeLocalModel()}
+          >
+            {localModelProbing
+              ? t("settings.localModel.probing")
+              : t("settings.localModel.probe")}
+          </button>
+          {localModelProbe && (
+            <div
+              className={`settings-field-hint ${
+                localModelProbe.reachable && (localModelProbe.models?.length ?? 0) > 0
+                  ? ""
+                  : "settings-field-hint--warning"
+              }`}
+            >
+              {localModelProbe.detail}
+              {localModelProbe.models && localModelProbe.models.length > 0
+                ? ` — ${localModelProbe.models.slice(0, 5).join(", ")}`
+                : ""}
+            </div>
+          )}
+        </div>
+
+        <div className="settings-field">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={localModelSaving}
+            onClick={() => void handleSaveLocalModel()}
+          >
+            {localModelSaving
+              ? t("settings.localModel.saving")
+              : t("settings.localModel.save")}
+          </button>
+          {localModelSaved && (
+            <div className="settings-field-hint">
+              {t("settings.localModel.saved")}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="settings-section">

@@ -100,6 +100,7 @@ import {
   type CubecloudAgentProbeResult,
 } from "./cubecloud-agent-probe";
 import { probeMcpServer } from "./mcp-probe";
+import { probeLocalLlm } from "./local-llm-probe";
 import { probeLaya, LAYA_MCP_REGISTRATION, type LayaProbeResult } from "./laya-probe";
 import {
   normalizeWeknoraBaseUrl,
@@ -3326,6 +3327,14 @@ function setupIPC(): void {
     "remove-mcp-server",
     (_event, name: string, profile?: string): { ok: boolean; error?: string } =>
       removeMcpServer(name, profile),
+  );
+  // Verify a local OpenAI-compatible model server. Local-first: the whole
+  // point of the dsh lane is that the default provider is loopback, so the
+  // operator needs a way to confirm a server is actually there.
+  ipcMain.handle(
+    "probe-local-llm",
+    (_event, routeId: string, baseUrl: string) =>
+      probeLocalLlm(routeId, baseUrl),
   );
   // Verify a registered server actually answers. The desktop has no
   // outbound MCP client — the runtime owns the connection — so without

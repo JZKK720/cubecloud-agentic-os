@@ -42,9 +42,9 @@ export interface DshSessionEvent {
  * are **required**; sending only `approvalRequests` makes the real runtime
  * answer `-32603 "paths[0] must be of type string"`.
  *
- * `provider` must name a registered adapter. The default `sdk` profile ships
- * `deepseek-account` (needs sign-in) and `deepseek-api-key` (needs a key);
- * an unknown id answers "no adapter registered for provider ...".
+ * `provider` names a *route* the deployment mounted. With `dsh-llm-pi-ai` that
+ * is whatever key the operator's `providers:` dictionary declares — by default
+ * a loopback OpenAI-compatible endpoint, not a cloud API.
  */
 export interface DshInitializeParams {
   cwd: string;
@@ -77,11 +77,17 @@ const DEFAULT_COMMAND = "npx";
 const DEFAULT_ARGS = ["-y", "@deepseek-ai/dsh", "--profile", "sdk"];
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
 
-/** Provider adapter that ships enabled in the default `sdk` profile. */
-export const DSH_DEFAULT_PROVIDER = "deepseek-account";
+/** The default local route id (Ollama). Never a cloud provider. */
+export const DSH_DEFAULT_PROVIDER = "ollama";
 
-/** First entry of `DEFAULT_MODELS` in `dsh-llm-deepseek`. */
-export const DSH_DEFAULT_MODEL = "deepseek-flash";
+/**
+ * Default model id.
+ *
+ * Deliberately empty: a local server's catalog is whatever the operator has
+ * pulled, so hard-coding a model name would be a guess that breaks on the next
+ * machine. An empty id lets the route's own catalog answer.
+ */
+export const DSH_DEFAULT_MODEL = "";
 
 interface PendingRequest {
   resolve: (value: unknown) => void;

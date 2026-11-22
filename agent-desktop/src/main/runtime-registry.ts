@@ -205,7 +205,7 @@ export async function listRuntimeProviders(): Promise<
             ? `${definition.displayName} CLI was detected on the current PATH and can serve turns over stdio.`
             : `${definition.displayName} is optional. It launches on demand through npx; no separate install step is required.`,
           detail:
-            "DeepSeek Harness is a developer-preview, everything-is-a-plugin runtime built on Cordis. It exposes no OpenAI-compatible gateway — its inbound surface is the SDK wire protocol (JSON-RPC 2.0, newline-delimited, over stdio), which the desktop's harness adapter speaks directly. Hermes remains the default runtime.",
+            "DeepSeek Harness is a developer-preview, everything-is-a-plugin runtime built on Cordis. It exposes no OpenAI-compatible gateway — its inbound surface is the SDK wire protocol (JSON-RPC 2.0, newline-delimited, over stdio), which the desktop's harness adapter speaks directly. Model access is composed locally through dsh-llm-pi-ai: the default route is a loopback Ollama endpoint, with a hosted route optional. Hermes remains the default runtime.",
         } satisfies RuntimeProviderSnapshot;
       }
     }
