@@ -27,6 +27,7 @@ export const MANAGED_APP_CONFIG_BLOCKS = [
   "openviking",
   "weknora",
   "dataflow",
+  "kitesurf",
 ] as const;
 
 export type ManagedAppConfigBlock = (typeof MANAGED_APP_CONFIG_BLOCKS)[number];

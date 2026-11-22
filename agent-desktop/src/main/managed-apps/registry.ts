@@ -9,6 +9,7 @@ import { createWorkspaceApp } from "./workspace";
 import { createEverOsApp } from "./everos";
 import { createGatewayApps } from "./gateways";
 import { createDataFlowApp } from "./dataflow";
+import { createKitesurfApp } from "./kitesurf";
 import {
   createOpenVikingApp,
   createWeknoraApp,
@@ -40,6 +41,7 @@ export function createManagedAppRegistry(): ManagedApp[] {
     createBrowserHarnessApp(),
     createLayaApp(),
     createDataFlowApp(),
+    createKitesurfApp(),
   ];
 }
 
@@ -62,6 +64,7 @@ export const EXPECTED_MANAGED_APP_IDS = [
   "browser-harness",
   "laya",
   "dataflow",
+  "kitesurf",
 ] as const;
 
 export type ManagedAppId = (typeof EXPECTED_MANAGED_APP_IDS)[number];

@@ -176,6 +176,8 @@ describe("ManagedApp config-block isolation", () => {
       // a new config block must be a deliberate, reviewed addition, not a
       // side effect of registering an adapter.
       "dataflow",
+      // Added with the Kitesurf adapter (opt-in CDP browser backend).
+      "kitesurf",
     ]);
   });
 
