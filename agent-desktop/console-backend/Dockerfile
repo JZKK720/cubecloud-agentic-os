@@ -86,13 +86,22 @@ COPY agent-desktop/src/shared/ ./src/shared/
 # SYMLINK — node resolves the symlink to its realpath (/app/packages/…,
 # outside node_modules), so stripping is allowed and the import works.
 COPY packages/platform-core/ /app/packages/platform-core/
-RUN mkdir -p /app/node_modules/@cubecloud \
- && ln -s /app/packages/platform-core /app/node_modules/@cubecloud/platform-core
 COPY --from=renderer-builder /build/agent-desktop/out/renderer/ ./out/renderer/
 # agent-desktop's runtime deps (better-sqlite3 for the kernel's memory /
 # sessions modules + the electron-free families the kernel imports).
 COPY --from=renderer-builder /build/agent-desktop/node_modules/ ./node_modules/
 COPY agent-desktop/package.json ./package.json
+# The workspace symlink MUST be created AFTER the node_modules copy above.
+#
+# It used to be created before, and the builder's own node_modules carries
+# `@cubecloud/platform-core -> ../../../packages/platform-core`, a RELATIVE
+# link that meant /app/packages/… in the builder but resolved to /packages/…
+# here. Copying overwrote the absolute link with the broken relative one, so
+# the kernel died on boot with ERR_MODULE_NOT_FOUND for @cubecloud/platform-core
+# while the image built cleanly. The container had never actually started.
+RUN mkdir -p /app/node_modules/@cubecloud \
+ && rm -rf /app/node_modules/@cubecloud/platform-core \
+ && ln -s /app/packages/platform-core /app/node_modules/@cubecloud/platform-core
 # Prune the build-only toolchain the kernel never uses at run time.
 RUN rm -rf node_modules/electron node_modules/electron-builder \
            node_modules/electron-updater node_modules/@electron-toolkit \
