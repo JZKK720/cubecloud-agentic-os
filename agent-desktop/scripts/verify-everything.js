@@ -101,11 +101,14 @@ const CHANNELS = [
   ["everosSidecarStatus", () => []],
   ["everosSidecarLogTail", () => []],
 
-  // kanban
-  ["kanbanListBoards", () => []],
-  ["kanbanCurrentBoard", () => []],
-  ["kanbanListTasks", () => []],
-  ["kanbanGetTask", () => ["__nonexistent__"]],
+  // kanban — REMOVED. The Kanban screen was deleted in V2.10.75 and replaced by
+  // Moo Tasks (moo-tasks, an agent-native kanban with 14 MCP tools, surfaced as
+  // a Plans panel). No `kanban*` channel exists in the preload or in main, so
+  // these four entries asserted against an interface that had been intentionally
+  // retired, and reported 🔴 missing for a channel nobody ships.
+  //
+  // Do not re-add them: if a kanban surface returns, it returns through the
+  // managed-app adapter contract, not through a bespoke IPC channel.
 
   // plans
   ["plansList", () => []],

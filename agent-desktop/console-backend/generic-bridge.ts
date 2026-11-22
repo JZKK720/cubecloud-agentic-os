@@ -61,6 +61,20 @@ async function importMain(specifier: string): Promise<Record<string, unknown>> {
   return import(pathToFileURL(target).href) as Promise<Record<string, unknown>>;
 }
 
+/** Import a WORKSPACE PACKAGE by its bare specifier.
+ *
+ *  `importMain` above is for modules that live under `src/main` — it builds a
+ *  filesystem path from the specifier. Passing a package name to it produced
+ *  `src/main/@cubecloud/platform-core`, a path that has never existed, so the
+ *  fallback silently returned a `.ts` URL that could not load. It "worked" only
+ *  in the container, where the loader happens to resolve differently.
+ *
+ *  A package must be imported by specifier, not by constructed path. The
+ *  specifier is written inline at each call site rather than passed in, so the
+ *  bundler can see it — a computed specifier is exactly what left a runtime
+ *  `require("@cubecloud/platform-core")` in the dev bundle and broke `npm run
+ *  dev` with ERR_MODULE_NOT_FOUND. */
+
 /** Register one delegate channel. Returns the capability name. */
 function registerDelegate(
   registry: ConsoleRouteRegistry,
@@ -387,7 +401,7 @@ let swarmPromise: Promise<{
 
 function getSwarm() {
   if (!swarmPromise) {
-    swarmPromise = importMain("@cubecloud/platform-core").then((pc) => {
+    swarmPromise = import("@cubecloud/platform-core").then((pc) => {
       const stubRouter = {
         async *runTurn(sessionId: string, input: { message: string }) {
           yield { type: "text" as const, content: `subagent result: ${input.message}` };
@@ -446,9 +460,7 @@ let vaultPromise: Promise<{
 async function getVault() {
   if (!vaultPromise) {
     const [{ createFsKnowledgeVault }, { profileHome }] = await Promise.all([
-      importMain("@cubecloud/platform-core") as Promise<{
-        createFsKnowledgeVault: (dir: string) => Record<string, never>;
-      }>,
+      import("@cubecloud/platform-core"),
       importMain("./utils") as Promise<{ profileHome: () => string }>,
     ]);
     const { join } = await import("path");

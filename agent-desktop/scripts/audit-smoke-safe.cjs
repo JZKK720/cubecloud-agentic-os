@@ -15,6 +15,10 @@ const readOnly = [
   "list-profiles", "list-sessions", "list-cached-sessions",
   "list-cron-jobs", "list-models", "list-mcp-servers",
   "list-runtime-providers", "list-task-orchestrators",
+  // Read-only: both return adapter state without mutating anything.
+  // `list-managed-apps` calls each adapter's discover() (a network probe);
+  // the two probes below likewise only ask an endpoint whether it answers.
+  "list-managed-apps", "probe-local-llm", "probe-mcp-server",
   "list-bundled-schemas", "schemas-get-active-id", "schemas-list-bundled", "schemas-get-active",
   "get-skill-content", "get-desktop-bundled-skill-path",
   "get-session-messages", "read-memory", "read-soul",
