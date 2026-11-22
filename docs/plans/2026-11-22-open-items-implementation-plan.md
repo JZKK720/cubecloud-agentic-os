@@ -113,15 +113,65 @@ about twenty lines.
 
 ---
 
+## Re-evaluation of the four open items (2026-11-22, requested)
+
+Checked against the tree rather than re-asserted. **Three of the four refusals
+are confirmed. One is revised.**
+
+### A2UI (#3) — refusal CONFIRMED, with a sharper reason
+
+`AgentMarkdown.tsx` already renders with `remarkGfm`, so GFM tables reach the
+operator today (`remarkGfm` at line 136, wired into `components` at 137). A2UI's
+payoff is "the agent can render a validated table" — that capability already
+exists in a form the model can produce without new machinery.
+
+What A2UI would add is *interactive* validated JSON trees, which requires a
+validator and a component registry mapping JSON to React. That is a subsystem,
+and it buys interactivity nobody has asked for. **Refusal stands.**
+
+### univer (#6) — refusal CONFIRMED
+
+Seven `navigation.office` keys still exist across locales, and
+`Layout.test.tsx:192,305` still asserts that key must never render. Adding
+univer would resurrect a nav surface the tests explicitly forbid, and its
+`.xlsx`/`.docx` I/O is a paid package. **Refusal stands.**
+
+### kitesurf (#7) — refusal CONFIRMED, and now better evidenced
+
+`createBrowserHarnessApp` already provides a browser-tool surface (12 references
+in `managed-apps/`). kitesurf would be a *second* browser backend for the same
+capability, and its own README says "not a hardened sandbox". Adding it means
+shipping and sandboxing a competing browser engine to duplicate what is already
+wired. **Refusal stands.**
+
+### astryx (#8) — **REVISED: refusal stands, but for a different reason**
+
+My earlier reason — "`DESIGN.md` plus settled `main.css`" — was hand-wavy. The
+concrete measurement: `main.css` defines **70 CSS custom properties** across two
+themes, and `DESIGN.md` documents every role. astryx's contribution would be
+component *markup*, not tokens; its themes are also CSS custom properties, so
+adopting them would mean re-pointing 70 existing variables at a second naming
+scheme with no visual gain.
+
+The honest framing: this is not "we have enough tokens", it is "astryx would
+require rewriting 70 token declarations and every consumer of them to change
+nothing visible". **Refusal stands on measurable cost, not taste.**
+
+### What would still change any of these
+
+Only a named requirement from someone using the product. None of the four is
+blocked on engineering effort; each is blocked on nobody having asked.
+
 ## Sequencing
 
-1. **`design-plans/mcp-probe-result-states.md`** — smallest, fully proven, no unknowns.
-2. **DataFlow adapter** — the only open item with a favourable cost/capability ratio.
-3. **Nothing else.** A2UI, univer, kitesurf and astryx stay refused with the reasons recorded above, so the next reader does not re-derive them.
+1. **`design-plans/mcp-probe-result-states.md`** — shipped `7c5aed1`. Two files, fully proven.
+2. **DataFlow adapter** — shipped `5850f43`. One file + three registrations.
+3. **Docker kernel boot + external auth** — shipped `74d86d0`. The container path had never been *run*; see that commit.
+4. **Nothing further.** A2UI, univer, kitesurf and astryx stay refused with the reasons recorded above, so the next reader does not re-derive them.
 
 ## What would change this plan
 
-One operator using v2.10.82 and reporting what is missing. If that report names
-spreadsheets, generative UI, or browser automation, the corresponding item moves
-from "refused" to "next" — with a real requirement behind it instead of a
-verdict table.
+One operator using v2.10.82 or the container stack, reporting what is missing. If
+that report names spreadsheets, generative UI, or browser automation, the
+corresponding item moves from "refused" to "next" — with a real requirement
+behind it instead of a verdict table.
