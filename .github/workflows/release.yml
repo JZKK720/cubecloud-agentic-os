@@ -44,14 +44,30 @@ jobs:
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
           echo "Release version: v$VERSION"
 
-      - name: Check if tag already exists
+      - name: Check if a release already exists for this version
         id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if git ls-remote --tags origin "refs/tags/v${{ steps.version.outputs.version }}" | grep -q .; then
+          # Deliberately checks the RELEASE, not the tag.
+          #
+          # The previous check was `git ls-remote --tags`, which is true for
+          # every tag-push trigger — the tag exists on origin by definition,
+          # because pushing it is what started this workflow. The publish job
+          # then required `tag_exists == 'false'`, so a tag push could never
+          # publish. That is why v2.10.77, v2.10.78 and v2.10.79 carry tags
+          # with no GitHub Release behind them and the last shipped build is
+          # v2.10.75.
+          #
+          # "Should we publish?" is about whether a release exists, not
+          # whether a tag does. The publish job re-creates the tag
+          # idempotently, so a pre-existing tag is harmless.
+          if gh release view "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Tag v${{ steps.version.outputs.version }} already exists."
+            echo "Release v${{ steps.version.outputs.version }} already exists — publish will be skipped."
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No release for v${{ steps.version.outputs.version }} yet — publish may run."
           fi
 
       - name: Compute dry-run flag
@@ -284,8 +300,12 @@ jobs:
 
   publish:
     name: Publish Release
-    needs:
-      [prepare, release_windows, generate_winget]
+    # `generate_winget` is deliberately NOT a dependency. winget manifests are a
+    # nice-to-have distribution channel and that job needs a separate token; if
+    # it fails or is skipped, the Windows installer — the artifact users actually
+    # download — must still get released. Requiring it made a peripheral job
+    # gate the whole release.
+    needs: [prepare, release_windows]
     if: needs.prepare.outputs.is_dry_run == 'false' && needs.prepare.outputs.tag_exists == 'false' && !cancelled()
     runs-on: ubuntu-latest
     steps:
@@ -296,8 +316,16 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ needs.prepare.outputs.tag }}
-          git push origin ${{ needs.prepare.outputs.tag }}
+          TAG=${{ needs.prepare.outputs.tag }}
+          # A tag-push trigger already has its tag on origin, so creating it
+          # again must be a no-op rather than a failure. A manual dispatch on
+          # an untagged commit creates it here.
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q .; then
+            echo "Tag $TAG already on origin — nothing to create."
+          else
+            git tag "$TAG"
+            git push origin "$TAG"
+          fi
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
