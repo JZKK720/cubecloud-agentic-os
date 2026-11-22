@@ -96,7 +96,11 @@ Flat by default. The one sanctioned elevation treatment is the hero CTA
   swap.
 - **Status pills** — `.tools-agent-reach-installed` / `.tools-agent-reach-not-installed`
   pair a 14px lucide icon (`CheckCircle` / `XCircle`) with a short label;
-  success uses `--success`, failure uses `--error`.
+  success uses `--success`, failure uses `--error`. The MCP probe result
+  (`.mcp-probe-result.ok` / `.fail`) is a third consumer of this pattern: it
+  had emitted these classes with no CSS rule behind them, so an answered server
+  and a refused one rendered identically. Do not express a two-outcome status
+  with text glyphs — the icon pair is the contract.
 - **Section dividers** — `.tools-section-divider` (1px `--border` rule)
   separates stacked tool cards; cards themselves are borderless sections, not
   boxed containers.

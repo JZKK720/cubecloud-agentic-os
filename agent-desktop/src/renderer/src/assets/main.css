@@ -8363,6 +8363,39 @@ select:focus-visible {
   border: 1px solid var(--border);
 }
 
+/* Probe result: a two-outcome status pill.
+ *
+ * This had NO rule until now. The markup emitted `.mcp-probe-result.ok` and
+ * `.mcp-probe-result.fail` but nothing defined them, so a server that answered
+ * and a server that refused both rendered in the inherited colour -- the one
+ * distinction the MCP screen exists to make.
+ *
+ * Follows the documented status-pill pattern (DESIGN.md -> Components ->
+ * Status pills) and its exemplar `.tools-agent-reach-installed`: 14px lucide
+ * icon beside the label, success in --success, failure in --error. Both tokens
+ * are defined in the dark AND light theme blocks, so no new colour is
+ * introduced. */
+.mcp-probe-result {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  font-size: 0.85em;
+}
+
+.mcp-probe-result.ok {
+  color: var(--success);
+}
+
+.mcp-probe-result.fail {
+  color: var(--error);
+}
+
+.mcp-probe-result svg {
+  flex-shrink: 0;
+}
+
 .mcp-row-actions {
   display: inline-flex;
   align-items: center;

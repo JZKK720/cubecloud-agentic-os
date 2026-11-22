@@ -35,6 +35,7 @@ function installHermes(
     addMcpServer?: ReturnType<typeof vi.fn>;
     removeMcpServer?: ReturnType<typeof vi.fn>;
     discoverCodebaseMemory?: ReturnType<typeof vi.fn>;
+    probeMcpServer?: ReturnType<typeof vi.fn>;
   } = {},
 ): void {
   Object.defineProperty(window, "hermesAPI", {
@@ -51,6 +52,15 @@ function installHermes(
       discoverCodebaseMemory:
         overrides.discoverCodebaseMemory ??
         vi.fn().mockResolvedValue({ found: false, path: null, version: null }),
+      probeMcpServer:
+        overrides.probeMcpServer ??
+        vi.fn().mockResolvedValue({
+          ok: false,
+          tools: null,
+          detail: "not probed",
+          error: null,
+          scannedAt: "",
+        }),
     },
   });
 }
@@ -73,6 +83,82 @@ describe("Mcp screen", () => {
     await waitFor(() => {
       expect(screen.getByText("mcp.empty")).toBeInTheDocument();
     });
+  });
+
+  /**
+   * The probe result is the screen's primary answer: does this server respond?
+   * It used to render the same unstyled paragraph for both outcomes — the
+   * `.mcp-probe-result.ok` / `.fail` classes existed with no CSS rule behind
+   * them — so "answered" and "refused" were visually identical. The documented
+   * status-pill pattern (DESIGN.md -> Components) requires a lucide icon and
+   * the --success / --error roles. These pin the rendered contract so the
+   * classes cannot go unstyled again.
+   */
+  it("distinguishes a successful probe from a failed one", async () => {
+    const probe = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        tools: ["a", "b"],
+        detail: "2 tools",
+        error: null,
+        scannedAt: "",
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        tools: null,
+        detail: "connection refused",
+        error: "ECONNREFUSED",
+        scannedAt: "",
+      });
+    installHermes({
+      listMcpServers: vi.fn().mockResolvedValue(SAMPLE_SERVERS),
+      probeMcpServer: probe,
+    });
+    render(<Mcp />);
+    await waitFor(() => {
+      expect(screen.getByText("github")).toBeInTheDocument();
+    });
+
+    const probeButtons = await screen.findAllByRole("button", {
+      name: /mcp\.probe/i,
+    });
+    expect(probeButtons.length).toBeGreaterThanOrEqual(2);
+
+    await act(async () => {
+      fireEvent.click(probeButtons[0]);
+    });
+    await waitFor(() => {
+      expect(document.querySelector(".mcp-probe-result.ok")).not.toBeNull();
+    });
+
+    await act(async () => {
+      fireEvent.click(probeButtons[1]);
+    });
+    await waitFor(() => {
+      expect(document.querySelector(".mcp-probe-result.fail")).not.toBeNull();
+    });
+
+    // Both states are present and carry DIFFERENT modifiers.
+    const okResult = document.querySelector(".mcp-probe-result.ok");
+    const failResult = document.querySelector(".mcp-probe-result.fail");
+    expect(okResult).not.toBeNull();
+    expect(failResult).not.toBeNull();
+
+    // Each must hold a lucide icon of its own, and NO text glyph. The icon
+    // assertion is scoped to the result paragraph on purpose: the row carries
+    // other SVGs, so a document-wide `svg` check would pass even with the old
+    // ✓/✗ text prefixes still in place — which is exactly the regression this
+    // test exists to catch, verified by reverting the markup and watching it
+    // fail.
+    expect(okResult!.querySelector("svg")).not.toBeNull();
+    expect(failResult!.querySelector("svg")).not.toBeNull();
+    expect(okResult!.textContent).not.toContain("✓");
+    expect(failResult!.textContent).not.toContain("✗");
+    // The icon is the first child, ahead of the detail text.
+    expect(okResult!.firstElementChild?.tagName.toLowerCase()).toBe("svg");
+    expect(failResult!.firstElementChild?.tagName.toLowerCase()).toBe("svg");
+    expect(probe).toHaveBeenCalledTimes(2);
   });
 
   it("renders one row per server with name, transport, and status", async () => {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useI18n } from "../../components/useI18n";
+import { CheckCircle, XCircle } from "../../assets/icons";
 import {
   searchBundledMcpServers,
   validateMcpDetail,
@@ -310,7 +311,11 @@ export default function Mcp({ profile }: McpProps): React.JSX.Element {
                     className={`mcp-probe-result ${probeResults[s.name].ok ? "ok" : "fail"}`}
                     role="status"
                   >
-                    {probeResults[s.name].ok ? "✓ " : "✗ "}
+                    {probeResults[s.name].ok ? (
+                      <CheckCircle size={14} aria-hidden="true" />
+                    ) : (
+                      <XCircle size={14} aria-hidden="true" />
+                    )}
                     {probeResults[s.name].detail}
                   </p>
                 )}
