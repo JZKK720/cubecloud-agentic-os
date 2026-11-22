@@ -176,12 +176,31 @@ export async function probeLocalLlm(
   }
 }
 
-/** Probe every candidate in order and return the first usable one. */
+/** Probe every candidate in order and return the first usable one.
+ *
+ *  Loopback-only by construction. `probeLocalLlm` now accepts any http(s) URL
+ *  because the operator can type a remote one, so the loopback guarantee this
+ *  helper used to inherit from it has to be stated here instead: a candidate
+ *  list is our own discovery surface, and discovery must never reach the
+ *  network.
+ */
 export async function findFirstReachableLocalLlm(
   candidates: readonly { id: string; baseURL: string }[],
 ): Promise<{ found: LocalLlmProbeResult | null; all: LocalLlmProbeResult[] }> {
   const all: LocalLlmProbeResult[] = [];
   for (const candidate of candidates) {
+    if (!isLoopbackUrl(candidate.baseURL)) {
+      all.push({
+        routeId: candidate.id,
+        baseUrl: candidate.baseURL,
+        reachable: false,
+        models: null,
+        detail: "not a loopback candidate — refusing to probe",
+        error: "non-loopback",
+        scannedAt: new Date().toISOString(),
+      });
+      continue;
+    }
     const result = await probeLocalLlm(candidate.id, candidate.baseURL);
     all.push(result);
     // "Usable" means reachable with at least one model — a server with an

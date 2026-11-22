@@ -18,7 +18,7 @@ import {
   LOCAL_PLACEHOLDER_API_KEY,
   localApiKeyEnvName,
 } from "../src/main/dsh-provider-config";
-import { probeLocalLlm } from "../src/main/local-llm-probe";
+import { probeLocalLlm, findFirstReachableLocalLlm } from "../src/main/local-llm-probe";
 import {
   dshEventToFailure,
   dshEventToReasoning,
@@ -488,6 +488,35 @@ describe("probeLocalLlm", () => {
     const result = await probeLocalLlm("custom", "https://gw.example.com/v1");
     expect(result.reachable).toBe(true);
     expect(result.models).toEqual(["gpt-x"]);
+    spy.mockRestore();
+  });
+
+  /**
+   * The typed-endpoint exception above must not leak into discovery. A
+   * candidate list is our own surface, and discovery never reaches the
+   * network — that guarantee used to come for free from probeLocalLlm's
+   * refusal, so it is asserted directly now that the refusal moved.
+   */
+  it("refuses a remote candidate during discovery", async () => {
+    const spy = vi.spyOn(globalThis, "fetch");
+    const { found, all } = await findFirstReachableLocalLlm([
+      { id: "remote", baseURL: "https://api.example.com/v1" },
+    ]);
+    expect(found).toBeNull();
+    expect(all[0].error).toBe("non-loopback");
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it("still returns the first usable loopback candidate", async () => {
+    const spy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(JSON.stringify({ data: [{ id: "qwen" }] }), { status: 200 }));
+    const { found, all } = await findFirstReachableLocalLlm([
+      { id: "ollama", baseURL: "http://127.0.0.1:11434/v1" },
+    ]);
+    expect(found?.routeId).toBe("ollama");
+    expect(all).toHaveLength(1);
     spy.mockRestore();
   });
 
