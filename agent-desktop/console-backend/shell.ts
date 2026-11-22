@@ -145,6 +145,22 @@ ${methods}
     // Unseeded bridge method — degrade, never crash (C1 finding:
     // the installer-wizard family probes inspectInstallTarget on
     // mount; the kernel dropped it with the wizard).
+    //
+    // LISTENER METHODS MUST RETURN AN UNSUBSCRIBE FUNCTION, NOT A PROMISE.
+    //
+    // The preload's 16 \`on*\` methods return \`() => void\`. Call sites write
+    // \`useEffect(() => window.hermesAPI.onXxx(cb), [])\`, so the effect returns
+    // whatever this proxy returns as its cleanup. React then calls it on
+    // unmount — and a Promise is not a function, so it throws
+    // "destroy_ is not a function" (React's internal cleanup variable name).
+    // That is what broke the Settings panel in the browser shell.
+    //
+    // An unsubscribed listener has nothing to unregister, so a no-op is the
+    // correct degraded shape. Returning DEGRADED here would be wrong for a
+    // different reason: callers treat the return as a cleanup, not a result.
+    if (prop.startsWith("on") && prop.length > 2 && prop[2] === prop[2].toUpperCase()) {
+      return () => () => {};
+    }
     return (...args) => Promise.resolve({ ...DEGRADED, method: prop });
   },
 });

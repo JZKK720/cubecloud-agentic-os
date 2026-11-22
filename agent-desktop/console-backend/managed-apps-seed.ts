@@ -62,5 +62,36 @@ export function seedManagedApps(registry: ConsoleRouteRegistry): ManagedAppSeedS
     registered += 1;
   }
 
+  // The roster. Health alone is not enough to RENDER a managed-app card: the
+  // renderer needs each adapter's id, label, mode and declared capabilities
+  // before it can decide what to show. Without this the registry existed only
+  // as per-app health routes — 16 capabilities the UI had no way to enumerate,
+  // which is why the DataFlow card (and every other managed app) never
+  // appeared on any screen.
+  if (!registry.get("listManagedApps")) {
+    registry.register({
+      name: "listManagedApps",
+      ipcChannel: "managed-app-list",
+      handler: async () => {
+        const apps = createManagedAppRegistry();
+        // Discovery is per-app and can be slow (it probes an endpoint). Fan out
+        // once and never throw: the contract guarantees a stable shape, and a
+        // roster read must not fail because one adapter is unreachable.
+        const discovered = await Promise.all(
+          apps.map(async (app) => ({
+            id: app.id,
+            label: app.label,
+            mode: app.mode,
+            discovery: await app.discover(),
+          })),
+        );
+        return { success: true, apps: discovered };
+      },
+    });
+    registered += 1;
+  } else {
+    skipped += 1;
+  }
+
   return { registered, skipped };
 }

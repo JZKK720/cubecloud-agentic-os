@@ -96,12 +96,16 @@ function request(
 }
 
 describe("ManagedApp kernel seed", () => {
-  it("registers exactly one capability per adapter", () => {
+  it("registers one health capability per adapter PLUS the roster", () => {
     const registry = new ConsoleRouteRegistry();
     const summary = seedManagedApps(registry);
 
-    expect(summary.registered).toBe(EXPECTED_MANAGED_APP_IDS.length);
-    expect(registry.size).toBe(EXPECTED_MANAGED_APP_IDS.length);
+    // Per-app health, plus one listManagedApps roster read. Health alone gives
+    // the renderer nothing to enumerate: a card needs id/label/mode/discovery,
+    // which is what the roster supplies.
+    expect(summary.registered).toBe(EXPECTED_MANAGED_APP_IDS.length + 1);
+    expect(registry.size).toBe(EXPECTED_MANAGED_APP_IDS.length + 1);
+    expect(registry.get("listManagedApps")).toBeDefined();
   });
 
   it("names every capability as <adapterId>Health (camelCase)", () => {
@@ -109,7 +113,10 @@ describe("ManagedApp kernel seed", () => {
     seedManagedApps(registry);
 
     const names = registry.list().map((r) => r.name).sort();
-    const expected = EXPECTED_MANAGED_APP_IDS.map((id) => `${camel(id)}Health`).sort();
+    const expected = [
+      "listManagedApps",
+      ...EXPECTED_MANAGED_APP_IDS.map((id) => `${camel(id)}Health`),
+    ].sort();
     expect(names).toEqual(expected);
   });
 
@@ -138,7 +145,7 @@ describe("ManagedApp kernel seed", () => {
   it("is idempotent: a second pass is a no-op, never a duplicate error", () => {
     const registry = new ConsoleRouteRegistry();
     const first = seedManagedApps(registry);
-    expect(first.registered).toBe(EXPECTED_MANAGED_APP_IDS.length);
+    expect(first.registered).toBe(EXPECTED_MANAGED_APP_IDS.length + 1);
 
     // `registry.register` throws on a duplicate name, so a seed that
     // blindly re-registers would crash the second boot. Idempotency is
@@ -148,7 +155,7 @@ describe("ManagedApp kernel seed", () => {
       second = seedManagedApps(registry);
     }).not.toThrow();
     expect(second!.registered).toBe(0);
-    expect(registry.size).toBe(EXPECTED_MANAGED_APP_IDS.length);
+    expect(registry.size).toBe(EXPECTED_MANAGED_APP_IDS.length + 1);
   });
 
   it("drives the real adapter through the registered handler", async () => {
@@ -191,6 +198,8 @@ describe("ManagedApp kernel seed", () => {
 
     const registered = new Set(registry.list().map((r) => r.name));
     const advertised = createManagedAppRegistry().map((a) => `${camel(a.id)}Health`);
+    // One health capability per adapter — the roster capability is separate and
+    // asserted in the "PLUS the roster" case above.
     expect(advertised.length).toBe(EXPECTED_MANAGED_APP_IDS.length);
     for (const name of advertised) {
       expect(registered.has(name), `${name} missing from the kernel`).toBe(true);
@@ -254,7 +263,7 @@ describe("ManagedApp capabilities over the kernel HTTP router", () => {
             capabilities: number;
             routes: Array<{ name: string }>;
           };
-          expect(body.capabilities).toBe(EXPECTED_MANAGED_APP_IDS.length);
+          expect(body.capabilities).toBe(EXPECTED_MANAGED_APP_IDS.length + 1);
           const names = new Set(body.routes.map((r) => r.name));
           expect(names.has("layaHealth")).toBe(true);
           expect(names.has("browserHarnessHealth")).toBe(true);
