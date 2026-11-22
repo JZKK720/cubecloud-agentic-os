@@ -3460,6 +3460,20 @@ select:focus-visible {
   background: var(--code-bg);
 }
 
+/* A2UI table block (src/shared/a2ui.ts). The table, th and td need no styling
+ * here — the three rules above already define how a table looks in a chat
+ * bubble, and duplicating them would let the two drift apart. Only the
+ * wrapper and its optional caption are new. */
+.a2ui-block {
+  margin: 8px 0;
+}
+
+.a2ui-caption {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
 .chat-bubble-agent pre {
   margin: 6px 0;
 }
