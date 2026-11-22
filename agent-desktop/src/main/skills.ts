@@ -104,13 +104,52 @@ export interface SkillSearchResult {
  *
  *  Returns "" when the key is absent. */
 function readFrontmatterScalar(frontmatter: string, key: string): string {
-  const line = new RegExp(`^[ \\t]*${key}[ \\t]*:[ \\t]*(.*)$`, "m").exec(
-    frontmatter,
-  );
+  const keyRe = new RegExp(`^([ \\t]*)${key}[ \\t]*:[ \\t]*(.*)$`, "m");
+  const line = keyRe.exec(frontmatter);
   if (!line) return "";
 
-  const raw = line[1].trim();
+  const raw = line[2].trim();
   if (!raw) return "";
+
+  // YAML block scalar: `>`, `>-`, `>+`, `|`, `|-`, `|+` — the value is the
+  // indented block that follows, not the indicator itself.
+  //
+  // This is not a rare shape: 23 of the skills in a typical install use it,
+  // and the previous implementation returned the literal string ">-" as the
+  // description, so those skills rendered in the catalog with no readable
+  // text at all.
+  const blockMatch = /^([>|])([+-]?)[ \t]*$/.exec(raw);
+  if (blockMatch) {
+    const folded = blockMatch[1] === ">";
+    const strip = blockMatch[2] === "-";
+    const after = frontmatter.slice(line.index + line[0].length);
+    const lines = after.split("\n").slice(1); // drop the empty rest of the key line
+    const body: string[] = [];
+    let indent: number | null = null;
+    for (const candidate of lines) {
+      if (candidate.trim() === "") {
+        body.push("");
+        continue;
+      }
+      const lead = candidate.length - candidate.trimStart().length;
+      if (indent === null) {
+        // The block's indentation is set by its first non-blank line; a
+        // subsequent line at or below it ends the block.
+        if (lead === 0) break;
+        indent = lead;
+      } else if (lead < indent) {
+        break;
+      }
+      body.push(candidate.slice(indent));
+    }
+    // Trim trailing blank lines the block picked up before the next key.
+    while (body.length > 0 && body[body.length - 1] === "") body.pop();
+    const text = folded
+      ? body.join(" ").replace(/\s+/g, " ")
+      : body.join("\n");
+    void strip; // `-` and `+` differ in trailing-newline handling, irrelevant here.
+    return text.trim();
+  }
 
   // Double-quoted scalar: unescape the handful of sequences we care about.
   if (raw.startsWith('"')) {

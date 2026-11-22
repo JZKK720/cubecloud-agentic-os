@@ -42,6 +42,55 @@ describe("parseSkillFrontmatter", () => {
     );
   });
 
+  /**
+   * YAML block scalars. The previous parser returned the indicator itself
+   * ("<" + "-") as the description, so those skills were cataloged with no
+   * readable text. 23 of the 332 skills in a typical user-global install use
+   * this shape, and it is common in upstream skill repos.
+   */
+  it("reads a folded block scalar (>-) as one line", () => {
+    const meta = parseSkillFrontmatter(
+      [
+        "---",
+        "name: folded",
+        "description: >-",
+        "  Manages datasets and jobs. Use when you need to query,",
+        "  or manage resources.",
+        "---",
+        "# Body",
+        "",
+      ].join("\n"),
+    );
+    expect(meta.description).toBe(
+      "Manages datasets and jobs. Use when you need to query, or manage resources.",
+    );
+  });
+
+  it("reads a literal block scalar (|) preserving line breaks", () => {
+    const meta = parseSkillFrontmatter(
+      ["---", "name: literal", "description: |", "  Line one.", "  Line two.", "---"].join("\n"),
+    );
+    expect(meta.description).toBe("Line one.\nLine two.");
+  });
+
+  it("stops a block scalar at the next top-level key", () => {
+    const meta = parseSkillFrontmatter(
+      [
+        "---",
+        "name: bounded",
+        "metadata:",
+        "  category: Testing",
+        "description: >-",
+        "  Only this text belongs to the description.",
+        "license: MIT",
+        "---",
+      ].join("\n"),
+    );
+    expect(meta.description).toBe("Only this text belongs to the description.");
+    expect(meta.category).toBe("Testing");
+    expect(meta.name).toBe("bounded");
+  });
+
   it("handles a double-quoted scalar with an escaped quote", () => {
     const meta = parseSkillFrontmatter(
       '---\nname: dq\ndescription: "says \\"hi\\" then stops"\n---\n',
