@@ -11,9 +11,12 @@
 //   - which models does it advertise? (GET /v1/models)
 //   - is any of them usable?
 //
-// Every candidate is loopback. Nothing here reaches the network: the security
-// floor for a sovereign product is that prompts only go where the operator
-// pointed.
+// POLICY: the *candidate list* is loopback-only and stays that way — nothing
+// here discovers or defaults to a remote host. But the operator can type any
+// http(s) endpoint into the form, and a typed endpoint is an explicit choice,
+// so it is probeable (with their key, if they supplied one). Refusing to probe
+// while the lane happily sends prompts to the same URL would be the
+// inconsistency, not the guard.
 //
 // SPDX-License-Identifier: (AGPL-3.0-or-later OR Apache-2.0 OR MIT)
 
@@ -49,6 +52,31 @@ export function isLoopbackUrl(raw: string): boolean {
   }
 }
 
+/** True when a URL is http(s) with a host — i.e. something we could contact. */
+export function isHttpUrl(raw: string): boolean {
+  try {
+    const url = new URL(raw);
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      url.hostname.length > 0
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Optional credential for a hosted endpoint. */
+export interface ProbeCredential {
+  /**
+   * Send the key. Defaults to true when a key is supplied — a hosted endpoint
+   * that needs one answers 401 otherwise, and reporting "no models" for a
+   * working endpoint with a missing key is a worse answer than sending it.
+   * Pass false to see what the endpoint says without it.
+   */
+  send?: boolean;
+  apiKey?: string;
+}
+
 interface ModelsResponse {
   data?: Array<{ id?: string }>;
   // Ollama's native endpoint returns { models: [{ name }] }; tolerate both.
@@ -59,21 +87,29 @@ interface ModelsResponse {
 export async function probeLocalLlm(
   routeId: string,
   baseUrl: string,
+  credential?: ProbeCredential,
 ): Promise<LocalLlmProbeResult> {
   const scannedAt = new Date().toISOString();
 
-  if (!isLoopbackUrl(baseUrl)) {
-    // Refuse rather than probe: a non-loopback "local" server is a
-    // misconfiguration we should surface, not silently contact.
+  // A loopback endpoint is always probeable. A remote endpoint is probeable
+  // only because the operator typed it into the form — there is no candidate
+  // list of remote hosts and nothing here ever supplies one. What stays
+  // refused is a URL we cannot parse or that is not http(s).
+  if (!isHttpUrl(baseUrl)) {
     return {
       routeId,
       baseUrl,
       reachable: false,
       models: null,
-      detail: "not a loopback endpoint — refusing to probe",
-      error: "non-loopback",
+      detail: "not an http(s) endpoint — refusing to probe",
+      error: "non-http",
       scannedAt,
     };
+  }
+
+  const headers: Record<string, string> = { accept: "application/json" };
+  if (credential?.apiKey && credential.send !== false) {
+    headers.authorization = `Bearer ${credential.apiKey}`;
   }
 
   const controller = new AbortController();
@@ -81,7 +117,7 @@ export async function probeLocalLlm(
   try {
     const res = await fetch(`${baseUrl.replace(/\/+$/, "")}/models`, {
       signal: controller.signal,
-      headers: { accept: "application/json" },
+      headers,
     });
 
     if (!res.ok) {
@@ -90,7 +126,10 @@ export async function probeLocalLlm(
         baseUrl,
         reachable: true,
         models: null,
-        detail: `server answered HTTP ${res.status}`,
+        detail:
+          res.status === 401 || res.status === 403
+            ? `server answered HTTP ${res.status} — the endpoint may need an API key`
+            : `server answered HTTP ${res.status}`,
         error: `HTTP ${res.status}`,
         scannedAt,
       };

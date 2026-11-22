@@ -133,10 +133,15 @@
   localModel: {
     title: "本地模型端点",
     hint:
-      "DeepSeek Harness 通道通过本地 OpenAI 兼容服务运行模型。默认使用 Ollama；LM Studio、llama.cpp 与 vLLM 用法相同。无需云服务商，也无需 API 密钥——如需托管端点，可稍后在同一组字段中填写。",
+      "DeepSeek Harness 通道通过 OpenAI 兼容服务运行模型。默认使用 Ollama；LM Studio、llama.cpp 与 vLLM 用法相同。本地服务无需 API 密钥。如需改用托管端点，请填写其服务地址并在下方添加密钥——密钥可以稍后再填。",
     baseUrl: "服务地址",
     model: "模型 ID",
     modelHint: "留空则使用服务端优先提供的模型。",
+    apiKey: "API 密钥（可选）",
+    apiKeyPlaceholder: "本地服务请留空",
+    apiKeyHint:
+      "保存在当前配置文件的配置中，并以环境变量形式传给运行时，不会写入任何插件文件。",
+    clearApiKey: "移除已保存的密钥",
     probe: "测试连接",
     probing: "测试中……",
     save: "保存端点",

@@ -3333,8 +3333,8 @@ function setupIPC(): void {
   // operator needs a way to confirm a server is actually there.
   ipcMain.handle(
     "probe-local-llm",
-    (_event, routeId: string, baseUrl: string) =>
-      probeLocalLlm(routeId, baseUrl),
+    (_event, routeId: string, baseUrl: string, apiKey?: string) =>
+      probeLocalLlm(routeId, baseUrl, apiKey ? { apiKey } : undefined),
   );
   // Verify a registered server actually answers. The desktop has no
   // outbound MCP client — the runtime owns the connection — so without

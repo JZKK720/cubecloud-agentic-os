@@ -50,6 +50,10 @@ import {
   type CustomDshRoute,
 } from "../dsh-provider-config";
 import {
+  DSH_CONFIG_KEYS,
+  DSH_CUSTOM_ROUTE_ID,
+} from "../../shared/runtime-defaults";
+import {
   buildDshMcpBridge,
   writeDshMcpPatch,
   type DesktopMcpServer,
@@ -108,11 +112,15 @@ export function ensureLocalProviderMounted(dshHome: string): {
   provider: string;
   model: string;
   env: Record<string, string>;
-} | null {  const patchPath = join(dshHome, "profiles", "sdk", "cordis.patch.yml");
+} | null {
+  const patchPath = join(dshHome, "profiles", "sdk", "cordis.patch.yml");
+  const routes = readCustomRoutes();
   const config = buildDshProviderConfig({
-    activeRoute: readConfiguredRoute(),
+    // A saved endpoint is the operator's explicit choice, so it wins over the
+    // local default; with none saved the composed default (ollama) applies.
+    activeRoute: routes[0]?.id,
     model: readConfiguredModel(),
-    customRoutes: readCustomRoutes(),
+    customRoutes: routes,
   });
 
   const ok = writeDshProviderPatch(
@@ -157,10 +165,28 @@ function resolveProfile(): string {
   return "sdk";
 }
 
-/** Operator-chosen route, or null to let the composed default decide. */
-function readConfiguredRoute(): string | undefined {
+/**
+ * The endpoint the operator saved in Settings, or undefined for the default.
+ *
+ * Settings writes `runtime.dsh_base_url`. For a long time nothing read it —
+ * the form persisted a value the lane then ignored, which is worse than no
+ * field at all. It is honoured here: one base URL means one route, and it is
+ * the operator's choice of endpoint, not a second parallel mechanism.
+ */
+function readConfiguredBaseUrl(): string | undefined {
   try {
-    const raw = getConfigValue("runtime.dsh_provider");
+    const raw = getConfigValue(DSH_CONFIG_KEYS.baseUrl);
+    if (typeof raw === "string" && raw.trim()) return raw.trim();
+  } catch {
+    /* fall through */
+  }
+  return undefined;
+}
+
+/** Operator-chosen credential for the configured endpoint, if any. */
+function readConfiguredApiKey(): string | undefined {
+  try {
+    const raw = getConfigValue(DSH_CONFIG_KEYS.apiKey);
     if (typeof raw === "string" && raw.trim()) return raw.trim();
   } catch {
     /* fall through */
@@ -171,7 +197,7 @@ function readConfiguredRoute(): string | undefined {
 /** Operator-chosen model, or undefined to use the route's default. */
 function readConfiguredModel(): string | undefined {
   try {
-    const raw = getConfigValue("runtime.dsh_model");
+    const raw = getConfigValue(DSH_CONFIG_KEYS.model);
     if (typeof raw === "string" && raw.trim()) return raw.trim();
   } catch {
     /* fall through */
@@ -180,27 +206,50 @@ function readConfiguredModel(): string | undefined {
 }
 
 /**
- * Extra routes from config, for an operator who wants a hosted gateway.
+ * Routes from config: the saved endpoint, plus any extra declared routes.
  *
- * Stored as `runtime.dsh_routes` JSON so we do not invent a config dialect:
- *   [{"id":"acme","baseURL":"https://gw.example/v1","apiKeyEnv":"ACME_KEY",
- *     "models":[{"id":"acme-think"}]}]
+ * `runtime.dsh_routes` stays as a JSON escape hatch so we do not invent a
+ * config dialect, but the Settings form no longer needs it — it writes the
+ * three flat keys above and they are composed into a single route here.
  */
 function readCustomRoutes(): CustomDshRoute[] {
+  const routes: CustomDshRoute[] = [];
+
+  const baseUrl = readConfiguredBaseUrl();
+  if (baseUrl) {
+    const model = readConfiguredModel();
+    routes.push({
+      id: DSH_CUSTOM_ROUTE_ID,
+      baseURL: baseUrl,
+      apiKey: readConfiguredApiKey(),
+      // MEASURED: pi-ai rejects a route with an empty catalog —
+      //   llm-pi-ai: provider "custom" resolves no models; the installed
+      //   catalog does not describe this route, so its models must be listed
+      //   in configuration
+      // The operator typed the model id, so declare it. A local route may
+      // leave it empty because the runtime can resolve the server's catalog;
+      // a custom route cannot.
+      models: model ? [{ id: model }] : undefined,
+    });
+  }
+
   try {
     const raw = getConfigValue("runtime.dsh_routes");
-    if (!raw) return [];
+    if (!raw) return routes;
     const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (r): r is CustomDshRoute =>
-        typeof r === "object" &&
-        r !== null &&
-        typeof (r as CustomDshRoute).id === "string" &&
-        typeof (r as CustomDshRoute).baseURL === "string",
-    );
+    if (!Array.isArray(parsed)) return routes;
+    return [
+      ...routes,
+      ...parsed.filter(
+        (r): r is CustomDshRoute =>
+          typeof r === "object" &&
+          r !== null &&
+          typeof (r as CustomDshRoute).id === "string" &&
+          typeof (r as CustomDshRoute).baseURL === "string",
+      ),
+    ];
   } catch {
-    return [];
+    return routes;
   }
 }
 
@@ -448,12 +497,14 @@ export function createDeepSeekHarness(
       // there is one wire implementation to keep correct.
       let provider = options.provider;
       let model = options.model;
+      let providerEnv: Record<string, string> = {};
       const home = resolveDshHome(options);
       if (home && (!provider || !model)) {
         const composed = ensureLocalProviderMounted(home);
         if (composed) {
           provider = provider ?? composed.provider;
           model = model ?? composed.model;
+          providerEnv = composed.env;
         }
       }
 
@@ -466,7 +517,7 @@ export function createDeepSeekHarness(
           resolveProfile(),
         ],
         cwd: options.cwd,
-        env: options.env,
+        env: { ...options.env, ...providerEnv },
         provider,
         model,
       });

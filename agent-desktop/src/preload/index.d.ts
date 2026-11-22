@@ -2104,6 +2104,7 @@ interface HermesAPI {
   probeLocalLlm: (
     routeId: string,
     baseUrl: string,
+    apiKey?: string,
   ) => Promise<{
     routeId: string;
     baseUrl: string;

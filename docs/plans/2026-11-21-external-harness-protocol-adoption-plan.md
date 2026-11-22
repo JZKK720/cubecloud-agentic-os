@@ -686,6 +686,62 @@ Base URL + Model id with a Test-connection button; a hosted route is added
 through the same fields when the operator wants one. Nothing on the default
 path needs a key.
 
+### Phase 1.9 — The credential path, and why the form was a lie (2026-11-22)
+
+The paragraph above said a hosted route "is added later through the same
+fields". That was aspirational, not true — and nothing failed loudly enough for
+anyone to notice. Three separate gaps:
+
+| Claim | Reality |
+|---|---|
+| The form has an optional API-key field | **No such field was rendered.** The code comment said "the key field is labelled as optional"; there was no key field. |
+| `handleSaveLocalModel` persists the endpoint | It wrote `runtime.dsh_base_url`, and **nothing ever read it.** The lane composed the ollama default regardless. |
+| A custom route's key reaches the runtime | `buildDshProviderConfig` skipped custom routes when filling the child env, so a custom route's key was never exported. |
+
+The third is the one that mattered: an operator could have added the field
+themselves, saved a key, and the runtime would still answer
+`No API key for provider: <route>` — with no path from the config to a working
+request.
+
+**What the operator asked for was exactly right:** the key is not a
+prerequisite, it is a field you can fill in later, like any other connection.
+
+So:
+
+- The three values are now one route. Settings writes `runtime.dsh_base_url`,
+  `runtime.dsh_model` and `runtime.dsh_api_key`; the adapter composes them into
+  a `custom` route and makes it active. A saved endpoint wins over the ollama
+  default because it is the operator's explicit choice — there is no second
+  parallel mechanism competing with it.
+- **The key is exported, never written.** It reaches the child process as
+  `CUBECLOUD_DSH_CUSTOM_API_KEY` and appears in no patch file, so
+  `cordis.patch.yml` can be read or committed without leaking it.
+- The key field is `type="password"`, masked with the same width-preserving
+  mask the gateway connection form already uses, and clearing the URL does not
+  clear the key (or the reverse).
+- The probe accepts a key and sends it as a bearer token. Its policy is now
+  honest: the **candidate list** stays loopback-only, but an endpoint the
+  operator typed is an explicit choice and is probeable. Refusing to probe a
+  URL the lane will happily send prompts to was the inconsistency.
+- A 401/403 now says "the endpoint may need an API key" instead of reporting a
+  bare status.
+
+**Two defects the real runtime found, again:**
+
+1. `llm-pi-ai: provider "custom" resolves no models; the installed catalog does
+   not describe this route, so its models must be listed in configuration`.
+   A local route may leave its model empty because the runtime reads the
+   server's catalog; a **custom** route cannot. The typed model id is now
+   declared on the route.
+2. `oneShot()` dropped the composed env entirely while `runTurn()` forwarded
+   it, so a one-shot on a keyed endpoint failed where a turn succeeded.
+
+Verified against `@deepseek-ai/dsh@0.2.2-rc.5` with a local HTTP server standing
+in for a hosted gateway: the turn streamed, `turn/end` was
+`{"kind":"completed"}`, and the server observed `Authorization: Bearer
+sk-keytest-abc` on the chat request — while the written patch contained no key
+at all.
+
 ### Phase 1.7 — MCP inventory reaches the fifth lane (2026-11-22)
 
 A runtime lane that cannot see the operator's MCP servers is a downgrade: the

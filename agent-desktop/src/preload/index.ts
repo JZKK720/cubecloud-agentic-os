@@ -2370,8 +2370,8 @@ const hermesAPI = {
   probeMcpServer: (entry: { name: string; type: string; detail: string }) =>
     ipcRenderer.invoke("probe-mcp-server", entry),
 
-  probeLocalLlm: (routeId: string, baseUrl: string) =>
-    ipcRenderer.invoke("probe-local-llm", routeId, baseUrl),
+  probeLocalLlm: (routeId: string, baseUrl: string, apiKey?: string) =>
+    ipcRenderer.invoke("probe-local-llm", routeId, baseUrl, apiKey),
 
   // Log viewer
   readLogs: (

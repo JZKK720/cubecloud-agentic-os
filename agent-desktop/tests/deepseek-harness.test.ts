@@ -16,6 +16,7 @@ import {
   buildDshProviderConfig,
   writeDshProviderPatch,
   LOCAL_PLACEHOLDER_API_KEY,
+  localApiKeyEnvName,
 } from "../src/main/dsh-provider-config";
 import { probeLocalLlm } from "../src/main/local-llm-probe";
 import {
@@ -363,6 +364,48 @@ describe("buildDshProviderConfig", () => {
     expect(cfg.provider).toBe("ollama");
   });
 
+  /**
+   * A route whose key never reaches the child env is a route that fails with
+   * `No API key for provider: <route>` — the operator types a key and nothing
+   * happens. These three cover the wiring rather than the shape of the YAML.
+   */
+  it("exports the operator's key for a custom route into the child env", () => {
+    const cfg = buildDshProviderConfig({
+      customRoutes: [
+        {
+          id: "custom",
+          baseURL: "https://gw.example.com/v1",
+          apiKey: "sk-real-key",
+        },
+      ],
+    });
+    const envName = localApiKeyEnvName("custom");
+    expect(cfg.env[envName]).toBe("sk-real-key");
+    // The key itself must never land in the YAML we write to disk.
+    expect(cfg.yaml).not.toContain("sk-real-key");
+    expect(cfg.yaml).toContain(`apiKeyEnv: ${envName}`);
+  });
+
+  it("derives an env name for a custom route that names none", () => {
+    const cfg = buildDshProviderConfig({
+      customRoutes: [
+        { id: "custom", baseURL: "https://gw.example.com/v1", apiKey: "k" },
+      ],
+    });
+    expect(cfg.yaml).toContain(`apiKeyEnv: ${localApiKeyEnvName("custom")}`);
+  });
+
+  it("exports no key for a custom route when the operator supplied none", () => {
+    const cfg = buildDshProviderConfig({
+      customRoutes: [{ id: "custom", baseURL: "https://gw.example.com/v1" }],
+    });
+    expect(cfg.env[localApiKeyEnvName("custom")]).toBeUndefined();
+    // A keyless custom route gets no apiKeyEnv at all, so the runtime reports
+    // the missing credential instead of us inventing a placeholder for a host
+    // that may actually check it.
+    expect(cfg.yaml).not.toContain("apiKeyEnv: " + localApiKeyEnvName("custom"));
+  });
+
   it("leaves the model empty when the route declares none", () => {
     // A local server's catalog is whatever the operator pulled; guessing a
     // model id would break on the next machine.
@@ -423,12 +466,62 @@ describe("writeDshProviderPatch", () => {
 });
 
 describe("probeLocalLlm", () => {
-  it("refuses a non-loopback endpoint instead of contacting it", async () => {
+  it("refuses a URL that is not http(s) instead of contacting it", async () => {
     const spy = vi.spyOn(globalThis, "fetch");
-    const result = await probeLocalLlm("remote", "https://api.example.com/v1");
+    const result = await probeLocalLlm("remote", "file:///etc/passwd");
     expect(result.reachable).toBe(false);
-    expect(result.error).toBe("non-loopback");
+    expect(result.error).toBe("non-http");
     expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  /**
+   * The candidate list stays loopback-only, but the operator can type any
+   * http(s) endpoint into the form. A typed endpoint is an explicit choice, so
+   * it is probeable — refusing to probe while the lane happily sends prompts
+   * to the same URL would be the inconsistency.
+   */
+  it("probes a typed remote endpoint", async () => {
+    const spy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(JSON.stringify({ data: [{ id: "gpt-x" }] }), { status: 200 }));
+    const result = await probeLocalLlm("custom", "https://gw.example.com/v1");
+    expect(result.reachable).toBe(true);
+    expect(result.models).toEqual(["gpt-x"]);
+    spy.mockRestore();
+  });
+
+  it("sends the key as a bearer token when one is supplied", async () => {
+    const spy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(JSON.stringify({ data: [] }), { status: 200 }));
+    await probeLocalLlm("custom", "https://gw.example.com/v1", {
+      apiKey: "sk-test-123",
+    });
+    const init = spy.mock.calls[0][1] as RequestInit;
+    expect((init.headers as Record<string, string>).authorization).toBe(
+      "Bearer sk-test-123",
+    );
+    spy.mockRestore();
+  });
+
+  it("sends no authorization header when no key is supplied", async () => {
+    const spy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response(JSON.stringify({ data: [] }), { status: 200 }));
+    await probeLocalLlm("ollama", "http://127.0.0.1:11434/v1");
+    const init = spy.mock.calls[0][1] as RequestInit;
+    expect((init.headers as Record<string, string>).authorization).toBeUndefined();
+    spy.mockRestore();
+  });
+
+  it("hints that a 401 may mean a missing key", async () => {
+    const spy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(new Response("nope", { status: 401 }));
+    const result = await probeLocalLlm("custom", "https://gw.example.com/v1");
+    expect(result.error).toBe("HTTP 401");
+    expect(result.detail).toContain("API key");
     spy.mockRestore();
   });
 

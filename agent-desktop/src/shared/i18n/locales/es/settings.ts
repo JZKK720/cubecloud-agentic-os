@@ -124,6 +124,25 @@
   migrationDesc:
     "Se encontró OpenClaw en <code>{{path}}</code>. Puedes migrar tu configuración, API keys, sesiones y habilidades a Hermes.",
   migrationDismiss: "No volver a mostrar",
+  localModel: {
+    title: "Local model endpoint",
+    hint:
+      "The DeepSeek Harness lane runs models through an OpenAI-compatible server. Ollama is the default; LM Studio, llama.cpp and vLLM work the same way. A local server needs no API key. To use a hosted endpoint instead, enter its base URL and add the key below — you can add it later.",
+    baseUrl: "Base URL",
+    model: "Model id",
+    modelHint:
+      "Leave empty to use whatever the server advertises first.",
+    apiKey: "API key (optional)",
+    apiKeyPlaceholder: "Leave empty for a local server",
+    apiKeyHint:
+      "Stored in this profile's config and passed to the runtime as an environment variable. Never written into a plugin file.",
+    clearApiKey: "Remove stored key",
+    probe: "Test connection",
+    probing: "Testing…",
+    save: "Save endpoint",
+    saving: "Saving…",
+    saved: "Endpoint saved.",
+  },
   migrating: "Migrando...",
   migrateToHermes: "Migrar a Hermes",
   skip: "Omitir",

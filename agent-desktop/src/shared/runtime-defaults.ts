@@ -24,6 +24,24 @@ export const OLLAMA_DEFAULT_BASE_URL = "http://127.0.0.1:11434/v1";
 
 /** Route id the pi-ai provider tree uses for the local Ollama endpoint. */
 export const OLLAMA_ROUTE_ID = "ollama";
+
+/**
+ * Route id used when the operator points the lane at a hosted, key-bearing
+ * endpoint instead of a local model server.
+ *
+ * The base URL is theirs — it is never defaulted, and it is never used unless
+ * they typed it. The key is stored in the profile's config (local, same
+ * directory as every other setting) and exported to the runtime child as an
+ * env var, so it is never written into a patch file that could be committed.
+ */
+export const DSH_CUSTOM_ROUTE_ID = "custom";
+
+/** Config keys the Settings endpoint form persists. */
+export const DSH_CONFIG_KEYS = {
+  baseUrl: "runtime.dsh_base_url",
+  model: "runtime.dsh_model",
+  apiKey: "runtime.dsh_api_key",
+} as const;
 export const DEFAULT_SSH_REMOTE_PORT = DEFAULT_LOCAL_GATEWAY_PORT;
 export const DEFAULT_SSH_LOCAL_PORT = 18642;
 export const SSH_CONNECTION_TEST_LOCAL_PORT = 19642;

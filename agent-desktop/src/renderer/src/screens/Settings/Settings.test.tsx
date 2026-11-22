@@ -47,6 +47,16 @@ function installHermesAPI(
     }),
     getApiServerKeyStatus: vi.fn().mockResolvedValue({ hasKey: true }),
     getConfig: vi.fn().mockResolvedValue(""),
+    setConfig: vi.fn().mockResolvedValue(true),
+    probeLocalLlm: vi.fn().mockResolvedValue({
+      routeId: "ollama",
+      baseUrl: "",
+      reachable: false,
+      models: null,
+      detail: "no server",
+      error: "ECONNREFUSED",
+      scannedAt: "",
+    }),
     getHermesVersion: vi
       .fn()
       .mockResolvedValue(
@@ -211,6 +221,78 @@ function installHermesAPI(
 describe("Settings orchestration", () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  /**
+   * The endpoint form used to save a base URL that nothing read, and its key
+   * field did not exist. Both are pinned here from the operator's side: type a
+   * URL and a key, press Save, and the config keys the adapter actually reads
+   * receive them.
+   */
+  it("saves the endpoint and the optional API key the adapter reads", async () => {
+    const api = installHermesAPI();
+    render(<Settings />);
+
+    const baseUrl = await screen.findByPlaceholderText(
+      "http://127.0.0.1:11434/v1",
+    );
+    fireEvent.change(baseUrl, { target: { value: "https://gw.example.com/v1" } });
+
+    const model = screen.getByPlaceholderText("qwen3.6:35b-a3b-mtp-q4_K_M");
+    fireEvent.change(model, { target: { value: "gw-model-1" } });
+
+    // The key field is real now. It is optional: filling it in is the whole
+    // point of "I can enter the API key later".
+    const key = screen.getByPlaceholderText("settings.localModel.apiKeyPlaceholder");
+    fireEvent.change(key, { target: { value: "sk-later" } });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "settings.localModel.save" }),
+    );
+
+    await waitFor(() => {
+      expect(api.setConfig).toHaveBeenCalledWith(
+        "runtime.dsh_base_url",
+        "https://gw.example.com/v1",
+        undefined,
+      );
+      expect(api.setConfig).toHaveBeenCalledWith(
+        "runtime.dsh_model",
+        "gw-model-1",
+        undefined,
+      );
+      expect(api.setConfig).toHaveBeenCalledWith(
+        "runtime.dsh_api_key",
+        "sk-later",
+        undefined,
+      );
+    });
+  });
+
+  it("shows a stored key as a mask, not as the key", async () => {
+    installHermesAPI({
+      getConfig: vi.fn((key: string) =>
+        Promise.resolve(
+          key === "runtime.dsh_api_key"
+            ? "sk-already-stored"
+            : key === "runtime.dsh_base_url"
+              ? "https://gw.example.com/v1"
+              : "",
+        ),
+      ),
+    });
+    render(<Settings />);
+
+    const key = (await screen.findByPlaceholderText(
+      "settings.localModel.apiKeyPlaceholder",
+    )) as HTMLInputElement;
+
+    await waitFor(() => {
+      expect(key.value).not.toBe("");
+    });
+    // Width-preserving mask: the UI reveals the length, never the value.
+    expect(key.value).not.toContain("sk-already-stored");
+    expect(key.type).toBe("password");
   });
 
   it("shows the orchestration section and migrates OpenClaw from Settings", async () => {

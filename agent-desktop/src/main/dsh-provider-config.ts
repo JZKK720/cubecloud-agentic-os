@@ -73,6 +73,8 @@ export interface CustomDshRoute {
   id: string;
   baseURL: string;
   apiKeyEnv?: string;
+  /** The key itself. Exported to the child env, never written to the patch. */
+  apiKey?: string;
   models?: Array<{ id: string; contextWindow?: number }>;
 }
 
@@ -156,6 +158,14 @@ export function buildDshProviderConfig(
   const disabled = new Set(input.disabledLocalRoutes ?? []);
   const local = LOCAL_PROVIDER_CANDIDATES.filter((r) => !disabled.has(r.id));
 
+  // A custom route that carries a key needs an env var name to be exported
+  // through; if the caller configured none, derive one rather than dropping
+  // the credential on the floor.
+  const customRoutes = (input.customRoutes ?? []).map((r) => ({
+    ...r,
+    apiKeyEnv: r.apiKeyEnv ?? (r.apiKey ? localApiKeyEnvName(r.id) : undefined),
+  }));
+
   const routes: DshProviderRoute[] = [
     ...local.map((r) => ({
       id: r.id,
@@ -167,7 +177,7 @@ export function buildDshProviderConfig(
       apiKeyEnv: localApiKeyEnvName(r.id),
       models: [],
     })),
-    ...(input.customRoutes ?? []).map((r) => ({
+    ...customRoutes.map((r) => ({
       id: r.id,
       displayName: r.id,
       baseURL: r.baseURL,
@@ -193,13 +203,20 @@ export function buildDshProviderConfig(
     lines.push(...renderRoute(route, "  "));
   }
 
-  // Every local route needs its placeholder present in the child env, or the
-  // runtime answers "No API key for provider: <route>".
+  // Every route needs its credential present in the child env, or the runtime
+  // answers "No API key for provider: <route>". Local routes get a placeholder
+  // their server ignores; a custom route gets the operator's real key, or the
+  // placeholder when they left it blank (some hosted gateways do not check).
   const env: Record<string, string> = {};
   for (const route of routes) {
     if (!route.apiKeyEnv) continue;
-    if ((input.customRoutes ?? []).some((c) => c.id === route.id)) continue;
-    env[route.apiKeyEnv] = LOCAL_PLACEHOLDER_API_KEY;
+    const custom = customRoutes.find((c) => c.id === route.id);
+    if (!custom) {
+      env[route.apiKeyEnv] = LOCAL_PLACEHOLDER_API_KEY;
+      continue;
+    }
+    if (!custom.apiKey) continue;
+    env[route.apiKeyEnv] = custom.apiKey;
   }
 
   return { yaml: lines.join("\n") + "\n", provider: activeRoute, model, env };

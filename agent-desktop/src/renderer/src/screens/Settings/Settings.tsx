@@ -3,7 +3,10 @@ import { useTheme } from "../../components/ThemeProvider";
 import { THEME_OPTIONS } from "../../constants";
 import { useI18n } from "../../components/useI18n";
 import { APP_LOCALES, type AppLocale } from "../../../../shared/i18n";
-import { OLLAMA_DEFAULT_BASE_URL } from "../../../../shared/runtime-defaults";
+import {
+  DSH_CONFIG_KEYS,
+  OLLAMA_DEFAULT_BASE_URL,
+} from "../../../../shared/runtime-defaults";
 import {
   DEFAULT_SSH_LOCAL_PORT,
   DEFAULT_SSH_REMOTE_PORT,
@@ -143,6 +146,12 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
   // "use the adapter's composed default" (loopback Ollama).
   const [localModelBaseUrl, setLocalModelBaseUrl] = useState("");
   const [localModelId, setLocalModelId] = useState("");
+  // Optional credential for a hosted endpoint. Empty is the normal case: a
+  // loopback server needs none. Stored in the profile's config, exported to
+  // the runtime as an env var, never written into a patch file.
+  const [localModelApiKey, setLocalModelApiKey] = useState("");
+  const [localModelHasApiKey, setLocalModelHasApiKey] = useState(false);
+  const [localModelApiKeyMask, setLocalModelApiKeyMask] = useState("");
   const [localModelProbing, setLocalModelProbing] = useState(false);
   const [localModelSaving, setLocalModelSaving] = useState(false);
   const [localModelSaved, setLocalModelSaved] = useState(false);
@@ -332,6 +341,30 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     } catch {
       /* keep the default */
     }
+
+    // Read the saved endpoint so the form shows what the lane will actually
+    // use. Without this the fields start blank and "Save" looks like it did
+    // something while the previous values are still in effect.
+    try {
+      const [savedBaseUrl, savedModel, savedKey] = await Promise.all([
+        window.hermesAPI.getConfig(DSH_CONFIG_KEYS.baseUrl, profile),
+        window.hermesAPI.getConfig(DSH_CONFIG_KEYS.model, profile),
+        window.hermesAPI.getConfig(DSH_CONFIG_KEYS.apiKey, profile),
+      ]);
+      if (typeof savedBaseUrl === "string" && savedBaseUrl.trim()) {
+        setLocalModelBaseUrl(savedBaseUrl.trim());
+      }
+      if (typeof savedModel === "string" && savedModel.trim()) {
+        setLocalModelId(savedModel.trim());
+      }
+      if (typeof savedKey === "string" && savedKey.length > 0) {
+        setLocalModelHasApiKey(true);
+        setLocalModelApiKey(makeApiKeyMask(savedKey.length));
+        setLocalModelApiKeyMask(makeApiKeyMask(savedKey.length));
+      }
+    } catch {
+      /* keep the defaults */
+    }
   }
 
   async function refreshTaskOrchestrators(): Promise<void> {
@@ -358,13 +391,24 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     }
   }
 
-  /** Probe the entered (or default) local OpenAI-compatible endpoint. */
+  /** Probe the entered (or default) endpoint. */
   async function handleProbeLocalModel(): Promise<void> {
     setLocalModelProbing(true);
     setLocalModelProbe(null);
     try {
       const baseUrl = localModelBaseUrl.trim() || OLLAMA_DEFAULT_BASE_URL;
-      const result = await window.hermesAPI.probeLocalLlm("ollama", baseUrl);
+      // A mask value means "unchanged" — send the real key we already have,
+      // not the bullet characters.
+      const key =
+        localModelApiKey === localModelApiKeyMask
+          ? (await window.hermesAPI.getConfig(DSH_CONFIG_KEYS.apiKey, profile)) ??
+            undefined
+          : localModelApiKey.trim() || undefined;
+      const result = await window.hermesAPI.probeLocalLlm(
+        "ollama",
+        baseUrl,
+        key,
+      );
       setLocalModelProbe({
         reachable: result.reachable,
         models: result.models,
@@ -381,23 +425,42 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
     }
   }
 
-  /** Persist the local endpoint so the dsh adapter composes it as a route. */
+  /** Persist the endpoint so the dsh adapter composes it as a route. */
   async function handleSaveLocalModel(): Promise<void> {
     setLocalModelSaving(true);
     setLocalModelSaved(false);
     try {
       const baseUrl = localModelBaseUrl.trim();
       await window.hermesAPI.setConfig(
-        "runtime.dsh_base_url",
+        DSH_CONFIG_KEYS.baseUrl,
         baseUrl,
         profile,
       );
-      if (localModelId.trim()) {
+      await window.hermesAPI.setConfig(
+        DSH_CONFIG_KEYS.model,
+        localModelId.trim(),
+        profile,
+      );
+      // The key is separate from the endpoint on purpose: clearing the URL
+      // must not silently wipe a credential the operator typed, and clearing
+      // the key must not clear the URL.
+      if (localModelApiKey !== localModelApiKeyMask) {
+        const apiKey = localModelApiKey.trim();
         await window.hermesAPI.setConfig(
-          "runtime.dsh_model",
-          localModelId.trim(),
+          DSH_CONFIG_KEYS.apiKey,
+          apiKey,
           profile,
         );
+        if (apiKey) {
+          const mask = makeApiKeyMask(apiKey.length);
+          setLocalModelHasApiKey(true);
+          setLocalModelApiKeyMask(mask);
+          setLocalModelApiKey(mask);
+        } else {
+          setLocalModelHasApiKey(false);
+          setLocalModelApiKeyMask("");
+          setLocalModelApiKey("");
+        }
       }
       setLocalModelSaved(true);
       setTimeout(() => setLocalModelSaved(false), 2500);
@@ -1189,9 +1252,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
         </label>
       </div>
 
-      {/* Local model endpoint for the DeepSeek Harness lane. Keyless by
-          default; a hosted route with an API key is added later through the
-          same fields, which is why the key field is labelled as optional. */}
+      {/* Endpoint for the DeepSeek Harness lane: a local model server by
+          default, or a hosted one the operator types in. The key is optional
+          and unrelated to the base URL, so it can be filled in now, later, or
+          never. */}
       <div className="settings-section">
         <div className="settings-section-title">
           {t("settings.localModel.title")}
@@ -1227,6 +1291,50 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           <div className="settings-field-hint">
             {t("settings.localModel.modelHint")}
           </div>
+        </label>
+
+        <label className="settings-field">
+          <span className="settings-field-label">
+            {t("settings.localModel.apiKey")}
+          </span>
+          <input
+            className="input"
+            type="password"
+            value={localModelApiKey}
+            placeholder={t("settings.localModel.apiKeyPlaceholder")}
+            onChange={(e) => setLocalModelApiKey(e.target.value)}
+            onFocus={() => {
+              if (localModelApiKey === localModelApiKeyMask) {
+                setLocalModelApiKey("");
+              }
+            }}
+            onBlur={() => {
+              if (localModelApiKey === "" && localModelHasApiKey) {
+                setLocalModelApiKey(localModelApiKeyMask);
+              }
+            }}
+          />
+          <div className="settings-field-hint">
+            {t("settings.localModel.apiKeyHint")}
+          </div>
+          {localModelHasApiKey && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={async () => {
+                await window.hermesAPI.setConfig(
+                  DSH_CONFIG_KEYS.apiKey,
+                  "",
+                  profile,
+                );
+                setLocalModelHasApiKey(false);
+                setLocalModelApiKeyMask("");
+                setLocalModelApiKey("");
+              }}
+            >
+              {t("settings.localModel.clearApiKey")}
+            </button>
+          )}
         </label>
 
         <div className="settings-field">
