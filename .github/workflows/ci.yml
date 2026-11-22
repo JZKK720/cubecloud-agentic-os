@@ -159,3 +159,77 @@ jobs:
       - name: Verify packaged Windows app
         working-directory: agent-desktop
         run: npm run verify:bundle
+
+  # The kernel container had a broken workspace symlink for an unknown length of
+  # time: the image BUILT cleanly, then crash-looped on start with
+  # ERR_MODULE_NOT_FOUND for @cubecloud/platform-core, because the runtime stage
+  # created the correct absolute symlink and then copied the builder's
+  # node_modules/ over it with a relative link that only resolved inside the
+  # builder. Nothing gated on the container actually starting.
+  #
+  # This job builds the real image from the real Dockerfile, boots it, and waits
+  # for the healthcheck to pass. A build-only check would not have caught it.
+  console-container-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build the kernel image
+        run: docker compose -p ci-smoke -f compose.console.yaml build
+
+      - name: Boot it and wait for healthy
+        env:
+          CONSOLE_KERNEL_TOKEN: ci-smoke-token
+        run: |
+          docker compose -p ci-smoke -f compose.console.yaml up -d
+          # The healthcheck has start_period 10s, interval 30s, retries 3.
+          for i in $(seq 1 40); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' ci-smoke-console-backend-1 2>/dev/null || echo "missing")
+            echo "attempt $i: $status"
+            if [ "$status" = "healthy" ]; then break; fi
+            if [ "$status" = "unhealthy" ]; then
+              echo "::error::container reported unhealthy"
+              docker compose -p ci-smoke -f compose.console.yaml logs --tail=60
+              exit 1
+            fi
+            sleep 5
+          done
+          if [ "$status" != "healthy" ]; then
+            echo "::error::container never became healthy (last status: $status)"
+            docker compose -p ci-smoke -f compose.console.yaml logs --tail=60
+            exit 1
+          fi
+
+      - name: Assert the container serves its capabilities
+        run: |
+          set -euo pipefail
+          curl -fsS http://127.0.0.1:6770/health -o /tmp/health.json
+          node -e '
+            const h = require("/tmp/health.json");
+            if (h.status !== "ok") { console.error("bad status", h.status); process.exit(1); }
+            const names = h.routes.map(r => r.name);
+            if (!names.includes("dataflowHealth")) {
+              console.error("dataflowHealth missing from the kernel route table");
+              process.exit(1);
+            }
+            console.log(`ok: ${h.capabilities} capabilities, dataflowHealth present`);
+          '
+
+      - name: Drive the AG-UI endpoint end to end
+        run: |
+          set -euo pipefail
+          code=$(curl -s -o /tmp/agui.txt -w '%{http_code}' \
+            -X POST http://127.0.0.1:6770/api/ag-ui/run \
+            -H 'content-type: application/json' \
+            -H 'x-console-token: ci-smoke-token' \
+            -H 'origin: http://127.0.0.1:6770' \
+            -d '{"threadId":"ci","runId":"ci","messages":[{"role":"user","content":"hi"}]}')
+          test "$code" = "200" || { echo "::error::AG-UI returned $code"; cat /tmp/agui.txt; exit 1; }
+          grep -q 'RUN_STARTED' /tmp/agui.txt || { echo "::error::no RUN_STARTED"; cat /tmp/agui.txt; exit 1; }
+          grep -q 'RUN_FINISHED' /tmp/agui.txt || { echo "::error::no RUN_FINISHED"; cat /tmp/agui.txt; exit 1; }
+          echo "ok: AG-UI streamed RUN_STARTED -> RUN_FINISHED"
+
+      - name: Tear down
+        if: always()
+        run: docker compose -p ci-smoke -f compose.console.yaml down -v
