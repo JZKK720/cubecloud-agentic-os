@@ -30,6 +30,14 @@ export default defineConfig({
     // hitting it on a full-suite run; both pass in well under
     // 2s when run in isolation.
     testTimeout: 20_000,
+    // Cap workers. Each worker spins up a full jsdom, and several suites spawn
+    // child processes and timers. On a 32-core machine the default worker count
+    // over-subscribes and unrelated tests start timing out — observed twice in a
+    // row: `ssh-remote.test.ts` then `headroom-learn.test.ts`, each passing
+    // 17/17 and 14/14 in isolation at the same commit. A bounded pool keeps the
+    // suite's runtime honest instead of making a green run a matter of luck.
+    maxWorkers: 4,
+    minWorkers: 1,
     include: [
       "src/**/*.test.ts",
       "src/**/*.test.tsx",

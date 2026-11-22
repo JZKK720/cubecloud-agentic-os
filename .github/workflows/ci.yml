@@ -106,6 +106,14 @@ jobs:
           node-version: 22
           cache: npm
 
+      # The ROOT install is required here and ONLY here: it supplies the
+      # @types/node that platform-core's own `typecheck` needs, and provides
+      # `npm run --workspace @cubecloud/platform-core`. agent-desktop installs
+      # its own copy separately because it resolves platform-core through a
+      # `file:` link, not a workspace hoist — see electron.vite.config.ts.
+      #
+      # Do not delete this thinking it is redundant: without it the
+      # platform-core typecheck step fails with TS2307 for 'fs'/'path'.
       - name: Install dependencies
         run: npm ci
 
@@ -145,9 +153,6 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
       - name: Install agent-desktop dependencies
         working-directory: agent-desktop
         run: npm ci
@@ -185,9 +190,6 @@ jobs:
         with:
           node-version: 22
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Install agent-desktop dependencies
         working-directory: agent-desktop
