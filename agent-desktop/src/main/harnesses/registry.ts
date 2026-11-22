@@ -19,6 +19,7 @@ import {
 import { createHermesHarness } from "./hermes-harness";
 import { createRavenHarness } from "./raven-harness";
 import { createDeepSeekHarness } from "./deepseek-harness";
+import { listMcpServers } from "../mcp-config";
 import { getConfigValue } from "../config";
 
 /** A stub harness for runtimes that don't have a full adapter yet. */
@@ -86,8 +87,15 @@ export function createHarnessRegistry(): HarnessRegistry {
     // I-phase: the real adapter replaced the throwing stub — Raven is
     // an OpenAI-compatible gateway (8855) the desktop can stream from.
     ["raven", createRavenHarness()],
-    // Fifth lane: dsh speaks JSON-RPC 2.0 over stdio, not HTTP.
-    ["deepseek-harness", createDeepSeekHarness()],
+    // Fifth lane: dsh speaks JSON-RPC 2.0 over stdio, not HTTP. The MCP
+    // inventory is projected into the runtime per turn, so a server the
+    // operator registered in the MCP screen reaches the agent.
+    [
+      "deepseek-harness",
+      createDeepSeekHarness({
+        mcpServers: () => listMcpServers(),
+      }),
+    ],
   ]);
 
   const resolve: HarnessResolver = async (_sessionId: string) => {

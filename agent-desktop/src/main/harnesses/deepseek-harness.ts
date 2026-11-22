@@ -49,12 +49,45 @@ import {
   writeDshProviderPatch,
   type CustomDshRoute,
 } from "../dsh-provider-config";
+import {
+  buildDshMcpBridge,
+  writeDshMcpPatch,
+  type DesktopMcpServer,
+  type DshMcpBridgeResult,
+} from "../dsh-mcp-bridge";
 
 const TURN_IDLE_TIMEOUT_MS = 180_000;
 
 /** Provider id for the runtime union. Kept as a const so the registry, the
  *  runtime catalog and the tests cannot drift. */
 export const DEEPSEEK_HARNESS_PROVIDER_ID = "deepseek-harness";
+
+/**
+ * Mount the desktop's MCP inventory into the dsh profile.
+ *
+ * The desktop already owns an MCP inventory and a probe; dsh ships its own MCP
+ * client. Without this the two are unrelated — a server registered in the MCP
+ * screen never reaches the dsh runtime. This projects the one inventory into
+ * the active runtime instead of duplicating a catalog.
+ *
+ * @param mcpServers the operator's inventory, or undefined to mount nothing
+ * @returns the bridge result so the caller can surface skipped servers
+ */
+export function ensureMcpBridgeMounted(
+  dshHome: string,
+  mcpServers?: readonly DesktopMcpServer[],
+): DshMcpBridgeResult | null {
+  if (!mcpServers) return null;
+  const patchPath = join(dshHome, "profiles", "sdk", "cordis.patch.yml");
+  const result = buildDshMcpBridge(mcpServers);
+  const ok = writeDshMcpPatch(
+    patchPath,
+    result,
+    { existsSync, readFileSync, writeFileSync, mkdirSync },
+    dirname(patchPath),
+  );
+  return ok ? result : null;
+}
 
 /**
  * Compose and mount the local-first provider tree into a profile home.
@@ -75,8 +108,7 @@ export function ensureLocalProviderMounted(dshHome: string): {
   provider: string;
   model: string;
   env: Record<string, string>;
-} | null {
-  const patchPath = join(dshHome, "profiles", "sdk", "cordis.patch.yml");
+} | null {  const patchPath = join(dshHome, "profiles", "sdk", "cordis.patch.yml");
   const config = buildDshProviderConfig({
     activeRoute: readConfiguredRoute(),
     model: readConfiguredModel(),
@@ -105,6 +137,11 @@ export interface DeepSeekHarnessOptions {
   provider?: string;
   /** Model id. Defaults to the route's first declared model. */
   model?: string;
+  /**
+   * The desktop's MCP inventory, projected into dsh plugins before each turn.
+   * Undefined mounts nothing (the runtime keeps whatever the profile has).
+   */
+  mcpServers?: () => readonly DesktopMcpServer[];
 }
 
 /** Resolve the dsh profile from config so an operator can pick sdk-minimal. */
@@ -212,6 +249,18 @@ export function createDeepSeekHarness(
           provider = provider ?? composed.provider;
           model = model ?? composed.model;
           providerEnv = composed.env;
+        }
+      }
+
+      // Project the desktop's MCP inventory into the runtime, so a server the
+      // operator registered in the MCP screen is actually available to the
+      // agent instead of existing only in a file this runtime never reads.
+      if (home && options.mcpServers) {
+        try {
+          ensureMcpBridgeMounted(home, options.mcpServers());
+        } catch {
+          // A bridge failure must not cost the user their turn; the runtime
+          // simply starts with whatever the profile already has.
         }
       }
 

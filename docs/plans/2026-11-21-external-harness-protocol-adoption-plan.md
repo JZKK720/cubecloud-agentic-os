@@ -685,9 +685,56 @@ credential, and 30 tools intact.
 Base URL + Model id with a Test-connection button; a hosted route is added
 through the same fields when the operator wants one. Nothing on the default
 path needs a key.
-directly (`hermes.ts:1462`). Adding a `stdio`-transport harness therefore
-requires routing `runTurn` through the chat path, which is a larger change than
-"add a union member". Sequence 1.2 *before* 1.1.
+
+### Phase 1.7 — MCP inventory reaches the fifth lane (2026-11-22)
+
+A runtime lane that cannot see the operator's MCP servers is a downgrade: the
+operator configures `mcp_servers:` once in the profile's `config.yaml` and
+expects every lane to inherit it. dsh does not read that file — it composes
+plugins from `$DSH_HOME` overlays — so the desktop projects its own inventory
+into the form dsh understands.
+
+- **`src/main/dsh-mcp-bridge.ts`** — reads the same `listMcpServers()`
+  inventory the MCP screen renders, maps each enabled row onto a
+  `@deepseek-ai/dsh-mcp-client` plugin row, and writes a managed block into
+  `$DSH_HOME/cordis.patch.yml`. `toServerName` coerces desktop names into dsh's
+  `[A-Za-z0-9_-]{1,32}` server-name grammar (the name is load-bearing: tools
+  surface as `mcp__<serverName>__<tool>`).
+- **`src/main/mcp-config.ts`** — the `mcp_servers:` reader moved out of
+  `installer.ts`, which imports `electron`. The harness registry is reachable
+  from the console kernel, so leaving the reader there would have broken the
+  Phase G electron-free gate. `installer.ts` re-exports both names, so no
+  caller changed.
+- Two transports only. dsh has `stdio` and `streamable-http`; the desktop's
+  `sse` type is refused explicitly rather than silently downgraded.
+
+**The one non-obvious contract:** a `cordis.patch.yml` overlay can only
+*modify* an existing row by id. Emitting a bare top-level `- id: <new>` fails
+composition with `patch: entry "<id>" not found`, and dsh then starts with the
+plugin **silently absent** — a clean tool list, just without your servers. New
+rows must be nested under `- insert:`. The renderer emits that form.
+
+Verified against `@deepseek-ai/dsh@0.2.2-rc.5`: with one projected stdio server
+the lane reported **34 tools including `mcp__smoke__smoke_tool`**, against 30
+without it. 21 tests in `tests/dsh-mcp-bridge.test.ts` cover name coercion,
+command splitting, transport mapping, the `sse` refusal, and patch idempotency.
+
+### Phase 1.8 — Chat routing through the lane
+
+`harness-chat.ts` sends a turn through the `HarnessRouter` when the selected
+runtime's profile advertises `supportsTurnExecution`, and falls back to the
+`hermes.ts` chat path otherwise. The capability flag is honest: dsh sets it,
+Hermes' HTTP-gateway path does not need it, and a lane without it is never
+silently fed a turn it cannot run.
+
+**This closes the Phase 1 blocker recorded above.** Before `harness-chat.ts`,
+`createHarnessRegistry()` was wired only into `createBeforeModelChain` — the
+harness was consulted for pre-model *policy* and then `hermes.ts` streamed from
+`/v1/chat/completions` directly. A `stdio` lane could be registered and would
+still never see a message. `trySendViaHarness()` in `hermes.ts` now offers each
+turn to the router first and falls through to the HTTP path when the lane
+cannot serve it, which is what made the fifth lane a real runtime rather than
+a catalog entry.
 
 ### Phase 2 — MCP transport parity
 
