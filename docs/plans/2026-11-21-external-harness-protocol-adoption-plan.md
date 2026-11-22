@@ -968,7 +968,9 @@ harness asks for that, the copy stays. The open question is therefore closed as
 2. **AG-UI at the edge only, or also as the main↔renderer transport?** This
    document argues edge-only. The counter-argument is that one protocol everywhere
    is simpler to reason about — but it would discard Electron IPC's structured
-   clone and its existing type safety.
+   clone and its existing type safety. *(Answered by implementation: edge-only. See
+   §Phase 1.10 — the transport ships at the kernel HTTP surface, and the IPC path is
+   untouched.)*
 3. **Is Phase 3.1 (A2UI) worth a tool at all?** It is the only generative-UI idea
    that survives our security posture, but "the agent can render a validated table"
    may not be worth the catalog machinery versus simply returning Markdown.
@@ -976,6 +978,77 @@ harness asks for that, the copy stays. The open question is therefore closed as
    existing CDP path sufficient? Absent a yes, 3.2 should stay unwritten.
 
 ---
+
+### Phase 1.10 — Closing the "still open" list (2026-11-22)
+
+Three items had been carried as open for two commits. Checking each at source
+changed what they actually were.
+
+**1. AG-UI SSE dialect + spec vendoring — closed.**
+`sse-parser.ts` had an `"ag-ui"` decode dialect and `platform-core/ag-ui.ts` had
+a full encoder, and **no module in `agent-desktop/src` imported either.** The
+codec was unit-tested and unreachable; "we speak AG-UI" was untestable from
+outside the app. The join now exists:
+
+- `POST /api/ag-ui/run` on the console kernel (`console-backend/registry.ts`)
+  streams `data: {event}` SSE. It lives under `/api/`, so it inherits the
+  kernel's existing origin check and token gate rather than opening a second
+  unauthenticated door — verified: an unauthenticated POST answers 401.
+- `console-backend/ag-ui-run.ts` turns a `HarnessTurnDelta` stream into AG-UI
+  events via the platform-core encoder. Transport stays in the registry;
+  encoding stays in platform-core; this file is only the wiring.
+- `createKernelAgUiRunHandler` sources turns from an `agUiTurn` capability, so a
+  real boot serves runs without the kernel importing the Electron-side harness
+  router. With no capability registered it answers `RUN_ERROR` with
+  `code: "NO_TURN_SOURCE"` — an actionable message, not a silent empty turn.
+- Wired into `console-backend/server.ts`, which is the part that made it real:
+  the first version passed the handler only in tests, which is the same
+  "endpoint that exists only in a test" failure this whole exercise is about.
+
+Verified against the actual container boot path
+(`node --experimental-strip-types … console-backend/server.ts`): `/health` 200,
+`/api/ag-ui/run` 200 with `RUN_STARTED` then `RUN_ERROR{NO_TURN_SOURCE}`, and 401
+without a token. 11 tests drive it over real HTTP.
+
+**A run terminates exactly once.** My first adapter fed every delta to the
+encoder. The encoder resets its `started` flag after a terminal event, so a
+trailing `done` after an `error` produced `RUN_STARTED` → `RUN_ERROR` →
+`RUN_STARTED` → `RUN_FINISHED` — two runs on one stream, one of them claiming
+success for a failed turn. The adapter now stops at the first terminal event.
+
+**2. On-disk skill duplication — not a defect.**
+`.agents/skills` and `agent-desktop/.agents/skills` are **not** hardlinks
+(`fsutil hardlink list` reports one link) and **are** separate tracked trees, so
+"they diverge silently" was a fair worry. Measured: 48 directories each, and the
+tracked file sets differ only by `README.md` and
+`karpathy-guidelines/tests/red-baseline.md` — i.e. the outer tree is the inner
+tree plus two files. No conflicting skill bodies. `listBundledSkills()` returns
+**zero duplicate names**, so the catalog was never double-counting; the earlier
+"379 skills, 23 with no description" figure was this machine's 332-entry
+user-global `~/.agents/skills`, not repo content. Left as-is deliberately: the
+inner copy is what ships in the asar, and collapsing it would change packaging
+for no correctness gain.
+
+**3. A real bug found while checking: 23 skills had no description.**
+`readFrontmatterScalar` returned the *indicator* for a YAML block scalar, so
+`description: >-` parsed as the literal string `">-"`. Skills using that shape —
+common upstream — appeared in the catalog with no readable text. Now folds `>`
+to one line and preserves `|` line breaks, stopping at the next top-level key.
+Measured on the 332-skill user-global tree: **23 degenerate descriptions → 0.**
+Three tests cover folded, literal, and boundary cases.
+
+**4. A crash the gate should have caught: the kernel could not boot.**
+The first real boot attempt died with
+`ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX: TypeScript parameter property is not
+supported in strip-only mode`. The container runs the kernel under
+`node --experimental-strip-types`, and `dsh-jsonrpc-client.ts` — reachable
+through the harness registry — used `constructor(private readonly options: …)`
+and `readonly` parameter properties on `DshRpcError`. **The kernel served nothing
+at all**, and no test noticed because the suite runs through esbuild, which
+supports that syntax. Both are now written out longhand, and
+`tests/console-kernel-electron-free.test.ts` gained a second assertion over the
+same transitive closure: no constructor parameter properties, no `enum`, no
+`namespace` — the strip-only subset, enforced.
 
 ## 7. Provenance of these claims
 

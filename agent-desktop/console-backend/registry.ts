@@ -12,6 +12,7 @@
 // convention shared by the module family).
 
 import { createServer, type IncomingMessage, type ServerResponse } from "http";
+import type { AgUiEvent } from "@cubecloud/platform-core";
 import { serveRenderer, renderShimJs } from "./shell.ts";
 
 /** A kernel capability: one preload bridge analog, one HTTP route. */
@@ -62,7 +63,34 @@ export interface ConsoleServerOptions {
   /** Shared-secret required on every non-health request. When set, a
    *  request without a matching `x-console-token` header is refused 401. */
   readonly authToken?: string | null;
+  /**
+   * AG-UI run endpoint (`POST /api/ag-ui/run`).
+   *
+   * AG-UI is the *edge* protocol: it is how an external client drives this
+   * kernel, not how the kernel talks to itself. Without this the codec in
+   * `packages/platform-core/src/ag-ui.ts` had no consumer, so the protocol
+   * claim was untestable from outside.
+   *
+   * The handler receives the parsed `RunAgentInput` and a sink it calls for
+   * every event; the sink serializes as SSE. Returning from the handler ends
+   * the run. It lives here, beside `/api/events/`, because this is the only
+   * surface in the product that already speaks SSE and already owns an auth
+   * gate — putting it behind the Electron IPC boundary would have meant
+   * calling a "protocol adapter" in-process, which is not a protocol.
+   */
+  readonly agUiRun?: AgUiRunHandler | null;
 }
+
+/** One AG-UI run. `emit` serializes an event to the client. Typed against the
+ *  protocol's own event union so the kernel cannot invent a malformed event. */
+export type AgUiRunHandler = (input: {
+  threadId: string;
+  runId: string;
+  messages: unknown[];
+  state: unknown;
+  resume: unknown[];
+  emit: (event: AgUiEvent) => void;
+}) => Promise<void>;
 
 /** Loopback origins/names the browser shell legitimately serves from. */
 const SAME_ORIGIN_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
@@ -181,6 +209,60 @@ export function createConsoleServer(
             routes: registry.list(),
           }),
         );
+        return;
+      }
+      // AG-UI run endpoint. The auth gate above already applied: this path
+      // starts with /api/, so a cross-origin or unauthenticated caller was
+      // refused before reaching here.
+      if (options.agUiRun && req.method === "POST" && url.pathname === "/api/ag-ui/run") {
+        const chunks: Buffer[] = [];
+        for await (const c of req) chunks.push(c as Buffer);
+        const raw = Buffer.concat(chunks).toString("utf8");
+        let input: Record<string, unknown>;
+        try {
+          input = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+        } catch {
+          res.statusCode = 400;
+          res.end(
+            JSON.stringify({ success: false, error: "invalid JSON body" }),
+          );
+          return;
+        }
+        const threadId =
+          typeof input.threadId === "string" && input.threadId
+            ? input.threadId
+            : `thread-${Date.now()}`;
+        const runId =
+          typeof input.runId === "string" && input.runId
+            ? input.runId
+            : `run-${Date.now()}`;
+        res.setHeader("content-type", "text/event-stream");
+        res.setHeader("cache-control", "no-cache");
+        res.setHeader("connection", "keep-alive");
+        res.write(": connected\n\n");
+        const emit = (event: AgUiEvent) => {
+          // AG-UI rule 1 (encoded in the codec, enforced here too): optional
+          // fields with no value are omitted, never sent as `null`.
+          res.write(`data: ${JSON.stringify(event)}\n\n`);
+        };
+        try {
+          await options.agUiRun({
+            threadId,
+            runId,
+            messages: Array.isArray(input.messages) ? input.messages : [],
+            state: input.state ?? null,
+            resume: Array.isArray(input.resume) ? input.resume : [],
+            emit,
+          });
+        } catch (err) {
+          // RUN_ERROR carries no thread/run id upstream; the run is already
+          // scoped by the response stream it arrives on.
+          emit({
+            type: "RUN_ERROR",
+            message: err instanceof Error ? err.message : String(err),
+          });
+        }
+        res.end();
         return;
       }
       if (req.method !== "POST") {

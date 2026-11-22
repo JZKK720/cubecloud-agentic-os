@@ -27,6 +27,7 @@ import {
   createConsoleServer,
   ConsoleRouteRegistry,
 } from "./registry.ts";
+import { createKernelAgUiRunHandler } from "./ag-ui-run.ts";
 import { seedGovernance } from "./governance-seed.ts";
 import type { ServerResponse } from "http";
 import { randomBytes } from "crypto";
@@ -235,6 +236,10 @@ async function main(): Promise<void> {
     rendererRoot,
     pushSinks,
     authToken: tokenGateEnabled ? authToken : null,
+    // AG-UI is the kernel's *edge* protocol: an external client drives a
+    // turn over SSE. Wired here so `POST /api/ag-ui/run` answers in a real
+    // boot — an endpoint that only exists inside a test is not a protocol.
+    agUiRun: createKernelAgUiRunHandler(registry),
   });
   await new Promise<void>((resolve) => server.listen(PORT, HOST, resolve));
   console.log(`console-backend kernel listening on http://${HOST}:${PORT}`);
