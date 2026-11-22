@@ -50,6 +50,7 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "smoke": "node scripts/smoke-all.js",
+    "smoke:dev-boot": "node scripts/dev-boot-check.cjs",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "dev:fresh": "HERMES_HOME=$(mktemp -d -t hermes-fresh) electron-vite dev",

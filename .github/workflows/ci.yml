@@ -160,6 +160,59 @@ jobs:
         working-directory: agent-desktop
         run: npm run verify:bundle
 
+  # `npm run build` succeeding says nothing about `npm run dev`: they bundle
+  # differently. On 2026-11-22 the main bundle emitted a runtime
+  # `require("@cubecloud/platform-core")` because the workspace package sat in
+  # `dependencies` and electron-vite externalizes those. Node then loaded
+  # platform-core's raw TypeScript entry, whose relative imports are extensionless
+  # (`./ag-ui`), and dev died on startup with ERR_MODULE_NOT_FOUND.
+  #
+  # Typecheck passed. 1,831 tests passed. The Windows packaging job passed. Every
+  # gate was green and the app would not launch, because no gate started it.
+  #
+  # This job starts dev with CDP enabled and asserts the renderer produced a page
+  # target. `scripts/dev-boot-check.cjs` is the same script a developer can run
+  # locally; it was proven both ways — it fails with the externalizeDeps exclude
+  # removed and passes with it in place.
+  desktop-shell-dev-boot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install agent-desktop dependencies
+        working-directory: agent-desktop
+        run: npm ci
+
+      # Electron needs a display and a sandbox namespace even when headless.
+      - name: Install headless display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb
+
+      - name: Assert dev boots and exposes the renderer
+        working-directory: agent-desktop
+        env:
+          # Headless CI: run Electron under a virtual display.
+          DISPLAY: ":99"
+        run: |
+          Xvfb :99 -screen 0 1280x1024x24 &
+          sleep 2
+          # electron-builder refuses to run as root without this in containers;
+          # the same flag keeps the Chromium sandbox from blocking startup.
+          export ELECTRON_DISABLE_SANDBOX=1
+          node scripts/dev-boot-check.cjs
+
+
   # The kernel container had a broken workspace symlink for an unknown length of
   # time: the image BUILT cleanly, then crash-looped on start with
   # ERR_MODULE_NOT_FOUND for @cubecloud/platform-core, because the runtime stage
@@ -170,6 +223,7 @@ jobs:
   # This job builds the real image from the real Dockerfile, boots it, and waits
   # for the healthcheck to pass. A build-only check would not have caught it.
   console-container-smoke:
+    name: Container smoke (build + boot + serve)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
