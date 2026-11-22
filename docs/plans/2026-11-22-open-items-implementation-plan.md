@@ -169,7 +169,116 @@ blocked on engineering effort; each is blocked on nobody having asked.
 3. **Docker kernel boot + external auth** — shipped `74d86d0`. The container path had never been *run*; see that commit.
 4. **Nothing further.** A2UI, univer, kitesurf and astryx stay refused with the reasons recorded above, so the next reader does not re-derive them.
 
+## Re-think of the four refusals, against your proposal (2026-11-22)
+
+You asked whether A2UI and univer can be adopted, and whether kitesurf and
+astryx can run as **separate container runtimes wired as tools or MCPs**. I
+checked the repos at source rather than reasoning from memory. **My earlier
+refusal of kitesurf was wrong about the facts**, and two of the four become
+worth doing under your framing.
+
+### kitesurf — REFUSAL WITHDRAWN. The container framing is exactly right
+
+From the upstream README:
+
+```
+docker run --rm -p 127.0.0.1:8787:8787 ghcr.io/cloudflare/kitesurf
+```
+
+- Ships a **prebuilt image** (`ghcr.io/cloudflare/kitesurf`), no Cloudflare
+  account, runs on `workerd` without Node.
+- Exposes **Chrome DevTools Protocol endpoints**, usable by Playwright /
+  Puppeteer CDP clients.
+- `KITESURF_PORT` (default 8787) and `KITESURF_NATIVE_EVAL` are env knobs.
+- Starts in under a second.
+
+**My earlier reasoning was wrong in a specific, checkable way.** I said
+`createBrowserHarnessApp` already covers this. It does not: that adapter is a
+**2.6 KB detector** that runs `--doctor` on a CLI. It discovers a browser tool;
+it *is not a browser engine*. So "kitesurf duplicates it" was false.
+
+What kitesurf actually offers is a **stateless, disposable browser backend** —
+one container, one CDP endpoint, no Chrome install, no VNC. That is a genuine
+capability we do not have.
+
+**Why it is still not first.** DataFlow just taught the lesson: transport alone
+is not a feature. Wiring kitesurf means (a) a `ManagedApp` adapter that
+discovers `127.0.0.1:8787`, (b) a CDP client in the desktop, (c) a decision about
+what the agent may do with a browser, and (d) the sandboxing the upstream README
+explicitly disclaims. Step (d) is the honest blocker: *"not a hardened
+sandbox"* means the isolation is ours to provide, and a CDP endpoint on loopback
+that executes page JS is a local-code-execution surface.
+
+**Verdict: ADOPT as a container-attached tool, gated behind explicit operator
+enablement.** Not a runtime lane, not a default. It is the strongest of the four.
+
+### astryx — still refused, and the container framing does not help
+
+astryx is a **design system** (31,963 stars, TypeScript, "fully customizable and
+agent ready"). It is a component library, not a service. Running it in a
+container would produce… a container serving component code to a renderer that
+cannot import it across a process boundary.
+
+The 70-custom-property count stands as the cost measure. But there is one thing
+worth taking that I dismissed too fast: **"agent ready"** is a real claim, and if
+astryx ships a machine-readable component schema, that is *exactly* the
+JSON→component registry A2UI needs. Worth reading before writing A2UI from
+scratch.
+
+**Verdict: still not adopted as a design system. Its agent-facing schema is
+worth reading as an input to the A2UI decision.**
+
+### A2UI — refusal softened; the right scope is now visible
+
+My reason was that `AgentMarkdown.tsx` already renders GFM tables. That is true
+and it answers the *table* case. But you have argued the broader point
+correctly: the product's chat surface renders only prose and markdown, so an
+agent cannot present anything interactive.
+
+The honest scope, if adopted, is narrow and cheap:
+
+- **One** validated block type first — a table with columns/rows/alignment —
+  rendered by a new small component that reuses existing table CSS.
+- Validation against a schema, rejecting anything outside it.
+- No free-form component tree, no model-authored HTML, no Jev classifier.
+
+That is a `remark`-plugin-scale change, not a subsystem, **provided it starts
+with one block type**. The subsystem risk was mine to create by scoping it as
+"interactive JSON trees" rather than "a table the agent can emit reliably."
+
+**Verdict: ADOPT-able, at one block type, reusing the existing table styles.**
+
+### univer — refusal stands, but the path is now clear if you want it
+
+univer's blocker is not engineering, it is licensing: `.xlsx`/`.docx` I/O is a
+**paid package**. The open core gives snapshots and a formula engine.
+
+Two honest paths, neither of which I should pick for you:
+
+1. **Read-only viewer**, open core only — render `.xlsx` *if already converted*,
+   never claim import/export. Cheap, genuinely useful, no licence question.
+2. **Full editing** — requires the paid package. A commercial decision, not mine.
+
+Either way it must arrive as a **tool card**, never as the `navigation.office`
+nav surface that `Layout.test.tsx:192,305` pins absent.
+
+**Verdict: univer waits on a licence decision. Path 1 is available today.**
+
+## What I recommend, in order
+
+1. **kitesurf as an opt-in container tool** — the framing you proposed is
+   correct and my refusal was based on a factual error. Start with discovery +
+   a `ManagedApp` card; wire CDP only after deciding the sandbox question.
+2. **A2UI, one block type** — small, reuses table styles, read astryx's agent
+   schema first in case it already defines the shape.
+3. **univer read-only** — only if someone needs spreadsheet *viewing*.
+4. **astryx as a design system** — do not adopt.
+
 ## What would change this plan
+
+One operator using the current build. Every item above is still ranked on
+inferred value; a real request would replace the inference.
+
 
 One operator using v2.10.82 or the container stack, reporting what is missing. If
 that report names spreadsheets, generative UI, or browser automation, the
