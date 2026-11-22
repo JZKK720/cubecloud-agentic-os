@@ -1661,6 +1661,7 @@ export function discoverLast30Days(): Last30DaysStatus {
 
 // The `mcp_servers:` reader lives in `./mcp-config` so the console kernel
 // can reach it without pulling `electron` into its import closure.
+import type { McpServerType } from "./mcp-config";
 export { listMcpServers, type McpServerType } from "./mcp-config";
 
 // Mutate the mcp_servers block of the profile's config.yaml. We work
