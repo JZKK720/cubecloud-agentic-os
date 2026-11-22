@@ -10,28 +10,41 @@
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
 
-## Latest release: **v2.10.79**
+## Latest release: **v2.10.82**
 
 Download the Windows installer from the
-[v2.10.79 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.79):
+[v2.10.82 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.82):
 
-- `cubecloud-agent-desktop-2.10.79-setup.exe` (NSIS one-click installer)
-- `cubecloud-agent-desktop-2.10.79-portable.exe` (single-file portable)
-- `cubecloud-agent-desktop-2.10.79-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
+- `cubecloud-agent-desktop-2.10.82-setup.exe` (NSIS one-click installer)
+- `cubecloud-agent-desktop-2.10.82-portable.exe` (single-file portable)
+- `cubecloud-agent-desktop-2.10.82-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
 
-v2.10.78 is the **architectural foundation** release: Swarm multi-agent
-collaboration screen (dispatch read-only subagents, live SVG topology
-graph), Knowledge Vault (editable Markdown knowledge base with full-text
-search), IM channel interface (Feishu/DingTalk/WeCom), harness adapter
-framework, provider router, tool policy + command screening, scoped
-memory service, auto-compaction, run queue, and subagent infrastructure.
-10 architectural modules adopted from openworker, qm, and skills-bundle-kit.
-3 competitive gaps closed (IM channels, agent swarm, knowledge vault).
-Full i18n parity across 8 locales (27/27 files, 0 drift). 1383 tests pass.
-See
-[`agent-desktop/changelogs/2.10.79.md`](agent-desktop/changelogs/2.10.79.md)
-for the full changelog. v0.6.0 and v0.6.1 are marked pre-release on
-GitHub and should not be used — they were built from the retired
+**Releases are Windows-only.** The macOS and Linux jobs were removed in
+v2.10.82 rather than left failing; they needed Apple notarization and Linux
+signing credentials the project does not have. Combined with a publish gate
+that could never be satisfied on a tag push, and an undeclared workspace
+dependency that broke `tsc` on a clean runner, nothing shipped between
+v2.10.75 and v2.10.82 — five months and 157 commits.
+
+v2.10.82 carries everything from v2.10.77 through v2.10.81 plus its own
+changes, so the intermediate tags are superseded (they were dangling tags with
+no release behind them and have been deleted):
+
+- **DeepSeek Harness as a fifth runtime lane** — JSON-RPC over stdio, local-first
+  by default (Ollama at `127.0.0.1:11434/v1`), operator's MCP inventory projected
+  into the runtime, optional API key stored in the profile and exported to the
+  child process rather than written into a plugin file.
+- **AG-UI at the edge** — `POST /api/ag-ui/run` on the console kernel, backed by
+  the live harness router, under the kernel's existing origin and token gate.
+- **i18n completeness fix** — 165 `t()` calls had no dictionary entry and
+  rendered raw keys on screen; the CI gate that should have caught it could
+  only see 57 of ~1,470 keys.
+
+Earlier foundation releases: v2.10.78 introduced the Swarm multi-agent screen,
+Knowledge Vault, IM channel interface (Feishu/DingTalk/WeCom), the harness
+adapter framework, provider router, tool policy, scoped memory, auto-compaction,
+run queue and subagent infrastructure. v0.6.0 and v0.6.1 are marked pre-release
+on GitHub and should not be used — they were built from the retired
 `apps/desktop-shell/` wrapper tree.
 
 Install instructions, runtime picker details, and provider configuration

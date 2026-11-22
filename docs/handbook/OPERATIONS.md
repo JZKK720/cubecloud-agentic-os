@@ -7,30 +7,28 @@
 ### Windows
 
 ```powershell
-# Download the latest MSI from the GitHub release page
-# (Cubecloud-pending: replace with the Cubecloud-owned release URL once
-#  the brand transition is finalised)
-Invoke-WebRequest -Uri https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-setup.exe -OutFile agent-desktop-setup.exe
+# Windows x64 only. The asset name carries the version, so `latest/download`
+# needs the exact file name — check the release page if the version moved on.
+$v = "2.10.82"
+$base = "https://github.com/JZKK720/cubecloud-agentic-os/releases/download/v$v"
+# Installer (NSIS — not an MSI; run it, do not pass it to msiexec):
+Invoke-WebRequest -Uri "$base/cubecloud-agent-desktop-$v-setup.exe" -OutFile setup.exe
+# Portable single-file alternative, no install:
+# Invoke-WebRequest -Uri "$base/cubecloud-agent-desktop-$v-portable.exe" -OutFile portable.exe
 
-# Run the installer (SmartScreen will warn —click "More info" →"Run anyway")
-msiexec /i cubecloud-setup.msi
+# Run it. SmartScreen will warn because the build is not code-signed for
+# public distribution —click "More info" then "Run anyway".
+.\setup.exe
 ```
 
-### Fedora
-
-```bash
-curl -L -o agent-desktop.rpm https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x86_64.rpm
-sudo dnf install ./cubecloud.rpm
-# If your system enforces signature checking: sudo dnf install ./cubecloud.rpm --nogpgcheck
-```
-
-### macOS
-
-```bash
-curl -L -o agent-desktop.dmg https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x64.dmg
-open cubecloud.dmg
-# Drag Cubecloud.app to /Applications
-```
+**Releases are Windows-only as of v2.10.82.** The release workflow builds and
+publishes the Windows installer and portable build. The macOS and Linux jobs
+were removed rather than left failing: they required Apple notarization and
+Linux signing credentials the project does not have, so every run failed at
+"Build app" and — combined with a publish gate that could never be satisfied —
+nothing shipped between v2.10.75 and v2.10.82. `npm run build:mac` and
+`npm run build:linux` still exist locally for an operator who supplies their
+own signing material; they are simply not part of a release.
 
 ### First-run wizard
 
@@ -47,8 +45,9 @@ On first launch, the desktop walks the user through:
 
 - **Desktop state** (profiles, sessions, models, providers, skills, memory, tools, schedules, kanban) —in the desktop's SQLite database under the user's app-data dir.
   - Windows: `%APPDATA%\agent-desktop\state.db`
-  - macOS: `~/Library/Application Support/agent-desktop/state.db`
-  - Linux: `~/.config/agent-desktop/state.db`
+  - The macOS and Linux locations (`~/Library/Application Support/…`,
+    `~/.config/…`) are documented for a locally built app; released builds are
+    Windows-only, see the install section above.
 - **Runtime state** (Hermes / OpenClaw / IronClaw) —in the runtime's own home dir.
   - Hermes: `~/.hermes/`
   - OpenClaw: `~/.openclaw/`
@@ -119,21 +118,18 @@ To restore:
 
 To remove the desktop and all its state:
 
-```bash
-# macOS
-rm -rf "/Applications/Cubecloud.app"
-rm -rf ~/Library/Application\ Support/agent-desktop
-rm -rf ~/Library/Logs/agent-desktop
-
-# Windows
-# Use "Apps & Features" →Cubecloud Desktop →Uninstall.
-# Then remove %APPDATA%\agent-desktop and %LOCALAPPDATA%\agent-desktop.
-
-# Linux
-sudo dnf remove agent-desktop
-rm -rf ~/.config/agent-desktop
-rm -rf ~/.local/share/agent-desktop
+```powershell
+# Windows (the supported release target)
+# Use "Apps & Features" → Cubecloud Desktop → Uninstall.
+# Then remove:
+Remove-Item -Recurse -Force "$env:APPDATA\agent-desktop"
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\agent-desktop"
 ```
+
+For a locally built macOS or Linux app (not part of a release), the equivalent
+is `rm -rf "/Applications/Cubecloud.app" ~/Library/Application\ Support/agent-desktop`
+on macOS, or `sudo dnf remove agent-desktop && rm -rf ~/.config/agent-desktop
+~/.local/share/agent-desktop` on Linux.
 
 The runtime homes (`~/.hermes/`, etc.) are *not* removed by the desktop's uninstaller. The user must remove those separately if they want a fully clean state.
 

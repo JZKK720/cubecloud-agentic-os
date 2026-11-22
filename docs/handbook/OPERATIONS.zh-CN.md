@@ -7,29 +7,27 @@
 ### Windows
 
 ```powershell
-# 从 GitHub release 页面下载最新 MSI
-# （Cubecloud-pending: 一旦品牌切换完成，替换为 Cubecloud 自有发布 URL）
-Invoke-WebRequest -Uri https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-setup.msi -OutFile cubecloud-setup.msi
+# 仅支持 Windows x64。资源文件名带版本号，因此需使用确切文件名
+# （若版本已更新，请到 release 页面确认）。
+$v = "2.10.82"
+$base = "https://github.com/JZKK720/cubecloud-agentic-os/releases/download/v$v"
+# 安装器（NSIS —— 不是 MSI；直接运行，不要交给 msiexec）：
+Invoke-WebRequest -Uri "$base/cubecloud-agent-desktop-$v-setup.exe" -OutFile setup.exe
+# 免安装的单文件版本：
+# Invoke-WebRequest -Uri "$base/cubecloud-agent-desktop-$v-portable.exe" -OutFile portable.exe
 
-# 运行安装器（SmartScreen 会告警——点击 “More info” → “Run anyway”）
-msiexec /i cubecloud-setup.msi
+# 运行安装器。由于该构建未做公开分发代码签名，SmartScreen 会告警
+# ——点击 “More info”，再点 “Run anyway”。
+.\setup.exe
 ```
 
-### Fedora
-
-```bash
-curl -L -o cubecloud.rpm https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x86_64.rpm
-sudo dnf install ./cubecloud.rpm
-# 如果你的系统强制检查签名：sudo dnf install ./cubecloud.rpm --nogpgcheck
-```
-
-### macOS
-
-```bash
-curl -L -o cubecloud.dmg https://github.com/JZKK720/cubecloud-agentic-os/releases/latest/download/agent-desktop-x64.dmg
-open cubecloud.dmg
-# 将 Cubecloud.app 拖入 /Applications
-```
+**自 v2.10.82 起，发布仅为 Windows 版。** 发布流水线只构建并发布 Windows
+安装器与免安装版本。macOS 与 Linux 任务已被移除，而非保留为持续失败状态：
+它们依赖本项目并不具备的 Apple 公证与 Linux 签名凭据，因此每次运行都在
+“Build app” 阶段失败；再叠加一个永远无法满足的发布门禁，导致 v2.10.75 至
+v2.10.82 之间没有任何版本真正发布出去。`npm run build:mac` 与
+`npm run build:linux` 仍保留在本地，供自行准备签名材料的操作者使用，只是不再
+属于发布流程。
 
 ### 首次启动向导
 
@@ -46,8 +44,8 @@ open cubecloud.dmg
 
 - **桌面端状态**（profiles、sessions、models、providers、skills、memory、tools、schedules、kanban）—— 位于用户应用数据目录下的 SQLite 数据库。
   - Windows: `%APPDATA%\agent-desktop\state.db`
-  - macOS: `~/Library/Application Support/agent-desktop/state.db`
-  - Linux: `~/.config/agent-desktop/state.db`
+  - macOS 与 Linux 的路径（`~/Library/Application Support/…`、`~/.config/…`）
+    此处保留是为了本地自行构建的版本；正式发布的构建仅支持 Windows，见上文的安装说明。
 - **运行时状态**（Hermes / OpenClaw / IronClaw）—— 位于运行时自己的 home 目录中。
   - Hermes: `~/.hermes/`
   - OpenClaw: `~/.openclaw/`
@@ -118,21 +116,18 @@ kill -9 <pid>
 
 要移除桌面端及其全部状态：
 
-```bash
-# macOS
-rm -rf "/Applications/Cubecloud.app"
-rm -rf ~/Library/Application\ Support/agent-desktop
-rm -rf ~/Library/Logs/agent-desktop
-
-# Windows
+```powershell
+# Windows（受支持的发布目标）
 # 使用 “Apps & Features” → Cubecloud Desktop → Uninstall。
-# 然后删除 %APPDATA%\agent-desktop 和 %LOCALAPPDATA%\agent-desktop。
-
-# Linux
-sudo dnf remove agent-desktop
-rm -rf ~/.config/agent-desktop
-rm -rf ~/.local/share/agent-desktop
+# 然后删除：
+Remove-Item -Recurse -Force "$env:APPDATA\agent-desktop"
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\agent-desktop"
 ```
+
+对于本地自行构建的 macOS 或 Linux 版本（不属于正式发布），等价操作为：
+macOS 上 `rm -rf "/Applications/Cubecloud.app" ~/Library/Application\ Support/agent-desktop`；
+Linux 上 `sudo dnf remove agent-desktop && rm -rf ~/.config/agent-desktop
+~/.local/share/agent-desktop`。
 
 运行时 home（`~/.hermes/` 等）**不会**由桌面端卸载器删除；如果用户希望完全清空状态，需要自己单独删除它们。
 
