@@ -31,6 +31,30 @@ are things the product must explicitly refuse.
 | 7 | `cloudflare/kitesurf` | Apache-2.0 | Browser engine on `workerd`, CDP-compatible. Local Docker works account-free. | **CONDITIONAL** — opt-in backend, must be sandboxed by us |
 | 8 | `meta/astryx` | MIT | 150+ component design system. Themes *are* CSS custom properties. | **SELECTIVE** — tokens only; no markup migration |
 
+### 0.0.1 What is actually built, as of v2.10.82
+
+**A verdict is a decision, not a delivery.** Read the table above as "should
+we?", and this one as "did we?". Conflating them is how a plan starts
+overstating the product.
+
+| # | Verdict | Delivered? | Where it lives |
+|---|---|---|---|
+| 1 | ADOPT — 5th runtime lane | **Yes, shipped** | `agent-desktop/src/main/harnesses/deepseek-harness.ts`, `dsh-jsonrpc-client.ts`, `dsh-provider-config.ts`, `dsh-mcp-bridge.ts` |
+| 2 | ADOPT — edge chat protocol | **Yes, shipped** | `packages/platform-core/src/ag-ui.ts`; served at `POST /api/ag-ui/run` (`console-backend/ag-ui-run.ts`, `ag-ui-harness-source.ts`) |
+| 3 | ADOPT the A2UI idea | **No — unbuilt** | Nothing. No `a2ui` reference exists in the tree. The refusal half is honoured: there is no model-authored HTML surface. |
+| 4 | ADOPT via MCP | **No — one comment** | `agent-desktop/src/renderer/src/screens/Mcp/registry.ts` mentions DataFlow's `:8000/mcp` SSE shape. No adapter, no tool enumeration, no warning card. |
+| 5 | DO NOT ADOPT | **Yes — refused** | Zero references, which is the intended state. |
+| 6 | CONDITIONAL — tool only | **No — unbuilt** | Nothing. The only "univer" string in the tree is the word "universal" in a comment. |
+| 7 | CONDITIONAL — opt-in backend | **No — unbuilt** | Nothing. |
+| 8 | SELECTIVE — tokens only | **No — unbuilt** | Nothing. |
+
+So: **2 of 8 implemented, 1 correctly refused, 4 unimplemented, 1 is a comment.**
+The four unbuilt ones are Phase 3 "conditional / opt-in" by this document's own
+design — they are *not* regressions or omissions. But "ADOPT via MCP" in §2.4
+overstates the DataFlow position: the desktop supports the *transport shape*
+DataFlow uses (SSE MCP registration), and the adapter that would consume it does
+not exist.
+
 **Three findings that change the plan, all verified:**
 
 1. **`navigation.office` is a tombstone, not a placeholder.** The key exists in
@@ -278,6 +302,12 @@ sandbox, no hosted router.
 ---
 
 ### 2.4 `OpenDCAI/DataFlow-WebUI` — a real MCP surface, and a real gap in our S3
+
+> **Delivery status:** the *transport* half is built — the desktop can register
+> and validate an `sse` MCP server. The **adapter is not built**: nothing
+> enumerates DataFlow's 20 tools, spawns/attaches the app, or renders the
+> unauthenticated-code-execution warning. The verdict below is a decision to
+> adopt, not a claim that adoption happened. See §0.0.1.
 
 **Verified facts.** Apache-2.0, Python. Three independently installable layers
 (`webui` / `harness` / `skills`). MCP is derived from FastAPI routes via
