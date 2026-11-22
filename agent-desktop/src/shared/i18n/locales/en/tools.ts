@@ -169,4 +169,15 @@ export default {
   agentReachInstalled: "Installed",
   agentReachNotInstalled:
     "Agent-Reach is not installed. The runtime agent does not have internet capability tools.",
+  managedApps: {
+    title: "Managed apps",
+    subtitle:
+      "Every app the desktop can attach to, with the state its adapter reports. Read-only: the desktop mirrors these services, it does not manage them.",
+    refresh: "Refresh",
+    loading: "Reading roster…",
+    empty: "No managed apps are registered.",
+    needsSetup: "needs setup",
+    needsAuth: "needs setup",
+    unavailable: "The managed-app roster is not available in this build.",
+  },
 } as const;

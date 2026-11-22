@@ -164,6 +164,7 @@ list-runtime-providers
 list-sessions
 list-swarm-agents
 list-task-orchestrators
+list-managed-apps
 list-thread-outputs
 list-vault-files
 media-file-exists

@@ -456,6 +456,7 @@ import {
 } from "./security";
 import { SSH_CONNECTION_TEST_LOCAL_PORT } from "../shared/runtime-defaults";
 import type { AppLocale } from "../shared/i18n/types";
+import { createManagedAppRegistry } from "./managed-apps/registry";
 import {
   sshListInstalledSkills,
   sshGetSkillContent,
@@ -1230,6 +1231,24 @@ function setupIPC(): void {
   );
 
   ipcMain.handle("list-task-orchestrators", () => listTaskOrchestrators());
+
+  // The managed-app roster. Mirrors the kernel's `listManagedApps` capability so
+  // the Electron app and the browser shell show the same cards from the same
+  // adapters.
+  ipcMain.handle("list-managed-apps", async () => {
+    const apps = createManagedAppRegistry();
+    return {
+      success: true,
+      apps: await Promise.all(
+        apps.map(async (app) => ({
+          id: app.id,
+          label: app.label,
+          mode: app.mode,
+          discovery: await app.discover(),
+        })),
+      ),
+    };
+  });
 
   ipcMain.handle(
     "diagnose-ssh-connection",

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useI18n } from "../../components/useI18n";
 import { Refresh, CheckCircle, XCircle, Alert as AlertIcon } from "../../assets/icons";
+import { ManagedAppsPanel } from "../../components/ManagedAppsPanel";
 
 interface ToolsetInfo {
   key: string;
@@ -1127,6 +1128,8 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           />
         ) : null}
       </div>
+
+      <ManagedAppsPanel />
     </div>
   );
 }

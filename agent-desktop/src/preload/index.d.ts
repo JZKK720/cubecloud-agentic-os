@@ -984,6 +984,19 @@ interface HermesAPI {
     actionId: RuntimeProviderActionId,
   ) => Promise<RuntimeProviderActionResult>;
   listTaskOrchestrators: () => Promise<TaskOrchestratorSnapshot[]>;
+  listManagedApps: () => Promise<{
+    success: boolean;
+    apps: Array<{
+      id: string;
+      label: string;
+      mode: string;
+      discovery: {
+        state: "found" | "not-found" | "auth-required";
+        detail: string;
+        scannedAt: string;
+      };
+    }>;
+  }>;
   diagnoseSshConnection: (
     host: string,
     port: number,

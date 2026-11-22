@@ -512,6 +512,22 @@ const hermesAPI = {
 
   listTaskOrchestrators: (): Promise<TaskOrchestratorSnapshot[]> =>
     ipcRenderer.invoke("list-task-orchestrators"),
+  /** The managed-app roster: id, label, mode and per-app discovery. Backed by
+   *  the kernel's `listManagedApps` capability, so the browser shell gets the
+   *  same data over HTTP. */
+  listManagedApps: (): Promise<{
+    success: boolean;
+    apps: Array<{
+      id: string;
+      label: string;
+      mode: string;
+      discovery: {
+        state: "found" | "not-found" | "auth-required";
+        detail: string;
+        scannedAt: string;
+      };
+    }>;
+  }> => ipcRenderer.invoke("list-managed-apps"),
 
   diagnoseSshConnection: (
     host: string,
