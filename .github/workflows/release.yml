@@ -330,7 +330,11 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          # Absolute, because this workflow's default `working-directory` is
+          # `agent-desktop`: a bare `artifacts` downloaded there, while the
+          # step below reads `$GITHUB_WORKSPACE/artifacts`. That mismatch made
+          # the metadata step fail with ENOENT scandir and blocked publishing.
+          path: ${{ github.workspace }}/artifacts
           merge-multiple: true
 
       - name: Generate macOS update metadata
@@ -342,7 +346,10 @@ jobs:
           const fs = require("fs");
           const path = require("path");
 
-          const artifactsDir = path.join(process.cwd(), "artifacts");
+          const artifactsDir = path.join(
+            process.env.GITHUB_WORKSPACE || process.cwd(),
+            "artifacts",
+          );
           const version = process.env.VERSION;
           const zipNames = fs
             .readdirSync(artifactsDir)
