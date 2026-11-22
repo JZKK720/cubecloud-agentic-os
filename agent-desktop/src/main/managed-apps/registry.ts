@@ -8,6 +8,7 @@
 import { createWorkspaceApp } from "./workspace";
 import { createEverOsApp } from "./everos";
 import { createGatewayApps } from "./gateways";
+import { createDataFlowApp } from "./dataflow";
 import {
   createOpenVikingApp,
   createWeknoraApp,
@@ -38,6 +39,7 @@ export function createManagedAppRegistry(): ManagedApp[] {
     createGraphifyApp(),
     createBrowserHarnessApp(),
     createLayaApp(),
+    createDataFlowApp(),
   ];
 }
 
@@ -59,6 +61,7 @@ export const EXPECTED_MANAGED_APP_IDS = [
   "graphify",
   "browser-harness",
   "laya",
+  "dataflow",
 ] as const;
 
 export type ManagedAppId = (typeof EXPECTED_MANAGED_APP_IDS)[number];

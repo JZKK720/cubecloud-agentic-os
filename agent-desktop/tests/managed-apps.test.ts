@@ -172,6 +172,10 @@ describe("ManagedApp config-block isolation", () => {
       "headroom",
       "openviking",
       "weknora",
+      // Added with the DataFlow adapter. This list is intentionally explicit —
+      // a new config block must be a deliberate, reviewed addition, not a
+      // side effect of registering an adapter.
+      "dataflow",
     ]);
   });
 
