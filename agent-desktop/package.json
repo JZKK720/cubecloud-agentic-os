@@ -1,6 +1,6 @@
 {
   "name": "cubecloud-agent-desktop",
-  "version": "2.10.81",
+  "version": "2.10.82",
   "description": "Agent Desktop — desktop shell for Cubecloud Agentic-OS",
   "main": "./out/main/index.js",
   "author": "Cubecloud Contributors",
@@ -64,6 +64,7 @@
     "verify:bundle": "vitest run tests/release-bundle.test.ts"
   },
   "dependencies": {
+    "@cubecloud/platform-core": "file:../packages/platform-core",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@types/highlight.js": "^9.12.4",
