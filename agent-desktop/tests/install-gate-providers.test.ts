@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { expectedEnvKeyForModel } from "../src/main/installer";
+import { expectedEnvKeyForModel } from "../src/main/install-classification";
 
 // Regression tests for #236: the install gate's .env check hard-coded
 // only OPENROUTER_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY, so users

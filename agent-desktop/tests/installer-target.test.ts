@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyInstallTarget } from "../src/main/installer";
+import { classifyInstallTarget } from "../src/main/install-classification";
 
 // Pre-install inspection (issue #272): classify what the installer will do
 // to the target `hermes-agent` directory so the renderer can warn first.

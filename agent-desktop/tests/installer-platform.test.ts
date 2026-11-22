@@ -5,7 +5,7 @@ import {
   hermesCliArgs,
   HERMES_PYTHON,
   HERMES_SCRIPT,
-} from "../src/main/installer";
+} from "../src/main/homer";
 
 describe("installer platform wiring", () => {
   it("uses the platform path delimiter in the enhanced PATH", () => {
