@@ -5,6 +5,8 @@ import { Copy } from "lucide-react";
 import { useI18n } from "./useI18n";
 import { MediaImage, DownloadChip } from "./MediaImage";
 import { describeImageSrc } from "../screens/Chat/mediaUtils";
+import { A2uiBlock } from "./A2uiBlock";
+import { parseA2uiBlock } from "../../../shared/a2ui";
 
 // Lazy-load the heavy syntax highlighter — only imported when a code block renders
 let _highlighterMod: typeof import("react-syntax-highlighter") | null = null;
@@ -22,6 +24,30 @@ function loadHighlighter(): Promise<void> {
     _oneDark = style.default;
   });
   return _loadingPromise;
+}
+
+// Renders an ```a2ui fence: parse, then either the validated table or the
+// rejection reason. Model output never becomes markup.
+function A2uiFence({ raw }: { raw: string }): React.JSX.Element {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return (
+      <figure className="a2ui-block a2ui-block--rejected" role="status">
+        <figcaption>Could not read the table block (invalid JSON).</figcaption>
+      </figure>
+    );
+  }
+  const result = parseA2uiBlock(parsed);
+  if (!result.ok) {
+    return (
+      <figure className="a2ui-block a2ui-block--rejected" role="status">
+        <figcaption>Table block rejected: {result.error}</figcaption>
+      </figure>
+    );
+  }
+  return <A2uiBlock block={result.block} />;
 }
 
 // Diff viewer with colored +/- lines
@@ -60,6 +86,20 @@ function CodeBlock({
   const code = String(children).replace(/\n$/, "");
   const match = /language-(\w+)/.exec(className || "");
   const language = match ? match[1] : "";
+
+  // A fenced ```a2ui block is the *producer* for the validated table block.
+  //
+  // The component and the validator shipped with no producer, so no agent
+  // output could reach them — the capability existed and was unreachable.
+  // Model output is untrusted, so the fence is parsed rather than rendered:
+  // a malformed block shows the rejection reason instead of falling through
+  // to a raw <pre>, which would look like a legitimate answer and hide the
+  // parse failure. The highlighter is not needed for this path, so the
+  // lazy load below is skipped.
+  if (language === "a2ui") {
+    return <A2uiFence raw={code} />;
+  }
+
   const isDiff = language === "diff";
 
   // Trigger lazy load when code block mounts

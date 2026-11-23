@@ -20,6 +20,7 @@ import {
   parseA2uiBlock,
 } from "../src/shared/a2ui";
 import { A2uiBlock } from "../src/renderer/src/components/A2uiBlock";
+import { I18nProvider } from "../src/renderer/src/components/I18nProvider";
 
 const VALID = {
   type: "table",
@@ -178,5 +179,54 @@ describe("A2uiBlock — rendering", () => {
     // ...and no element was created from them.
     expect(container.querySelector("script")).toBeNull();
     expect(container.querySelector("img")).toBeNull();
+  });
+});
+
+// ── Producer: an ```a2ui fence in model output ───────────────────────────
+//
+// The component and the validator existed with no producer, so no agent
+// output could ever reach them. These tests pin the wiring: a fenced block
+// with language `a2ui` is parsed and rendered as a table; a malformed one
+// shows the rejection instead of a table, and never falls through to a raw
+// `<pre>` that would look like an answer.
+describe("A2UI producer — fenced a2ui block in AgentMarkdown", () => {
+  it("renders a validated table from an a2ui fence", async () => {
+    const { AgentMarkdown } = await import(
+      "../src/renderer/src/components/AgentMarkdown"
+    );
+    const md = [
+      "Here is the result:",
+      "",
+      "\`\`\`a2ui",
+      JSON.stringify({
+        type: "table",
+        columns: ["Name", "Status"],
+        rows: [["alpha", "ok"]],
+        caption: "Checks",
+      }),
+      "\`\`\`",
+    ].join("\n");
+
+    render(React.createElement(I18nProvider, null, React.createElement(AgentMarkdown, null, md)));
+
+    expect(screen.getByText("Checks")).toBeInTheDocument();
+    expect(screen.getByText("alpha")).toBeInTheDocument();
+    expect(screen.getByText("ok")).toBeInTheDocument();
+  });
+
+  it("shows the rejection for a malformed a2ui fence instead of a table", async () => {
+    const { AgentMarkdown } = await import(
+      "../src/renderer/src/components/AgentMarkdown"
+    );
+    const md = [
+      "\`\`\`a2ui",
+      JSON.stringify({ type: "table", columns: ["a"], rows: [["x", "y"]] }),
+      "\`\`\`",
+    ].join("\n");
+
+    render(React.createElement(I18nProvider, null, React.createElement(AgentMarkdown, null, md)));
+
+    // Row width mismatch is rejected, not repaired.
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 });
