@@ -133,6 +133,53 @@ export function getApiUrl(): string {
   return LOCAL_API_URL;
 }
 
+/**
+ * Resolve the local gateway base URL, honouring a host-side override.
+ *
+ * `LOCAL_API_URL` is `127.0.0.1:8642`, which is correct for the desktop but
+ * wrong for the console kernel: a container's loopback is its own, so
+ * `127.0.0.1:8642` inside the kernel container is ECONNREFUSED while the
+ * host's Hermes answers fine on `host.docker.internal:8642`.
+ *
+ * Without this, `POST /api/ag-ui/run` returned a well-formed
+ * RUN_STARTED → RUN_FINISHED with no text between them — the turn failed
+ * silently, which reads to a consumer as "the model said nothing".
+ *
+ * `CONSOLE_RUNTIME_BASE_URL` is read from the environment rather than the
+ * config file because it describes where this *process* runs, not a user
+ * preference: the same config file is used by the desktop and by the
+ * kernel, so persisting it would break the desktop.
+ */
+export function getApiUrlWithEnvOverride(): string {
+  const override = (process.env.CONSOLE_RUNTIME_BASE_URL || "").trim();
+  // Only applies to the local path. A remote/ssh connection is explicit
+  // operator intent and must win over an environment default.
+  const conn = getConnectionConfig();
+  if (conn.mode === "local" && override && /^https?:\/\//i.test(override)) {
+    return normaliseRemoteUrl(override);
+  }
+  return getApiUrl();
+}
+
+/**
+ * The bearer for the local gateway, with a process-env fallback.
+ *
+ * `getApiServerKey()` resolves from the desktop's config file and the
+ * per-profile `.env` — both of which the console kernel has none of. A
+ * containerised kernel therefore sent no Authorization header, Hermes
+ * answered 401 `gateway_auth_failed`, and the AG-UI endpoint returned an
+ * empty turn instead of surfacing the failure.
+ *
+ * `HERMES_API_SERVER_KEY` is how the container is told the shared secret.
+ * It comes from the process environment, so it is never written into a
+ * config file that could be committed.
+ */
+export function getApiServerKeyWithEnvFallback(profile?: string): string {
+  const fromConfig = getApiServerKey(profile);
+  if (fromConfig) return fromConfig;
+  return (process.env.HERMES_API_SERVER_KEY || "").trim();
+}
+
 export function isRemoteMode(): boolean {
   const mode = getConnectionConfig().mode;
   return mode === "remote" || mode === "ssh";
@@ -190,7 +237,14 @@ export function getRemoteAuthHeader(): Record<string, string> {
       return localKey ? { Authorization: `Bearer ${localKey}` } : {};
     }
   }
-  return {};
+  // Local mode reaches the gateway on this machine's loopback, which still
+  // requires the shared secret. Falling through to `{}` here meant the
+  // desktop sent no Authorization header at all; it worked only because the
+  // in-process gateway tolerates a missing key when one is not configured.
+  // The containerised kernel has no config file, so it needs the
+  // environment fallback to authenticate at all.
+  const localKey = getApiServerKeyWithEnvFallback();
+  return localKey ? { Authorization: `Bearer ${localKey}` } : {};
 }
 
 function resolveRemoteApiKey(url: string, apiKey?: string): string {
@@ -883,7 +937,7 @@ function sendMessageViaApi(
 ): ChatHandle {
   const mc = getModelConfig(profile);
   const controller = new AbortController();
-  const apiUrl = getApiUrl();
+  const apiUrl = getApiUrlWithEnvOverride();
 
   // Build full conversation from history + current message (standard OpenAI format).
   // History items are kept text-only — attachments from prior turns live in

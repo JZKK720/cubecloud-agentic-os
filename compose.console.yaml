@@ -43,6 +43,19 @@ services:
       # drive the HTTP surface from outside the browser; leave it unset for
       # the normal cookie-only path.
       CONSOLE_KERNEL_TOKEN: ${CONSOLE_KERNEL_TOKEN:-}
+      # Where the kernel should find the agent runtime. A container's
+      # loopback is its own, so the default 127.0.0.1:8642 resolves to
+      # nothing and every AG-UI turn returns RUN_STARTED → RUN_FINISHED
+      # with no text. `host.docker.internal` reaches the host's Hermes
+      # through host-gateway (declared below). Override to point the
+      # kernel at a remote runtime instead.
+      CONSOLE_RUNTIME_BASE_URL: ${CONSOLE_RUNTIME_BASE_URL:-http://host.docker.internal:8642}
+      # The gateway's shared secret. The kernel has no config file and no
+      # per-profile .env, so without this it sends no Authorization header
+      # and Hermes answers 401 gateway_auth_failed — which surfaced as an
+      # empty AG-UI turn rather than an error. Read from the environment,
+      # never written to a file.
+      HERMES_API_SERVER_KEY: ${HERMES_API_SERVER_KEY:-}
     extra_hosts:
       # Standalone mode: reach the host's workspace + local LLM runtimes
       # (Ollama :11434, LM Studio :1234) through the host loopback.

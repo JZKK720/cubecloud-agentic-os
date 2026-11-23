@@ -149,6 +149,7 @@ vi.mock("../src/main/headroom-chat", () => ({
 import {
   sendMessage,
   stopHealthPolling as realStopHealthPolling,
+  getApiUrlWithEnvOverride,
 } from "../src/main/hermes";
 
 // sendMessageViaApi fires its HTTP request from a fire-and-forget async
@@ -434,5 +435,63 @@ describe("sendMessageViaApi uses the local API key for loopback remote URLs", ()
     const headers = chatRequest!.options.headers as Record<string, string>;
 
     expect(headers.Authorization).toBe("Bearer local-api-secret");
+  });
+});
+
+// The console kernel runs inside a container, whose loopback is its own.
+// `127.0.0.1:8642` therefore resolves to nothing and every AG-UI turn
+// returned RUN_STARTED -> RUN_FINISHED with no text: the turn failed
+// silently, which reads to a consumer as "the model said nothing".
+// CONSOLE_RUNTIME_BASE_URL lets the process be told where the runtime
+// actually is, without persisting a machine-specific address to the
+// config file that the desktop shares.
+describe("getApiUrlWithEnvOverride honours the container runtime address", () => {
+  const originalEnv = process.env.CONSOLE_RUNTIME_BASE_URL;
+
+  afterEach(() => {
+    if (originalEnv === undefined) delete process.env.CONSOLE_RUNTIME_BASE_URL;
+    else process.env.CONSOLE_RUNTIME_BASE_URL = originalEnv;
+    // Restore the default remote mock used by the rest of the file.
+    Object.assign(mockConnectionConfig, {
+      mode: "remote" as const,
+      remoteUrl: "http://test-api.example.com",
+      apiKey: "test-key",
+    });
+  });
+
+  it("uses the env override when the connection is local", () => {
+    Object.assign(mockConnectionConfig, {
+      mode: "local" as const,
+      remoteUrl: "",
+      apiKey: "",
+    });
+    process.env.CONSOLE_RUNTIME_BASE_URL = "http://host.docker.internal:8642";
+
+    expect(getApiUrlWithEnvOverride()).toBe(
+      "http://host.docker.internal:8642",
+    );
+  });
+
+  it("ignores the override when the operator set a remote gateway", () => {
+    Object.assign(mockConnectionConfig, {
+      mode: "remote" as const,
+      remoteUrl: "http://explicit.example.com",
+      apiKey: "k",
+    });
+    process.env.CONSOLE_RUNTIME_BASE_URL = "http://host.docker.internal:8642";
+
+    // Explicit operator intent must win over an environment default.
+    expect(getApiUrlWithEnvOverride()).toBe("http://explicit.example.com");
+  });
+
+  it("falls back to the loopback default when neither is set", () => {
+    Object.assign(mockConnectionConfig, {
+      mode: "local" as const,
+      remoteUrl: "",
+      apiKey: "",
+    });
+    delete process.env.CONSOLE_RUNTIME_BASE_URL;
+
+    expect(getApiUrlWithEnvOverride()).toContain("127.0.0.1:8642");
   });
 });

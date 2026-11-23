@@ -41,6 +41,7 @@ export function createHermesHarness(): Harness {
       let resolveNext: (() => void) | null = null;
       let isDone = false;
       let error: Error | null = null;
+      let sawDone = false;
 
       const flush = () => {
         if (resolveNext) {
@@ -61,13 +62,21 @@ export function createHermesHarness(): Harness {
         },
         onDone: (sessionId?: string) => {
           queue.push({ type: "done", sessionId });
+          sawDone = true;
           isDone = true;
           flush();
         },
         onError: (err: string) => {
           error = new Error(err);
-          // Yield a done with no sessionId to signal error
+          // Surface the failure. This used to push only a `done`, which the
+          // AG-UI encoder turned into RUN_FINISHED{success} — the caller saw
+          // a successful run that produced no text, which is
+          // indistinguishable from "the model said nothing". The
+          // HarnessTurnDelta contract has an `error` variant for exactly
+          // this case; use it.
+          queue.push({ type: "error", message: err, code: "hermes-turn-error" });
           queue.push({ type: "done", sessionId: undefined });
+          sawDone = true;
           isDone = true;
           flush();
         },
@@ -114,9 +123,18 @@ export function createHermesHarness(): Harness {
         }
       }
 
-      // Drain any remaining deltas
+      // Drain any remaining deltas.
+      //
+      // The terminal `done` is always queued alongside any `error`, and
+      // callers rely on it: HermesTurnDelta says a turn ends with `done`,
+      // and the router treats its absence as a stream that was cut off.
+      // Exiting the loop on `isDone` without draining dropped it.
       while (queue.length > 0) {
         yield queue.shift()!;
+      }
+      // Guarantee a terminal `done` even if the provider never sent one.
+      if (!sawDone) {
+        yield { type: "done", sessionId: undefined };
       }
 
       // Ensure the handle promise settles (avoids unhandled rejection).

@@ -140,6 +140,16 @@ export function createAgUiRunHandler(
     // run as terminating exactly once.
     let terminated = false;
 
+    // A turn that never settles must not hang the client forever.
+    //
+    // There was no deadline here at all: a gateway that accepted the
+    // connection and then stalled left the response open indefinitely, and
+    // the caller saw neither text nor an error. An explicit RUN_ERROR is the
+    // honest outcome — a consumer can act on it, whereas silence reads as
+    // "the model said nothing".
+    const RUN_TIMEOUT_MS = 180_000;
+    const deadline = Date.now() + RUN_TIMEOUT_MS;
+
     for await (const delta of source.runTurn({
       threadId,
       runId,
@@ -158,6 +168,17 @@ export function createAgUiRunHandler(
       // *second* run on the same response — RUN_STARTED then RUN_FINISHED
       // after RUN_ERROR. Stop as soon as the turn is decided.
       if (terminated) break;
+      if (Date.now() > deadline) {
+        for (const event of encoder.push({
+          type: "error",
+          message: `turn exceeded ${Math.round(RUN_TIMEOUT_MS / 1000)}s`,
+          code: "turn-timeout",
+        })) {
+          if (event.type === "RUN_ERROR") terminated = true;
+          emit(event);
+        }
+        break;
+      }
     }
 
     if (!terminated) {
