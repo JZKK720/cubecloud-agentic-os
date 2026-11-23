@@ -17,11 +17,11 @@ leaving them "conditional" forever.
 |---|---|---|---|
 | 1 | deepseek-harness | ADOPT | **Shipped** — `harnesses/deepseek-harness.ts` + 4 supporting modules, live-verified |
 | 2 | ag-ui | ADOPT | **Shipped** — `platform-core/src/ag-ui.ts`, `POST /api/ag-ui/run`, live-verified |
-| 3 | A2UI | adopt | **Zero.** No `a2ui`/`componentTree`/`renderComponent` anywhere |
+| 3 | A2UI | adopt | **Shipped** — `shared/a2ui.ts` + `A2uiBlock.tsx` + a producer: a fenced ```a2ui block now routes through `CodeBlock` in `AgentMarkdown.tsx`. 15 tests, proven to fail without the producer |
 | 4 | DataFlow via MCP | adopt | **Shipped** (`5850f43`) — `managed-apps/dataflow.ts` + 7 tests. Transport was already done in `probeSse` |
 | 5 | omnara | REFUSE | **Correctly absent** — zero references |
 | 6 | univer | conditional | **Zero** |
-| 7 | kitesurf | conditional | **Zero** |
+| 7 | kitesurf | conditional | **Shipped** — `managed-apps/kitesurf.ts` + `kitesurf-probe.ts`, wired registry → `ManagedAppsPanel` → Tools screen |
 | 8 | astryx | selective | **Zero** (no design tokens adopted) |
 
 Three shipped, one refused, four open — and the four that remain are refused below with reasons rather than left "conditional".
