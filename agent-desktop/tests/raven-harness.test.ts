@@ -5,13 +5,19 @@
  * Replaces the throwing stub in `harnesses/registry.ts` (EverMind replan
  * §2.1 row "harness adapter": ❌ stub throws → ✅ real adapter).
  *
- * Raven contract (grounded in the replan + hermes.ts detection code):
- *   - OpenAI-compatible chat gateway on **8855** (NOT the WebUI's 18793).
- *   - `/health` returns a body whose `runtime` field reads `"raven"` or
- *     `"evermind"`.
- *   - Turns ride `/v1/chat/completions` (SSE, OpenAI shape) — the same
- *     wire contract Hermes serves, which is why the desktop probes
- *     both with one routine.
+ * Raven contract (V2.10.84 — corrected against the shipped raven 0.2.8
+ * wheel and `raven serve --help`; the earlier "8855 OpenAI gateway" claim
+ * was never true and has been removed from the tree):
+ *   - The headless gateway is **WebSocket RPC on 18792**, NOT an
+ *     OpenAI-compatible HTTP surface. The 18793 WebUI is a separate
+ *     browser surface.
+ *   - `/health` returns `{"ok":true,"service":"raven-serve",...}`.
+ *   - There is NO `/v1/chat/completions` route. `raven serve --help`
+ *     offers only `--port` and `--open`, and the package contains no
+ *     8855 literal and no inbound chat-completions route.
+ *   - Turns ride the `/rpc` WebSocket using `turn.send` (263 methods in
+ *     `rpc-schema/openrpc.json`), which is a different wire contract
+ *     from Hermes's SSE `/v1/chat/completions` lane.
  *
  * Tests verify (mirroring the registry/hermes adapter conventions):
  *   1. createRavenHarness returns a full Harness (profile, turns, models,
@@ -122,6 +128,30 @@ describe("raven harness adapter (I-phase)", () => {
     })) {
       deltas.push(delta);
     }
+    expect(deltas.at(-1)!.type).toBe("done");
+  });
+
+  // V2.10.84 — Raven has no /v1/chat/completions route (verified against
+  // the live 0.2.8 gateway: /v1/* all 404, /rpc 401). A 404 must therefore
+  // surface as an error delta, not a silent empty turn.
+  it("a 404 from Raven surfaces an error delta instead of ending silently", async () => {
+    fetchMock.mockResolvedValue(new Response("not found", { status: 404 }));
+    const { createRavenHarness } = await import(
+      "../src/main/harnesses/raven-harness"
+    );
+    const harness = createRavenHarness();
+    const deltas = [];
+    for await (const delta of harness.turns.runTurn({
+      message: "hi",
+      sessionId: "s1",
+      history: [],
+    })) {
+      deltas.push(delta);
+    }
+    const errorDelta = deltas.find((d) => d.type === "error");
+    expect(errorDelta).toBeDefined();
+    expect(errorDelta!.code).toBe("raven-no-chat-completions");
+    expect(errorDelta!.message).toMatch(/WebSocket RPC|\/rpc/);
     expect(deltas.at(-1)!.type).toBe("done");
   });
 

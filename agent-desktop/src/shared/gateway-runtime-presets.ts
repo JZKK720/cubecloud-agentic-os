@@ -11,8 +11,10 @@ import {
 // SSH path still targets the published gateway port (default 3231)
 // and validates the IronClaw-specific /api/health surface.
 // V2.10.76 — widened to include Raven. Raven is EverMind's self-
-// improving agent harness. Its OpenAI-compatible HTTP gateway runs
-// on port 8855 by default and exposes /health + /v1/chat/completions.
+// improving agent harness. V2.10.84 — corrected: its headless gateway
+// is WebSocket RPC on port 18792 and exposes NO OpenAI-compatible
+// /v1 surface. Probes target /health on 18792; the WebUI on 18793 is
+// a separate browser surface. See runtime-defaults.ts for the evidence.
 export type GatewayRuntimePresetId =
   | "hermes"
   | "openclaw"
@@ -104,12 +106,11 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
     sshSupported: true,
   },
   // V2.10.76 — Raven is EverMind's self-improving agent harness
-  // built on EverOS. Its OpenAI-compatible HTTP gateway runs on
-  // port 8855 by default. Auth is via an optional Bearer token.
-  // The gateway exposes /health (returns {"status":"ok",...
-  // "runtime":"raven"}) and /v1/chat/completions. The desktop
-  // attaches the same way as Hermes/IronClaw/OpenClaw — the chat
-  // path is the unified /v1/chat/completions contract.
+  // built on EverOS. V2.10.84 — corrected against the shipped raven
+  // 0.2.8 wheel: the headless gateway is WebSocket RPC on 18792 and
+  // exposes NO OpenAI-compatible /v1 surface. /health answers
+  // {"ok":true,"service":"raven-serve",...}. The 18793 WebUI is the
+  // interactive surface; the desktop attaches for health/visibility.
   raven: {
     id: "raven",
     displayName: "Raven (EverMind)",
@@ -120,7 +121,7 @@ export const GATEWAY_RUNTIME_PRESETS: Record<
     remoteSecretHint:
       "Leave this empty if the Raven gateway accepts unauthenticated requests.",
     remoteHint:
-      "Use the Raven gateway base URL (default port 8855). Raven is EverMind's self-improving agent harness with EverOS memory, SkillForge skills, and Sentinel proactivity.",
+      "Use the Raven gateway base URL (default port 18792). Raven is EverMind's self-improving agent harness with EverOS memory, SkillForge skills, and Sentinel proactivity. Its gateway is WebSocket RPC, so attach for health/visibility; the WebUI on 18793 is the interactive surface.",
     sshRemotePort: RAVEN_DEFAULT_PORT,
     sshSecretLabel: "Bearer token (optional)",
     sshSecretHint:

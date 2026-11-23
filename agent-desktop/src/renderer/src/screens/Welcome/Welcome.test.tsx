@@ -281,7 +281,7 @@ describe("Welcome handoffs", () => {
       screen.getByRole("button", { name: "Raven via SSH" }),
     );
 
-    expect(screen.getByDisplayValue("8855")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("18792")).toBeInTheDocument();
   });
 
   it("hides the local install CTA when runtimes were already discovered", async () => {

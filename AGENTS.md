@@ -47,13 +47,19 @@ surface assumptions into Cubecloud-original code paths.
    IronClaw (WASM-sandbox gateway-handoff, port 3231 — the live source
    of truth is `scripts/ironclaw-attach.smoke.cjs`; the older "8281"
    in historical docs is legacy), OpenClaw (optional, port 18789),
-   Raven (EverMind's self-improving agent harness, port 8855,
-   `integrationStatus: "optional"` as of V2.10.76). The desktop
-   attaches over HTTP; it does not shell out to an
-   interactive TUI for the chat path. Raven provides self-evolving
+   Raven (EverMind's self-improving agent harness, headless
+   gateway on port 18792, `integrationStatus: "optional"` as of
+   V2.10.76). The desktop attaches over HTTP; it does not shell out to
+   an interactive TUI for the chat path. Raven provides self-evolving
    memory (EverOS), SkillForge skills, and Sentinel proactivity.
-   The desktop auto-detects Raven on port 8855 and surfaces it as
-   a 4th runtime choice on the Welcome screen.
+   V2.10.84 — Raven's 18792 gateway is **WebSocket RPC**, not an
+   OpenAI-compatible surface: it serves `/health`, `/auth`, `/rpc`
+   and the file/knowledge viewers, but no `/v1/chat/completions`.
+   The desktop therefore auto-detects Raven as a health-visible 4th
+   runtime on the Welcome screen rather than a chat-completions lane;
+   the interactive surface is Raven's own WebUI on 18793. (An earlier
+   "port 8855" claim never existed upstream — verified against the
+   raven 0.2.8 wheel and the repo history.)
 2. **Integrated support surfaces** — CodeGraph, EverOS, Headroom,
    Moo Tasks, Codebase Memory, Agent Reach, Last 30 Days,
    Voice STT/TTS, Handy, GBrain, Graphify, OfficeCLI, Browser Use,

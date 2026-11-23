@@ -70,9 +70,13 @@ describe("P0.5 — Raven registry consistency", () => {
     const raven = getRuntimeProviderDefinition("raven");
     const notes = raven.notes.join(" ");
     // The stale "pre-alpha (v0.1.x)" pin is gone; upstream now
-    // ships 0.2.x with a distinct WebUI port (18793) vs gateway (8855).
+    // ships 0.2.x with a distinct WebUI port (18793) vs the headless
+    // gateway (18792, WebSocket RPC). V2.10.84 corrected the note:
+    // 8855 was never a Raven port and Raven has no OpenAI /v1 surface.
     expect(notes).not.toMatch(/v0\.1\.x/i);
-    expect(notes).toMatch(/8855/);
+    expect(notes).toMatch(/18792/);
     expect(notes).toMatch(/18793|WebUI/i);
+    // Guard the corrected fact so the false 8855 premise cannot return.
+    expect(notes).not.toMatch(/8855/);
   });
 });

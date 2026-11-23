@@ -79,7 +79,7 @@ hard-codes 8281.
 4. **Asar integrity** — `npm run verify:bundle --workspace cubecloud-agent-desktop`
 5. **IPC audit** — `node scripts/audit-smoke-safe.cjs` (cwd `agent-desktop`)
 6. **Doc/i18n checks** — `check-mojibake`, `check-skill-counts`, `check-doc-pair`, `check-i18n-coverage`
-7. **Operator CLI smokes** — `hermes-agent-attach.smoke.cjs`, `ironclaw-attach.smoke.cjs` (need live gateways)
+7. **Operator CLI smokes** — `hermes-agent-attach.smoke.cjs`, `ironclaw-attach.smoke.cjs`, `runtime-gateways.smoke.cjs` (OpenClaw + Raven; need live gateways)
 8. **CDP smokes** — `npm run smoke` (need `ENABLE_CDP=1 CDP_PORT=9222 npm run dev` running)
 9. **CI reality check** — verify the 2 broken jobs are flagged, not trusted
 10. **Report** — red/green table + one-line verdict
@@ -88,7 +88,8 @@ hard-codes 8281.
 
 - **Hermes**: `diagnoseRemoteConnection` probe → `runtime: "hermes"` on 200, green health dot within ~30s. Negative auth path returns `code: "auth"`. See `docs/hermes-agent-attach.smoke.md`.
 - **IronClaw**: `probeLocalModelHealth` → `reachable=true`. Negative token path returns auth failure. See `docs/ironclaw-attach.smoke.md`.
-- **OpenClaw**: optional third lane; fallback path when Hermes is unreachable. Pinned in `tests/hermes-agent-attach.smoke.test.ts`.
+- **OpenClaw**: gateway on 18789. `GET /health` → `{"ok":true}`; `GET /v1/models` → OpenAI list shape ONLY when `gateway.http.endpoints.chatCompletions.enabled = true` (default false, and it 404s otherwise — the usual "gateway up but desktop cannot attach"). The chat endpoint accepts only `model: "openclaw"` or `openclaw/<agentId>`, routing to `agents.defaults.model`. Covered by `scripts/runtime-gateways.smoke.cjs`.
+- **Raven**: gateway on **18792** (WebSocket RPC), NOT 8855 — that port has never existed in Raven's source, history, or shipped wheel. `/health` → `{"ok": true, "service": "raven-serve", ...}` (note the space; match the token, not an exact JSON slice). Raven has NO `/v1/chat/completions`, so it is a health-visible lane, not a chat lane. The 18793 WebUI is the interactive surface. Covered by `scripts/runtime-gateways.smoke.cjs`.
 - **CodeGraph / EverOS / Headroom**: covered by `tests/codegraph*.test.ts`, `tests/everos-sidecar.test.ts`, `tests/headroom-*.test.ts` (5 files). CDP smoke `verify-step3-4-ipc.js` covers the 12 new IPC channels for CodeGraph runtime + EverOS sidecar.
 
 ## Security-floor invariants (pinned by smokes)

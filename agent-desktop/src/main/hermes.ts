@@ -380,11 +380,14 @@ export async function diagnoseRemoteConnection(
   //
   // Only run when the caller explicitly expects Raven
   // (expectedRuntime === "raven") or when auto-detecting AND the URL
-  // port matches Raven's default (8855). This avoids an extra
+  // port matches Raven's default (18792). This avoids an extra
   // round-trip for Hermes/OpenClaw/IronClaw URLs that can't be Raven.
-  // On auth failures (401/403), do NOT return early — both Raven
-  // and Hermes use /health, so the auth failure is ambiguous. Let
-  // the Hermes probe handle it (it runs next on the same endpoint).
+  //
+  // V2.10.84 — the body matcher accepts the shapes Raven actually
+  // serves. `raven serve` answers `/health` with
+  // {"ok":true,"service":"raven-serve",...}; older/other builds used a
+  // `runtime` key. Matching only "runtime":"raven" made every real
+  // Raven report itself as Hermes.
   const isRavenPort = (() => {
     try {
       return new URL(baseUrl).port === String(RAVEN_DEFAULT_PORT);
@@ -394,9 +397,13 @@ export async function diagnoseRemoteConnection(
   })();
   if (expectedRuntime === "raven" || (useCache && isRavenPort)) {
     const ravenResponse = await requestText(`${baseUrl}/health`, headers);
+    // Raven serves the service marker with varying whitespace
+    // (`"service": "raven-serve"` on the live 0.2.8 gateway, compact
+    // elsewhere), so match on the token, not the exact JSON slice.
     if (
       ravenResponse?.statusCode === 200 &&
-      (ravenResponse.body.includes('"runtime":"raven"') ||
+      (ravenResponse.body.includes("raven-serve") ||
+        ravenResponse.body.includes('"runtime":"raven"') ||
         ravenResponse.body.includes('"runtime":"evermind"') ||
         ravenResponse.body.includes('"evermind"'))
     ) {

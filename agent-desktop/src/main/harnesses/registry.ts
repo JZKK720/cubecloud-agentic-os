@@ -84,8 +84,9 @@ export function createHarnessRegistry(): HarnessRegistry {
     ["hermes", createHermesHarness()],
     ["ironclaw", createStubHarness("ironclaw", "IronClaw")],
     ["openclaw", createStubHarness("openclaw", "OpenClaw")],
-    // I-phase: the real adapter replaced the throwing stub — Raven is
-    // an OpenAI-compatible gateway (8855) the desktop can stream from.
+    // Raven's 18792 gateway is WebSocket RPC with no /v1 chat route, so this
+    // adapter is fail-open: it reports the raven-no-chat-completions code
+    // rather than streaming an empty turn. See raven-harness.ts.
     ["raven", createRavenHarness()],
     // Fifth lane: dsh speaks JSON-RPC 2.0 over stdio, not HTTP. The MCP
     // inventory is projected into the runtime per turn, so a server the

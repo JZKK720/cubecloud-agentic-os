@@ -276,8 +276,8 @@ export const RUNTIME_PROVIDER_CATALOG = [
     preferredTaskOrchestratorIds: ["hermes"],
     notes: [
       "Raven is EverMind's self-improving agent harness built on EverOS. It provides memory, SkillForge skills, Sentinel proactivity, and 12 messaging gateways.",
-      "The desktop attaches to Raven's OpenAI-compatible HTTP gateway. The chat path is the same unified /v1/chat/completions contract used by Hermes, IronClaw, and OpenClaw.",
-      "Raven is actively developed upstream (0.2.x, Apache-2.0). The runtime slot is activated as 'optional' — the desktop probes for Raven on gateway port 8855 and auto-detects it when the gateway is running. Raven's `raven web` also serves its own WebUI (port 18793), which is a separate browser surface, not the chat gateway — do not conflate the two ports. Users choose Raven when they want self-evolving memory; Hermes remains the default.",
+      "The desktop attaches to Raven's headless gateway on 18792. V2.10.84 — that gateway is WebSocket RPC, not an OpenAI-compatible HTTP surface: Raven serves `/health`, `/auth`, `/rpc` (263 RPC methods incl. `turn.send`) and the file/knowledge viewers, but no `/v1/chat/completions`. Raven is classified as an attached, health-visible lane rather than a chat-completions lane; its own WebUI on 18793 is the interactive surface.",
+      "Raven is actively developed upstream (0.2.x, Apache-2.0). The runtime slot is activated as 'optional' — the desktop probes the 18792 gateway and auto-detects it when the gateway is running. Users choose Raven for self-evolving memory; Hermes remains the default.",
       "EverOS (already integrated as a Tier 2 support surface) is Raven's memory backend — the two are complementary, not redundant.",
     ],
   },
@@ -392,7 +392,7 @@ const DOCKER_DISCOVERY_TARGETS: Record<
     id: "raven",
     displayName: "Raven",
     keywords: ["raven", "evermind-raven"],
-    preferredPorts: [8855, 3000, 8080],
+    preferredPorts: [18792, 18793, 3000, 8080],
   },
   "deepseek-harness": {
     id: "deepseek-harness",

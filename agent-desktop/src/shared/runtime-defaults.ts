@@ -10,7 +10,15 @@ export const OPENCLAW_LOCAL_GATEWAY_PORT = 18789;
 // Operators can override it at attach time; the const is a
 // placeholder for the form, not a hard-coded bind address.
 export const IRONCLAW_DEFAULT_PORT = 3231;
-export const RAVEN_DEFAULT_PORT = 8855;
+// V2.10.84 — corrected. Raven's gateway has never listened on 8855.
+// Verified against the installed raven 0.2.8 wheel and `raven serve
+// --help`: the headless gateway is WebSocket-RPC on 18792, and the
+// repo's own history contains no 8855 port (only an embedding float).
+// Raven exposes NO OpenAI-compatible /v1 surface — its inbound HTTP is
+// `/health`, `/auth`, /rpc and the file/knowledge viewers. The desktop
+// therefore probes `/health` here and classifies it as attached
+// (read-only), not as a chat-completions lane.
+export const RAVEN_DEFAULT_PORT = 18792;
 
 /**
  * Default local OpenAI-compatible endpoint for the DeepSeek Harness lane.

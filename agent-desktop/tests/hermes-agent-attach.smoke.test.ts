@@ -89,6 +89,10 @@ interface FakeServerOptions {
   // when /health also failed. null = skip the /v1/models probe.
   openClawModelsStatus: number | null;
   openClawModelsBody?: string;
+  // Optional exact /health body, used to pin a specific runtime's real
+  // shape (e.g. Raven's `{"ok":true,"service":"raven-serve",...}`).
+  // When provided it replaces the default `{"status":"ok"}` payload.
+  healthBody?: string;
 }
 
 interface CapturedRequest {
@@ -116,7 +120,7 @@ async function startFakeHermes(
       res.statusCode = options.healthStatus;
       res.setHeader("content-type", "application/json");
       if (options.healthStatus === 200) {
-        res.end(JSON.stringify({ status: "ok" }));
+        res.end(options.healthBody ?? JSON.stringify({ status: "ok" }));
       } else {
         res.end(JSON.stringify({ error: "status_" + options.healthStatus }));
       }
@@ -203,6 +207,59 @@ describe("Hermes Agent attach smoke (V2.10.63, credential-free)", () => {
     expect(result.runtime).toBe("hermes");
     expect(result.transport).toBe("remote");
     expect(result.statusCode).toBe(200);
+  });
+
+  // V2.10.84 — Raven regression coverage. The probe previously matched
+  // only `"runtime":"raven"`, so every real Raven (whose /health answers
+  // `{"ok":true,"service":"raven-serve",...}`) was misclassified as
+  // Hermes, and the lane was pinned to port 8855 which never existed.
+  it("resolves runtime:raven on Raven's real /health body (spaced service marker)", async () => {
+    const port = await pickFreePort();
+    const captured: CapturedRequest = {
+      path: "",
+      headerValue: null,
+      queryToken: null,
+    };
+    const ravenServer = await startFakeHermes(
+      port,
+      {
+        healthStatus: 200,
+        // Verbatim shape served by `raven serve` 0.2.8 on /health —
+        // note the space after each colon. The live server pretty-prints
+        // with spaces, which an exact-slice matcher like
+        // `"service":"raven-serve"` misses; JSON.stringify would compact
+        // it and hide the regression, so this is a literal.
+        healthBody:
+          '{"ok": true, "service": "raven-serve", "boot_id": "b69f8f3536e0caf8", "server_version": "0.1.0", "schema_version": "0.1.0", "trajectory_view": true}',
+        openClawModelsStatus: null,
+      },
+      captured,
+    );
+    try {
+      const result = await diagnoseRemoteConnection(
+        `http://127.0.0.1:${port}`,
+        "raven",
+        undefined,
+      );
+      expect(result.ok).toBe(true);
+      expect(result.runtime).toBe("raven");
+      expect(result.statusCode).toBe(200);
+    } finally {
+      await new Promise<void>((resolve) =>
+        ravenServer.close(() => resolve()),
+      );
+    }
+  });
+
+  it("does not classify a plain hermes /health body as raven", async () => {
+    const result = await diagnoseRemoteConnection(
+      baseUrl,
+      "raven",
+      undefined,
+    );
+    // The default fake body is `{"status":"ok"}` — it carries no Raven
+    // marker, so a raven-expected probe must not claim raven.
+    expect(result.runtime).not.toBe("raven");
   });
 
   it("returns code:auth on a 401 /health response", async () => {

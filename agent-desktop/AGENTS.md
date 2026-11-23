@@ -129,7 +129,7 @@ the real reason for the pin is the 4.x bug, not a 4.x feature.
 | Hermes | 8642 | `scripts/hermes-agent-attach.smoke.cjs`, `docs/hermes-agent-attach.smoke.md` |
 | IronClaw | 3231 | `scripts/ironclaw-attach.smoke.cjs` (defaults to `http://127.0.0.1:3231/api/health`). The "8281" in older docs is legacy. |
 | OpenClaw | 18789 | `agent-desktop/src/shared/runtime-orchestration.ts` |
-| Raven | 8855 | `agent-desktop/src/shared/runtime-defaults.ts` (`RAVEN_DEFAULT_PORT`). Probe in `hermes.ts` checks `/health` for `"runtime":"raven"` body. Auto-detected on port 8855. |
+| Raven | 18792 | `agent-desktop/src/shared/runtime-defaults.ts` (`RAVEN_DEFAULT_PORT`). Probe in `hermes.ts` checks `/health` for the `"service":"raven-serve"` body. The gateway is WebSocket RPC (no OpenAI /v1 surface); the 18793 WebUI is the interactive surface. (V2.10.84 — the earlier "8855" entry was never an upstream port.) |
 
 `RuntimeProviderId` and `TaskOrchestratorId` live in
 `agent-desktop/src/shared/runtime-orchestration.ts`. The 35-entry

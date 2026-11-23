@@ -2,20 +2,27 @@
 // replacing the throwing registry stub (EverMind replan §2.1: harness
 // adapter ❌ stub → ✅ implemented; I-phase row in §5).
 //
-// Raven (EverMind, Apache-2.0, v0.2.x) exposes an **OpenAI-compatible
-// chat gateway on 8855** (the WebUI on 18793 is a different surface —
-// do not conflate; see `gateway-runtime-presets.ts` comments). Turns
-// are standard `POST /v1/chat/completions` with SSE streaming — the
-// same wire contract the desktop's other gateways speak, minus the
-// desktop's session-id resume semantics (Raven owns its own session
-// state server-side).
+// Raven (EverMind, Apache-2.0, v0.2.x) runs a **WebSocket-RPC** gateway
+// on 18792 (verified against the raven 0.2.8 wheel and `raven serve
+// --help`; the WebUI on 18793 is a different surface — do not conflate;
+// see `gateway-runtime-presets.ts` comments). Raven exposes NO
+// `/v1/chat/completions` route: its inbound HTTP surface is `/health`,
+// `/auth`, `/rpc` and the file/knowledge viewers.
+//
+// V2.10.84 — this adapter is therefore a **fail-open placeholder**: it
+// still speaks the OpenAI SSE wire shape so a future/proxy front-end can
+// satisfy it, but against a stock Raven every turn resolves through the
+// error path with `code: "raven-no-chat-completions"`. The lane's real
+// value today is attachment/health visibility plus EverOS memory, not
+// chat completions. Driving Raven's actual `turn.send` RPC is a separate
+// piece of work and is not claimed here.
 //
 // Design constraints (mirroring `hermes-harness.ts`):
 //   - Thin adapter over the platform `Harness` contract; no behavior
 //     change elsewhere.
 //   - The base URL resolution mirrors the connection config chain
 //     (remote → ssh tunnel → local default) via ` getConnectionConfig`
-//     + `getSshTunnelUrl`, but pins the Raven port default (8855) so
+//     + `getSshTunnelUrl`, but pins the Raven port default (18792) so
 //     the adapter can coexist with a Hermes gateway on 8642. An
 //     operator override rides `runtime.provider_url` in config.
 //   - `supportsCompaction: false` → compactHistory is an honest no-op
@@ -50,7 +57,7 @@ const RAVEN_ONESHOT_TIMEOUT_MS = 30_000;
 /** Resolve the Raven gateway base URL: operator override (config
  *  `runtime.provider_url`) → ssh-tunnel URL when active (rewritten to
  *  the Raven port path is not supported remotely; the tunnel forwards
- *  as-is) → local default `127.0.0.1:8855`. Never throws. */
+ *  as-is) → local default `127.0.0.1:18792`. Never throws. */
 export function resolveRavenBaseUrl(): string {
   try {
     const override = getConfigValue("runtime.provider_url");
@@ -66,7 +73,7 @@ export function resolveRavenBaseUrl(): string {
       // Remote mode points at the tunneled/host gateway; Raven remote
       // deployments are expected to serve on their own URL (the
       // override above is the explicit path). Keep the port swap for
-      // tunnel setups: replace the remote port with 8855 when the
+      // tunnel setups: replace the remote port with 18792 when the
       // host matches the tunnel host.
       try {
         const url = new URL(conn.remoteUrl);
@@ -178,9 +185,22 @@ export function createRavenHarness(): Harness {
         }
       } catch (err) {
         clearTimeout(timer);
-        // Mirror the Hermes adapter: surface the failure as a final
-        // `done` (the router's error path) instead of throwing out of
-        // the generator.
+        // Mirror the Hermes adapter: surface the failure as an `error`
+        // delta then `done`, instead of ending the turn silently.
+        //
+        // V2.10.84 — Raven exposes NO `/v1/chat/completions` route (its
+        // API is WebSocket RPC on `/rpc`), so an attached Raven always
+        // lands here with a 404. Ending silently made that read as "the
+        // model said nothing", which is the exact failure mode the
+        // HarnessTurnDelta error variant exists to prevent.
+        yield {
+          type: "error",
+          message:
+            "Raven's gateway is attached but exposes no /v1/chat/completions " +
+            "endpoint — Raven serves WebSocket RPC on /rpc, not an " +
+            "OpenAI-compatible chat API. Use Raven's WebUI on 18793 to chat.",
+          code: "raven-no-chat-completions",
+        };
         yield { type: "done", sessionId: undefined };
         return;
       }

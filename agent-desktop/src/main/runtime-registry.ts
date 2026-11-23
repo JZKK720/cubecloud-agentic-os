@@ -155,7 +155,7 @@ export async function listRuntimeProviders(): Promise<
               kind: "scan",
               label: "Rescan",
               detail:
-                "Probe http://127.0.0.1:8855/health and detect the Raven binary on PATH again.",
+                "Probe http://127.0.0.1:18792/health and detect the Raven binary on PATH again.",
               primary: false,
             },
             {
@@ -163,17 +163,17 @@ export async function listRuntimeProviders(): Promise<
               kind: "docs",
               label: ravenCommand ? "Open Raven install guide" : "Install Raven CLI",
               detail:
-                "Open the upstream Raven install guide (raven.evermind.ai). The gateway attaches on port 8855; the WebUI served by `raven web` is a separate browser surface on 18793.",
+                "Open the upstream Raven install guide (raven.evermind.ai). The gateway attaches on port 18792; the WebUI served by `raven web` is a separate browser surface on 18793.",
               primary: !ravenCommand,
             },
           ],
           summary: ravenConnected
-            ? `${definition.displayName} is currently attached through its OpenAI-compatible gateway surface.`
+            ? `${definition.displayName} is currently attached through its headless gateway (health-visible; WebSocket RPC, no OpenAI /v1 surface).`
             : ravenCommand
               ? `${definition.displayName} CLI was detected on the current PATH; attach it through the Welcome screen gateway flow.`
               : `${definition.displayName} is optional. Install it externally when you want self-evolving memory; the gateway lane is already wired.`,
           detail:
-            "Raven (EverMind) is Apache-2.0 and ships its own four built-in agents plus an Evolver. The desktop attaches to the gateway on port 8855 with the same chat contract as the other lanes. The Raven harness adapter is a later phase — until then the gateway lane is chat-capable. Hermes remains the default runtime.",
+            "Raven (EverMind) is Apache-2.0 and ships its own four built-in agents plus an Evolver. V2.10.84 — the desktop attaches to the headless gateway on port 18792, which is WebSocket RPC: it exposes /health ({\"ok\":true,\"service\":\"raven-serve\"}) but NO OpenAI-compatible /v1/chat/completions, so the lane is health-visible rather than chat-capable through /v1. Raven's own WebUI on 18793 is the interactive surface. Hermes remains the default runtime.",
         } satisfies RuntimeProviderSnapshot;
       }
       case "deepseek-harness": {

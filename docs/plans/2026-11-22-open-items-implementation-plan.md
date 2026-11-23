@@ -284,3 +284,81 @@ One operator using v2.10.82 or the container stack, reporting what is missing. I
 that report names spreadsheets, generative UI, or browser automation, the
 corresponding item moves from "refused" to "next" — with a real requirement
 behind it instead of a verdict table.
+
+---
+
+# V2.10.84 — live runtime verification (supersedes inferred verdicts above)
+
+This section records what was actually **installed and run on this machine**,
+not what was inferred from docs. Where it disagrees with anything higher in this
+file, this section wins.
+
+## The Raven port was wrong, and so was the surface
+
+The tree pinned Raven to `RAVEN_DEFAULT_PORT = 8855` and described it as an
+"OpenAI-compatible chat gateway". Both claims were false:
+
+| Check | Result |
+|---|---|
+| `grep 8855` across the raven 0.2.8 wheel (1,059 py files) | **0 matches** |
+| `git log --all -S"8855"` across Raven's full history | only an embedding **float** (`-0.018855`), never a port |
+| `raven serve --help` | options are `--port` (default **18792**) and `--open` only |
+| Raven port defaults found in the wheel | **18792** (`ws.py`), 18790, 18795 |
+| `GET 127.0.0.1:8855/health` on a live install | `ECONNREFUSED` |
+| `GET 127.0.0.1:18792/health` on a live install | `200` `{"ok": true, "service": "raven-serve", ...}` |
+| `GET :18792/v1/models`, `/v1/chat/completions` | **404** (no such routes) |
+| `GET :18792/rpc` | `401` — the real API is a WebSocket RPC |
+
+So Raven is **not** a `/v1/chat/completions` lane. It is a WebSocket-RPC
+gateway (`turn.send`, 263 methods in `rpc-schema/openrpc.json`) with an HTTP
+control plane of `/health`, `/auth`, `/rpc`, and the file/knowledge viewers.
+
+**Fixed:** `RAVEN_DEFAULT_PORT` → 18792; the `/health` matcher now accepts
+`raven-serve` (the live body puts a space after the colon, which an exact-slice
+match missed); the catalog note, preset hint, registry summary, harness header,
+`platform-core`, both `AGENTS.md` tables and the Welcome form default are all
+corrected. Two tests that pinned the false premise were corrected, and a third
+was added that fails on the old matcher and passes on the new one.
+
+## Live gateway status, measured
+
+| Lane | Port | Health | Chat round-trip |
+|---|---|---|---|
+| Hermes | 8642 | **PASS** 200, 21 ms | gateway live |
+| IronClaw 1.4.1 | 3231 | **PASS** 200, 50 ms | **blocked by host VRAM** |
+| OpenClaw 2026.11.6 | 18789 | **PASS** 200 | **PASS** — `POST /v1/chat/completions` → `PONG` |
+| Raven 0.2.8 | 18792 | **PASS** 200 (`raven-serve`) | n/a — no `/v1` surface exists |
+
+### OpenClaw needed one non-obvious toggle
+
+The gateway runs fine but serves `404` on `/v1/models` until
+`gateway.http.endpoints.chatCompletions.enabled = true` (default `false`).
+It also rejects `model: "<any-model>"` — the gateway accepts only `openclaw`
+or `openclaw/<agentId>`, and routes to whatever `agents.defaults.model` names.
+That is why "gateway is up but desktop can't attach" happens.
+
+### IronClaw's 503 is the host, not the code
+
+`POST /v1/chat/completions` returns `503 service_unavailable`, and
+`GET /v1/models` returns `200` with a full model list. The turn runner's ollama
+call fails with, from ollama's own log:
+
+```
+requested context size too large for model   num_ctx=8192 n_ctx_train=2048
+llama-server terminated  error="exit status 1"
+cudaMalloc failed: out of memory   (ROCm0 buffer 25180674816 bytes)
+```
+
+The host GPU is an **AMD Radeon 8060S iGPU with 4 GB**. Every non-cloud model
+in the local ollama store is 6.1–23.7 GB, so nothing local fits; cloud models
+work (they proxy upstream) but IronClaw's vision-projector startup path still
+exits. This is a hardware ceiling, not an IronClaw or Cubecloud defect. It will
+work unchanged on a host with adequate VRAM, or once IronClaw is pointed at a
+cloud provider key.
+
+## New gate
+
+`scripts/runtime-gateways.smoke.cjs` covers the two lanes that had **no**
+operator-side check — which is exactly how the Raven port stayed wrong for
+months. It asserts OpenClaw's `/v1/models` OpenAI shape and Raven's
+`raven-serve` marker, and it fails when pointed at 8855 (proven both ways).
