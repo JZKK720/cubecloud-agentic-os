@@ -657,15 +657,19 @@ interface ChatHandle {
 
 function isApiServerReady(): Promise<boolean> {
   return new Promise((resolve) => {
-    const url = `${getApiUrl()}/health`;
+    // Use the env-aware URL: inside the console kernel the runtime lives on
+    // host.docker.internal, not the container's own loopback. Reading
+    // getApiUrl() here probed 127.0.0.1, decided the API server was down,
+    // and fell through to the CLI spawn path — which then failed with
+    // `spawn … ENOENT` because the container has no Hermes binary. The
+    // turn failed at the transport-selection gate, not in the runtime.
+    const url = `${getApiUrlWithEnvOverride()}/health`;
     const mod = url.startsWith("https") ? https : http;
-    // In local mode, getRemoteAuthHeader() returns {} — but the
-    // gateway may gate /health behind the same API_SERVER_KEY it
-    // requires on /v1/chat/completions. Merge the local key in so the
-    // health probe survives an auth-gated /health endpoint. In remote
-    // mode, getRemoteAuthHeader() already carries the bearer and the
-    // local key is empty, so the merge is a no-op.
-    const localKey = getApiServerKey();
+    // In local mode, getRemoteAuthHeader() returned {} — but the gateway may
+    // gate /health behind the same API_SERVER_KEY it requires on
+    // /v1/chat/completions. Merge the local key in (now env-aware) so the
+    // health probe survives an auth-gated /health endpoint.
+    const localKey = getApiServerKeyWithEnvFallback();
     const probeHeaders = {
       ...getRemoteAuthHeader(),
       ...(localKey ? { Authorization: `Bearer ${localKey}` } : {}),
