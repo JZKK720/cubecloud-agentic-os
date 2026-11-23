@@ -2,15 +2,15 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 最新发布：**v2.10.83**
+## 最新发布：**v2.10.84**
 
 从
-[v2.10.83 发布页](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
+[v2.10.84 发布页](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.84)
 下载 Windows 安装包：
 
-- `cubecloud-agent-desktop-2.10.83-setup.exe`（NSIS 一键安装）
-- `cubecloud-agent-desktop-2.10.83-portable.exe`（单文件便携版）
-- `cubecloud-agent-desktop-2.10.83-setup.exe.blockmap` + `latest.yml`（自动更新元数据）
+- `cubecloud-agent-desktop-2.10.84-setup.exe`（NSIS 一键安装）
+- `cubecloud-agent-desktop-2.10.84-portable.exe`（单文件便携版）
+- `cubecloud-agent-desktop-2.10.84-setup.exe.blockmap` + `latest.yml`（自动更新元数据）
 
 **发布仅面向 Windows。** macOS 与 Linux 构建任务已在 v2.10.82 移除，而不是让它们持续失败——它们需要本仓库并不具备的 Apple 公证与 Linux 签名凭据。叠加一个在 tag 推送时永远无法满足的发布门禁，以及一个导致 `tsc` 在干净 runner 上失败的未声明 workspace 依赖，使 v2.10.75 到 v2.10.82 之间没有任何版本真正发布出去——五个月、157 个提交。
 

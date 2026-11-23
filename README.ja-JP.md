@@ -2,15 +2,15 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 最新リリース：**v2.10.83**
+## 最新リリース：**v2.10.84**
 
 Windows インストーラーは
-[v2.10.83 リリースページ](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
+[v2.10.84 リリースページ](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.84)
 からダウンロードしてください：
 
-- `cubecloud-agent-desktop-2.10.83-setup.exe`（NSIS ワンクリックインストーラー）
-- `cubecloud-agent-desktop-2.10.83-portable.exe`（シングルファイル版）
-- `cubecloud-agent-desktop-2.10.83-setup.exe.blockmap` + `latest.yml`（自動更新メタデータ）
+- `cubecloud-agent-desktop-2.10.84-setup.exe`（NSIS ワンクリックインストーラー）
+- `cubecloud-agent-desktop-2.10.84-portable.exe`（シングルファイル版）
+- `cubecloud-agent-desktop-2.10.84-setup.exe.blockmap` + `latest.yml`（自動更新メタデータ）
 
 **リリースは Windows のみです。** macOS と Linux のジョブは失敗させ続けるのではなく、v2.10.82 で削除されました。Apple の公証と Linux の署名資格情報が必要でしたが、本プロジェクトにはそれらがありません。加えて、タグ push では決して満たせない公開ゲートと、クリーンな runner 上で `tsc` を壊す未宣言の workspace 依存により、v2.10.75 から v2.10.82 の間に何も出荷されませんでした——5 か月、157 コミット。
 

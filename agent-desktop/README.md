@@ -16,7 +16,7 @@ choice**, **skills**, **memory**, **schedules**, and **optional code
 intelligence** — without coupling the workflow to a hosted wrapper or
 a single-vendor CLI.
 
-**Latest release: [v2.10.83](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)** —
+**Latest release: [v2.10.84](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.84)** —
 DeepSeek Harness as a fifth runtime lane (local-first Ollama default, operator MCP inventory projected into the runtime, optional API key exported to the child process), AG-UI served at `POST /api/ag-ui/run`, and the i18n renderer-key fix. Carries the v2.10.78 foundation unchanged: Swarm multi-agent screen, Knowledge Vault, IM channels, harness adapter framework, provider router, tool policy, memory service, auto-compaction, run queue, subagent infrastructure.
 
 ## What the user sees
@@ -184,15 +184,15 @@ The full per-skill breakdown is in the monorepo README under
 
 ## Install
 
-The latest stable installer is **v2.10.83**, published at
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83>.
+The latest stable installer is **v2.10.84**, published at
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.84>.
 Releases are **Windows-only**: the macOS and Linux build jobs were removed in
 v2.10.82 rather than left failing, because they need notarization and signing
 credentials the project does not have.
 Older releases are listed on the
 [Releases page](https://github.com/JZKK720/cubecloud-agentic-os/releases).
 v0.6.0 and v0.6.1 are marked pre-release because they were built
-from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.83
+from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.84
 or later**.
 
 ### Prerequisites
@@ -217,8 +217,8 @@ access — the desktop prompts for the admin password upfront.
 ### Windows
 
 Download
-`cubecloud-agent-desktop-2.10.83-setup.exe` from the
-[v2.10.83 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
+`cubecloud-agent-desktop-2.10.84-setup.exe` from the
+[v2.10.84 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.84)
 and run it. The NSIS installer is one-click per-user and registers
 `cubecloud-agent-desktop` in Windows Programs and Features.
 
@@ -229,7 +229,7 @@ and run it. The NSIS installer is one-click per-user and registers
 > for the OEM-build path that includes a corporate certificate.
 
 For an installer-free option, download
-`cubecloud-agent-desktop-2.10.83-portable.exe` instead — single-file
+`cubecloud-agent-desktop-2.10.84-portable.exe` instead — single-file
 portable that runs without an install step.
 
 ### macOS / Linux
