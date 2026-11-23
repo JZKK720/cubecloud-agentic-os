@@ -81,12 +81,17 @@ describe("ssh remote config writes", () => {
 });
 
 describe("ssh Hermes command quoting", () => {
-  // The shim below spawns bash and writes the args NUL-separated
-  // back through stdout. On a slow Windows runner bash sometimes
-  // doesn't return inside the 5s default. Bump the timeout for
-  // the whole describe to remove the intermittent flake.
-  // (See #? — CI pre-existing.)
-  vi.setConfig({ testTimeout: 20_000 });
+  // The shim below spawns bash and writes the args NUL-separated back
+  // through stdout. Measured on Windows, `bash -lc` alone costs ~3.9s to
+  // start (WSL cold start) against milliseconds on Linux; under a full
+  // parallel suite that start-up competes with 171 other files and one
+  // test was observed taking >30s. The whole file passes in 915ms when
+  // run alone, so this is contention, not slowness.
+  //
+  // 60s is chosen from the measurement, not guessed: 4s bash start × the
+  // worst contention multiple seen (~8×) with headroom. It is a bound on
+  // an environmental cost — the assertions themselves are unchanged.
+  vi.setConfig({ testTimeout: 60_000 });
   it("shell-quotes the whole bash script without dropping per-argument quoting", () => {
     const command = buildRemoteHermesCmd([
       "kanban",

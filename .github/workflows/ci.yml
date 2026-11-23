@@ -134,7 +134,28 @@ jobs:
 
       - name: Run agent-desktop test suite
         working-directory: agent-desktop
-        run: npm run test
+        # `passWithNoTests: true` is set in vitest.config.ts so a narrow local
+        # filter can exit clean without matching anything. That setting makes a
+        # bare `npm run test` a green that proves nothing: if the include globs
+        # ever stopped matching, CI would report success having run zero tests.
+        # Assert the counts here so that cannot happen silently.
+        run: |
+          set -euo pipefail
+          npm run test 2>&1 | tee /tmp/vitest.log
+          # vitest colourises its summary, and the number is separated from the
+          # label by padding, so strip ANSI and allow flexible whitespace.
+          clean=$(sed -E 's/\x1b\[[0-9;]*m//g' /tmp/vitest.log)
+          files=$(printf '%s' "$clean" | grep -oE 'Test Files[[:space:]]+[0-9]+[[:space:]]+passed' | grep -oE '[0-9]+' | tail -1 || true)
+          tests=$(printf '%s' "$clean" | grep -oE 'Tests[[:space:]]+[0-9]+[[:space:]]+passed' | grep -oE '[0-9]+' | tail -1 || true)
+          echo "vitest reported: files=${files:-0} tests=${tests:-0}"
+          if [ -z "${files:-}" ] || [ "${files:-0}" -lt 100 ]; then
+            echo "::error::expected at least 100 test files, got ${files:-0} — did the include globs stop matching?"
+            exit 1
+          fi
+          if [ -z "${tests:-}" ] || [ "${tests:-0}" -lt 1000 ]; then
+            echo "::error::expected at least 1000 tests, got ${tests:-0}"
+            exit 1
+          fi
 
   # NOTE: The desktop-shell-electron-smoke job was removed in V2.10.73.
   # It referenced `npm run test:electron-smoke`, which was never defined
