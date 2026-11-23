@@ -101,7 +101,21 @@ A malicious sidecar binary (e.g. one that the user installed but
 was later compromised) inherits the user's privileges. The desktop
 treats the sidecar as the user does.
 
-## 6. Specific threats we have not yet addressed
+## 6. Residual risk
+
+Inside the trust boundary, the risks that remain:
+
+- **Prompt injection in a request.** Even following the "treat model
+  output as data" rule, a crafted request can mislead in ways that are
+  hard to spot. If the user clicks "Approve" without reading, a shell
+  tool can still be invoked.
+- **Assets cannot be fully hidden.** If a user copies and pastes an API
+  key between applications, the desktop cannot infer whether that key
+  was overheard or deliberately copied.
+- **Multi-account isolation depends on user habit.** The default is no
+  isolation, which is what makes multi-account use possible; if you run
+  several accounts, use a separate account or workspace per one.
+## 7. Specific threats we have not yet addressed
 
 These are tracked as follow-up work, not as immediate blockers:
 
@@ -116,7 +130,7 @@ These are tracked as follow-up work, not as immediate blockers:
   should drop privileges to a separate service user for the
   sidecar process.
 
-## 7. When to update this document
+## 8. When to update this document
 
 This document should be updated when:
 
@@ -130,3 +144,10 @@ This document should be updated when:
 In all of these cases, update this file in the same PR as the
 change. Reviewers should treat changes to this file as a
 trust-boundary change and call out any drift.
+
+## 9. Related documents
+
+- `SECURITY.md` — vulnerability reporting, disclosure process, embargo.
+- `BRANDING_AND_LICENSE.md` — provenance, trademark posture, licence split.
+- `docs/HANDBOOK.md` — architecture, deployment modes, who maintains it.
+- `docs/handbook/ARCHITECTURE.md` — the security-relevant architecture detail.

@@ -10,7 +10,7 @@
 
 Cubecloud Agent Desktop 是一个原生 Electron 桌面应用，为单个操作者提供统一的控制面板，用于管理**运行时选择**、**提供者选择**、**技能**、**记忆**、**计划任务**和**可选的代码智能**——而不会将工作流绑定到托管包装层或单一供应商 CLI。
 
-**最新版本：[v2.10.73](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)** —
+**最新版本：[v2.10.83](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)** —
 MCP 注册表大修：Firecrawl 替换 Tavily（无密钥额度，可自托管），
 新增 SkillSpector 和 OpenKnowledge，Qdrant 默认使用本地 Docker（无需 API 密钥）。
 
@@ -123,26 +123,38 @@ Skills 表面来自三个相互独立的技能树，各有不同的生命周期�
 
 ## 安装
 
-最新的稳定安装包是 **v2.10.73**，发布地址：
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73>。
+最新的稳定安装包是 **v2.10.83**，发布地址：
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83>。
 较早的版本列于
 [Releases 页面](https://github.com/JZKK720/cubecloud-agentic-os/releases)。
-v0.6.0 和 v0.6.1 已被标记为预发布版本，因为它们是从现已退役的 `apps/desktop-shell/` wrapper 树构建的；**请使用 v2.10.73 或更新版本**。
+v0.6.0 和 v0.6.1 已被标记为预发布版本，因为它们是从现已退役的 `apps/desktop-shell/` wrapper 树构建的；**请使用 v2.10.83 或更新版本**。
+
+### 环境要求
+
+桌面二进制是自包含的——**安装它不需要任何前置条件。**首次启动时，用户选择一种连接方式：
 
 ### Windows
 
 从
-[v2.10.73 发布](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
-下载 `cubecloud-agent-desktop-2.10.73-setup.exe` 并运行。NSIS 安装程序为每用户一键安装，会在 Windows“程序和功能”中注册 `cubecloud-agent-desktop`。
+[v2.10.83 发布](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
+下载 `cubecloud-agent-desktop-2.10.83-setup.exe` 并运行。NSIS 安装程序为每用户一键安装，会在 Windows“程序和功能”中注册 `cubecloud-agent-desktop`。
 
 > **Windows 用户提示：** 安装程序未进行代码签名。Windows SmartScreen 在首次启动时会发出警告——点击**更多信息**→**仍要运行**。代码签名是已知的跟进项；OEM 构建路径（含企业证书）详见
 > [`../docs/legal/COMMERCIAL_LICENSE.md`](../docs/legal/COMMERCIAL_LICENSE.md)。
 
-若不需要安装程序，也可以下载 `cubecloud-agent-desktop-2.10.73-portable.exe` — 单文件便携版，无需安装步骤。
+若不需要安装程序，也可以下载 `cubecloud-agent-desktop-2.10.83-portable.exe` — 单文件便携版，无需安装步骤。
 
 ### macOS / Linux
 
-`electron-builder` 可以生成 macOS（`.dmg`）和 Linux（`.deb`、`.rpm`、`.AppImage`、`.snap`）目标，但本仓库的 CI 构建流水线目前只发布 Windows 产物。多平台 CI 是跟进项，需要在仓库设置中配置 App Store Connect、代码签名和 Linux 应用商店凭据。
+自 v2.10.82 起**发布仅面向 Windows**。macOS 与 Linux 构建任务已被移除，而不是让它们持续失败——它们需要 Apple 公证与 Linux 签名凭据，而本仓库并不具备。`npm run build:mac` 与 Linux 目标不再受支持。
+
+### 可选组件（用户自行安装，桌面自动发现）
+
+这些组件不随包发布，桌面会在本机发现已安装的实例，也可在界面中手动指向其地址。
+
+### MCP 服务器（在 MCP 界面按需启用）
+
+MCP 服务器不随包发布，桌面在 **MCP** 界面按需启用。启用后，桌面会把该服务器的工具清单投影进运行时，每轮对话都可见。
 
 ## 工作原理
 
@@ -241,6 +253,8 @@ npm run verify:bundle
 ```
 
 运行 `release-bundle.test.ts` 套件，断言 asar 包含预期的 `node_modules/`、`out/main/index.js` 与 `out/preload/index.js` 条目，且存在 `BrowserWindow` / `createWindow` / `whenReady` 引用。
+
+
 
 ## 下一步看哪里
 

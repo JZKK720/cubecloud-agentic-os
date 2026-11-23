@@ -101,3 +101,19 @@ git grep -n -I -E \\
 详见 [`LICENSE`](LICENSE) 与 [`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md)。
 本文件不对本项目的安全作出任何式式或隐含承诺。
 最终解释权归项目维护者与贡献者所有。
+
+## 暂不支持 PGP 加密邮件
+
+本版本尚不支持 PGP 加密的漏洞报告。如果你的某项报告确实需要 PGP，
+请通过常规的 GitHub Security Advisory 说明，我们会安排一条侧信道来协调。
+
+## 许可与贡献模式
+
+本仓库中 Cubecloud 原创的部分采用三重许可，你可选择
+AGPL-3.0-or-later、Apache-2.0 或 MIT（见 `LICENSE`）。
+承载这些原创模块的、继承自 `hermes-desktop` 的框架代码为硬性 MIT。
+
+入站代码贡献采用 **DCO 1.1** 签署模式（见 `CONTRIBUTING.md`
+的“开发者证书来源”一节）。提交信息中的 `Signed-off-by:` 行即表示
+贡献者有权以本项目许可提交该代码。无论下游使用者最终选择三种许可中的哪一种，
+DCO 都同样适用——DCO 是贡献侧的机制，而不是许可选择。
