@@ -2,19 +2,19 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 最新リリース：**v2.10.73**
+## 最新リリース：**v2.10.83**
 
 Windows インストーラーは
-[v2.10.73 リリースページ](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
+[v2.10.83 リリースページ](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
 からダウンロードしてください：
 
-- `cubecloud-agent-desktop-2.10.73-setup.exe`（127 MB、NSIS ワンクリックインストーラー）
-- `cubecloud-agent-desktop-2.10.73-portable.exe`（127 MB、シングルファイル版）
-- `cubecloud-agent-desktop-2.10.73-setup.exe.blockmap` + `latest.yml`（自動更新メタデータ）
+- `cubecloud-agent-desktop-2.10.83-setup.exe`（NSIS ワンクリックインストーラー）
+- `cubecloud-agent-desktop-2.10.83-portable.exe`（シングルファイル版）
+- `cubecloud-agent-desktop-2.10.83-setup.exe.blockmap` + `latest.yml`（自動更新メタデータ）
 
-v2.10.73 は **MCP レジストリ刷新**リリースです。Firecrawl が Tavily を置き換え（キーレス枠、セルフホスト可能）、SkillSpector と OpenKnowledge を追加、Qdrant はローカル Docker がデフォルト（API キー不要）。`verify:bundle` は
-7/7 PASS。完全な変更履歴は
-[`agent-desktop/changelogs/2.10.73.md`](agent-desktop/changelogs/2.10.73.md) を参照。
+**リリースは Windows のみです。** macOS と Linux のジョブは失敗させ続けるのではなく、v2.10.82 で削除されました。Apple の公証と Linux の署名資格情報が必要でしたが、本プロジェクトにはそれらがありません。加えて、タグ push では決して満たせない公開ゲートと、クリーンな runner 上で `tsc` を壊す未宣言の workspace 依存により、v2.10.75 から v2.10.82 の間に何も出荷されませんでした——5 か月、157 コミット。
+
+v2.10.82 は v2.10.77 から v2.10.81 までのすべてと自身の変更を含むため、中間タグは置き換えられています（対応するリリースを持たない宙に浮いたタグであり、削除済みです）。
 v0.6.0 と v0.6.1 は GitHub 上でプレリリースとしてマークされており、
 使用しないでください。これらは廃止された `apps/desktop-shell/`
 ラッパーツリーからビルドされています。
@@ -109,7 +109,7 @@ Cubecloudは以下のようなチームやオペレーターに特に適して�
 
 - [`agent-desktop/`](agent-desktop/) はエンドユーザーに提供される完全なElectronデスクトップです。唯一の実装ターゲットであり、すべてのビルド成果物はここから生成されます。
 - [`packages/platform-core/`](packages/platform-core/) は共有TypeScriptコントラクトを保持します。
-- [`.agents/skills/`](.agents/skills/) には {{SKILLS_REPOS}} 個のア ップストリームリポジトリから適応された 49 個のオープンソーススキルが含まれます。これらは**コントリビューター向け**のスキルであり、本 monorepo 内で Copilot / Claude Code を動かすためのソースツリーに存在します。**デスクトップバイナリには同梱されません**。デスクトップのエンドユーザーが見るのは別の一 組です：[asar 内に同梱される 28 個のデスクトップ組み込みスキル](agent-desktop/.agents/skills/) で、Skills → Browse タブに表示されます。3 層すべての内訳は [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers) を参照してください。
+- [`.agents/skills/`](.agents/skills/) には 8 個のアップストリームリポジトリから適応された 48 個のオープンソーススキルが含まれます。これらは**コントリビューター向け**のスキルであり、本 monorepo 内で Copilot / Claude Code を動かすためのソースツリーに存在します。**デスクトップバイナリには同梱されません**。デスクトップのエンドユーザーが見るのは別の一 組です：[asar 内に同梱される 48 個のデスクトップ組み込みスキル](agent-desktop/.agents/skills/) で、Skills → Browse タブに表示されます。3 層すべての内訳は [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers) を参照してください。
 - [`docs/`](docs/) はハンドブック、脅威モデル、ランタイム計画、法的ポリシー、移行履歴を保持します。
 
 デスクトップの初回起動時に、ユーザーは以下を得ます：
@@ -149,7 +149,7 @@ Cubecloudの言う「プロダクション対応」とは「ホスト型SaaSと�
 - **予測可能な状態。** プロファイル、セッション、プロバイダー定義、メモリ、スケジュール、かんばん状態は、不透明なホスト型ワークフロー層ではなく、永続的なローカル状態に保存されます。
 - **交換可能な依存関係。** ランタイム選択とプロバイダー選択が分離されているため、チームはユーザーワークフロー全体を崩壊させることなく、移行、ステージング、ロールバックできます。
 - **オプションのサイドカーはオプションのまま。** CodeGraphとEverOSは必要に応じてシステムを拡張しますが、必須の隠れたプラットフォーム依存関係にはなりません。
-- **バージョン管理された方法論。** {{SKILLS_UPSTREAM}}スキルエコシステムは文書化され、来歴が追跡され、アップストリームのスキルプロセスから継承されたred-baseline規律によって支えられています。
+- **バージョン管理された方法論。** 35スキルエコシステムは文書化され、来歴が追跡され、アップストリームのスキルプロセスから継承されたred-baseline規律によって支えられています。
 - **明確な法的表面。** リポジトリはパスレベルの来歴、商標姿勢、商用再ライセンスポリシー、継承フレームワークのMIT carve-outを一箇所で文書化しています。[`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) と [`docs/legal/`](docs/legal/) を参照。
 
 これがエンタープライズストーリーです：「私たちを信じてください」ではなく、「スタックを検査してください」。
@@ -189,7 +189,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   セキュリティポリシーと報告方法
 ├── THREAT_MODEL.md               ローカルファースト脅威モデル
 ├── README.i18n.md                翻訳インベントリマニフェスト
-├── .agents/                      ~/.agents/skills/ にミラーリングされる{{SKILLS_TOTAL}}のオープンソーススキル
+├── .agents/                      ~/.agents/skills/ にミラーリングされる48のオープンソーススキル
 ├── .github/                      エージェント指示、ワークフロースキル、自動化
 ├── packages/
 │   └── platform-core/            共有TypeScriptコントラクト

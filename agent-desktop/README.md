@@ -16,7 +16,7 @@ choice**, **skills**, **memory**, **schedules**, and **optional code
 intelligence** — without coupling the workflow to a hosted wrapper or
 a single-vendor CLI.
 
-**Latest release: [v2.10.82](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.82)** —
+**Latest release: [v2.10.83](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)** —
 DeepSeek Harness as a fifth runtime lane (local-first Ollama default, operator MCP inventory projected into the runtime, optional API key exported to the child process), AG-UI served at `POST /api/ag-ui/run`, and the i18n renderer-key fix. Carries the v2.10.78 foundation unchanged: Swarm multi-agent screen, Knowledge Vault, IM channels, harness adapter framework, provider router, tool policy, memory service, auto-compaction, run queue, subagent infrastructure.
 
 ## What the user sees
@@ -54,8 +54,9 @@ DeepSeek Harness as a fifth runtime lane (local-first Ollama default, operator M
   user-initiated, not silently installed.
 - **Skill, memory, schedule, kanban, and plan** surfaces backed by
   inspectable JSON registries under the user's control.
-- **Pre-bundled skills ecosystem** — 28 desktop-targeted skills
-  ship inside the asar (23 + 5 added in V2.10.71). The Skills →
+- **Pre-bundled skills ecosystem** — 48 desktop-targeted skills
+  ship inside the asar (measured from the packaged `app.asar`, not
+  inferred; the earlier "28" was stale). The Skills →
   Browse tab shows them all. See
   [Skills ecosystem — 3 layers](#skills-ecosystem--3-layers) below.
 - **Auto-updater** via `electron-updater` pointing at this repo's
@@ -125,7 +126,7 @@ The Skills surface draws from three independent skill trees, each
 with a different lifecycle. None of them are duplicates — they exist
 for different audiences and serve different purposes.
 
-### Layer 1 — Desktop-bundled ({{SKILLS_TOTAL}} skills, ships in the asar)
+### Layer 1 — Desktop-bundled (48 skills, ships in the asar)
 
 These are the skills visible in the **Skills → Browse** tab on first
 launch. They live at `agent-desktop/.agents/skills/<name>/SKILL.md`
@@ -169,10 +170,10 @@ These appear in the Skills → Browse tab alongside the desktop-bundled
 entries, tagged `source: "bundled"`. The count varies by Hermes
 version; expect 100+ skills once the runtime is installed.
 
-### Layer 3 — Monorepo developer-time ({{SKILLS_TOTAL}} skills, source-only)
+### Layer 3 — Monorepo developer-time (48 skills, source-only)
 
-The root `.agents/skills/` tree holds {{SKILLS_TOTAL}} skills adapted
-from {{SKILLS_REPOS}} upstream repos. These are **not shipped in the
+The root `.agents/skills/` tree holds 48 skills adapted
+from 8 upstream repos. These are **not shipped in the
 binary** — they exist in the source tree for contributors who run
 Copilot / Claude Code / another agent inside this monorepo. The
 desktop does not see them; they are the contributor's surface, not
@@ -183,15 +184,15 @@ The full per-skill breakdown is in the monorepo README under
 
 ## Install
 
-The latest stable installer is **v2.10.82**, published at
-<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.82>.
+The latest stable installer is **v2.10.83**, published at
+<https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83>.
 Releases are **Windows-only**: the macOS and Linux build jobs were removed in
 v2.10.82 rather than left failing, because they need notarization and signing
 credentials the project does not have.
 Older releases are listed on the
 [Releases page](https://github.com/JZKK720/cubecloud-agentic-os/releases).
 v0.6.0 and v0.6.1 are marked pre-release because they were built
-from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.82
+from the now-retired `apps/desktop-shell/` wrapper tree; **use v2.10.83
 or later**.
 
 ### Prerequisites
@@ -216,8 +217,8 @@ access — the desktop prompts for the admin password upfront.
 ### Windows
 
 Download
-`cubecloud-agent-desktop-2.10.82-setup.exe` from the
-[v2.10.82 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.82)
+`cubecloud-agent-desktop-2.10.83-setup.exe` from the
+[v2.10.83 release](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
 and run it. The NSIS installer is one-click per-user and registers
 `cubecloud-agent-desktop` in Windows Programs and Features.
 
@@ -228,7 +229,7 @@ and run it. The NSIS installer is one-click per-user and registers
 > for the OEM-build path that includes a corporate certificate.
 
 For an installer-free option, download
-`cubecloud-agent-desktop-2.10.82-portable.exe` instead — single-file
+`cubecloud-agent-desktop-2.10.83-portable.exe` instead — single-file
 portable that runs without an install step.
 
 ### macOS / Linux
@@ -417,7 +418,7 @@ contains the expected `node_modules/`, `out/main/index.js`, and
   [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
 - **The skills ecosystem** —
   [`../.agents/skills/README.md`](../.agents/skills/README.md)
-  ({{SKILLS_UPSTREAM}} skills, mirrored to `~/.agents/skills/`)
+  (35 skills, mirrored to `~/.agents/skills/`)
 - **The runtime orchestration deep-dive** —
   [`../docs/handbook/ARCHITECTURE.md`](../docs/handbook/ARCHITECTURE.md#runtime-orchestration-deep)
 - **The Hermes / IronClaw / OpenClaw attach smokes** —

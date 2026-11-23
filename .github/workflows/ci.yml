@@ -10,13 +10,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Structural docs check: fail any PR that hard-codes a skill
-  # count in prose. Pure Node, no install step required.
-  # The accepted forms are {{SKILLS_TOTAL}}, {{SKILLS_UPSTREAM}},
-  # {{SKILLS_REPOS}} — see scripts/skill-counts.cjs for the
-  # source of truth. This gate is what makes the prose count
-  # drift impossible: the next skill-add that forgets to update
-  # the count will fail CI rather than silently land.
+  # Structural docs check: fail any PR whose prose states a skill count
+  # that is not currently true. Pure Node, no install step required.
+  # Ground truth (TOTAL/UPSTREAM/REPOS) is computed from
+  # .agents/skills/ on every run — see scripts/check-skill-counts.cjs.
+  # Numbers are allowed and must render; the earlier contract banned
+  # every number in favour of {{SKILLS_*}} tokens, which nothing
+  # substituted, so the published README shipped the literal token.
+  # This gate is what makes drift impossible: the next skill-add that
+  # forgets to update a count fails CI rather than silently landing.
   check-skill-counts:
     name: Verify skill counts in prose
     runs-on: ubuntu-latest
@@ -29,7 +31,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Verify no hard-coded skill counts in prose
+      - name: Verify every stated skill count is true
         run: node scripts/check-skill-counts.cjs
 
   # Doc-pair section diff: fail any PR that drops an EN section in a

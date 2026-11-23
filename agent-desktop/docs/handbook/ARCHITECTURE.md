@@ -226,7 +226,7 @@ The skills harness (`src/main/skills-harness.ts`) is the resolver that the agent
 - Returns the merged set, with repo-local taking precedence over user-global.
 - Caches the result in memory; reloads on file-system change.
 
-The {{SKILLS_TOTAL}}-skill ecosystem that the harness resolves is described in `docs/HANDBOOK.md` §5 and in `.agents/skills/README.md`. The harness is Cubecloud-original; the skills themselves are adapted from upstream MIT-licensed repos (see `NOTICE` §"Adapted dependencies").
+The 48-skill ecosystem that the harness resolves is described in `docs/HANDBOOK.md` §5 and in `.agents/skills/README.md`. The harness is Cubecloud-original; the skills themselves are adapted from upstream MIT-licensed repos (see `NOTICE` §"Adapted dependencies").
 
 ## Build pipeline
 

@@ -83,7 +83,7 @@ SkillSpector と OpenKnowledge を追加、Qdrant はローカル Docker がデ�
 
 Skills サーフェスは、互いに独立した 3 つのスキルツリーから成り立ちます。それぞれライフサイクルが異なり、**重複は意図的に存在しません**。対象読者と目的が異なります。
 
-### 第 1 層 —— デスクトップ内蔵（{{SKILLS_TOTAL}} スキル、asar に同梱）
+### 第 1 層 —— デスクトップ内蔵（48 スキル、asar に同梱）
 
 これらは初回起動時に **Skills → Browse** タブに表示されるスキルです。パッケージ済みバイナリ内の `agent-desktop/.agents/skills/<name>/SKILL.md` に置かれているため、ユーザーがデスクトップをインストールした瞬間からオフラインで利用可能です。
 
@@ -115,9 +115,9 @@ Skills サーフェスは、互いに独立した 3 つのスキルツリーか�
 
 Hermes ランタイムをインストールすると（初回ローカル導入時）、デスクトップは hermes-agent リポジトリ内に同梱されているスキルを検出します。配置先は `<HERMES_REPO>/skills/<category>/<name>/SKILL.md`。これらは Skills → Browse タブにデスクトップ内蔵分と一緒に表示され、`source: "bundled"` タグが付きます。数は Hermes のバージョンにより変動し、ランタイム導入後は概ね 100+ 件になります。
 
-### 第 3 層 —— Monorepo 開発者向け（{{SKILLS_TOTAL}} スキル、ソースのみ）
+### 第 3 層 —— Monorepo 開発者向け（48 スキル、ソースのみ）
 
-ルート `.agents/skills/` には {{SKILLS_REPOS}} 個の上流リポジトリから適合された {{SKILLS_TOTAL}} 件のスキルがあります。これらは**バイナリには同梱されません**。本 monorepo 内で Copilot / Claude Code / 他のエージェントを動かす貢献者向けにソースツリー内に存在します。デスクトップからは見えず、エンドユーザー向けではなく貢献者向けです。
+ルート `.agents/skills/` には 8 個の上流リポジトリから適合された 48 件のスキルがあります。これらは**バイナリには同梱されません**。本 monorepo 内で Copilot / Claude Code / 他のエージェントを動かす貢献者向けにソースツリー内に存在します。デスクトップからは見えず、エンドユーザー向けではなく貢献者向けです。
 
 スキルごとの全明細は monorepo README の ["What ships in this repo"](../README.md#what-ships-in-this-repo) を参照してください。
 
@@ -248,7 +248,7 @@ npm run verify:bundle
 - **長編の分野別ドキュメント** — [`../docs/handbook/`](../docs/handbook/)（アーキテクチャ、開発、オペレーション）
 - **ライセンス / ブランド** — [`../LICENSE`](../LICENSE) と [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
 - **ライブ / スクラッチパッド / ミラー索引** — [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
-- **スキルエコシステム** — [`../.agents/skills/README.md`](../.agents/skills/README.md)（{{SKILLS_UPSTREAM}} 個のスキル、`~/.agents/skills/` にミラー）
+- **スキルエコシステム** — [`../.agents/skills/README.md`](../.agents/skills/README.md)（35 個のスキル、`~/.agents/skills/` にミラー）
 - **ランタイムオーケストレーション詳細** — [`../docs/handbook/ARCHITECTURE.md`](../docs/handbook/ARCHITECTURE.md#runtime-orchestration-deep)
 - **Hermes / IronClaw / OpenClaw アタッチ smoke** — [`../docs/hermes-agent-attach.smoke.md`](../docs/hermes-agent-attach.smoke.md) と [`../docs/ironclaw-attach.smoke.md`](../docs/ironclaw-attach.smoke.md)
 

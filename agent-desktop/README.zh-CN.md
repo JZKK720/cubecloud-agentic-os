@@ -83,7 +83,7 @@ MCP 注册表大修：Firecrawl 替换 Tavily（无密钥额度，可自托管�
 
 Skills 表面来自三个相互独立的技能树，各有不同的生命周期。三者之间**不存在重复**——它们面向不同的受众、解决不同的问题。
 
-### 第 1 层 —— 桌面内置（{{SKILLS_TOTAL}} 个技能，随 asar 打包发布）
+### 第 1 层 —— 桌面内置（48 个技能，随 asar 打包发布）
 
 这些是首次启动后可在 **Skills → Browse** 标签页看到的技能。它们位于打包后二进制内的 `agent-desktop/.agents/skills/<name>/SKILL.md`，因此从用户安装桌面的那一刻起，就可以在离线状态下使用。
 
@@ -115,9 +115,9 @@ Skills 表面来自三个相互独立的技能树，各有不同的生命周期�
 
 当 Hermes 运行时被安装（首次启动的本地安装）后，桌面会发现在 hermes-agent 仓库内随发行版一起发布的技能，路径为 `<HERMES_REPO>/skills/<category>/<name>/SKILL.md`。它们会与桌面内置的条目一起出现在 Skills → Browse 标签页，标记为 `source: "bundled"`。数量随 Hermes 版本变化；运行时安装完成后通常会有 100+ 条。
 
-### 第 3 层 —— Monorepo 开发者态（{{SKILLS_TOTAL}} 个技能，仅源码）
+### 第 3 层 —— Monorepo 开发者态（48 个技能，仅源码）
 
-仓库根的 `.agents/skills/` 目录保存了 {{SKILLS_TOTAL}} 个从 {{SKILLS_REPOS}} 上游仓库适配而来的技能。这些**不会随二进制一起发布**——它们存在于源码树中，供在本 monorepo 内运行 Copilot / Claude Code / 其他 agent 的贡献者使用。桌面看不到它们；它们面向贡献者，而非终端用户。
+仓库根的 `.agents/skills/` 目录保存了 48 个从 8 上游仓库适配而来的技能。这些**不会随二进制一起发布**——它们存在于源码树中，供在本 monorepo 内运行 Copilot / Claude Code / 其他 agent 的贡献者使用。桌面看不到它们；它们面向贡献者，而非终端用户。
 
 每个技能的完整明细见 monorepo README 的 ["What ships in this repo"](../README.md#what-ships-in-this-repo)。
 
@@ -249,7 +249,7 @@ npm run verify:bundle
 - **长篇分主题深入文档** — [`../docs/handbook/`](../docs/handbook/)（架构、开发、运维）
 - **许可证 / 品牌** — [`../LICENSE`](../LICENSE) 与 [`../BRANDING_AND_LICENSE.md`](../BRANDING_AND_LICENSE.md)
 - **活跃 / 暂存 / 镜像索引** — [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
-- **技能生态** — [`../.agents/skills/README.md`](../.agents/skills/README.md)（{{SKILLS_UPSTREAM}} 个技能，镜像至 `~/.agents/skills/`）
+- **技能生态** — [`../.agents/skills/README.md`](../.agents/skills/README.md)（35 个技能，镜像至 `~/.agents/skills/`）
 - **运行时编排深入文档** — [`../docs/handbook/ARCHITECTURE.md`](../docs/handbook/ARCHITECTURE.md#runtime-orchestration-deep)
 - **Hermes / IronClaw / OpenClaw 接入 smoke** — [`../docs/hermes-agent-attach.smoke.md`](../docs/hermes-agent-attach.smoke.md) 与 [`../docs/ironclaw-attach.smoke.md`](../docs/ironclaw-attach.smoke.md)
 

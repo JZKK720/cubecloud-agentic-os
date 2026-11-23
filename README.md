@@ -10,14 +10,14 @@
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
 
-## Latest release: **v2.10.82**
+## Latest release: **v2.10.83**
 
 Download the Windows installer from the
-[v2.10.82 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.82):
+[v2.10.83 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83):
 
-- `cubecloud-agent-desktop-2.10.82-setup.exe` (NSIS one-click installer)
-- `cubecloud-agent-desktop-2.10.82-portable.exe` (single-file portable)
-- `cubecloud-agent-desktop-2.10.82-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
+- `cubecloud-agent-desktop-2.10.83-setup.exe` (NSIS one-click installer)
+- `cubecloud-agent-desktop-2.10.83-portable.exe` (single-file portable)
+- `cubecloud-agent-desktop-2.10.83-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
 
 **Releases are Windows-only.** The macOS and Linux jobs were removed in
 v2.10.82 rather than left failing; they needed Apple notarization and Linux
@@ -151,7 +151,7 @@ This monorepo is broader than the desktop binary alone.
 
 - [`agent-desktop/`](agent-desktop/) is the full Electron desktop that ships to end users. This is the active implementation target; all builds come from here.
 - [`packages/platform-core/`](packages/platform-core/) holds shared TypeScript contracts.
-- [`.agents/skills/`](.agents/skills/) contains {{SKILLS_TOTAL}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos. These are the **contributor's surface** — they exist in the source tree for Copilot / Claude Code sessions inside this monorepo and are **not shipped in the desktop binary**. The end user of the desktop sees a different set: the [28 desktop-bundled skills](agent-desktop/.agents/skills/) that ship inside the asar and are visible in the Skills → Browse tab. See [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers) for the full 3-layer breakdown.
+- [`.agents/skills/`](.agents/skills/) contains 48 first-class open-source skills adapted from 8 upstream repos. These are the **contributor's surface** — they exist in the source tree for Copilot / Claude Code sessions inside this monorepo and are **not shipped in the desktop binary**. The end user of the desktop sees a different set: the [48 desktop-bundled skills](agent-desktop/.agents/skills/) that ship inside the asar and are visible in the Skills → Browse tab. See [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers) for the full 3-layer breakdown.
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) is a repo-authored Copilot / VS Code workflow layer for the optional Headroom context-compression proxy. The standalone install/use guide lives at [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md).
 - [`docs/`](docs/) holds the handbook, threat model, runtime plans, legal policies, and transition history.
 
@@ -196,7 +196,7 @@ inspectable, and replaceable.
 - **Predictable state.** Profiles, sessions, provider definitions, memories, schedules, and kanban state live in durable local state rather than in an opaque hosted workflow layer.
 - **Replaceable dependencies.** Runtime choice and provider choice are separated so teams can migrate, stage, or roll back without collapsing the whole user workflow.
 - **Optional sidecars stay optional.** CodeGraph and EverOS expand the system when needed, but they do not become mandatory hidden dependencies.
-- **Versioned methodology.** The {{SKILLS_UPSTREAM}}-skill ecosystem is documented, provenance-tracked, and supported by a red-baseline discipline inherited from the upstream skill process.
+- **Versioned methodology.** The 35-skill ecosystem is documented, provenance-tracked, and supported by a red-baseline discipline inherited from the upstream skill process.
 - **Clear legal surface.** The repo documents path-level provenance, trademark posture, commercial-relicensing policy, and the inherited-framework carve-out in one place. See [`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) and [`docs/legal/`](docs/legal/).
 
 That is the enterprise story: not "trust us," but "inspect the stack."
@@ -295,7 +295,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   security policy and reporting
 ├── THREAT_MODEL.md               local-first threat model
 ├── README.i18n.md                translation inventory manifest
-├── .agents/                      {{SKILLS_UPSTREAM}} open-source skills mirrored to ~/.agents/skills/
+├── .agents/                      35 open-source skills mirrored to ~/.agents/skills/
 ├── .github/                      agent instructions, workflow skills, and automation
 ├── packages/
 │   └── platform-core/            shared TypeScript contracts

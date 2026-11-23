@@ -115,9 +115,9 @@ Skills 화면은 서로 독립적인 세 개의 스킬 트리에서 가져옵니
 
 Hermes 런타임이 설치되면(첫 실행 로컬 설치), 데스크톱은 hermes-agent 리포지토리에 동봉된 스킬을 발견합니다. 위치는 `<HERMES_REPO>/skills/<category>/<name>/SKILL.md`입니다. 이 스킬들은 Skills → Browse 탭에서 데스크톱 내장 항목과 함께 표시되며 `source: "bundled"` 태그가 붙습니다. 개수는 Hermes 버전에 따라 달라지며, 런타임 설치 후 보통 100개 이상이 됩니다.
 
-### 3계층 — Monorepo 개발자용 ({{SKILLS_TOTAL}}개 스킬, 소스 전용)
+### 3계층 — Monorepo 개발자용 (48개 스킬, 소스 전용)
 
-루트 `.agents/skills/`에는 {{SKILLS_REPOS}}개 상류 리포지토리에서 적합된 {{SKILLS_TOTAL}}개의 스킬이 있습니다. 이것들은 **바이너리에 동봉되지 않습니다** — 이 monorepo 안에서 Copilot / Claude Code / 다른 에이전트를 돌리는 컨트리뷰터를 위해 소스 트리 안에 존재합니다. 데스크톱은 그것들을 보지 못하며, 이는 엔드 사용자가 아닌 컨트리뷰터 대상입니다.
+루트 `.agents/skills/`에는 8개 상류 리포지토리에서 적합된 48개의 스킬이 있습니다. 이것들은 **바이너리에 동봉되지 않습니다** — 이 monorepo 안에서 Copilot / Claude Code / 다른 에이전트를 돌리는 컨트리뷰터를 위해 소스 트리 안에 존재합니다. 데스크톱은 그것들을 보지 못하며, 이는 엔드 사용자가 아닌 컨트리뷰터 대상입니다.
 
 스킬별 전체 내역은 monorepo README의 ["What ships in this repo"](../README.md#what-ships-in-this-repo)에 있습니다.
 
@@ -294,7 +294,7 @@ npm run verify:bundle
 - **활성 / 스크래치패드 / 미러 인덱스** —
   [`../docs/RETIRED_AND_LEGACY.md`](../docs/RETIRED_AND_LEGACY.md)
 - **스킬 생태계** — [`../.agents/skills/README.md`](../.agents/skills/README.md)
-  ({{SKILLS_UPSTREAM}}개 스킬, `~/.agents/skills/`로 미러)
+  (35개 스킬, `~/.agents/skills/`로 미러)
 - **런타임 오케스트레이션 심화** —
   [`../docs/handbook/ARCHITECTURE.md`](../docs/handbook/ARCHITECTURE.md#runtime-orchestration-deep)
 - **Hermes / IronClaw / OpenClaw 연결 smoke** —

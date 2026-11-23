@@ -321,7 +321,7 @@ treat them as two separate edits, not one.
 | `agent-desktop/` | The Electron desktop that ships to end users. This is the active implementation target. |
 | `apps/desktop-shell/` | **Retired in V2.10.67** (commit `06a10b9`). The `desktop-shell/` subdir is gone. References to it in older docs and READMEs are stale — treat them as `agent-desktop/` for build purposes. |
 | `packages/platform-core/` | Shared TypeScript contracts. |
-| `.agents/skills/` | {{SKILLS_UPSTREAM}} first-class open-source skills adapted from {{SKILLS_REPOS}} upstream repos. |
+| `.agents/skills/` | 35 first-class open-source skills adapted from 8 upstream repos. |
 | `.github/skills/` | Repo-authored Copilot / VS Code workflow skills (docs-i18n-refresh, headroom-workflow). |
 | `.github/prompts/` | Slash prompts for structured agent work. |
 | `.github/copilot-instructions.md` | Copilot-specific instruction file. The Karpathy/ECC generic principles. |

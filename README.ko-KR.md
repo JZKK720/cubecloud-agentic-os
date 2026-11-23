@@ -2,20 +2,20 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 최신 릴리스: **v2.10.73**
+## 최신 릴리스: **v2.10.83**
 
 Windows 설치 프로그램은
-[v2.10.73 릴리스 페이지](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
+[v2.10.83 릴리스 페이지](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
 에서 다운로드하세요:
 
-- `cubecloud-agent-desktop-2.10.73-setup.exe` (127 MB, NSIS 원클릭 설치 프로그램)
-- `cubecloud-agent-desktop-2.10.73-portable.exe` (127 MB, 단일 파일 포터블)
-- `cubecloud-agent-desktop-2.10.73-setup.exe.blockmap` + `latest.yml` (자동 업데이트 메타데이터)
+- `cubecloud-agent-desktop-2.10.83-setup.exe` (NSIS 원클릭 설치 프로그램)
+- `cubecloud-agent-desktop-2.10.83-portable.exe` (단일 파일 포터블)
+- `cubecloud-agent-desktop-2.10.83-setup.exe.blockmap` + `latest.yml` (자동 업데이트 메타데이터)
 
-v2.10.73은 **MCP 레지스트리 개편** 릴리스입니다. Firecrawl이 Tavily를 대체(키리스 티어, 셀프 호스팅 가능), SkillSpector와 OpenKnowledge 추가, Qdrant는 로컬 Docker가 기본(API 키 불필요). `verify:bundle`
-7/7 PASS. 전체 변경 로그는
-[`agent-desktop/changelogs/2.10.73.md`](agent-desktop/changelogs/2.10.73.md)를
-참조하세요. v0.6.0과 v0.6.1은 GitHub에서 프리릴리스로 표시되어
+**릴리스는 Windows 전용입니다.** macOS와 Linux 작업은 계속 실패하게 두는 대신 v2.10.82에서 제거되었습니다. Apple 공증과 Linux 서명 자격 증명이 필요했지만 이 프로젝트에는 없습니다. 여기에 태그 푸시에서는 결코 충족될 수 없는 공개 게이트와, 깨끗한 runner에서 `tsc`를 깨뜨리는 선언되지 않은 workspace 의존성이 더해져 v2.10.75부터 v2.10.82까지 아무것도 출시되지 않았습니다——5개월, 157개 커밋.
+
+v2.10.82는 v2.10.77부터 v2.10.81까지의 모든 내용과 자체 변경 사항을 담고 있으므로 중간 태그는 대체되었습니다(릴리스가 없는 떠 있는 태그였으며 삭제되었습니다).
+v0.6.0과 v0.6.1은 GitHub에서 프리릴리스로 표시되어
 있으며, 폐기된 `apps/desktop-shell/` 래퍼 트리에서 빌드되었으므로
 사용하면 안 됩니다.
 
@@ -108,7 +108,7 @@ Cubecloud는 다음과 같은 팀과 운영자에게 특히 적합합니다:
 
 - [`agent-desktop/`](agent-desktop/)은 최종 사용자에게 제공되는 완전한 Electron 데스크톱입니다. 유일한 활성 구현 대상이며 모든 빌드 결과물은 여기에서 생성됩니다.
 - [`packages/platform-core/`](packages/platform-core/)는 공유 TypeScript 계약을 보유합니다.
-- [`.agents/skills/`](.agents/skills/)에는 {{SKILLS_REPOS}}개 업스트림 리포지토리에서 적응된 49개의 오픈소스 스킬이 들어 있습니다. 이것들은 **컨트리뷰터 대상** 스킬이며, 이 monorepo 안에서 Copilot / Claude Code 세션을 돌리기 위한 소스 트리에 존재합니다. **데스크톱 바이너리에는 포함되지 않습니다**. 데스크톱 최종 사용자가 보는 것은 별개의 묶음입니다: asar 내부에 동봉되는 [28개의 데스크톱 내장 스킬](agent-desktop/.agents/skills/)이며, Skills → Browse 탭에 표시됩니다. 3개 계층의 전체 구분은 [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers)를 참고하세요.
+- [`.agents/skills/`](.agents/skills/)에는 8개 업스트림 리포지토리에서 적응된 48개의 오픈소스 스킬이 들어 있습니다. 이것들은 **컨트리뷰터 대상** 스킬이며, 이 monorepo 안에서 Copilot / Claude Code 세션을 돌리기 위한 소스 트리에 존재합니다. **데스크톱 바이너리에는 포함되지 않습니다**. 데스크톱 최종 사용자가 보는 것은 별개의 묶음입니다: asar 내부에 동봉되는 [28개의 데스크톱 내장 스킬](agent-desktop/.agents/skills/)이며, Skills → Browse 탭에 표시됩니다. 3개 계층의 전체 구분은 [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers)를 참고하세요.
 - [`docs/`](docs/)는 핸드북, 위협 모델, 런타임 계획, 법적 정책, 전환 이력을 보유합니다.
 
 데스크톱 첫 실행 시 사용자는 다음을 얻습니다:
@@ -148,7 +148,7 @@ Cubecloud가 말하는 "프로덕션 대응"이란 "호스팅 SaaS와 영업 대
 - **예측 가능한 상태.** 프로필, 세션, 프로바이더 정의, 메모리, 스케줄, 칸반 상태가 불투명한 호스팅 워크플로 레이어가 아닌 영구적인 로컬 상태에 저장됩니다.
 - **교체 가능한 종속성.** 런타임 선택과 프로바이더 선택이 분리되어 있어 팀이 전체 사용자 워크플로를 붕괴시키지 않고 마이그레이션, 스테이징, 롤백할 수 있습니다.
 - **선택적 사이드카는 선택적으로 유지.** CodeGraph와 EverOS는 필요할 때 시스템을 확장하지만 필수적인 숨겨진 플랫폼 종속성이 되지 않습니다.
-- **버전 관리된 방법론.** {{SKILLS_UPSTREAM}}개 스킬 생태계는 문서화되고 출처가 추적되며 업스트림 스킬 프로세스에서 상속된 red-baseline 규율로 지원됩니다.
+- **버전 관리된 방법론.** 35개 스킬 생태계는 문서화되고 출처가 추적되며 업스트림 스킬 프로세스에서 상속된 red-baseline 규율로 지원됩니다.
 - **명확한 법적 표면.** 리포지토리는 경로 수준 출처, 상표 자세, 상업적 재라이선스 정책, 상속 프레임워크의 MIT carve-out을 한 곳에서 문서화합니다. [`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) 및 [`docs/legal/`](docs/legal/) 참조.
 
 이것이 엔터프라이즈 스토리입니다: "우리를 믿으세요"가 아니라 "스택을 검사하세요".
@@ -188,7 +188,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   보안 정책 및 보고 방법
 ├── THREAT_MODEL.md               로컬-퍼스트 위협 모델
 ├── README.i18n.md                번역 인벤토리 매니페스트
-├── .agents/                      ~/.agents/skills/로 미러링되는 {{SKILLS_TOTAL}}개의 오픈소스 스킬
+├── .agents/                      ~/.agents/skills/로 미러링되는 48개의 오픈소스 스킬
 ├── .github/                      에이전트 지시, 워크플로 스킬, 자동화
 ├── packages/
 │   └── platform-core/            공유 TypeScript 계약

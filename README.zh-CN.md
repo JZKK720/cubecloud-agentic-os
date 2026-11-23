@@ -2,18 +2,19 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 最新发布：**v2.10.73**
+## 最新发布：**v2.10.83**
 
 从
-[v2.10.73 发布页](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.73)
+[v2.10.83 发布页](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.83)
 下载 Windows 安装包：
 
-- `cubecloud-agent-desktop-2.10.73-setup.exe`（127 MB，NSIS 一键安装）
-- `cubecloud-agent-desktop-2.10.73-portable.exe`（127 MB，单文件便携版）
-- `cubecloud-agent-desktop-2.10.73-setup.exe.blockmap` + `latest.yml`（自动更新元数据）
+- `cubecloud-agent-desktop-2.10.83-setup.exe`（NSIS 一键安装）
+- `cubecloud-agent-desktop-2.10.83-portable.exe`（单文件便携版）
+- `cubecloud-agent-desktop-2.10.83-setup.exe.blockmap` + `latest.yml`（自动更新元数据）
 
-v2.10.73 是 **MCP 注册表大修**版本：Firecrawl 替换 Tavily（无密钥额度，可自托管），新增 SkillSpector 和 OpenKnowledge，Qdrant 默认使用本地 Docker（无需 API 密钥）。`verify:bundle` 7/7 通过。完整变更日志见
-[`agent-desktop/changelogs/2.10.73.md`](agent-desktop/changelogs/2.10.73.md)。
+**发布仅面向 Windows。** macOS 与 Linux 构建任务已在 v2.10.82 移除，而不是让它们持续失败——它们需要本仓库并不具备的 Apple 公证与 Linux 签名凭据。叠加一个在 tag 推送时永远无法满足的发布门禁，以及一个导致 `tsc` 在干净 runner 上失败的未声明 workspace 依赖，使 v2.10.75 到 v2.10.82 之间没有任何版本真正发布出去——五个月、157 个提交。
+
+v2.10.82 承载了 v2.10.77 至 v2.10.81 的全部内容以及自身改动，因此中间的 tag 已被取代（它们是没有对应 release 的悬挂 tag，已删除）。
 v0.6.0 和 v0.6.1 已在 GitHub 上标记为预发布版本，不应使用——它们构建自已废弃的
 `apps/desktop-shell/` wrapper 树。
 
@@ -108,7 +109,7 @@ Cubecloud 特别适合以下几类团队与操作者：
 
 - [`agent-desktop/`](agent-desktop/) 是面向终端用户交付的完整 Electron 桌面端，也是唯一的活跃实现目标 —— 所有构建产物均来自此目录。
 - [`packages/platform-core/`](packages/platform-core/) 保存共享 TypeScript 契约。
-- [`.agents/skills/`](.agents/skills/) 包含 49 个开源技能，来自 {{SKILLS_REPOS}} 上游仓库。这些是**面向贡献者**的技能——存在于源码树中，供在本 monorepo 内运行 Copilot / Claude Code 会话时使用，**不会随桌面二进制发布**。桌面终端用户看到的是另一组：[28 个桌面内置技能](agent-desktop/.agents/skills/)，它们打包进 asar，可见于 Skills → Browse 标签页。完整的 3 层划分见 [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers)。
+- [`.agents/skills/`](.agents/skills/) 包含 48 个开源技能，来自 8 个上游仓库。这些是**面向贡献者**的技能——存在于源码树中，供在本 monorepo 内运行 Copilot / Claude Code 会话时使用，**不会随桌面二进制发布**。桌面终端用户看到的是另一组：[48 个桌面内置技能](agent-desktop/.agents/skills/)，它们打包进 asar，可见于 Skills → Browse 标签页。完整的 3 层划分见 [`agent-desktop/README.md`](agent-desktop/README.md#skills-ecosystem--3-layers)。
 - [`.github/skills/headroom-workflow/`](.github/skills/headroom-workflow/) 是仓库自带的 Copilot / VS Code 工作流层，对接可选的 Headroom 上下文压缩代理。完整安装 / 使用指南位于 [`docs/agent-skills-bundle/HEADROOM.md`](docs/agent-skills-bundle/HEADROOM.md)。
 - [`docs/`](docs/) 保存手册、威胁模型、运行时规划、法律政策与过渡历史。
 
@@ -148,7 +149,7 @@ Cubecloud 所说的"面向生产"，并不是"托管 SaaS 加销售后台"，而
 - **可预测状态** — 人设、会话、提供者定义、记忆、计划任务与看板状态均保存在持久化的本地状态中，而非托管黑盒流程层。
 - **依赖可替换** — 运行时选择与提供者选择分离，团队可以迁移、灰度或回滚，而不会让整个用户工作流一起失效。
 - **可选 sidecar 依然保持可选** — CodeGraph 与 EverOS 在需要时扩展系统，但不会变成必须存在的隐藏平台依赖。
-- **方法论已版本化** — {{SKILLS_UPSTREAM}} 技能生态有文档、有来源跟踪，并继承了上游技能流程中的 red-baseline 验证纪律。
+- **方法论已版本化** — 35 技能生态有文档、有来源跟踪，并继承了上游技能流程中的 red-baseline 验证纪律。
 - **法律表面清晰** — 仓库在一个地方说明路径级来源、商标姿态、商业重许可政策以及继承框架的 MIT 剖分。参见 [`BRANDING_AND_LICENSE.md`](BRANDING_AND_LICENSE.md) 与 [`docs/legal/`](docs/legal/)。
 
 这就是它面向企业团队的价值主张：不是"请相信我们"，而是"请检查这套栈"。
@@ -208,7 +209,7 @@ cubecloud-agentic-os/
 ├── SECURITY.md                   安全策略与上报方式
 ├── THREAT_MODEL.md               本地主导威胁模型
 ├── README.i18n.md                译文清单
-├── .agents/                      {{SKILLS_TOTAL}} 个镜像到 ~/.agents/skills/ 的开源技能
+├── .agents/                      48 个镜像到 ~/.agents/skills/ 的开源技能
 ├── .github/                      智能体指令、工作流技能与自动化
 │   └── skills/
 │       └── headroom-workflow/    面向可选 Headroom 代理的 Copilot / VS Code 工作流层
