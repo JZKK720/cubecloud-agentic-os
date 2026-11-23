@@ -322,12 +322,21 @@ was added that fails on the old matcher and passes on the new one.
 
 ## Live gateway status, measured
 
-| Lane | Port | Health | Chat round-trip |
-|---|---|---|---|
-| Hermes | 8642 | **PASS** 200, 21 ms | gateway live |
-| IronClaw 1.4.1 | 3231 | **PASS** 200, 50 ms | **blocked by host VRAM** |
-| OpenClaw 2026.11.6 | 18789 | **PASS** 200 | **PASS** — `POST /v1/chat/completions` → `PONG` |
-| Raven 0.2.8 | 18792 | **PASS** 200 (`raven-serve`) | n/a — no `/v1` surface exists |
+These are **opt-in** lanes. The desktop and the container ship without them,
+and nothing in the product requires them to be running. The table records what
+each lane did when it *was* started for verification; the last column says
+whether it is up now.
+
+| Lane | Port | Health (when started) | Chat round-trip | Running now |
+|---|---|---|---|---|
+| Hermes | 8642 | **PASS** 200, 11 ms | gateway live | **yes** |
+| IronClaw 1.4.1 | 3231 | **PASS** 200, 10 ms | **blocked by host VRAM** | no — stopped on request |
+| OpenClaw 2026.11.6 | 18789 | **PASS** 200 | **PASS** — `POST /v1/chat/completions` → `PONG` | no — stopped on request |
+| Raven 0.2.8 | 18792 | **PASS** 200 (`raven-serve`) | n/a — no `/v1` surface exists | yes |
+
+The verification is not withdrawn: every row was measured against a live
+process, and the checks that proved it are committed. IronClaw and OpenClaw
+are simply not started right now, which is their shipped default.
 
 ### OpenClaw needed one non-obvious toggle
 
@@ -361,4 +370,17 @@ cloud provider key.
 `scripts/runtime-gateways.smoke.cjs` covers the two lanes that had **no**
 operator-side check — which is exactly how the Raven port stayed wrong for
 months. It asserts OpenClaw's `/v1/models` OpenAI shape and Raven's
-`raven-serve` marker, and it fails when pointed at 8855 (proven both ways).
+`raven-serve` marker, and it distinguishes three states, because conflating
+them is how a wrong port hides:
+
+| State | Meaning | Exit |
+|---|---|---|
+| `PASS` | process is up and answers with the expected shape | 0 |
+| `SKIP` | nothing is listening — the lane is opt-in and not started | 0 |
+| `FAIL` | something answers, but not with the expected shape | 1 |
+
+`SKIP` is deliberately not a failure: "not started" is the shipped default.
+`FAIL` is the state that actually strands a user, so it is the only one that
+turns the smoke red. Both non-trivial states were proven by running them —
+`SKIP` with both gateways stopped, `FAIL` against a stub server that answers
+`200 {"status":"ok"}` on Raven's port.
