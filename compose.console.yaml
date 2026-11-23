@@ -17,6 +17,21 @@
 #      service DNS replaces the host-gateway hop.
 #
 # Browser shell: http://localhost:6770 (serves out/renderer + /shim.js).
+#
+# Runtime gateway. Two different hops are involved and they are easy to
+# confuse:
+#
+#   * the WORKSPACE (6767) — optional, the cubecloud-agent stack;
+#   * the RUNTIME gateway (8642) — required to run an AI turn at all. The
+#     kernel attaches to it over HTTP; it does not embed a runtime.
+#
+# Both are host services, and a container's loopback is its own, so both
+# are reached through host.docker.internal. CONSOLE_RUNTIME_BASE_URL sets
+# the runtime hop and already defaults to the right value; without
+# HERMES_API_SERVER_KEY the kernel reaches the gateway but cannot
+# authenticate. Copy `.env.console.example` to `.env` for the full set.
+# Being "up and healthy" does not imply a turn can run — see the
+# `Assert the kernel targets the configured runtime` step in ci.yml.
 
 services:
   console-backend:

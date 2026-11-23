@@ -287,14 +287,10 @@ jobs:
             -d '{"threadId":"ci","runId":"ci","messages":[{"role":"user","content":"hi"}]}')
           test "$code" = "200" || { echo "::error::AG-UI returned $code"; cat /tmp/agui.txt; exit 1; }
           grep -q 'RUN_STARTED' /tmp/agui.txt || { echo "::error::no RUN_STARTED"; cat /tmp/agui.txt; exit 1; }
-          # The run must terminate exactly once, and the terminal event must be
-          # truthful. This smoke previously required RUN_FINISHED — which the
-          # kernel emitted even when the turn had produced no text at all,
-          # so the gate was pinning the bug it should have caught.
-          #
-          # In this container there is no Hermes binary, so the honest outcome
-          # is RUN_ERROR. Accept either terminal event, but require one, and
-          # require that a successful finish is not silent.
+          # A run that finishes successfully must have carried text. A
+          # RUN_FINISHED with neither text nor a tool call is a silent turn:
+          # the kernel is up but cannot reach or authenticate to the runtime,
+          # which is exactly how this shipped broken.
           if grep -q 'RUN_ERROR' /tmp/agui.txt; then
             echo "ok: AG-UI reported the turn error truthfully"
             grep -o '"message":"[^"]*"' /tmp/agui.txt | head -1 || true
@@ -304,6 +300,27 @@ jobs:
               echo "::error::RUN_FINISHED with no text and no tool call — a silent turn"; cat /tmp/agui.txt; exit 1; }
             echo "ok: AG-UI streamed RUN_STARTED -> content -> RUN_FINISHED"
           fi
+
+      # "Up" and "can think" are different states, and this job exists
+      # because the difference was invisible. The kernel boots healthy with
+      # no runtime reachable at all: health is its own process, not the
+      # gateway's. This step asserts the transport *selection* is right by
+      # proving the kernel resolves the configured runtime URL rather than
+      # its own loopback — the defect that produced `spawn … ENOENT` from a
+      # container that ships no Hermes binary.
+      - name: Assert the kernel targets the configured runtime, not its own loopback
+        run: |
+          set -euo pipefail
+          # The container's own 127.0.0.1:8642 must NOT be the target.
+          docker compose -p ci-smoke -f compose.console.yaml exec -T console-backend \
+            printenv CONSOLE_RUNTIME_BASE_URL | grep -q 'host.docker.internal:8642' \
+            || { echo "::error::kernel is not pointed at the host runtime"; docker compose -p ci-smoke -f compose.console.yaml exec -T console-backend printenv CONSOLE_RUNTIME_BASE_URL || true; exit 1; }
+          # And the resolution helper must honour it rather than returning the
+          # hard-coded loopback default.
+          docker compose -p ci-smoke -f compose.console.yaml exec -T console-backend sh -c \
+            'grep -q "getApiUrlWithEnvOverride()}/health" /app/src/main/hermes.ts' \
+            || { echo "::error::the API-server health gate does not use the env-aware URL"; exit 1; }
+          echo "ok: runtime targeting is configuration-driven"
 
       - name: Tear down
         if: always()
