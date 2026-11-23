@@ -71,4 +71,6 @@ export default {
   openclawNotDetected: "本机未检测到。",
   cliSectionEmpty: "未检测到任何 agent。请安装 Claude Code、Codex、Gemini CLI、OpenCode 等支持的 CLI 后点击重新扫描。",
   cliSectionPathHint: "若 CLI 仍显示缺失，请确认其 bin 目录已加入 Agent Desktop 继承的 PATH。",
+  launching: "正在启动...",
+  opening: "正在打开...",
 } as const;

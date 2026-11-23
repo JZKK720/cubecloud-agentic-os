@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   appName: "Cubecloud Agent Desktop",
   continue: "続行しますか？",
   cancel: "キャンセルしますか？",
@@ -14,7 +14,7 @@
   delete: "鍓婇櫎",
   remove: "鍓婇櫎",
   add: "杩藉姞",
-  create: "浣滄垚",
+  create: "作成",
   close: "闁夈仒銈？",
   confirm: "纰鸿獚",
   reset: "銉偦銉冦儓",
@@ -31,7 +31,7 @@
   baseUrl: "Base URL",
   port: "銉濄兗銉？",
   home: "銉涖兗銉？",
-  released: "銉儶銉笺偣鏃？",
+  released: "リリース済み",
   engine: "銈ㄣ兂銈搞兂",
   desktop: "銉囥偣銈儓銉冦儣",
   noResults: "绲愭灉銇岃銇ゃ亱銈娿伨銇涖倱",

@@ -26,4 +26,5 @@ export default {
   useExistingInvalid: "在该文件夹中未找到可用的本地运行时安装。",
   useExistingDone: "已设置现有安装 — 退出并重新打开 Cubecloud Desktop 以应用。",
   useExistingQuitBtn: "退出 Cubecloud Desktop",
+  supportChannel: "打开支持渠道",
 } as const;

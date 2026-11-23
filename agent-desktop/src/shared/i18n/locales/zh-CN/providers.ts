@@ -13,5 +13,6 @@ export default {
     qwenDesc: "使用您的 Qwen 订阅",
     geminiDesc: "使用您的 Google AI Pro / Gemini 套餐",
     minimaxDesc: "使用您的 MiniMax 订阅",
+    nousDesc: "使用您的 Nous Portal 订阅登录",
   },
 } as const;

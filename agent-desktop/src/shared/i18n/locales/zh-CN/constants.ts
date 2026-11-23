@@ -222,4 +222,6 @@ export default {
   platformWebhooksDesc: "通过 HTTP webhooks 接收消息",
   platformHomeAssistant: "Home Assistant",
   platformHomeAssistantDesc: "连接 Home Assistant",
+  nousApiKey: "Nous Portal API Key",
+  nousHint: "Nous Portal API Key——如果你已有 Nous 订阅，请改用下方的 OAuth 卡片",
 } as const;

@@ -171,7 +171,7 @@
   switchedToLocal: "Mudou para o modo local",
 
 
-  // Schema packs (V2 Step 13 鈥?gbrain)
+  // Schema packs (V2 Step 13 — gbrain)
   schemas: {
   sectionTitle: "Pacotes de esquemas",
   sectionHint: "Os pacotes de esquemas declaram quais tipos de página a base de conhecimento reconhece. O pacote ativo também direciona o roteamento de síntese.",
@@ -188,7 +188,7 @@
   inferResult: "Tipo: {{type}}",
   },
 
-  // Careful guard (V2 Step 9 鈥?gstack /careful)
+  // Careful guard (V2 Step 9 — gstack /careful)
   careful: {
   title: "Confirmar comando destrutivo",
   subtitle: "O corpo do plano contém um comando shell que parece destrutivo. Confirme antes de enviar.",

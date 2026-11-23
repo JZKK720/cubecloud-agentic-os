@@ -17,6 +17,8 @@ export default {
   yes: "是",
   no: "否",
   deleteTitle: "删除代理",
+  empty: "还没有代理档案",
+  emptyHint: "新建一个档案即可开始，每个档案都是独立的 Hermes 工作区。",
   auto: "自动",
   local: "本地",
 } as const;

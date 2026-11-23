@@ -2,6 +2,7 @@ export default {
   title: "模型",
   searchPlaceholder: "搜索模型...",
   empty: "还没有模型",
+  freeBadge: "（免费）",
   noMatch: "没有匹配的模型",
   deleteConfirm: "删除？",
   displayName: "显示名称",

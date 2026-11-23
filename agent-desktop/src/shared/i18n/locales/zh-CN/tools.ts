@@ -1,6 +1,8 @@
 export default {
   title: "工具",
   subtitle: "启用或禁用代理在对话期间可使用的工具集",
+  empty: "暂无可用工具集",
+  emptyHint: "网关运行后，工具集将显示在这里。",
   web: { label: "网络搜索", description: "搜索网页并提取 URL 内容" },
   browser: { label: "浏览器", description: "浏览、点击、输入并与网页交互" },
   terminal: { label: "终端", description: "执行 shell 命令和脚本" },
@@ -127,4 +129,15 @@ export default {
   agentReachInstalled: "已安装",
   agentReachNotInstalled:
     "Agent-Reach 未安装。运行时智能体没有联网能力工具。",
+  managedApps: {
+    title: "受管应用",
+    subtitle:
+      "桌面端可连接的每一个应用，以及其适配器上报的状态。只读：桌面端只是镜像这些服务，并不管理它们。",
+    refresh: "刷新",
+    loading: "正在读取名册……",
+    empty: "尚未注册任何受管应用。",
+    needsSetup: "需要设置",
+    needsAuth: "需要设置",
+    unavailable: "此构建中不提供受管应用名册。",
+  },
 } as const;

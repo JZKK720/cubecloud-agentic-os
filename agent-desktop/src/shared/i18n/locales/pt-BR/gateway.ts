@@ -32,31 +32,31 @@ export default {
   },  runtimes: {
     title: "Runtimes",
     summary:
-      "O mesmo registro de runtimes exibido na tela de boas-vindas. Cada linha mostra se o runtime est谩 pronto nesta m谩quina.",
+      "O mesmo registro de runtimes exibido na tela de boas-vindas. Cada linha mostra se o runtime está pronto nesta máquina.",
     registryLabel: "Registro de runtimes",
     refreshAria: "Re-escanear o registro de runtimes",
-    empty: "Nenhum runtime instalado ainda. A tela de boas-vindas instala o Hermes por padr茫o.",
+    empty: "Nenhum runtime instalado ainda. A tela de boas-vindas instala o Hermes por padrão.",
     statusReady: "Runtime pronto para hospedar o gateway.",
-    statusUnavailable: "Runtime ainda n茫o dispon铆vel nesta m谩quina.",
+    statusUnavailable: "Runtime ainda não disponível nesta máquina.",
     detected: "Detectado",
     responded: "Respondeu",
     scanning: "Escaneando…",
     localProbesLabel: "Sondagens do gateway local",
     localProbesRefreshAria: "Sondar portas do gateway local",
     localProbesEmpty:
-      "Nenhum gateway local respondeu. Volte 脿 tela de boas-vindas para instalar ou conectar.",
+      "Nenhum gateway local respondeu. Volte à tela de boas-vindas para instalar ou conectar.",
     discoveryHint:
-      "Este runtime exp玫e uma superf铆cie de descoberta que pode ser chamada da tela de boas-vindas.",
+      "Este runtime expõe uma superfície de descoberta que pode ser chamada da tela de boas-vindas.",
   },
   container: {
-    title: "Descoberta de cont锚ineres",
+    title: "Descoberta de contêineres",
     summary:
       "Examina o Docker Desktop em busca de runtimes pareados (IronClaw, OpenClaw e qualquer provedor com gateway Docker).",
     sharedHint:
-      "Mesmo registro da tela de boas-vindas. Fa莽a uma nova varredura aqui ap贸s iniciar ou parar um cont锚iner.",
+      "Mesmo registro da tela de boas-vindas. Faça uma nova varredura aqui após iniciar ou parar um contêiner.",
     statusLabel: "Status da varredura Docker",
     refreshAria: "Re-escanear os runtimes do Docker Desktop",
     rescan: "Re-escanear",
-    empty: "Nenhum runtime Docker foi detectado. Instale o Docker Desktop ou inicie um cont锚iner pareado.",
-    scannedAt: "趌tima varredura {{value}}",
+    empty: "Nenhum runtime Docker foi detectado. Instale o Docker Desktop ou inicie um contêiner pareado.",
+    scannedAt: "Última varredura {{value}}",
   },} as const;

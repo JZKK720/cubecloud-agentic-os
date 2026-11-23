@@ -17,6 +17,8 @@ export default {
   addErrorDuplicate: "已存在同名服务器。",
   addErrorInvalidName: "服务器名称只能包含字母、数字、连字符或下划线。",
   addErrorInvalidDetail: "请提供 URL 或命令（最多 2048 个字符）。",
+  addError_empty: "请提供 URL 或命令。",
+  addError_tooLong: "URL 或命令过长（最多 2048 个字符）。",
   http: "HTTP",
   sse: "SSE",
   stdio: "stdio",

@@ -23,7 +23,7 @@
   "remoteUnsupported": "Plan hanya lokal. Beralih ke mode lokal atau SSH-tunnel untuk memakai surface ini.",
 
 
-  // Autoplan briefs (V2 Step 15 鈥?gstack /autoplan)
+  // Autoplan briefs (V2 Step 15 — gstack /autoplan)
   "briefsTitle": "Ringkasan keputusan",
   "briefsHint": "Langkah yang membawa skill plan-tune dipindai untuk pertanyaan inline. Isi untuk menyempurnakan rencana sebelum mengirim.",
   "noBriefs": "Tidak ada ringkasan keputusan untuk rencana ini.",
@@ -32,7 +32,7 @@
   "answersApplied": "Jawaban dimasukkan ke dalam rencana.",
   "briefRequired": "Wajib",
 
-  // Careful precheck (V2 Step 9 鈥?gstack /careful)
+  // Careful precheck (V2 Step 9 — gstack /careful)
   carefulWarning: "Rencana berisi perintah destruktif",
   carefulVerdict: "Putusan: {{verdict}}",
   carefulReason: "{{reason}}",

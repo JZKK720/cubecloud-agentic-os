@@ -32,20 +32,20 @@ export default {
   },  runtimes: {
     title: "Runtimes",
     summary:
-      "El mismo registro de runtimes que aparece en la bienvenida. Cada fila muestra si el runtime est谩 disponible en esta m谩quina.",
+      "El mismo registro de runtimes que aparece en la bienvenida. Cada fila muestra si el runtime está disponible en esta máquina.",
     registryLabel: "Registro de runtimes",
     refreshAria: "Volver a escanear el registro de runtimes",
     empty:
-      "Todav铆a no hay runtimes instalados. La bienvenida instalar谩 Hermes por defecto.",
-    statusReady: "El runtime est谩 listo para hospedar el gateway.",
-    statusUnavailable: "El runtime a煤n no est谩 disponible en esta m谩quina.",
+      "Todavía no hay runtimes instalados. La bienvenida instalará Hermes por defecto.",
+    statusReady: "El runtime está listo para hospedar el gateway.",
+    statusUnavailable: "El runtime aún no está disponible en esta máquina.",
     detected: "Detectado",
-    responded: "Respondi贸",
+    responded: "Respondió",
     scanning: "Escaneando…",
     localProbesLabel: "Sondeos del gateway local",
     localProbesRefreshAria: "Sondear los puertos del gateway local",
     localProbesEmpty:
-      "Ning煤n gateway local respondi贸. Vuelve a la bienvenida para instalar o conectar uno.",
+      "Ningún gateway local respondió. Vuelve a la bienvenida para instalar o conectar uno.",
     discoveryHint:
       "Este runtime expone una superficie de descubrimiento a la que puedes llamar desde la bienvenida.",
   },
@@ -60,5 +60,5 @@ export default {
     rescan: "Re-escanear",
     empty:
       "No se detectaron runtimes en Docker. Instala Docker Desktop o inicia un contenedor emparejado.",
-    scannedAt: "趌timo escaneo {{value}}",
+    scannedAt: "Último escaneo {{value}}",
   },} as const;

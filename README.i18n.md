@@ -66,14 +66,23 @@ is the source of truth:
 
 - 8 locales: `en`, `es`, `id`, `ja`, `pt-BR`, `pt-PT`, `zh-CN`,
   `zh-TW`.
-- `en` and `zh-CN` are natively authored. The other six re-export the
-  English file (`export { default } from "../en/<namespace>";`) or
-  spread it, so operators always see real copy instead of a raw key.
+- `en` and `zh-CN` are natively authored and **complete** (`zh-CN`
+  reached 1594/1594 keys in V2.10.84). The other six carry real partial
+  translations and fall back to English for the rest, so operators always
+  see real copy instead of a raw key. They are *not* pure re-exports —
+  an earlier version of this file said they were, which was wrong and
+  hid how much copy they were still missing.
 - Every namespace must be registered in
   `agent-desktop/src/shared/i18n/index.ts` under **all eight**
   locale `resources` blocks. A namespace that exists on disk but is
   not registered renders as `namespace.key` on screen.
-- Two gates enforce this:
+- UI copy must also be free of **UTF-8-as-GBK mojibake**. That corruption
+  produces valid UTF-8 with no U+FFFD, so it is invisible to a
+  replacement-character scan; `check-mojibake.cjs` now detects it by
+  reversing the cp936 round-trip and by flagging CJK inside the Latin
+  locales. It is what garbled 131 lines across 19 locale files before
+  V2.10.84.
+- Two gates enforce the rest:
   - `agent-desktop/tests/i18n-renderer-keys.test.ts` asserts every
     literal `t("namespace.key")` call resolves to real copy in `en`
     and falls back to real copy in the other seven locales.

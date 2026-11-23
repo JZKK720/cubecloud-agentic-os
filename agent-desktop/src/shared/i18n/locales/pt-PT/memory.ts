@@ -1,36 +1,36 @@
-﻿export default {
-  title: "Mem贸ria",
-  subtitle: "O que o Hermes se lembra sobre si e o seu ambiente entre sess玫es.",
-  sessions: "Sess玫es",
+export default {
+  title: "Memória",
+  subtitle: "O que o Hermes se lembra sobre si e o seu ambiente entre sessões.",
+  sessions: "Sessões",
   messages: "Mensagens",
-  memories: "Mem贸rias",
+  memories: "Memórias",
   providersTitle: "Fornecedores",
-  agentMemory: "Mem贸ria do Agente",
+  agentMemory: "Memória do Agente",
   userProfile: "Perfil do Utilizador",
   entries: "{{count}} entradas",
-  addMemory: "Adicionar Mem贸ria",
+  addMemory: "Adicionar Memória",
   addFailed: "Falha ao adicionar entrada",
   updateFailed: "Falha ao actualizar entrada",
   saveFailed: "Falha ao guardar",
   entriesPlaceholder:
     "ex: O utilizador prefere TypeScript em vez de JavaScript. Use sempre o modo estrito.",
   userProfilePlaceholder:
-    "ex: Nome: Alex. Programador s茅nior. Prefere respostas concisas. Usa macOS com zsh. Fuso hor谩rio: PST.",
-  noProvidersFound: "Nenhum fornecedor de mem贸ria encontrado nesta instala莽茫o.",
+    "ex: Nome: Alex. Programador sénior. Prefere respostas concisas. Usa macOS com zsh. Fuso horário: PST.",
+  noProvidersFound: "Nenhum fornecedor de memória encontrado nesta instalação.",
   openProviderWebsite: "Abrir site do fornecedor",
   noMemoriesYet:
-    "Ainda sem mem贸rias. O Hermes guardar谩 factos importantes 脿 medida que conversam.",
-  noMemoryEntries: "Ainda sem entradas de mem贸ria.",
+    "Ainda sem memórias. O Hermes guardará factos importantes à medida que conversam.",
+  noMemoryEntries: "Ainda sem entradas de memória.",
   noToolsetsFound: "Nenhum conjunto de ferramentas encontrado.",
   addManuallyHint:
-    "Tamb茅m pode adicionar mem贸rias manualmente usando o bot茫o acima.",
+    "Também pode adicionar memórias manualmente usando o botão acima.",
   userProfileHint:
-    "Fale ao Hermes sobre si 鈥?nome, cargo, prefer锚ncias, estilo de comunica莽茫o.",
+    "Fale ao Hermes sobre si — nome, cargo, preferências, estilo de comunicação.",
   providersHint:
-    "Fornecedores de mem贸ria modular d茫o ao Hermes uma mem贸ria de longo prazo avan莽ada. A mem贸ria integrada (acima) est谩 sempre activa em conjunto com o fornecedor seleccionado.",
+    "Fornecedores de memória modular dão ao Hermes uma memória de longo prazo avançada. A memória integrada (acima) está sempre activa em conjunto com o fornecedor seleccionado.",
   providersHintActive: "Activo: <strong>{{provider}}</strong>",
   providersHintInactive:
-    "Nenhum fornecedor externo activo 鈥?a usar apenas a integrada.",
+    "Nenhum fornecedor externo activo — a usar apenas a integrada.",
   enterEnvKey: "Introduza {{key}}",
   chars: "{{count}} caracteres",
   cancel: "Cancelar",
@@ -38,7 +38,7 @@
   edit: "Editar",
   deleteConfirm: "Eliminar?",
   yes: "Sim",
-  no: "N茫o",
+  no: "Não",
   saveProfile: "Guardar Perfil",
   active: "Activo",
   deactivate: "Desactivar",
@@ -47,7 +47,7 @@
 
   providers: {
     honcho:
-      "Modela莽茫o de utilizador entre sess玫es nativa de IA com Q&A dial茅ctico e pesquisa sem芒ntica",
+      "Modelação de utilizador entre sessões nativa de IA com Q&A dialéctico e pesquisa semântica",
     hindsight:
       "Memóriaria de longo prazo com grafo de conhecimento e recuperaçãoo multi-estratégiagia",
     mem0: "Server-side LLM fact extraction with semantic search and auto-deduplication",

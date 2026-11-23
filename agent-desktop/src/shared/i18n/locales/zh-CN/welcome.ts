@@ -42,6 +42,8 @@ export default {
     "当 {{runtime}} 网关需要保持私有、仅通过 Agent Desktop 的隧道可达时，使用 SSH。",
   connectSshSubtitleOpenclaw:
     "当 {{runtime}} 兼容网关需要保持私有、仅通过 Agent Desktop 的隧道可达时，使用 SSH。",
+  connectSshSubtitleIronclaw:
+    "通过 SSH 转发现有的 {{runtime}} 网关，无需直接暴露已发布的容器端口。",
   runtimeLane: "运行时通道",
   sshHost: "SSH 主机",
   sshHostPlaceholder: "192.168.1.100 或 myserver.local",

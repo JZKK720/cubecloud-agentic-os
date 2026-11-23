@@ -23,7 +23,7 @@
   "remoteUnsupported": "Plans são apenas locais. Mude para o modo local ou SSH-tunnel para usar essa surface.",
 
 
-  // Autoplan briefs (V2 Step 15 鈥?gstack /autoplan)
+  // Autoplan briefs (V2 Step 15 — gstack /autoplan)
   "briefsTitle": "Resumos de decisão",
   "briefsHint": "Etapas que carregam a habilidade plan-tune foram verificadas em busca de perguntas inline. Preencha para refinar o plano antes de enviar.",
   "noBriefs": "Não há resumos de decisão para este plano.",
@@ -32,7 +32,7 @@
   "answersApplied": "Respostas incorporadas ao plano.",
   "briefRequired": "Obrigatório",
 
-  // Careful precheck (V2 Step 9 鈥?gstack /careful)
+  // Careful precheck (V2 Step 9 — gstack /careful)
   carefulWarning: "O plano contém um comando destrutivo",
   carefulVerdict: "Veredito: {{verdict}}",
   carefulReason: "{{reason}}",

@@ -169,7 +169,7 @@
   switchedToLocal: "Beralih ke mode lokal",
 
 
-  // Schema packs (V2 Step 13 鈥?gbrain)
+  // Schema packs (V2 Step 13 — gbrain)
   schemas: {
   sectionTitle: "Paket Skema",
   sectionHint: "Paket skema mendeklarasikan tipe halaman apa yang dikenali oleh basis pengetahuan. Paket aktif juga menggerakkan routing sintesis.",
@@ -186,7 +186,7 @@
   inferResult: "Tipe: {{type}}",
   },
 
-  // Careful guard (V2 Step 9 鈥?gstack /careful)
+  // Careful guard (V2 Step 9 — gstack /careful)
   careful: {
   title: "Konfirmasi perintah destruktif",
   subtitle: "Isi rencana berisi perintah shell yang terlihat destruktif. Konfirmasi sebelum mengirim.",

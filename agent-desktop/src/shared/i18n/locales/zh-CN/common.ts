@@ -66,4 +66,8 @@ export default {
   errorMessage: "发生了意外错误。",
   tryAgain: "重试",
   copied: "已复制！",
+  legal: {
+    openPanel: "打开版权与许可面板",
+    licensingLink: "许可",
+  },
 } as const;

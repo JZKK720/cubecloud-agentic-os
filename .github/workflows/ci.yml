@@ -55,10 +55,12 @@ jobs:
         run: node scripts/check-doc-pair.cjs
 
   # Mojibake gate: fail any PR that introduces a U+FFFD replacement
-  # character or CP1252-substituted-UTF-8 mojibake into a tracked
-  # source file.  Pure Node, no install step required.  Catches the
-  # same class of bug the doc-pair check catches, but at the byte
-  # level so it works across all languages.
+  # character, CP1252-substituted UTF-8, or **UTF-8 text decoded as
+  # GBK/cp936 and re-saved**. The third case is the one that actually
+  # shipped: 131 lines across 19 locale files, all valid UTF-8 with zero
+  # U+FFFD, which is why the replacement-character scan alone reported
+  # clean for months while zh-CN, zh-TW, ja and the pt/es locales showed
+  # garbled text.  Pure Node, no install step required.
   check-mojibake:
     name: Verify no mojibake in source files
     runs-on: ubuntu-latest

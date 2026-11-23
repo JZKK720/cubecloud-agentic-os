@@ -22,4 +22,9 @@ export default {
   plans: "Plans",
   mcp: "MCP",
   settings: "设置",
+  group: {
+    work: "工作",
+    configure: "配置",
+    platform: "平台",
+  },
 } as const;
