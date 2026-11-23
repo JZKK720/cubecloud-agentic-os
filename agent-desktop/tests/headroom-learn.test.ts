@@ -299,6 +299,15 @@ describe("applyHeadroomLearn / revertHeadroomLearn", () => {
 
   beforeEach(async () => {
     vi.resetModules();
+    // The two `describe` blocks share the module-level spawnMock, but
+    // only the first one reset it. Without this, the apply tests inherit
+    // whatever calls earlier tests recorded, so any "wait until spawn is
+    // called" predicate is satisfied immediately and the test emits the
+    // child's `close` before the Promise executor has attached its
+    // listener — the promise then never settles and vitest reports a
+    // 20s timeout rather than an assertion failure.
+    spawnMock.mockReset();
+    getEnhancedPathMock.mockReturnValue("C:\\mock-bin");
     const os = await import("os");
     const path = await import("path");
     const fs = await import("fs/promises");
@@ -355,13 +364,15 @@ describe("applyHeadroomLearn / revertHeadroomLearn", () => {
     const { applyHeadroomLearn } = await import("../src/main/headroom-learn");
     const promise = applyHeadroomLearn({ projectPath });
     // Let the synchronous portion of the apply function
-    // (the 3 sequential pre-snapshot reads) drain
-    // through a few microtask flushes before we touch
-    // the file. Then wait for spawn to be called.
-    for (let i = 0; i < 20; i += 1) {
-      await new Promise((r) => setTimeout(r, 5));
-      if (spawnMock.mock.calls.length > 0) break;
-    }
+    // (the 3 sequential pre-snapshot reads) drain before we touch
+    // the file, then wait for spawn to be called.
+    //
+    // waitFor rather than a fixed 20x5ms loop: under parallel CI load
+    // the three snapshotFile reads can exceed 100ms, the loop falls
+    // through, `close` fires before spawn attached its listeners, and
+    // `await promise` never settles — surfacing as vitest's 20s
+    // timeout instead of an assertion failure.
+    await waitFor(() => spawnMock.mock.calls.length > 0, { timeoutMs: 5000 });
     await fs.writeFile(agentsPath, newContent, "utf-8");
     child.stdout.emit("data", Buffer.from("Scanned 8 sessions\nDone.\n"));
     child.emit("close", 0);
@@ -394,10 +405,9 @@ describe("applyHeadroomLearn / revertHeadroomLearn", () => {
     const newPath = pathJoin(projectPath, "CLAUDE.md");
     const newContent = "# New file\n";
     const promise = applyHeadroomLearn({ projectPath });
-    for (let i = 0; i < 20; i += 1) {
-      await new Promise((r) => setTimeout(r, 5));
-      if (spawnMock.mock.calls.length > 0) break;
-    }
+    // Same synchronisation as the modified-files test: poll for spawn
+    // with a real timeout instead of a fixed 100ms ceiling.
+    await waitFor(() => spawnMock.mock.calls.length > 0, { timeoutMs: 5000 });
     await fs.writeFile(newPath, newContent, "utf-8");
     child.stdout.emit("data", Buffer.from("Scanned 4 sessions\nDone.\n"));
     child.emit("close", 0);
