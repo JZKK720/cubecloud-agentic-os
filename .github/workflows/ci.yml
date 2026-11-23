@@ -287,8 +287,23 @@ jobs:
             -d '{"threadId":"ci","runId":"ci","messages":[{"role":"user","content":"hi"}]}')
           test "$code" = "200" || { echo "::error::AG-UI returned $code"; cat /tmp/agui.txt; exit 1; }
           grep -q 'RUN_STARTED' /tmp/agui.txt || { echo "::error::no RUN_STARTED"; cat /tmp/agui.txt; exit 1; }
-          grep -q 'RUN_FINISHED' /tmp/agui.txt || { echo "::error::no RUN_FINISHED"; cat /tmp/agui.txt; exit 1; }
-          echo "ok: AG-UI streamed RUN_STARTED -> RUN_FINISHED"
+          # The run must terminate exactly once, and the terminal event must be
+          # truthful. This smoke previously required RUN_FINISHED — which the
+          # kernel emitted even when the turn had produced no text at all,
+          # so the gate was pinning the bug it should have caught.
+          #
+          # In this container there is no Hermes binary, so the honest outcome
+          # is RUN_ERROR. Accept either terminal event, but require one, and
+          # require that a successful finish is not silent.
+          if grep -q 'RUN_ERROR' /tmp/agui.txt; then
+            echo "ok: AG-UI reported the turn error truthfully"
+            grep -o '"message":"[^"]*"' /tmp/agui.txt | head -1 || true
+          else
+            grep -q 'RUN_FINISHED' /tmp/agui.txt || { echo "::error::run did not terminate"; cat /tmp/agui.txt; exit 1; }
+            grep -qE '"type":"(TEXT_MESSAGE_CONTENT|TOOL_CALL_START)"' /tmp/agui.txt || {
+              echo "::error::RUN_FINISHED with no text and no tool call — a silent turn"; cat /tmp/agui.txt; exit 1; }
+            echo "ok: AG-UI streamed RUN_STARTED -> content -> RUN_FINISHED"
+          fi
 
       - name: Tear down
         if: always()
