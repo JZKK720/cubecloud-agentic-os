@@ -28,6 +28,7 @@
 
 import { probeMcpServer } from "../mcp-probe";
 import { readAppBlock, type ManagedAppConfigBlock } from "./config-blocks";
+import { firstAnswering } from "./endpoint-candidates";
 import type {
   ManagedApp,
   ManagedAppDiscovery,
@@ -43,25 +44,12 @@ export const DATAFLOW_CONFIG_BLOCK = "dataflow" as const satisfies ManagedAppCon
 
 /** The endpoint DataFlow mounts its MCP server on. `fastapi-mcp` derives it
  *  from the FastAPI routes, so it is fixed unless the operator remaps the
- *  container port. */
+ *  container port.
+ *
+ *  The host-gateway alias is NOT listed here: `endpoint-candidates.ts` derives
+ *  it from whatever the operator configured, so a custom port gets a correct
+ *  alias instead of a hardcoded :8000. */
 export const DATAFLOW_DEFAULT_MCP_URL = "http://localhost:8000/mcp";
-
-/** Where a DataFlow endpoint should be looked for, in order.
- *
- *  A desktop app on the host reaches the published port directly; the kernel
- *  running in a container reaches the same port through the host-gateway alias.
- *  Measured 2026-11-24 from inside cc-console-backend-1 against a real host
- *  listener: `127.0.0.1:11434` and `localhost:11434` both failed while
- *  `host.docker.internal:11434` answered 200. Without this list the adapter had
- *  one fixed endpoint and could never connect from the container, which is the
- *  only place the desktop actually probes from.
- *
- *  Exported so a caller can report why the first candidate failed instead of
- *  silently trying another. Mirrors KITESURF_CANDIDATE_URLS. */
-export const DATAFLOW_CANDIDATE_URLS: readonly string[] = [
-  DATAFLOW_DEFAULT_MCP_URL,
-  "http://host.docker.internal:8000/mcp",
-] as const;
 
 /** The tool count DataFlow's route whitelist produces upstream. Recorded for
  *  the card's detail line; NOT used to validate, because the operator's
@@ -96,43 +84,19 @@ async function probeDataFlow(baseUrl: string) {
 /** Probe the configured endpoint, then the container host-gateway alias.
  *
  *  Only a LOOPBACK endpoint gets the alias appended: an operator who named a
- *  remote host has already said where the service lives, and adding a
- *  `host.docker.internal` fallback would probe a machine they never mentioned
- *  (and would fail `normalizeMcpEndpoint` anyway for plain http).
- *
- *  Only reachable results short-circuit. When every candidate fails the FIRST
- *  result is returned, so the operator sees the endpoint they configured rather
- *  than an alias they never typed. */
+ *  remote host has already said where the service lives. Only reachable results
+ *  short-circuit; when every candidate fails the FIRST result is returned, so
+ *  the operator sees the endpoint they configured rather than an alias they
+ *  never typed. The candidate rule itself lives in endpoint-candidates.ts, which
+ *  openviking and weknora share - this was the third instance of the same bug. */
 async function probeDataFlowWithCandidates(
   configured: string,
 ): Promise<{ result: Awaited<ReturnType<typeof probeDataFlow>>; url: string }> {
-  const isLoopback = (() => {
-    try {
-      const h = new URL(configured).hostname.toLowerCase();
-      return (
-        h === "localhost" ||
-        h === "127.0.0.1" ||
-        h === "::1" ||
-        h === "[::1]" ||
-        h === "host.docker.internal"
-      );
-    } catch {
-      return false;
-    }
-  })();
-
-  const candidates = isLoopback
-    ? [configured, ...DATAFLOW_CANDIDATE_URLS.filter((u) => u !== configured)]
-    : [configured];
-
-  let first: { result: Awaited<ReturnType<typeof probeDataFlow>>; url: string } | null =
-    null;
-  for (const url of candidates) {
-    const result = await probeDataFlow(url);
-    first ??= { result, url };
-    if (result.ok) return { result, url };
-  }
-  return first!;
+  return firstAnswering(
+    configured,
+    (url) => probeDataFlow(url),
+    (r) => r.ok,
+  );
 }
 
 /** Combine the probe's two failure strings without repeating one inside the

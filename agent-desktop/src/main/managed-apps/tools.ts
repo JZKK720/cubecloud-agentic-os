@@ -19,6 +19,7 @@ import {
   probeWeknora,
   type WeknoraProbeResult,
 } from "../weknora-probe";
+import { firstAnswering } from "./endpoint-candidates";
 import { probeGbrain } from "../gbrain-probe";
 import {
   loadHeadroomConfig,
@@ -108,48 +109,90 @@ export function saveWeknoraAppConfig(
 
 // ── HTTP-probe adapters (openviking, weknora) ─────────────────────
 
+/** Probe one endpoint. The adapters need to re-probe per candidate, so the
+ *  factory takes this instead of a zero-arg closure: a closure would have
+ *  already chosen the URL before the candidate rule could run. */
+type EndpointProbe = (
+  url: string,
+) => Promise<OpenVikingProbeResult | WeknoraProbeResult>;
+
+/** One failure line that always names what was tried.
+ *
+ *  WeKnora answers `invalid or missing WeKnora base URL` for an empty config,
+ *  which left the card reading "WeKnora not reachable at " - a sentence that
+ *  trails off and points nowhere. When there is no usable URL, say that instead
+ *  of leaving a blank. */
+function describeFailure(
+  label: string,
+  url: string,
+  result: { error: string | null },
+): string {
+  const why = result.error ? ` - ${result.error}` : "";
+  if (!url) return `${label} has no usable endpoint configured${why}`;
+  return `${label} not reachable at ${url}${why}`;
+}
+
 function httpProbeApp(
   id: string,
   label: string,
-  probe: () => Promise<OpenVikingProbeResult | WeknoraProbeResult>,
+  probe: EndpointProbe,
   loadConfig: () => { baseUrl: string; apiKey: string | null },
   block: "openviking" | "weknora",
 ): ManagedApp {
+  /** Probe the configured endpoint, then the Docker host-gateway alias.
+   *
+   *  The kernel's `127.0.0.1` is the container's own, so a service the operator
+   *  started on their machine answers only through `host.docker.internal`.
+   *  Measured 2026-11-24: openviking live on the host, `localhost:1933` ->
+   *  fetch failed, `host.docker.internal:1933` -> 200, while the card said
+   *  "TypeError: fetch failed". See endpoint-candidates.ts. */
+  const probeWithCandidates = () => {
+    const cfg = loadConfig();
+    return firstAnswering(
+      cfg.baseUrl,
+      (url) => probe(url),
+      (r) => r.reachable,
+    );
+  };
+
   return {
     id,
     label,
     mode: "fabric-attach",
 
     async discover(): Promise<ManagedAppDiscovery> {
-      const result = await probe();
+      const { result, url } = await probeWithCandidates();
       return {
         state: result.reachable ? "found" : "not-found",
+        // Name the endpoint, always. "TypeError: fetch failed" tells an operator
+        // nothing about which host was tried, and with a candidate list there
+        // can be more than one.
         detail: result.reachable
-          ? `${label} reachable at ${result.baseUrl}`
-          : (result.error ?? `${label} not reachable`),
+          ? `${label} reachable at ${url}`
+          : describeFailure(label, url, result),
         scannedAt: result.scannedAt,
       };
     },
 
     async health(): Promise<ManagedAppHealth> {
-      const result = await probe();
+      const { result, url } = await probeWithCandidates();
       return {
         ok: result.reachable,
         capabilities: ["inventory", "config"],
-        detail: result.reachable
-          ? `reachable at ${result.baseUrl}`
-          : (result.error ?? "unreachable"),
+        detail: result.reachable ? `reachable at ${url}` : describeFailure(label, url, result),
         raw: result,
         scannedAt: result.scannedAt,
       };
     },
 
     async inventory(): Promise<ManagedAppInventory> {
-      const result = await probe();
+      const { result, url } = await probeWithCandidates();
       return {
         ok: result.reachable,
-        data: result,
-        error: result.reachable ? null : (result.error ?? "inventory unavailable"),
+        // Report the URL that answered, so the caller is not told it came from
+        // an address that never replied.
+        data: { ...result, baseUrl: url },
+        error: result.reachable ? null : describeFailure(label, url, result),
       };
     },
 
@@ -185,9 +228,9 @@ export function createOpenVikingApp(): ManagedApp {
   return httpProbeApp(
     "openviking",
     "OpenViking",
-    () => {
+    (url) => {
       const cfg = loadOpenVikingAppConfig();
-      return probeOpenViking(cfg.baseUrl, { apiKey: cfg.apiKey });
+      return probeOpenViking(url, { apiKey: cfg.apiKey });
     },
     loadOpenVikingAppConfig,
     "openviking",
@@ -198,9 +241,9 @@ export function createWeknoraApp(): ManagedApp {
   return httpProbeApp(
     "weknora",
     "WeKnora",
-    () => {
+    (url) => {
       const cfg = loadWeknoraAppConfig();
-      return probeWeknora(cfg.baseUrl, {
+      return probeWeknora(url, {
         apiKey: cfg.apiKey,
         tenantId: cfg.tenantId,
       });
