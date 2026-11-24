@@ -366,13 +366,12 @@ both.
 
 ## What I recommend, in order
 
-1. **kitesurf as an opt-in container tool** — the framing you proposed is
-   correct and my refusal was based on a factual error. Start with discovery +
-   a `ManagedApp` card; wire CDP only after deciding the sandbox question.
-2. **A2UI, one block type** — small, reuses table styles, read astryx's agent
-   schema first in case it already defines the shape.
-3. **univer read-only** — only if someone needs spreadsheet *viewing*.
-4. **astryx as a design system** — do not adopt.
+1. ~~**kitesurf as an opt-in container tool**~~ — **Done.** `agent-desktop/src/main/kitesurf-probe.ts` + `managed-apps/kitesurf.ts`, registered in `managed-apps/registry.ts` and gated by `config-blocks.ts`. Opt-in; nothing starts without the operator running the `ghcr.io/cloudflare/kitesurf` container on `127.0.0.1:8787`. Safety notes unchanged: CDP on loopback is a local-code-execution surface, so it stays opt-in.
+2. ~~**A2UI, one block type**~~ — **Done.** `shared/a2ui.ts` + `A2uiBlock.tsx`, produced by the ```` ```a2ui ```` fence in `AgentMarkdown.tsx`. One block type (table), schema-validated, no free-form component tree.
+3. **univer read-only** — only if someone needs spreadsheet *viewing*. Still blocked on a licensing decision.
+4. **astryx as a design system** — not adopted as a design system. Adopted instead as an **MCP server** (`astryx.atmeta.com/mcp`) wired into the MCP registry in `5363c70`; MIT, no licensing issue.
+
+The sections below remain the record of how these verdicts were reached.
 
 ## What would change this plan
 
