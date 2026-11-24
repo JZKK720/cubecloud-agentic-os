@@ -392,7 +392,13 @@ async function successPath({ dshBin }) {
       DSH_PACKAGE_DIR,
       "or set DSH_PACKAGE_DIR.",
     );
-    process.exit(0);
+    // NOT EVALUATED, not success. This used to be exit(0), which made the smoke
+    // a false green anywhere the runtime was absent: it would "pass" on a runner
+    // that never installed it, so the lane could stop being tested and nobody
+    // would know. Exit 2 is the repo's cannot-check value, and it is what makes
+    // the script safe to wire into required CI - a 0 can now only mean it ran.
+    console.log("[not evaluated] the lane was NOT tested (exit 2)");
+    process.exit(2);
   }
   if (!resolveAdapter()) {
     console.log(
@@ -400,7 +406,8 @@ async function successPath({ dshBin }) {
         "  npx esbuild src/main/harnesses/deepseek-harness.ts --bundle --platform=node " +
         `--format=cjs --outfile="${path.join(DSH_PACKAGE_DIR, "adapter.cjs")}" --external:electron`,
     );
-    process.exit(0);
+    console.log("[not evaluated] the lane was NOT tested (exit 2)");
+    process.exit(2);
   }
 
   console.log("dsh:", dshBin);

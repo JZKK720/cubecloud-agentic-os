@@ -639,8 +639,20 @@ All five are fixed. Two structural consequences:
   a hang.
 
 `scripts/dsh-real-smoke.cjs` makes this repeatable. It runs two paths against the
-real runtime, needs no credentials, and skips with exit 0 when the package is
-absent (so it can sit in the local audit ladder but never in required CI):
+real runtime and needs no credentials. Its exit codes are three-valued, which is
+what makes it safe to wire into required CI:
+
+- **exit 0** — both paths passed;
+- **exit 1** — a path failed (a real defect);
+- **exit 2** — the runtime or the bundled adapter is absent, i.e. NOT EVALUATED.
+
+Exit 2 matters. The script originally exited 0 on absence, so it would have
+reported a green pass on any runner that never installed the package — the lane
+could have stopped being tested with nobody noticing. A `0` can now only mean
+the smoke actually ran. `agent-desktop/tests/dsh-real-smoke.test.ts` pins this by
+driving the script as a child process and asserting the exit codes, because the
+bug was behavioural and a source-level assertion would have passed on the broken
+version.
 
 - **failure path** — `deepseek-account` without sign-in must surface
   `ACCOUNT_SIGN_IN_REQUIRED`, not a false success;

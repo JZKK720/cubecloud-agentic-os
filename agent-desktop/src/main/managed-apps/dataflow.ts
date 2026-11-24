@@ -105,7 +105,6 @@ export function createDataFlowApp(): ManagedApp {
     async health(): Promise<ManagedAppHealth> {
       const { baseUrl } = loadDataFlowConfig();
       const result = await probeDataFlow(baseUrl);
-      const count = result.tools?.length ?? 0;
       return {
         ok: result.ok,
         // Capability-honest (rule 1): the desktop can mirror the tool catalog
@@ -113,7 +112,15 @@ export function createDataFlowApp(): ManagedApp {
         // attaches to, so "lifecycle" is deliberately absent.
         capabilities: ["inventory", "config"],
         detail: result.ok
-          ? `${count} tool${count === 1 ? "" : "s"} advertised at ${baseUrl} — ${DATAFLOW_SECURITY_WARNING}`
+          ? // `probeSse` reads only the first chunk to learn the endpoint, so it
+            // returns `tools: null` — it never enumerates. Rendering that as
+            // "0 tools advertised" is a claim we have no evidence for, and it
+            // reads as "DataFlow is up but exposes nothing", which is wrong:
+            // measured against the real backend it exposes 20. Say "not
+            // enumerated" instead of inventing a zero.
+            result.tools === null
+            ? `reachable at ${baseUrl} (tool catalog not enumerated over SSE) — ${DATAFLOW_SECURITY_WARNING}`
+            : `${result.tools.length} tool${result.tools.length === 1 ? "" : "s"} advertised at ${baseUrl} — ${DATAFLOW_SECURITY_WARNING}`
           : (result.error ?? result.detail ?? "unreachable"),
         raw: result,
         scannedAt: result.scannedAt,

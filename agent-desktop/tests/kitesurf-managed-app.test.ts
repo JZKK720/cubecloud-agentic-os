@@ -151,6 +151,22 @@ describe("kitesurf managed app", () => {
     expect(discovery.detail).not.toContain(KITESURF_SANDBOX_WARNING);
   });
 
+  // Measured 2026-11-24 with no Kitesurf container running: the card read
+  // `detail: "fetch failed"`. That is a bare socket message. The probe already
+  // builds a better line — `no CDP endpoint at <url>` — and the adapter was
+  // preferring `result.error` over it, so the operator lost the endpoint they
+  // were being told about. Naming the endpoint is the difference between
+  // "something is wrong" and "start the container that listens here".
+  it("names the endpoint it failed to reach, not a bare socket message", async () => {
+    fetchMock.mockRejectedValue(new Error("fetch failed"));
+    const app = createKitesurfApp();
+    const discovery = await app.discover();
+    expect(discovery.state).toBe("not-found");
+    expect(discovery.detail).toContain("no CDP endpoint at");
+    expect(discovery.detail).toContain("8787");
+    expect(discovery.detail).not.toBe("fetch failed");
+  });
+
   it("claims no inventory and no lifecycle it cannot honour", async () => {
     const app = createKitesurfApp();
     const inventory = await app.inventory();

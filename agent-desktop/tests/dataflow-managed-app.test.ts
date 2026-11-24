@@ -141,4 +141,25 @@ describe("DataFlow managed app", () => {
     readBlockMock.mockReturnValue({ baseUrl: "http://10.0.0.5:8000/mcp" });
     expect(loadDataFlowConfig().baseUrl).toBe("http://10.0.0.5:8000/mcp");
   });
+
+  // Measured 2026-11-24 against the REAL backend (OpenDCAI/DataFlow-WebUI,
+  // `uvicorn app.main:app`): the SSE handshake succeeds, and `probeSse` reads
+  // only the first chunk to learn the endpoint, so it returns `tools: null`.
+  // The adapter rendered that as "0 tools advertised" — a claim it had no
+  // evidence for, and one that reads as "the service exposes nothing" when the
+  // same server actually advertises 20 tools once you complete the handshake.
+  // Absence of enumeration is not a count.
+  it("does not invent a tool count when the SSE probe did not enumerate", async () => {
+    probeMock.mockResolvedValue(probeResult(true, null));
+    const h = await createDataFlowApp().health();
+    expect(h.ok).toBe(true);
+    expect(h.detail).not.toMatch(/\b0 tools\b/);
+    expect(h.detail).toMatch(/not enumerated/);
+  });
+
+  it("still reports a real count when the probe DID enumerate", async () => {
+    probeMock.mockResolvedValue(probeResult(true, ["list_pipelines", "create_pipeline"]));
+    const h = await createDataFlowApp().health();
+    expect(h.detail).toMatch(/2 tools advertised/);
+  });
 });

@@ -106,7 +106,11 @@ export function createKitesurfApp(): ManagedApp {
         // browser they have not started is dangerous is noise.
         detail: result.reachable
           ? `${result.detail} — ${KITESURF_SANDBOX_WARNING}`
-          : (result.error ?? `no Kitesurf CDP endpoint at ${baseUrl}`),
+          : // `detail` names the endpoint ("no CDP endpoint at <url>"); `error` is
+            // the bare socket message ("fetch failed"). Prefer the one the
+            // operator can act on, then the configured endpoint, and keep `error`
+            // only as the last fallback for a shape that carries neither.
+            (result.detail || `no Kitesurf CDP endpoint at ${baseUrl}`),
         scannedAt: result.scannedAt,
       };
     },
@@ -122,7 +126,11 @@ export function createKitesurfApp(): ManagedApp {
         capabilities: ["config"],
         detail: result.reachable
           ? `${result.detail} — ${KITESURF_SANDBOX_WARNING}`
-          : (result.error ?? result.detail ?? "unreachable"),
+          : // `detail` names the endpoint ("no CDP endpoint at <url>"); `error` is
+            // the bare socket message ("fetch failed"). Prefer the one the
+            // operator can act on, and keep `error` only as the fallback for the
+            // shapes that carry no detail.
+            (result.detail || result.error || "unreachable"),
         raw: result,
         scannedAt: result.scannedAt,
       };
