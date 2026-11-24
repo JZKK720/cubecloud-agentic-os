@@ -63,11 +63,22 @@ export function normalizeMcpEndpoint(
   if (url.protocol !== "http:" && url.protocol !== "https:") return null;
 
   const host = url.hostname.toLowerCase();
+  // `host.docker.internal` is the Docker host-gateway alias. It is included for
+  // the same reason `isLoopbackCdpUrl` includes it: the kernel runs in a
+  // container whose own 127.0.0.1 is NOT the host's, so this alias is the only
+  // way it reaches a host-run MCP server. Measured 2026-11-24 from inside
+  // cc-console-backend-1: 127.0.0.1:11434 and localhost:11434 both fail while
+  // host.docker.internal:11434 answers 200.
+  //
+  // It does not widen the boundary - docker adds the alias via extra_hosts and
+  // it resolves to the operator's own machine - and it is matched EXACTLY, so a
+  // look-alike such as host.docker.internal.evil.com is still rejected below.
   const isLoopback =
     host === "localhost" ||
     host === "127.0.0.1" ||
     host === "::1" ||
-    host === "[::1]";
+    host === "[::1]" ||
+    host === "host.docker.internal";
 
   // Plain http is only acceptable on loopback.
   if (url.protocol === "http:" && !isLoopback) return null;

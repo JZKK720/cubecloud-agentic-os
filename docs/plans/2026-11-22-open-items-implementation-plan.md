@@ -59,6 +59,23 @@ adapters, a documented contract in `contract.ts`, and a compact exemplar in
 - **Surface:** the Tools screen's managed-app cards, fed by `createManagedAppRegistry()` (`src/main/managed-apps/registry.ts:26`).
 - **Owner:** `src/main/managed-apps/` — it owns the adapter contract; `registry.ts` owns the roster; `contract.ts` owns the shape.
 - **Verified facts:** DataFlow exposes exactly 20 whitelisted MCP tools over SSE at `:8000/mcp` (from `fastapi-mcp==0.4.0`, route-derived). Transport is `sse`, which `probeSse` already handles.
+
+  **The MCP surface is in `OpenDCAI/DataFlow-WebUI`, not `OpenDCAI/DataFlow`.**
+  `DataFlow`'s Dockerfile ends in `CMD ["/bin/bash"]` and has zero `fastapi-mcp`
+  references; the server is `DataFlow-WebUI/backend/app/mcp_server.py`, and that
+  repo's `.mcp.json` declares `{type: sse, url: http://localhost:8000/mcp}`.
+  Proven 2026-11-24 by running it from source: `MCP Server mounted at /mcp`,
+  `endpoint` event on GET, `initialize`/`tools/list` both `202`, 20 tools.
+
+  **Loopback alone is not reachable from the kernel.** The console runs in a
+  container whose `127.0.0.1` is its own, so a host-run DataFlow must be reached
+  through `host.docker.internal`. Both halves of that gap were fixed 2026-11-24:
+  `normalizeMcpEndpoint` rejected the alias for plain http, and the adapter had a
+  single fixed endpoint and no candidate list. Measured from inside
+  `cc-console-backend-1` against the live backend: `localhost:8000/mcp` and
+  `127.0.0.1:8000/mcp` both failed while `host.docker.internal:8000/mcp` answered
+  `200` with an `endpoint` event. Confirmed end to end on the deployed kernel:
+  `POST /api/console/dataflowHealth` now returns `ok: true` naming the alias.
 - **Uncertainty:** the exact tool list is documented in the analysis (§2.4) but not re-verified in this session; the adapter should not hard-code 20 names. Validate by count and by `tools/list` passthrough.
 
 ### Changes

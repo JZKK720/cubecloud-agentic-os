@@ -170,6 +170,31 @@ describe("normalizeMcpEndpoint", () => {
     expect(normalizeMcpEndpoint("http://evil.example.com/mcp")).toBeNull();
   });
 
+  // Measured 2026-11-24 from inside cc-console-backend-1, against a listener on
+  // the host: localhost:11434 and 127.0.0.1:11434 both fail, while
+  // host.docker.internal:11434 answers 200. A container's 127.0.0.1 is its own,
+  // so the only way the kernel reaches a host-run MCP server is the gateway
+  // alias. Rejecting it made DataFlow unreachable from the container no matter
+  // what the operator configured.
+  //
+  // This does NOT widen the security boundary: host.docker.internal resolves to
+  // the operator's own machine (docker adds it via extra_hosts), so it is the
+  // host's loopback reached by its container name - the same reasoning
+  // isLoopbackCdpUrl already documents for kitesurf.
+  it("accepts the Docker host-gateway alias over plain http", () => {
+    expect(normalizeMcpEndpoint("http://host.docker.internal:8000/mcp")).toBe(
+      "http://host.docker.internal:8000/mcp",
+    );
+  });
+
+  it("still rejects every other plain-http host, including look-alikes", () => {
+    // A remote host that merely CONTAINS the alias must not pass.
+    expect(normalizeMcpEndpoint("http://host.docker.internal.evil.com/mcp")).toBeNull();
+    expect(normalizeMcpEndpoint("http://evil.com/host.docker.internal/mcp")).toBeNull();
+    expect(normalizeMcpEndpoint("http://10.0.0.5:8000/mcp")).toBeNull();
+    expect(normalizeMcpEndpoint("http://192.168.1.10:8000/mcp")).toBeNull();
+  });
+
   it("rejects non-http schemes and junk", () => {
     expect(normalizeMcpEndpoint("file:///etc/passwd")).toBeNull();
     expect(normalizeMcpEndpoint("npx -y server")).toBeNull();

@@ -162,4 +162,48 @@ describe("DataFlow managed app", () => {
     const h = await createDataFlowApp().health();
     expect(h.detail).toMatch(/2 tools advertised/);
   });
+
+  // The kernel runs in a container, so the configured loopback URL cannot reach
+  // a DataFlow the operator started on the host. Measured 2026-11-24 from
+  // inside the console container against a real listener: 127.0.0.1 failed,
+  // host.docker.internal answered 200. kitesurf already probes candidates for
+  // this reason; DataFlow had a single fixed endpoint and therefore could never
+  // connect from the container.
+  it("falls through to the host-gateway alias when the configured loopback fails", async () => {
+    readBlockMock.mockReturnValue({});
+    probeMock.mockImplementation(async (entry: { detail: string }) => {
+      if (entry.detail.includes("host.docker.internal")) {
+        return probeResult(true, null);
+      }
+      return probeResult(false, null, "fetch failed");
+    });
+
+    const d = await createDataFlowApp().discover();
+    expect(d.state).toBe("found");
+    // The card must name the endpoint that actually answered, not the one the
+    // operator typed, or the report is about a host that never replied.
+    expect(d.detail).toContain("host.docker.internal:8000");
+  });
+
+  it("reports the configured endpoint when every candidate fails", async () => {
+    readBlockMock.mockReturnValue({});
+    probeMock.mockResolvedValue(probeResult(false, null, "fetch failed"));
+
+    const d = await createDataFlowApp().discover();
+    expect(d.state).toBe("not-found");
+    // First candidate, i.e. what the operator configured - not an alias they
+    // never typed.
+    expect(d.detail).toContain("localhost:8000");
+  });
+
+  it("does not add the alias when the operator names a non-loopback host", async () => {
+    readBlockMock.mockReturnValue({ baseUrl: "https://dataflow.internal/mcp" });
+    probeMock.mockResolvedValue(probeResult(false, null, "fetch failed"));
+
+    await createDataFlowApp().discover();
+    const probed = probeMock.mock.calls.map(
+      (c) => (c[0] as { detail: string }).detail,
+    );
+    expect(probed).toEqual(["https://dataflow.internal/mcp"]);
+  });
 });

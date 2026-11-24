@@ -46,6 +46,23 @@ export const DATAFLOW_CONFIG_BLOCK = "dataflow" as const satisfies ManagedAppCon
  *  container port. */
 export const DATAFLOW_DEFAULT_MCP_URL = "http://localhost:8000/mcp";
 
+/** Where a DataFlow endpoint should be looked for, in order.
+ *
+ *  A desktop app on the host reaches the published port directly; the kernel
+ *  running in a container reaches the same port through the host-gateway alias.
+ *  Measured 2026-11-24 from inside cc-console-backend-1 against a real host
+ *  listener: `127.0.0.1:11434` and `localhost:11434` both failed while
+ *  `host.docker.internal:11434` answered 200. Without this list the adapter had
+ *  one fixed endpoint and could never connect from the container, which is the
+ *  only place the desktop actually probes from.
+ *
+ *  Exported so a caller can report why the first candidate failed instead of
+ *  silently trying another. Mirrors KITESURF_CANDIDATE_URLS. */
+export const DATAFLOW_CANDIDATE_URLS: readonly string[] = [
+  DATAFLOW_DEFAULT_MCP_URL,
+  "http://host.docker.internal:8000/mcp",
+] as const;
+
 /** The tool count DataFlow's route whitelist produces upstream. Recorded for
  *  the card's detail line; NOT used to validate, because the operator's
  *  DataFlow version may add or remove routes. */
@@ -76,12 +93,78 @@ async function probeDataFlow(baseUrl: string) {
   });
 }
 
+/** Probe the configured endpoint, then the container host-gateway alias.
+ *
+ *  Only a LOOPBACK endpoint gets the alias appended: an operator who named a
+ *  remote host has already said where the service lives, and adding a
+ *  `host.docker.internal` fallback would probe a machine they never mentioned
+ *  (and would fail `normalizeMcpEndpoint` anyway for plain http).
+ *
+ *  Only reachable results short-circuit. When every candidate fails the FIRST
+ *  result is returned, so the operator sees the endpoint they configured rather
+ *  than an alias they never typed. */
+async function probeDataFlowWithCandidates(
+  configured: string,
+): Promise<{ result: Awaited<ReturnType<typeof probeDataFlow>>; url: string }> {
+  const isLoopback = (() => {
+    try {
+      const h = new URL(configured).hostname.toLowerCase();
+      return (
+        h === "localhost" ||
+        h === "127.0.0.1" ||
+        h === "::1" ||
+        h === "[::1]" ||
+        h === "host.docker.internal"
+      );
+    } catch {
+      return false;
+    }
+  })();
+
+  const candidates = isLoopback
+    ? [configured, ...DATAFLOW_CANDIDATE_URLS.filter((u) => u !== configured)]
+    : [configured];
+
+  let first: { result: Awaited<ReturnType<typeof probeDataFlow>>; url: string } | null =
+    null;
+  for (const url of candidates) {
+    const result = await probeDataFlow(url);
+    first ??= { result, url };
+    if (result.ok) return { result, url };
+  }
+  return first!;
+}
+
+/** Combine the probe's two failure strings without repeating one inside the
+ *  other. `probeSse` often sets `error` to a prefix of `detail` ("HTTP 404" vs
+ *  "HTTP 404 from the SSE endpoint"), and a card that says both reads as two
+ *  faults instead of one. */
+function failureText(detail: string | null, error: string | null): string {
+  const d = (detail ?? "").trim();
+  const e = (error ?? "").trim();
+  if (!d) return e;
+  if (!e || d.includes(e)) return d;
+  return `${d} / ${e}`;
+}
+
 /** Build the discover detail. The warning is appended ONLY when the endpoint
  *  answered: telling a user that a server they have not installed is dangerous
- *  is noise, and it dilutes the warning where it matters. */
-function discoverDetail(baseUrl: string, reachable: boolean, failure: string | null): string {
+ *  is noise, and it dilutes the warning where it matters.
+ *
+ *  The failure line names the endpoint, because "fetch failed" tells an operator
+ *  nothing about which host was tried - and with a candidate list there can be
+ *  more than one. */
+function discoverDetail(
+  baseUrl: string,
+  reachable: boolean,
+  detail: string | null,
+  error: string | null,
+): string {
   if (!reachable) {
-    return failure ?? `DataFlow not reachable at ${baseUrl}`;
+    const why = failureText(detail, error);
+    return why
+      ? `no DataFlow MCP endpoint at ${baseUrl} — ${why}`
+      : `no DataFlow MCP endpoint at ${baseUrl}`;
   }
   return `DataFlow reachable at ${baseUrl} — ${DATAFLOW_SECURITY_WARNING}`;
 }
@@ -94,17 +177,20 @@ export function createDataFlowApp(): ManagedApp {
 
     async discover(): Promise<ManagedAppDiscovery> {
       const { baseUrl } = loadDataFlowConfig();
-      const result = await probeDataFlow(baseUrl);
+      // Report the endpoint that ANSWERED, not the one configured: a card that
+      // says "reachable at localhost" while it was reached through the gateway
+      // alias is describing a host that never replied.
+      const { result, url } = await probeDataFlowWithCandidates(baseUrl);
       return {
         state: result.ok ? "found" : "not-found",
-        detail: discoverDetail(baseUrl, result.ok, result.error),
+        detail: discoverDetail(url, result.ok, result.detail, result.error),
         scannedAt: result.scannedAt,
       };
     },
 
     async health(): Promise<ManagedAppHealth> {
       const { baseUrl } = loadDataFlowConfig();
-      const result = await probeDataFlow(baseUrl);
+      const { result, url } = await probeDataFlowWithCandidates(baseUrl);
       return {
         ok: result.ok,
         // Capability-honest (rule 1): the desktop can mirror the tool catalog
@@ -119,9 +205,9 @@ export function createDataFlowApp(): ManagedApp {
             // measured against the real backend it exposes 20. Say "not
             // enumerated" instead of inventing a zero.
             result.tools === null
-            ? `reachable at ${baseUrl} (tool catalog not enumerated over SSE) — ${DATAFLOW_SECURITY_WARNING}`
-            : `${result.tools.length} tool${result.tools.length === 1 ? "" : "s"} advertised at ${baseUrl} — ${DATAFLOW_SECURITY_WARNING}`
-          : (result.error ?? result.detail ?? "unreachable"),
+            ? `reachable at ${url} (tool catalog not enumerated over SSE) — ${DATAFLOW_SECURITY_WARNING}`
+            : `${result.tools.length} tool${result.tools.length === 1 ? "" : "s"} advertised at ${url} — ${DATAFLOW_SECURITY_WARNING}`
+          : `no DataFlow MCP endpoint at ${url} — ${failureText(result.detail, result.error) || "unreachable"}`,
         raw: result,
         scannedAt: result.scannedAt,
       };
@@ -129,11 +215,11 @@ export function createDataFlowApp(): ManagedApp {
 
     async inventory(): Promise<ManagedAppInventory> {
       const { baseUrl } = loadDataFlowConfig();
-      const result = await probeDataFlow(baseUrl);
+      const { result, url } = await probeDataFlowWithCandidates(baseUrl);
       return {
         ok: result.ok,
-        data: { baseUrl, tools: result.tools },
-        error: result.ok ? null : (result.error ?? result.detail ?? "inventory unavailable"),
+        data: { baseUrl: url, tools: result.tools },
+        error: result.ok ? null : (failureText(result.detail, result.error) || "inventory unavailable"),
       };
     },
 
