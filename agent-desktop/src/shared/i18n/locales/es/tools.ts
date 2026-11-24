@@ -133,6 +133,11 @@ export default {
         emptyHint: "Introduce una ruta dentro de tu carpeta personal o temporal. Las rutas fuera de esas raíces se rechazan.",
         notInstalled: "OfficeCLI no está instalado, por lo que no hay nada que ejecutar.",
       },
+      view: {
+        button: "Ver como hoja de cálculo",
+        loading: "Cargando vista previa…",
+        loadingUniver: "Cargando Univer…",
+      },
     },
     graphify: {
       title: "Graphify (Grafo de Conocimiento Conceptual)",

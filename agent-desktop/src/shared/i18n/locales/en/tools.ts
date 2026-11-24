@@ -163,6 +163,11 @@ export default {
         emptyHint: "Enter a file path inside your home or temp folder. Paths outside those roots are refused.",
         notInstalled: "OfficeCLI is not installed, so there is nothing to run.",
       },
+      view: {
+        button: "View as spreadsheet",
+        loading: "Loading preview…",
+        loadingUniver: "Loading Univer…",
+      },
     },
     graphify: {
       title: "Graphify (Concept Knowledge Graph)",

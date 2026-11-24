@@ -90,6 +90,11 @@ export default {
         emptyHint: "請輸入你的主目錄或暫存目錄中的路徑。根目錄以外的路徑會被拒絕。",
         notInstalled: "OfficeCLI 未安裝，無法執行。",
       },
+      view: {
+        button: "以試算表檢視",
+        loading: "正在載入預覽…",
+        loadingUniver: "正在載入 Univer…",
+      },
     },
     graphify: {
       title: "Graphify（概念知識圖譜）",

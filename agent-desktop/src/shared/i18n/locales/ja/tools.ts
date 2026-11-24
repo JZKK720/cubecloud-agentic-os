@@ -126,6 +126,11 @@ export default {
         emptyHint: "ホームフォルダーまたは一時フォルダー内のパスを入力してください。それ以外のパスは拒否されます。",
         notInstalled: "OfficeCLI がインストールされていないため、実行できません。",
       },
+      view: {
+        button: "スプレッドシートとして表示",
+        loading: "プレビューを読み込み中…",
+        loadingUniver: "Univer を読み込み中…",
+      },
     },
     graphify: {
       title: "Graphify（概念知識グラフ）",

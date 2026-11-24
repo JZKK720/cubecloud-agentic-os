@@ -1,7 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useI18n } from "../../components/useI18n";
 import { Refresh, CheckCircle, XCircle, Alert as AlertIcon } from "../../assets/icons";
 import { ManagedAppsPanel } from "../../components/ManagedAppsPanel";
+const OfficeCliSheetView = React.lazy(() =>
+  import("../../components/OfficeCliSheetView").then((m) => ({ default: m.OfficeCliSheetView })),
+);
 
 interface ToolsetInfo {
   key: string;
@@ -304,6 +307,31 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
   >("view");
   const [officeCliOut, setOfficeCliOut] = useState<string | null>(null);
   const [officeCliErr, setOfficeCliErr] = useState<string | null>(null);
+  const [officeCliSheetJson, setOfficeCliSheetJson] = useState<string | null>(null);
+  const [officeCliViewing, setOfficeCliViewing] = useState(false);
+
+  async function openOfficeCliSheet(): Promise<void> {
+    const file = officeCliFile.trim();
+    if (!file) return;
+    setOfficeCliViewing(true);
+    setOfficeCliSheetJson(null);
+    try {
+      const res = await window.hermesAPI.officecliView({
+        file,
+        mode: "text",
+        args: ["--json"],
+      });
+      setOfficeCliSheetJson(
+        res.ok ? res.stdout : JSON.stringify({ success: false, error: res.error ?? "unknown" }),
+      );
+    } catch (e) {
+      setOfficeCliSheetJson(
+        JSON.stringify({ success: false, error: e instanceof Error ? e.message : String(e) }),
+      );
+    } finally {
+      setOfficeCliViewing(false);
+    }
+  }
 
   async function runOfficeCli(): Promise<void> {
     if (!officeCliFile.trim()) return;
@@ -1190,6 +1218,23 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
                 {officeCliOut}
               </pre>
             ) : null}
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => void openOfficeCliSheet()}
+                disabled={officeCliViewing || !officeCliFile.trim()}
+                className="rounded border border-border bg-surface px-3 py-1 text-sm disabled:opacity-50"
+              >
+                {officeCliViewing ? t("tools.panels.officecli.view.loading") : t("tools.panels.officecli.view.button")}
+              </button>
+              {officeCliSheetJson ? (
+                <div className="mt-2 h-80 w-full overflow-hidden rounded border border-border">
+                  <Suspense fallback={<div className="p-2 text-xs">{t("tools.panels.officecli.view.loadingUniver")}</div>}>
+                    <OfficeCliSheetView json={officeCliSheetJson} loading={officeCliViewing} />
+                  </Suspense>
+                </div>
+              ) : null}
+            </div>
           </div>
         ) : null}
       </div>

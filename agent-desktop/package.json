@@ -70,6 +70,8 @@
     "@electron-toolkit/utils": "^4.0.0",
     "@types/highlight.js": "^9.12.4",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@univerjs/preset-sheets-core": "^1.6.1",
+    "@univerjs/presets": "^1.6.1",
     "@wesbos/code-icons": "^1.2.4",
     "better-sqlite3": "^12.8.0",
     "electron-updater": "^6.3.9",

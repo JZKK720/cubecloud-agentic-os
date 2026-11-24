@@ -130,6 +130,11 @@ export default {
         emptyHint: "Informe um caminho dentro da sua pasta pessoal ou temp. Caminhos fora dessas raízes são recusados.",
         notInstalled: "O OfficeCLI não está instalado, então não há o que executar.",
       },
+      view: {
+        button: "Ver como planilha",
+        loading: "Carregando pré-visualização…",
+        loadingUniver: "Carregando Univer…",
+      },
     },
     graphify: {
       title: "Graphify (Grafo de Conhecimento Conceitual)",

@@ -123,6 +123,11 @@ export default {
         emptyHint: "请输入你的主目录或临时目录中的路径。根目录之外的路径会被拒绝。",
         notInstalled: "OfficeCLI 未安装，无法运行。",
       },
+      view: {
+        button: "以电子表格查看",
+        loading: "正在加载预览…",
+        loadingUniver: "正在加载 Univer…",
+      },
     },
     graphify: {
       title: "Graphify（概念知识图谱）",

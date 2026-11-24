@@ -130,6 +130,11 @@ export default {
         emptyHint: "Masukkan path di dalam folder rumah atau temp Anda. Path di luar folder itu ditolak.",
         notInstalled: "OfficeCLI belum terpasang, jadi tidak ada yang bisa dijalankan.",
       },
+      view: {
+        button: "Lihat sebagai lembar sebar",
+        loading: "Memuat pratinjau…",
+        loadingUniver: "Memuat Univer…",
+      },
     },
     graphify: {
       title: "Graphify (Graf Pengetahuan Konseptual)",
