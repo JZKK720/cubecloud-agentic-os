@@ -10,14 +10,14 @@
   <a href="ACKNOWLEDGMENTS.md"><img src="https://img.shields.io/badge/Acknowledgments-read-lightgrey?style=for-the-badge" alt="Acknowledgments" /></a>
 </p>
 
-## Latest release: **v2.10.84**
+## Latest release: **v2.10.85**
 
 Download the Windows installer from the
-[v2.10.84 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.84):
+[v2.10.85 release page](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.85):
 
-- `cubecloud-agent-desktop-2.10.84-setup.exe` (NSIS one-click installer)
-- `cubecloud-agent-desktop-2.10.84-portable.exe` (single-file portable)
-- `cubecloud-agent-desktop-2.10.84-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
+- `cubecloud-agent-desktop-2.10.85-setup.exe` (NSIS one-click installer)
+- `cubecloud-agent-desktop-2.10.85-portable.exe` (single-file portable)
+- `cubecloud-agent-desktop-2.10.85-setup.exe.blockmap` + `latest.yml` (auto-update metadata)
 
 **Releases are Windows-only.** The macOS and Linux jobs were removed in
 v2.10.82 rather than left failing; they needed Apple notarization and Linux

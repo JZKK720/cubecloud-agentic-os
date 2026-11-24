@@ -2,15 +2,15 @@
   <img width="540" alt="Cubecloud" src="agent-desktop/build/branding/cubecloud-logo.svg" />
 </p>
 
-## 최신 릴리스: **v2.10.84**
+## 최신 릴리스: **v2.10.85**
 
 Windows 설치 프로그램은
-[v2.10.84 릴리스 페이지](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.84)
+[v2.10.85 릴리스 페이지](https://github.com/JZKK720/cubecloud-agentic-os/releases/tag/v2.10.85)
 에서 다운로드하세요:
 
-- `cubecloud-agent-desktop-2.10.84-setup.exe` (NSIS 원클릭 설치 프로그램)
-- `cubecloud-agent-desktop-2.10.84-portable.exe` (단일 파일 포터블)
-- `cubecloud-agent-desktop-2.10.84-setup.exe.blockmap` + `latest.yml` (자동 업데이트 메타데이터)
+- `cubecloud-agent-desktop-2.10.85-setup.exe` (NSIS 원클릭 설치 프로그램)
+- `cubecloud-agent-desktop-2.10.85-portable.exe` (단일 파일 포터블)
+- `cubecloud-agent-desktop-2.10.85-setup.exe.blockmap` + `latest.yml` (자동 업데이트 메타데이터)
 
 **릴리스는 Windows 전용입니다.** macOS와 Linux 작업은 계속 실패하게 두는 대신 v2.10.82에서 제거되었습니다. Apple 공증과 Linux 서명 자격 증명이 필요했지만 이 프로젝트에는 없습니다. 여기에 태그 푸시에서는 결코 충족될 수 없는 공개 게이트와, 깨끗한 runner에서 `tsc`를 깨뜨리는 선언되지 않은 workspace 의존성이 더해져 v2.10.75부터 v2.10.82까지 아무것도 출시되지 않았습니다——5개월, 157개 커밋.
 
