@@ -1159,7 +1159,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           />
         ) : null}
         {officecli?.installed ? (
-          <div className="mt-3 flex flex-col gap-2">
+          <div className="officecli-panel">
             <label className="tools-agent-reach-subtitle" htmlFor="officecli-file">
               {t("tools.panels.officecli.run.fileLabel")}
             </label>
@@ -1169,16 +1169,16 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               value={officeCliFile}
               onChange={(e) => setOfficeCliFile(e.target.value)}
               placeholder={t("tools.panels.officecli.run.filePlaceholder")}
-              className="rounded border border-border bg-surface px-2 py-1 text-sm"
+              className="officecli-input"
             />
-            <div className="flex gap-2">
+            <div className="officecli-panel-row">
               <select
                 aria-label={t("tools.panels.officecli.run.verbLabel")}
                 value={officeCliVerb}
                 onChange={(e) =>
                   setOfficeCliVerb(e.target.value as typeof officeCliVerb)
                 }
-                className="rounded border border-border bg-surface px-2 py-1 text-sm"
+                className="officecli-select"
               >
                 {["view", "get", "query", "validate", "dump", "raw", "create", "set", "add", "remove"].map(
                   (v) => (
@@ -1194,13 +1194,13 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
                 onChange={(e) => setOfficeCliArgs(e.target.value)}
                 placeholder={t("tools.panels.officecli.run.argsPlaceholder")}
                 aria-label={t("tools.panels.officecli.run.argsLabel")}
-                className="flex-1 rounded border border-border bg-surface px-2 py-1 text-sm"
+                className="officecli-input officecli-input--grow"
               />
               <button
                 type="button"
                 onClick={() => void runOfficeCli()}
                 disabled={officeCliRunning || !officeCliFile.trim()}
-                className="rounded border border-border bg-surface px-3 py-1 text-sm disabled:opacity-50"
+                className="officecli-button"
               >
                 {officeCliRunning
                   ? t("tools.panels.officecli.run.running")
@@ -1211,25 +1211,25 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               {t("tools.panels.officecli.run.emptyHint")}
             </p>
             {officeCliErr ? (
-              <pre className="whitespace-pre-wrap text-xs text-red-500">{officeCliErr}</pre>
+              <pre className="officecli-error">{officeCliErr}</pre>
             ) : null}
             {officeCliOut ? (
-              <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded bg-black/20 p-2 text-xs">
+              <pre className="officecli-output">
                 {officeCliOut}
               </pre>
             ) : null}
-            <div className="mt-2">
+            <div className="officecli-panel-row">
               <button
                 type="button"
                 onClick={() => void openOfficeCliSheet()}
                 disabled={officeCliViewing || !officeCliFile.trim()}
-                className="rounded border border-border bg-surface px-3 py-1 text-sm disabled:opacity-50"
+                className="officecli-button"
               >
                 {officeCliViewing ? t("tools.panels.officecli.view.loading") : t("tools.panels.officecli.view.button")}
               </button>
               {officeCliSheetJson ? (
-                <div className="mt-2 h-80 w-full overflow-hidden rounded border border-border">
-                  <Suspense fallback={<div className="p-2 text-xs">{t("tools.panels.officecli.view.loadingUniver")}</div>}>
+                <div className="officecli-viewer-wrap">
+                  <Suspense fallback={<div className="officecli-viewer-loading">{t("tools.panels.officecli.view.loadingUniver")}</div>}>
                     <OfficeCliSheetView json={officeCliSheetJson} loading={officeCliViewing} />
                   </Suspense>
                 </div>
