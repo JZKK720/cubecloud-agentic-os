@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "@univerjs/preset-sheets-core/lib/index.css";
 import { parseOfficeCliTextJson, type OfficeCliTextView } from "../../../shared/officecli-text";
 
@@ -25,9 +25,13 @@ export function OfficeCliSheetView({
   const [status, setStatus] = useState<"idle" | "mounting" | "ready" | "failed">("idle");
   const [mountError, setMountError] = useState<string | null>(null);
 
-  const view: OfficeCliTextView = json
-    ? parseOfficeCliTextJson(json)
-    : { fileName: "", sheets: [] };
+  // Memoize on the raw payload: parsing produces a fresh object each render,
+  // which would otherwise re-fire the mount effect on every render and make
+  // Univer mount/unmount in a loop.
+  const view: OfficeCliTextView = useMemo(
+    () => (json ? parseOfficeCliTextJson(json) : { fileName: "", sheets: [] }),
+    [json],
+  );
   const sheet = view.sheets[0] ?? null;
 
   useEffect(() => {
@@ -48,8 +52,6 @@ export function OfficeCliSheetView({
             import("@univerjs/preset-sheets-core/lib/es/locales/en-US.js"),
           ]);
         if (cancelled || !containerRef.current) return;
-
-        host.replaceChildren();
 
         const { univerAPI } = createUniver({
           locale: LocaleType.EN_US,
@@ -128,7 +130,9 @@ export function OfficeCliSheetView({
       } catch {
         /* Univer does not guarantee dispose on every path; ignore. */
       }
-      if (containerRef.current) containerRef.current.replaceChildren();
+      // Do not call host.replaceChildren() here: Univer owns those nodes.
+      // Removing them at unmount races React's own detach and throws
+      // "Failed to execute 'removeChild' on 'Node'".
     };
   }, [sheet]);
 
