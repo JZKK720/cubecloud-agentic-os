@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   title: "Configuración",
   sections: {
     hermesAgent: "Runtime local",

@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   "title": "Plans",
   "subtitle": "用 markdown 起草 RFC。每个标题都会在调度时变成一个 Kanban 任务。",
   "savedPlans": "已保存的计划",

@@ -71,6 +71,68 @@ const GBK_ARTEFACTS = [
 const LATIN_LOCALES = new Set(['es', 'id', 'pt-BR', 'pt-PT']);
 const ANY_CJK = /[\u3040-\u30ff\u4e00-\u9fff]/;
 
+// cp936 (GBK) reverse map: character -> the two bytes it encodes to.
+//
+// `UTF-8 -> decoded as GBK -> saved as UTF-8` produces *valid* UTF-8 with
+// zero U+FFFD, so neither the FFFD scan nor the artefact list above sees it.
+// The only reliable test is to run the decode backwards. `ja/common.ts` held
+// `save: "淇濆瓨"` (保存) and `search: "妞滅储"` (検索) from the initial commit
+// through the 3aa28d4 "repair", because the repair only touched Markdown.
+//
+// A run of characters that all encode losslessly to cp936 and whose bytes
+// decode as valid UTF-8 is the signature. The plausibility filter matters:
+// correct copy such as 停止 also round-trips, but to unprintable combining
+// marks, so requiring the result to contain CJK keeps it out.
+let cp936Map = null;
+function cp936Reverse() {
+  if (cp936Map) return cp936Map;
+  const decoder = new TextDecoder('gbk');
+  cp936Map = new Map();
+  for (let hi = 0x81; hi <= 0xfe; hi++) {
+    for (let lo = 0x40; lo <= 0xfe; lo++) {
+      if (lo === 0x7f) continue;
+      let ch;
+      try { ch = decoder.decode(Buffer.from([hi, lo])); } catch { continue; }
+      if (ch.length === 1 && ch !== '\uFFFD' && !cp936Map.has(ch)) {
+        cp936Map.set(ch, [hi, lo]);
+      }
+    }
+  }
+  return cp936Map;
+}
+
+const IMPLAUSIBLE = /[\u0300-\u036f\u0480-\u04ff\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20f0\u0080-\u00ff]/;
+const PLAUSIBLE_CJK = /[\u3000-\u303f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af\uff01-\uff60\u2010-\u2027]/;
+
+function gbkRoundTripIn(rel, raw) {
+  if (GBK_EXEMPT.has(rel)) return 0;
+  const map = cp936Reverse();
+  const hits = [];
+  let run = [];
+
+  const settle = () => {
+    if (run.length >= 2) {
+      const bytes = [];
+      for (const ch of run) bytes.push(...map.get(ch));
+      let reversed = '';
+      try {
+        reversed = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(bytes));
+      } catch { reversed = ''; }
+      if (reversed && !IMPLAUSIBLE.test(reversed) && PLAUSIBLE_CJK.test(reversed)) {
+        hits.push(`${run.join('')} -> ${reversed}`);
+      }
+    }
+    run = [];
+  };
+
+  for (const ch of raw) {
+    if (ch.charCodeAt(0) > 127 && map.has(ch)) run.push(ch);
+    else settle();
+  }
+  settle();
+  return hits;
+}
+
 // Files that legitimately QUOTE the artefact characters, because their job
 // is to document or repair this exact corruption. Detecting artefacts in
 // them is correct behaviour that would block the repair tooling itself.
@@ -80,6 +142,10 @@ const GBK_EXEMPT = new Set([
   'agent-desktop/BRANDING_AND_LICENSE.md',
   'scripts\\v2.10.24-handbook-zh.cjs',
   'scripts/v2.10.24-handbook-zh.cjs',
+  // This test exists to describe the corruption and asserts on it. Its
+  // comments quote the artefact characters on purpose.
+  'agent-desktop\\tests\\i18n-byte-integrity.test.ts',
+  'agent-desktop/tests/i18n-byte-integrity.test.ts',
 ]);
 
 function gbkArtefactsIn(rel, raw) {
@@ -129,6 +195,7 @@ for (const file of walk(process.cwd())) {
     if (raw.includes(m)) { cp1252 = 1; break; }
   }
   let gbk = gbkArtefactsIn(rel, raw);
+  const roundTrip = gbkRoundTripIn(rel, raw);
   // Language-picker labels are genuine Japanese/Chinese copy inside the
   // *Latin* locale files ("日本語", "中文"). They must be exempted per
   // file, not globally: a global subtraction cancelled real corruption in
@@ -151,8 +218,11 @@ for (const file of walk(process.cwd())) {
       if (gbk < 0) gbk = 0;
     }
   }
-  if (fffd > 0 || cp1252 > 0 || gbk > 0) {
-    bad.push({ file: file.replace(process.cwd() + path.sep, ''), fffd, cp1252, gbk });
+  if (fffd > 0 || cp1252 > 0 || gbk > 0 || roundTrip.length > 0) {
+    bad.push({
+      file: file.replace(process.cwd() + path.sep, ''),
+      fffd, cp1252, gbk, roundTrip: roundTrip.length,
+    });
     badCount++;
   }
 }
@@ -165,6 +235,8 @@ if (badCount === 0) {
 
 process.stdout.write(`❌ ${badCount} files have mojibake:\n`);
 for (const b of bad.sort((a, b) => b.fffd - a.fffd)) {
-  process.stdout.write(`  ${b.file}  FFFD=${b.fffd}  CP1252=${b.cp1252}\n`);
+  process.stdout.write(
+    `  ${b.file}  FFFD=${b.fffd}  CP1252=${b.cp1252}  GBK=${b.gbk}  roundTrip=${b.roundTrip}\n`,
+  );
 }
 process.exit(1);

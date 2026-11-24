@@ -103,6 +103,21 @@ export const BUNDLED_MCP_SERVERS: BundledMcpServer[] = [
     detail: "https://mcp.context7.com/mcp",
   },
   {
+    // Meta's Astryx is a React design system, and this is its published MCP
+    // endpoint — verified live: POST /mcp returns 200 with 9 tools (build,
+    // component, discover, docs, hook, search, template, theme_list,
+    // theme_targets). It serves design-system knowledge and scaffolding, not
+    // file I/O, so it is a third-party hook rather than something we vendor.
+    // MIT, so there is no licence to negotiate.
+    name: "astryx",
+    title: "Astryx (Meta)",
+    description:
+      "Meta's design-system knowledge over MCP: component lookup, theme generation, codemod and template build.",
+    category: "developer",
+    transport: "http",
+    detail: "https://astryx.atmeta.com/mcp",
+  },
+  {
     name: "firecrawl",
     title: "Firecrawl",
     description:

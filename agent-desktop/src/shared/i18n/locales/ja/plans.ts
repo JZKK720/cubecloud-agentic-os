@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   "title": "Plans",
   "subtitle": "markdownでRFCの下書きをします。見出しがディスパッチ時にKanbanタスクになります。",
   "savedPlans": "保存済みプラン",

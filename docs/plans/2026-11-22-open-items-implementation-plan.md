@@ -281,6 +281,89 @@ nav surface that `Layout.test.tsx:192,305` pins absent.
 
 **Verdict: univer waits on a licence decision. Path 1 is available today.**
 
+## Resolved by research, not inference (2026-11-24)
+
+The verdicts above were reasoned from repo reading. Two of them were **wrong on
+the facts**, and one was wrong on a number. Corrected here with citations, so
+nobody re-derives them:
+
+### astryx — verdict REVERSED. It is a service, and we now hook it
+
+The claim "it is a design system, not a service, so the container framing does
+not help" is **refuted**. Astryx ships a production MCP server:
+
+```
+POST https://astryx.atmeta.com/mcp   {"method":"tools/list"}
+→ 200 OK
+   build, component, discover, docs, hook, search,
+   template, theme_list, theme_targets
+```
+
+Re-verified independently on 2026-11-24: **200**, same 9 tools. Source of record
+`packages/cli/clients/cli/lib/mcp-server.mjs` (stdio, JSON-RPC per line, 4
+protocol versions) and `apps/docsite/src/app/mcp/route.ts` (Streamable HTTP,
+POST-only, no session). Spec `docs/specs/AST-121-mcp-server/spec.md`.
+
+Licence is **MIT** — `meta/astryx:LICENSE`, `package.json`, and the published
+`@astryxdesign/cli`. No commercial tier. So there is nothing to negotiate.
+
+**What it actually contributes** is design-system knowledge and scaffolding —
+component lookup, theme generation, codemods, template build — not file I/O. That
+is why the container framing was the wrong question: it never needed a container,
+it needed to be *dialled* as a third-party MCP endpoint. Which is what our MCP
+screen already does for `exa` and `context7`.
+
+**Shipped:** a `astryx` entry in `BUNDLED_MCP_SERVERS`
+(`transport: "http"`, `https://astryx.atmeta.com/mcp`), plus
+`Mcp/registry.test.ts` pinning the invariants.
+
+The "~70 custom properties" cost measure was also imprecise:
+`packages/core/src/theme/tokens.stylex.ts` declares **211** tokens (98
+`--color-*`, 42 text, 19 font, 15 spacing). The 65 I counted was one theme's
+*override* set (`themes/neutral/src/neutralTheme.ts`), which is a different
+number. Still not adopted as a design system — the token-fork argument holds —
+but the number I was using was wrong.
+
+### univer — verdict stands, but the blocker is now precise
+
+"`.xlsx`/`.docx` I/O is a paid package" was directionally right and
+insufficiently specific. The verifiable shape:
+
+| Fact | Evidence |
+|---|---|
+| The repo is **Apache-2.0**, single licence, no copyleft | `LICENSE`, npm `@univerjs/core@1.6.1` |
+| It **is** genuinely headless in Node | `docs/ISOMORPHIC.md`, `docs.univer.ai/guides/sheets/getting-started/node` — "never mounts a Canvas" |
+| `@univerjs-pro/mcp` is a **client**, not a server | its controller dials `wss://mcp.univer.ai/api/ws` |
+| `@univerjs-pro/mcp` and `@univerjs-pro/exchange-node` have **no `license` field on npm** | i.e. not open source |
+| A real HTTP MCP server exists only in `dream-num/workbuddy-univer-office` | `src/mcp/http.ts` — express + Streamable HTTP, `127.0.0.1:9080` |
+| That repo depends on **~50 `@univerjs-pro/*` packages** | `package.json` |
+| Commercial production needs Business/Enterprise | `docs.univer.ai/server/license`; free tier = 10 watermark-free exports/month |
+
+So the blocker is not "a paid package" in the abstract — it is that **every
+capability that makes it a service (import/export, collab, MCP) sits in
+`@univerjs-pro/*`, which is not open-source licensed**, and the upstream
+documentation itself says production deployment requires a commercial licence.
+
+**Verdict unchanged: licence-gated.** Two genuinely new facts for whoever
+decides: (a) `univer-cli`'s bundled runtime credential is scoped to
+`localhost`/`app`/`127.0.0.1` and **rotates every 90 days** — unverified whether
+that is usable from an unattended container, so it needs vendor confirmation, not
+my guess; (b) Slides and Boards are separately distributed commercial products.
+
+If it is ever pursued, it is a **complement to OfficeCLI, never a replacement**:
+OfficeCLI does format conversion and PPTX under plain Apache-2.0 with no quota,
+while univer's value is live editable state, worktrees and semantic diff.
+
+### The general correction
+
+Both errors came from the same move: treating "the repo is X" as evidence about
+"the project offers Y". astryx is a design system *and* a live service; univer is
+Apache-2.0 *and* licence-gated for the part that matters. Reading the licence and
+the server entry point, rather than the project description, is what settled
+both.
+
+---
+
 ## What I recommend, in order
 
 1. **kitesurf as an opt-in container tool** — the framing you proposed is

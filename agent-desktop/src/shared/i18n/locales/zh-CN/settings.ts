@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   // V2.10.44
   errorOpenClawImportUnavailable: "OpenClaw 导入功能尚不可用。",
   errorHostAndUsernameRequired: "请填写主机和用户名",

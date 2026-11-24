@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   title: "設定",
   sections: {
     hermesAgent: "本機執行環境",

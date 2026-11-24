@@ -32,9 +32,9 @@ export default {
   providersHint:
     "可插拔的记忆提供商为 Hermes 提供高级长期记忆。内置记忆（上方）始终与所选提供商一起激活。",
   providersHintActive: "当前激活: <strong>{{provider}}</strong>",
-  providersHintInactive: "娌℃湁澶栭儴鎻愪緵鍟嗘縺娲?鈥?浠呬娇鐢ㄥ唴缃蹇嗐€?",
+  providersHintInactive: "没有外部提供商激活 — 仅使用内置记忆。",
   enterEnvKey: "输入 {{key}}",
-  chars: "{{count}} 瀛楃",
+  chars: "{{count}} 字符",
   cancel: "取消",
   save: "保存",
   edit: "编辑",

@@ -1,4 +1,4 @@
-﻿export default {
+export default {
   "title": "Plans",
   "subtitle": "Esboza un RFC en markdown. Cada encabezado se convierte en una tarea de Kanban al despachar.",
   "savedPlans": "Plans guardados",
