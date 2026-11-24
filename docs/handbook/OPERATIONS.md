@@ -133,6 +133,49 @@ on macOS, or `sudo dnf remove agent-desktop && rm -rf ~/.config/agent-desktop
 
 The runtime homes (`~/.hermes/`, etc.) are *not* removed by the desktop's uninstaller. The user must remove those separately if they want a fully clean state.
 
+### OfficeCLI (optional document tool)
+
+OfficeCLI (<https://github.com/iOfficeAI/OfficeCLI>) is an optional single-binary
+tool for reading and writing .docx / .xlsx / .pptx. The desktop registers it as
+an MCP stdio server and shows it on the Tools screen; the desktop itself does
+**not** bundle it.
+
+Install (Windows, x64):
+
+```powershell
+npm install -g @officecli/officecli
+# or download a binary from https://github.com/iOfficeAI/OfficeCLI/releases
+```
+
+The desktop finds it via PATH (resolved the same way as the other agent CLIs)
+or via the `OFFICECLI_BIN` environment variable pointing at the executable.
+
+**What the desktop does with it:** nothing, unless you ask. The main process
+exposes three IPC channels, all gated:
+
+- `officecli-run` — spawns officecli with a **whitelisted verb**
+  (`get|query|view|raw|dump|validate|create|set|add|remove|move|swap|refresh|raw-set|add-part|import|merge|batch|save|open|close|plugins`)
+  against a file that resolves inside an allowed root. `shell`, `exec`, and
+  any verb outside the list are refused before spawn.
+- `officecli-view` — `officecli view <file> <mode>` with `mode` restricted to
+  `text|annotated|outline|stats|issues|html|svg|screenshot|pdf|forms`.
+- `officecli-status` — read-only probe (binary present? which roots?), used by
+  the Tools card to render the Install / Installed state.
+
+Allowed roots default to the user's home directory and the OS temp dir; extend
+with `OFFICECLI_ALLOWED_ROOTS` (a Windows path-list, `;`-separated). Any path
+that escapes those roots — via `..`, an absolute path elsewhere, or a
+JSON-batch payload containing one — is rejected before spawn. Output is capped
+at 1 MB (the excess is flagged with `truncated: true`) and the child is
+killed after 120 s.
+
+`OFFICECLI_BIN` must point at the `.exe` (or a `.cmd`/`.bat` shim). The
+desktop never invokes officecli through a shell.
+
+**Uninstalling:** remove the global npm package, or delete the binary. The
+desktop degrades cleanly — the Tools card shows "not installed" and no other
+surface depends on it.
+
 ## Day-2 operations (operator / release)
 
 ### Release checklist

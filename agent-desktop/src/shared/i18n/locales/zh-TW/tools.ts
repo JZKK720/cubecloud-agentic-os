@@ -77,6 +77,24 @@ export default {
       hint: '新增為 MCP 伺服器：在 MCP 畫面搜尋「officecli」。代理可透過 CLI 或 MCP 建立、編輯和渲染 Office 文件。',
       notInstalled:
         'OfficeCLI 未安裝。使用 <code>npm install -g @officecli/officecli</code> 安裝，或從 <code>https://github.com/iOfficeAI/OfficeCLI</code> 下載。單一二進位檔，無需 .NET 執行階段。',
+      run: {
+        title: "執行文件命令",
+        fileLabel: "文件路徑",
+        filePlaceholder: ".docx、.xlsx 或 .pptx 檔案的絕對路徑",
+        verbLabel: "命令",
+        argsLabel: "參數",
+        argsPlaceholder: "額外參數，例如 --page 1-3（可選）",
+        submit: "執行",
+        running: "執行中…",
+        outputLabel: "輸出",
+        emptyHint: "請輸入你的主目錄或暫存目錄中的路徑。根目錄以外的路徑會被拒絕。",
+        notInstalled: "OfficeCLI 未安裝，無法執行。",
+      },
+      view: {
+        button: "以試算表檢視",
+        loading: "正在載入預覽…",
+        loadingUniver: "正在載入 Univer…",
+      },
     },
     graphify: {
       title: "Graphify（概念知識圖譜）",

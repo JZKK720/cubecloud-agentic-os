@@ -110,6 +110,24 @@ export default {
       hint: '添加为 MCP 服务器：在 MCP 屏幕搜索 "officecli"。代理可以通过 CLI 或 MCP 创建、编辑和渲染 Office 文档。',
       notInstalled:
         "OfficeCLI 未安装。使用 <code>npm install -g @officecli/officecli</code> 安装或从 <code>https://github.com/iOfficeAI/OfficeCLI</code> 下载。单一二进制文件，无需 .NET 运行时。",
+      run: {
+        title: "运行文档命令",
+        fileLabel: "文档路径",
+        filePlaceholder: ".docx、.xlsx 或 .pptx 文件的绝对路径",
+        verbLabel: "命令",
+        argsLabel: "参数",
+        argsPlaceholder: "额外参数，例如 --page 1-3（可选）",
+        submit: "运行",
+        running: "运行中…",
+        outputLabel: "输出",
+        emptyHint: "请输入你的主目录或临时目录中的路径。根目录之外的路径会被拒绝。",
+        notInstalled: "OfficeCLI 未安装，无法运行。",
+      },
+      view: {
+        button: "以电子表格查看",
+        loading: "正在加载预览…",
+        loadingUniver: "正在加载 Univer…",
+      },
     },
     graphify: {
       title: "Graphify（概念知识图谱）",

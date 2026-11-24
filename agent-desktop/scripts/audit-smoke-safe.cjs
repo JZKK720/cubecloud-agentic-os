@@ -49,6 +49,7 @@ const readOnly = [
   "convert-file-to-markdown", "is-markitdown-available",
   "discover-memory-providers", "discover-agent-clis", "discover-docker-runtimes",
   "discover-browser-harness", "browser-harness-doctor",
+  "officecli-status",
   "gbrain-probe", "graphify-discover", "graphify-version",
   "handy-detect", "eval-run",
   "list-all-outputs", "list-thread-outputs",
@@ -146,6 +147,8 @@ const excluded = [
   "quit-app", "generate-api-server-key",
   "ironclaw-dispatch",
   "run-runtime-provider-action",
+  // OfficeCLI spawns the installed binary and can write .docx/.xlsx/.pptx.
+  "officecli-run", "officecli-view",
   "schemas-set-active",
   "sync-session-cache",
   "set-locale",

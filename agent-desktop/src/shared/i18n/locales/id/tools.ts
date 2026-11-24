@@ -117,6 +117,24 @@ export default {
       hint: 'Tambahkan sebagai server MCP: cari "officecli" di layar MCP. Agen dapat membuat, mengedit, dan merender dokumen Office via CLI atau MCP.',
       notInstalled:
         'OfficeCLI belum terpasang. Pasang dengan: <code>npm install -g @officecli/officecli</code> atau unduh dari <code>https://github.com/iOfficeAI/OfficeCLI</code>. Biner tunggal, tanpa .NET runtime.',
+      run: {
+        title: "Jalankan perintah dokumen",
+        fileLabel: "Path dokumen",
+        filePlaceholder: "Path absolut ke file .docx, .xlsx atau .pptx",
+        verbLabel: "Perintah",
+        argsLabel: "Argumen",
+        argsPlaceholder: "Argumen tambahan, mis. --page 1-3 (opsional)",
+        submit: "Jalankan",
+        running: "Menjalankan…",
+        outputLabel: "Keluaran",
+        emptyHint: "Masukkan path di dalam folder rumah atau temp Anda. Path di luar folder itu ditolak.",
+        notInstalled: "OfficeCLI belum terpasang, jadi tidak ada yang bisa dijalankan.",
+      },
+      view: {
+        button: "Lihat sebagai lembar sebar",
+        loading: "Memuat pratinjau…",
+        loadingUniver: "Memuat Univer…",
+      },
     },
     graphify: {
       title: "Graphify (Graf Pengetahuan Konseptual)",

@@ -997,6 +997,32 @@ interface HermesAPI {
       };
     }>;
   }>;
+  officecliRun: (req: { verb: string; file: string; args?: string[] }) => Promise<{
+    ok: boolean;
+    exitCode: number | null;
+    stdout: string;
+    stderr: string;
+    truncated: boolean;
+    error: string | null;
+  }>;
+  officecliView: (req: {
+    file: string;
+    mode: string;
+    out?: string;
+    args?: string[];
+  }) => Promise<{
+    ok: boolean;
+    exitCode: number | null;
+    stdout: string;
+    stderr: string;
+    truncated: boolean;
+    error: string | null;
+  }>;
+  officecliStatus: () => Promise<{
+    installed: boolean;
+    detectedCommand: string | null;
+    allowedRoots: string[];
+  }>;
   diagnoseSshConnection: (
     host: string,
     port: number,

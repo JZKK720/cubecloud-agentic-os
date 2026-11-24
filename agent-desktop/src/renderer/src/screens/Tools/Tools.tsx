@@ -1,7 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useI18n } from "../../components/useI18n";
 import { Refresh, CheckCircle, XCircle, Alert as AlertIcon } from "../../assets/icons";
 import { ManagedAppsPanel } from "../../components/ManagedAppsPanel";
+const OfficeCliSheetView = React.lazy(() =>
+  import("../../components/OfficeCliSheetView").then((m) => ({ default: m.OfficeCliSheetView })),
+);
 
 interface ToolsetInfo {
   key: string;
@@ -296,6 +299,70 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     installed: boolean;
     detectedCommand: string | null;
   } | null>(null);
+  const [officeCliFile, setOfficeCliFile] = useState("");
+  const [officeCliArgs, setOfficeCliArgs] = useState("");
+  const [officeCliRunning, setOfficeCliRunning] = useState(false);
+  const [officeCliVerb, setOfficeCliVerb] = useState<
+    "get" | "query" | "validate" | "view" | "dump" | "raw" | "create" | "set" | "add" | "remove"
+  >("view");
+  const [officeCliOut, setOfficeCliOut] = useState<string | null>(null);
+  const [officeCliErr, setOfficeCliErr] = useState<string | null>(null);
+  const [officeCliSheetJson, setOfficeCliSheetJson] = useState<string | null>(null);
+  const [officeCliViewing, setOfficeCliViewing] = useState(false);
+
+  async function openOfficeCliSheet(): Promise<void> {
+    const file = officeCliFile.trim();
+    if (!file) return;
+    setOfficeCliViewing(true);
+    setOfficeCliSheetJson(null);
+    try {
+      const res = await window.hermesAPI.officecliView({
+        file,
+        mode: "text",
+        args: ["--json"],
+      });
+      setOfficeCliSheetJson(
+        res.ok ? res.stdout : JSON.stringify({ success: false, error: res.error ?? "unknown" }),
+      );
+    } catch (e) {
+      setOfficeCliSheetJson(
+        JSON.stringify({ success: false, error: e instanceof Error ? e.message : String(e) }),
+      );
+    } finally {
+      setOfficeCliViewing(false);
+    }
+  }
+
+  async function runOfficeCli(): Promise<void> {
+    if (!officeCliFile.trim()) return;
+    setOfficeCliRunning(true);
+    setOfficeCliOut(null);
+    setOfficeCliErr(null);
+    try {
+      const args = officeCliArgs
+        .split(/\s+/)
+        .map((a) => a.trim())
+        .filter(Boolean);
+      const res =
+        officeCliVerb === "view"
+          ? await window.hermesAPI.officecliView({
+              file: officeCliFile.trim(),
+              mode: "text",
+              args,
+            })
+          : await window.hermesAPI.officecliRun({
+              verb: officeCliVerb,
+              file: officeCliFile.trim(),
+              args,
+            });
+      setOfficeCliOut(res.stdout?.trim() ? res.stdout : null);
+      setOfficeCliErr(res.error ?? (res.stderr?.trim() ? res.stderr : null));
+    } catch (e) {
+      setOfficeCliErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setOfficeCliRunning(false);
+    }
+  }
   const [graphify, setGraphify] = useState<{
     installed: boolean;
     detectedCommand: string | null;
@@ -1090,6 +1157,85 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               __html: t("tools.panels.officecli.notInstalled"),
             }}
           />
+        ) : null}
+        {officecli?.installed ? (
+          <div className="mt-3 flex flex-col gap-2">
+            <label className="tools-agent-reach-subtitle" htmlFor="officecli-file">
+              {t("tools.panels.officecli.run.fileLabel")}
+            </label>
+            <input
+              id="officecli-file"
+              type="text"
+              value={officeCliFile}
+              onChange={(e) => setOfficeCliFile(e.target.value)}
+              placeholder={t("tools.panels.officecli.run.filePlaceholder")}
+              className="rounded border border-border bg-surface px-2 py-1 text-sm"
+            />
+            <div className="flex gap-2">
+              <select
+                aria-label={t("tools.panels.officecli.run.verbLabel")}
+                value={officeCliVerb}
+                onChange={(e) =>
+                  setOfficeCliVerb(e.target.value as typeof officeCliVerb)
+                }
+                className="rounded border border-border bg-surface px-2 py-1 text-sm"
+              >
+                {["view", "get", "query", "validate", "dump", "raw", "create", "set", "add", "remove"].map(
+                  (v) => (
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+                  ),
+                )}
+              </select>
+              <input
+                type="text"
+                value={officeCliArgs}
+                onChange={(e) => setOfficeCliArgs(e.target.value)}
+                placeholder={t("tools.panels.officecli.run.argsPlaceholder")}
+                aria-label={t("tools.panels.officecli.run.argsLabel")}
+                className="flex-1 rounded border border-border bg-surface px-2 py-1 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => void runOfficeCli()}
+                disabled={officeCliRunning || !officeCliFile.trim()}
+                className="rounded border border-border bg-surface px-3 py-1 text-sm disabled:opacity-50"
+              >
+                {officeCliRunning
+                  ? t("tools.panels.officecli.run.running")
+                  : t("tools.panels.officecli.run.submit")}
+              </button>
+            </div>
+            <p className="tools-agent-reach-subtitle">
+              {t("tools.panels.officecli.run.emptyHint")}
+            </p>
+            {officeCliErr ? (
+              <pre className="whitespace-pre-wrap text-xs text-red-500">{officeCliErr}</pre>
+            ) : null}
+            {officeCliOut ? (
+              <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded bg-black/20 p-2 text-xs">
+                {officeCliOut}
+              </pre>
+            ) : null}
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => void openOfficeCliSheet()}
+                disabled={officeCliViewing || !officeCliFile.trim()}
+                className="rounded border border-border bg-surface px-3 py-1 text-sm disabled:opacity-50"
+              >
+                {officeCliViewing ? t("tools.panels.officecli.view.loading") : t("tools.panels.officecli.view.button")}
+              </button>
+              {officeCliSheetJson ? (
+                <div className="mt-2 h-80 w-full overflow-hidden rounded border border-border">
+                  <Suspense fallback={<div className="p-2 text-xs">{t("tools.panels.officecli.view.loadingUniver")}</div>}>
+                    <OfficeCliSheetView json={officeCliSheetJson} loading={officeCliViewing} />
+                  </Suspense>
+                </div>
+              ) : null}
+            </div>
+          </div>
         ) : null}
       </div>
 

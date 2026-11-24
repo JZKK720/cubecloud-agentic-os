@@ -19,6 +19,7 @@
 | **What do we actually build next, concretely?** | [`2026-11-22-open-items-implementation-plan.md`](./2026-11-22-open-items-implementation-plan.md) — the executable plan; names files, owners and verify commands, and refuses four of the five open items with reasons |
 | **What external repos should we integrate, and how?** | [`2026-11-21-external-harness-protocol-adoption-plan.md`](./2026-11-21-external-harness-protocol-adoption-plan.md) — the analysis behind it; verdicts only, **not** a delivery record (see its §0.0.1) |
 | **What is the console/managed-app architecture?** | [`2026-10-08-desktop-overhaul-design.md`](./2026-10-08-desktop-overhaul-design.md) (approved design; supersedes the 2026-10-06 attach framing) |
+| **How do OfficeCLI and Univer fit together?** | [`2026-11-24-officecli-univer-integration-plan.md`](./2026-11-24-officecli-univer-integration-plan.md) — OfficeCLI owns the bytes (A-track), Univer is a gated optional renderer (B-track), pro packages refused (C-track) |
 | **What is the relationship model between the console and the Workspace?** | [`2026-10-08-second-brain-doctrine.md`](./2026-10-08-second-brain-doctrine.md) (supersedes the 2026-10-07 doctrine) |
 
 Everything else below is either **shipped evidence** or **a scoped decision
