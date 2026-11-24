@@ -120,6 +120,19 @@ export default {
       hint: 'Añade como servidor MCP: busca "officecli" en la pantalla MCP. El agente puede crear, editar y renderizar documentos Office via CLI o MCP.',
       notInstalled:
         'OfficeCLI no está instalado. Instala con: <code>npm install -g @officecli/officecli</code> o descarga desde <code>https://github.com/iOfficeAI/OfficeCLI</code>. Un solo binario, sin necesidad de .NET runtime.',
+      run: {
+        title: "Ejecutar un comando de documento",
+        fileLabel: "Ruta del documento",
+        filePlaceholder: "Ruta absoluta a un archivo .docx, .xlsx o .pptx",
+        verbLabel: "Comando",
+        argsLabel: "Argumentos",
+        argsPlaceholder: "Argumentos extra, p. ej. --page 1-3 (opcional)",
+        submit: "Ejecutar",
+        running: "Ejecutando…",
+        outputLabel: "Salida",
+        emptyHint: "Introduce una ruta dentro de tu carpeta personal o temporal. Las rutas fuera de esas raíces se rechazan.",
+        notInstalled: "OfficeCLI no está instalado, por lo que no hay nada que ejecutar.",
+      },
     },
     graphify: {
       title: "Graphify (Grafo de Conocimiento Conceptual)",

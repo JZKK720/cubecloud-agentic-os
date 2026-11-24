@@ -113,6 +113,19 @@ export default {
       hint: 'MCPサーバーとして追加: MCP画面で「officecli」を検索。エージェントはCLIまたはMCP経由でOffice文書を作成、編集、レンダリングできます。',
       notInstalled:
         'OfficeCLIがインストールされていません。<code>npm install -g @officecli/officecli</code>でインストール、または<code>https://github.com/iOfficeAI/OfficeCLI</code>からダウンロード。.NETランタイム不要のシングルバイナリ。',
+      run: {
+        title: "ドキュメントコマンドを実行",
+        fileLabel: "ドキュメントのパス",
+        filePlaceholder: ".docx / .xlsx / .pptx の絶対パス",
+        verbLabel: "コマンド",
+        argsLabel: "引数",
+        argsPlaceholder: "追加の引数（例: --page 1-3、省略可）",
+        submit: "実行",
+        running: "実行中…",
+        outputLabel: "出力",
+        emptyHint: "ホームフォルダーまたは一時フォルダー内のパスを入力してください。それ以外のパスは拒否されます。",
+        notInstalled: "OfficeCLI がインストールされていないため、実行できません。",
+      },
     },
     graphify: {
       title: "Graphify（概念知識グラフ）",

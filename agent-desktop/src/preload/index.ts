@@ -529,6 +529,35 @@ const hermesAPI = {
     }>;
   }> => ipcRenderer.invoke("list-managed-apps"),
 
+  /** Run a whitelisted officecli verb against a document inside the allowed
+   *  roots. Paths are resolved and contained by the main process. */
+  officecliRun: (req: { verb: string; file: string; args?: string[] }): Promise<{
+    ok: boolean;
+    exitCode: number | null;
+    stdout: string;
+    stderr: string;
+    truncated: boolean;
+    error: string | null;
+  }> => ipcRenderer.invoke("officecli-run", req),
+  officecliView: (req: {
+    file: string;
+    mode: string;
+    out?: string;
+    args?: string[];
+  }): Promise<{
+    ok: boolean;
+    exitCode: number | null;
+    stdout: string;
+    stderr: string;
+    truncated: boolean;
+    error: string | null;
+  }> => ipcRenderer.invoke("officecli-view", req),
+  officecliStatus: (): Promise<{
+    installed: boolean;
+    detectedCommand: string | null;
+    allowedRoots: string[];
+  }> => ipcRenderer.invoke("officecli-status"),
+
   diagnoseSshConnection: (
     host: string,
     port: number,

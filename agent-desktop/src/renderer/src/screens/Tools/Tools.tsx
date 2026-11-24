@@ -296,6 +296,45 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     installed: boolean;
     detectedCommand: string | null;
   } | null>(null);
+  const [officeCliFile, setOfficeCliFile] = useState("");
+  const [officeCliArgs, setOfficeCliArgs] = useState("");
+  const [officeCliRunning, setOfficeCliRunning] = useState(false);
+  const [officeCliVerb, setOfficeCliVerb] = useState<
+    "get" | "query" | "validate" | "view" | "dump" | "raw" | "create" | "set" | "add" | "remove"
+  >("view");
+  const [officeCliOut, setOfficeCliOut] = useState<string | null>(null);
+  const [officeCliErr, setOfficeCliErr] = useState<string | null>(null);
+
+  async function runOfficeCli(): Promise<void> {
+    if (!officeCliFile.trim()) return;
+    setOfficeCliRunning(true);
+    setOfficeCliOut(null);
+    setOfficeCliErr(null);
+    try {
+      const args = officeCliArgs
+        .split(/\s+/)
+        .map((a) => a.trim())
+        .filter(Boolean);
+      const res =
+        officeCliVerb === "view"
+          ? await window.hermesAPI.officecliView({
+              file: officeCliFile.trim(),
+              mode: "text",
+              args,
+            })
+          : await window.hermesAPI.officecliRun({
+              verb: officeCliVerb,
+              file: officeCliFile.trim(),
+              args,
+            });
+      setOfficeCliOut(res.stdout?.trim() ? res.stdout : null);
+      setOfficeCliErr(res.error ?? (res.stderr?.trim() ? res.stderr : null));
+    } catch (e) {
+      setOfficeCliErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setOfficeCliRunning(false);
+    }
+  }
   const [graphify, setGraphify] = useState<{
     installed: boolean;
     detectedCommand: string | null;
@@ -1090,6 +1129,68 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               __html: t("tools.panels.officecli.notInstalled"),
             }}
           />
+        ) : null}
+        {officecli?.installed ? (
+          <div className="mt-3 flex flex-col gap-2">
+            <label className="tools-agent-reach-subtitle" htmlFor="officecli-file">
+              {t("tools.panels.officecli.run.fileLabel")}
+            </label>
+            <input
+              id="officecli-file"
+              type="text"
+              value={officeCliFile}
+              onChange={(e) => setOfficeCliFile(e.target.value)}
+              placeholder={t("tools.panels.officecli.run.filePlaceholder")}
+              className="rounded border border-border bg-surface px-2 py-1 text-sm"
+            />
+            <div className="flex gap-2">
+              <select
+                aria-label={t("tools.panels.officecli.run.verbLabel")}
+                value={officeCliVerb}
+                onChange={(e) =>
+                  setOfficeCliVerb(e.target.value as typeof officeCliVerb)
+                }
+                className="rounded border border-border bg-surface px-2 py-1 text-sm"
+              >
+                {["view", "get", "query", "validate", "dump", "raw", "create", "set", "add", "remove"].map(
+                  (v) => (
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+                  ),
+                )}
+              </select>
+              <input
+                type="text"
+                value={officeCliArgs}
+                onChange={(e) => setOfficeCliArgs(e.target.value)}
+                placeholder={t("tools.panels.officecli.run.argsPlaceholder")}
+                aria-label={t("tools.panels.officecli.run.argsLabel")}
+                className="flex-1 rounded border border-border bg-surface px-2 py-1 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => void runOfficeCli()}
+                disabled={officeCliRunning || !officeCliFile.trim()}
+                className="rounded border border-border bg-surface px-3 py-1 text-sm disabled:opacity-50"
+              >
+                {officeCliRunning
+                  ? t("tools.panels.officecli.run.running")
+                  : t("tools.panels.officecli.run.submit")}
+              </button>
+            </div>
+            <p className="tools-agent-reach-subtitle">
+              {t("tools.panels.officecli.run.emptyHint")}
+            </p>
+            {officeCliErr ? (
+              <pre className="whitespace-pre-wrap text-xs text-red-500">{officeCliErr}</pre>
+            ) : null}
+            {officeCliOut ? (
+              <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded bg-black/20 p-2 text-xs">
+                {officeCliOut}
+              </pre>
+            ) : null}
+          </div>
         ) : null}
       </div>
 

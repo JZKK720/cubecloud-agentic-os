@@ -457,6 +457,7 @@ import {
 import { SSH_CONNECTION_TEST_LOCAL_PORT } from "../shared/runtime-defaults";
 import type { AppLocale } from "../shared/i18n/types";
 import { createManagedAppRegistry } from "./managed-apps/registry";
+import { officeCliStatus, runOfficeCli, viewOfficeCli } from "./officecli";
 import {
   sshListInstalledSkills,
   sshGetSkillContent,
@@ -1249,6 +1250,20 @@ function setupIPC(): void {
       ),
     };
   });
+
+  // OfficeCLI — agent-invoked document tool. The runner enforces the verb
+  // whitelist and confines every path it hands to the child to the allowed
+  // roots (see ./officecli.ts). The renderer never receives a path the main
+  // process has not resolved.
+  ipcMain.handle("officecli-run", (_event, req: { verb: string; file: string; args?: string[] }) =>
+    runOfficeCli(req),
+  );
+  ipcMain.handle(
+    "officecli-view",
+    (_event, req: { file: string; mode: string; out?: string; args?: string[] }) =>
+      viewOfficeCli(req),
+  );
+  ipcMain.handle("officecli-status", () => officeCliStatus());
 
   ipcMain.handle(
     "diagnose-ssh-connection",
