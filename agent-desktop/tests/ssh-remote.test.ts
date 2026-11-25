@@ -49,7 +49,14 @@ function runWithHermesShim(command: string): Buffer {
     ].join("\n"),
   );
   chmodSync(hermes, 0o755);
-  return execFileSync("bash", ["-lc", command], {
+  // The production command is run remotely as `bash -c ...` (see
+  // buildRemoteHermesCmd), so the shim must do the same. `-l` additionally
+  // sourced the login profile, which is where the per-run cost lives: on
+  // this machine `bash -lc` costs ~4-6s (WSL cold start plus profile), which
+  // is what made this file look flaky under full-suite load. Asserting the
+  // command with `-c` tests the same quoting and the same exit paths, minus
+  // an environment production never exercises.
+  return execFileSync("bash", ["-c", command], {
     env: {
       ...process.env,
       HOME: home,
@@ -83,14 +90,9 @@ describe("ssh remote config writes", () => {
 describe("ssh Hermes command quoting", () => {
   // The shim below spawns bash and writes the args NUL-separated back
   // through stdout. Measured on Windows, `bash -lc` alone costs ~3.9s to
-  // start (WSL cold start) against milliseconds on Linux; under a full
-  // parallel suite that start-up competes with 171 other files and one
-  // test was observed taking >30s. The whole file passes in 915ms when
-  // run alone, so this is contention, not slowness.
-  //
-  // 60s is chosen from the measurement, not guessed: 4s bash start × the
-  // worst contention multiple seen (~8×) with headroom. It is a bound on
-  // an environmental cost — the assertions themselves are unchanged.
+  // Headroom for a loaded CI runner. The shim is `bash -c`, which starts in
+  // well under a second alone and ~1s under full-suite contention; 60s is a
+  // bound for pathological load, not an operating point.
   vi.setConfig({ testTimeout: 60_000 });
   it("shell-quotes the whole bash script without dropping per-argument quoting", () => {
     const command = buildRemoteHermesCmd([
