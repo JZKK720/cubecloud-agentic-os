@@ -12,6 +12,11 @@
 No other loop is enabled. Enabling one requires editing this file and
 `LOOP.md` in the same PR, with a human approving both.
 
+## Alerts this period
+
+<!-- The loop-budget skill appends self-throttling notices here. Empty = none. -->
+(none)
+
 ## On budget exceed
 
 1. Stop the loop immediately.

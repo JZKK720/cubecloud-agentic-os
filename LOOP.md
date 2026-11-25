@@ -71,3 +71,4 @@ discard on verifier reject, never run two attempts in the main checkout.
 
 This repo tracks exactly one pattern (PR Babysitter, L1). See
 `patterns/registry.yaml`.
+

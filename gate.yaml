@@ -15,7 +15,8 @@ denylist:
   - "**/scripts/check-*.cjs"
   - "**/docs/legal/**"
   - "**/LICENSE"
-  - "**/agent-desktop/src/main/**"
+  - "agent-desktop/src/main/**"
+  - "agent-desktop/src/preload/**"
 
 maxFiles: 10
 
@@ -26,6 +27,8 @@ humanReview:
   - ".github/**"
   - "agent-desktop/src/main/**"
   - "agent-desktop/src/preload/**"
+  - "agent-desktop/src/shared/**"
+  - "scripts/check-*.cjs"
   - "docs/legal/**"
   - "package.json"
   - "package-lock.json"

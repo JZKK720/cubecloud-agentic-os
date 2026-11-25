@@ -10,7 +10,7 @@ user_invocable: true
 
 You are the guardrail. Before any other work begins, you MUST:
 
-1. Read `loop-constraints.md` from the project root.
+1. Read `loop-constraints.md` from the repository root.
 2. Load every rule into your working memory.
 3. Check if `loop-pause-all` is active → exit immediately.
 4. Apply these rules to EVERY action that follows.
@@ -30,7 +30,9 @@ Always begin with a one-line confirmation:
 Constraints loaded from loop-constraints.md: N rules active.
 ```
 
-If no `loop-constraints.md` exists, say so and proceed with default safety rules from `docs/safety.md`.
+If `loop-constraints.md` is absent, say so and enforce the defaults below.
+This repository has no `docs/safety.md`; `loop-constraints.md` and `gate.yaml`
+are the safety documents of record.
 
 ## Interaction with other skills
 
