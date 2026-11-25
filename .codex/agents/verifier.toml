@@ -1,0 +1,13 @@
+---
+kind: verifier
+name: loop-verifier
+sandbox: workspace-write
+tools:
+  - read
+  - grep
+  - glob
+  - shell_read_only
+network: none
+note: >
+  Read-only verification of a loop-produced change. Never edits, never pushes,
+  never merges. Human gates every merge in this repo.

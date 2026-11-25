@@ -1,0 +1,31 @@
+# Loop Gates — cubecloud-agentic-os
+# Machine-readable guard for loop-gated actions. L1 uses this only to classify
+# risk; the human merges. Nothing here authorizes a merge.
+version: 1
+
+denylist:
+  - "**/.env"
+  - "**/.env.*"
+  - "**/secrets/**"
+  - "**/credentials/**"
+  - "**/*_key*"
+  - "**/*_secret*"
+  - "**/*.pem"
+  - "**/.github/workflows/**"
+  - "**/scripts/check-*.cjs"
+  - "**/docs/legal/**"
+  - "**/LICENSE"
+  - "**/agent-desktop/src/main/**"
+
+maxFiles: 10
+
+# Nothing auto-merges in this repo. The allowlist is intentionally empty.
+autoMergeAllowlist: []
+
+humanReview:
+  - ".github/**"
+  - "agent-desktop/src/main/**"
+  - "agent-desktop/src/preload/**"
+  - "docs/legal/**"
+  - "package.json"
+  - "package-lock.json"
