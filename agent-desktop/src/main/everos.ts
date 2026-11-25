@@ -17,7 +17,7 @@ import { promises as fs } from "fs";
 import { existsSync } from "fs";
 import { join } from "path";
 
-const EVEROS_DEFAULT_BASE_URL = "http://127.0.0.1:1995";
+const EVEROS_DEFAULT_BASE_URL = "http://127.0.0.1:8000";
 const EVEROS_HEALTH_TIMEOUT_MS = 4_000;
 const EVEROS_API_TIMEOUT_MS = 15_000;
 const EVEROS_SEARCH_TIMEOUT_MS = 20_000;

@@ -680,3 +680,35 @@ export async function flushMemoriesV2(
     queued,
   };
 }
+
+/** Source config shape accepted by `toEverOsV2Config` — structurally
+ *  compatible with both the persisted `everos` block (groupId/userId)
+ *  and any future caller. Kept structural so this module does not need
+ *  to import the v1 client. */
+export interface EverOsV2SourceConfig {
+  baseUrl: string;
+  apiKey?: string | null;
+  /** Group id from the v1-era config block; reused as the v2 project scope. */
+  groupId?: string | null;
+  userId?: string | null;
+  agentId?: string | null;
+  projectId?: string | null;
+}
+
+/** Project a loose source config onto the v2 wire config. `app_id` is
+ *  never taken from the source — the scope pin in `buildScope` is the
+ *  only place it is set. */
+export function toEverOsV2Config(src: EverOsV2SourceConfig): EverOsV2Config {
+  const project = src.projectId?.trim() || src.groupId?.trim() || null;
+  const user = src.userId?.trim() || null;
+  const agent = src.agentId?.trim() || null;
+  return {
+    baseUrl: src.baseUrl,
+    apiKey: src.apiKey ?? null,
+    projectId: project,
+    // Owner XOR: an explicit agentId wins; otherwise mirror userId so the
+    // desktop's single "userId" setting still has an agent-owner identity.
+    userId: user,
+    agentId: agent ?? user,
+  };
+}

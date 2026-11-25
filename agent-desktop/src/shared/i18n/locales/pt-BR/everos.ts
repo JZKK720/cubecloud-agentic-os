@@ -16,7 +16,7 @@ export default {
   },
   "config": {
     "title": "Conexão",
-    "body": "O EverOS roda em http://localhost:1995 por padrão. O shell aponta para a URL base configurada sempre que o usuário pede memória de longo prazo.",
+    "body": "O EverOS roda em http://localhost:8000 por padrão. O shell aponta para a URL base configurada sempre que o usuário pede memória de longo prazo.",
     "baseUrl": "URL base",
     "apiKey": "Chave de API",
     "userId": "ID do usuário",

@@ -16,7 +16,7 @@ export default {
   },
   "config": {
     "title": "接続",
-    "body": "EverOS は既定で http://localhost:1995 で動作します。設定後、メモリ呼び出しは常にこのベース URL へ向きます。",
+    "body": "EverOS は既定で http://localhost:8000 で動作します。設定後、メモリ呼び出しは常にこのベース URL へ向きます。",
     "baseUrl": "ベース URL",
     "apiKey": "API キー",
     "userId": "ユーザー ID",

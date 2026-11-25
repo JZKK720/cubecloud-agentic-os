@@ -16,7 +16,7 @@ export default {
   },
   "config": {
     "title": "Koneksi",
-    "body": "EverOS berjalan di http://localhost:1995 secara bawaan. Shell akan mengarah ke URL dasar yang dikonfigurasi saat pengguna meminta memori.",
+    "body": "EverOS berjalan di http://localhost:8000 secara bawaan. Shell akan mengarah ke URL dasar yang dikonfigurasi saat pengguna meminta memori.",
     "baseUrl": "URL dasar",
     "apiKey": "Kunci API",
     "userId": "ID Pengguna",

@@ -16,7 +16,7 @@ export default {
   },
   "config": {
     "title": "Ligação",
-    "body": "O EverOS corre em http://localhost:1995 por defeito. O shell aponta para o URL base configurado sempre que o utilizador pede memória de longo prazo.",
+    "body": "O EverOS corre em http://localhost:8000 por defeito. O shell aponta para o URL base configurado sempre que o utilizador pede memória de longo prazo.",
     "baseUrl": "URL base",
     "apiKey": "Chave de API",
     "userId": "ID do utilizador",

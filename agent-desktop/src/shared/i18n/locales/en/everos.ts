@@ -16,7 +16,7 @@ export default {
   },
   "config": {
     "title": "Connection",
-    "body": "EverOS lives at http://localhost:1995 by default. The desktop points at the configured base URL whenever the user asks for memory recall.",
+    "body": "EverOS lives at http://localhost:8000 by default. The desktop points at the configured base URL whenever the user asks for memory recall.",
     "baseUrl": "Base URL",
     "apiKey": "API key",
     "userId": "User ID",

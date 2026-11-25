@@ -16,7 +16,7 @@ export default {
   },
   "config": {
     "title": "连接",
-    "body": "EverOS 默认运行在 http://localhost:1995。配置后,所有需要长期记忆的操作都会指向该地址。",
+    "body": "EverOS 默认运行在 http://localhost:8000。配置后,所有需要长期记忆的操作都会指向该地址。",
     "baseUrl": "服务地址",
     "apiKey": "API Key",
     "userId": "用户标识",

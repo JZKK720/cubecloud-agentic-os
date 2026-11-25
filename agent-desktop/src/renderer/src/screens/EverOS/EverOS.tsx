@@ -5,9 +5,9 @@
 // bridge in src/preload/index.d.ts):
 //   - everosGetConfig / everosSaveConfig → persisted to desktop.json
 //   - everosPing → GET {baseUrl}/health
-//   - everosAddMemory → POST {baseUrl}/api/v1/memories
-//   - everosSearch → POST {baseUrl}/api/v1/memories/search
-//   - everosListRecent → wraps everosSearch with a wildcard query
+//   - everosAddMemory → POST {baseUrl}/api/v2/memory/add (main adapts to legacy shape)
+//   - everosSearch → POST {baseUrl}/api/v2/memory/search
+//   - everosListRecent → POST {baseUrl}/api/v2/memory/get (memory_type=episode)
 //
 // The screen is fully functional even when the local EverCore runtime
 // is not installed — the operator just needs a reachable base URL.
@@ -456,7 +456,7 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
                 onChange={(e) =>
                   setDraft({ ...draft, baseUrl: e.target.value })
                 }
-                placeholder="http://127.0.0.1:1995"
+                placeholder="http://127.0.0.1:8000"
               />
             </label>
             <label className="operator-input-group">
@@ -698,17 +698,13 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
           <h2>{t("everos.setup.title")}</h2>
           <p className="workspace-copy">{t("everos.setup.body")}</p>
           <pre className="mono everos-snippet">
-{`git clone https://github.com/JZKK720/EverOS.git
-cd EverOS/methods/EverCore
-docker compose up -d
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv sync
-cp env.template .env  # set LLM_API_KEY + VECTORIZE_API_KEY
-uv run python src/run.py  # listens on http://localhost:1995`}
+{`pip install everos
+everos init
+everos server start  # listens on http://localhost:8000`}
           </pre>
           <p className="workspace-copy">
             <Check size={14} /> {t("everos.setup.healthCheck")}{" "}
-            <code>curl http://localhost:1995/health</code>
+            <code>curl http://localhost:8000/health</code>
           </p>
         </article>
       </div>

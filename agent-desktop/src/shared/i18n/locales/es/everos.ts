@@ -16,7 +16,7 @@ export default {
   },
   "config": {
     "title": "Conexión",
-    "body": "EverOS se ejecuta por defecto en http://localhost:1995. El shell apuntará a la URL base configurada cada vez que el usuario pida memoria a largo plazo.",
+    "body": "EverOS se ejecuta por defecto en http://localhost:8000. El shell apuntará a la URL base configurada cada vez que el usuario pida memoria a largo plazo.",
     "baseUrl": "URL base",
     "apiKey": "Clave API",
     "userId": "ID de usuario",
