@@ -29,8 +29,8 @@
  *  boundary cannot be widened by a settings change. */
 export const EVEROS_SCOPE_APP_ID = "agentic-os" as const;
 
-/** v2 default. Note this differs from the v1 default on :1995 and from the
- *  plan's original guess of :8000 — operators override via `config.baseUrl`. */
+/** v2 default. Matches EverOS 1.8.x's built-in `:8000`; the v1 client
+ *  default was moved here too. Operators override via `config.baseUrl`. */
 export const EVEROS_V2_DEFAULT_BASE_URL = "http://127.0.0.1:8000";
 
 export const EVEROS_V2_DEFAULT_PROJECT_ID = "default";
@@ -592,7 +592,15 @@ export async function addMemoryV2(
   opts: EverOsV2AddOptions,
 ): Promise<EverOsV2WriteResult> {
   if (!opts.messages.length) {
-    return { success: true, data: { status: "queued", messageCount: 0, pending: null }, error: null, requestId: null, queued: false };
+    // Nothing to write. Report a no-op success, not a queued job that will
+    // never exist.
+    return {
+      success: true,
+      data: { status: "accumulated", messageCount: 0, pending: 0 },
+      error: null,
+      requestId: null,
+      queued: false,
+    };
   }
   const scope = buildScope({ projectId: cfg.projectId });
   const payload: Record<string, unknown> = {

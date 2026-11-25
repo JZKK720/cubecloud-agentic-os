@@ -26,17 +26,19 @@ import {
 
 const BASE_URL = process.env.EVEROS_SMOKE_URL ?? "http://127.0.0.1:8000";
 
-async function reachable(): Promise<boolean> {
-  const h = await pingEverOsV2({ baseUrl: BASE_URL, apiKey: null });
-  return h.reachable;
+// Vitest does not await an async describe callback: anything awaited inside it
+// would not be guaranteed to have resolved before the suite body runs. Probe
+// reachability up front (module scope) instead, and keep describe synchronous.
+let up = false;
+try {
+  up = (await pingEverOsV2({ baseUrl: BASE_URL, apiKey: null })).reachable;
+} catch {
+  up = false;
 }
 
-describe("everos v2 live contract", async () => {
-  const up = await reachable();
-  const skipReason = up ? null : `no EverOS server at ${BASE_URL}`;
-
+describe("everos v2 live contract", () => {
   beforeAll(() => {
-    if (!up) console.warn(`[everos-v2 smoke] skipped: ${skipReason}`);
+    if (!up) console.warn(`[everos-v2 smoke] skipped: no EverOS server at ${BASE_URL}`);
   });
 
   it.skipIf(!up)("health reports a version", async () => {

@@ -80,6 +80,5 @@ export default {
   "windowsNote": {
     "title": "Windows 注意事項",
     "body": "在 Windows 上，受管理的本機 EverOS 可能仍需要 WSL 或遠端主機。若本機 sidecar 無法啟動，請繼續以指向 WSL 或遠端 EverOS 服務位址的方式使用此畫面。"
-  },
-  "body": "EverOS 預設執行於 http://localhost:8000。設定後,所有需要長期記憶的操作都會指向該位址。"
+  }
 };
