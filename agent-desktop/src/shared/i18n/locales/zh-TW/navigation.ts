@@ -22,4 +22,12 @@ export default {
   plans: "Plans",
   mcp: "MCP",
   settings: "設定",
+  home: "首頁",
+  runtime: "執行環境",
+  group: {
+    workbench: "首頁與工作",
+    runtime: "執行環境與工具",
+    operations: "維運",
+  },
+  approvals: "審批",
 } as const;

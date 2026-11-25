@@ -1,5 +1,10 @@
+// Cascade order: astryx layers first, legacy sheet next, and our overrides
+// LAST so brand/shell rules win over main.css at equal specificity.
+import "@astryxdesign/core/reset.css";
+import "@astryxdesign/core/astryx.css";
+import "@astryxdesign/theme-neutral/theme.css";
 import "./assets/main.css";
-
+import "./assets/cubecloud-theme.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";

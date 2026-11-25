@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { Theme as AstryxTheme } from "@astryxdesign/core/theme";
+import { neutralTheme } from "@astryxdesign/theme-neutral/built";
 
 type Theme = "light" | "dark" | "system";
 type ResolvedTheme = "light" | "dark";
@@ -62,14 +64,17 @@ export function ThemeProvider({
     setResolved(resolve(theme));
   }, [theme]);
 
-  // Apply data-theme attribute to <html>
+  // Apply data-theme + data-astryx-theme attribute to <html>
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", resolved);
+    const root = document.documentElement;
+    root.setAttribute("data-theme", resolved);
+    root.setAttribute("data-astryx-theme", "neutral");
   }, [resolved]);
-
   return (
     <ThemeContext.Provider value={{ theme, resolved, setTheme }}>
-      {children}
+      <AstryxTheme theme={neutralTheme} mode={resolved}>
+        {children}
+      </AstryxTheme>
     </ThemeContext.Provider>
   );
 }

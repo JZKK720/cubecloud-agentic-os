@@ -22,4 +22,13 @@ export default {
   plans: "Plans",
   mcp: "MCP",
   settings: "Pengaturan",
+  home: "Beranda",
+  runtime: "Runtime",
+  primaryNav: "Navigasi utama",
+  group: {
+    workbench: "Beranda & kerja",
+    runtime: "Runtime & alat",
+    operations: "Operasi",
+  },
+  approvals: "Persetujuan",
 } as const;

@@ -22,4 +22,13 @@ export default {
   plans: "Plans",
   mcp: "MCP",
   settings: "Configuración",
+  home: "Inicio",
+  runtime: "Runtime",
+  primaryNav: "Navegación principal",
+  group: {
+    workbench: "Inicio y trabajo",
+    runtime: "Runtime y herramientas",
+    operations: "Operaciones",
+  },
+  approvals: "Aprobaciones",
 } as const;

@@ -11,201 +11,90 @@ import Settings from "../Settings/Settings";
 import Skills from "../Skills/Skills";
 import Memory from "../Memory/Memory";
 import Tools from "../Tools/Tools";
-import Workspace, { type WorkspaceChatDraft } from "../Workspace/Workspace";
-import WorkspaceConsole from "../WorkspaceConsole/WorkspaceConsole";
 import Gateway from "../Gateway/Gateway";
 import Models from "../Models/Models";
 import Providers from "../Providers/Providers";
+import Plans from "../Plans/Plans";
+import Mcp from "../Mcp/Mcp";
+import Workspace, { type WorkspaceChatDraft } from "../Workspace/Workspace";
+import WorkspaceConsole from "../WorkspaceConsole/WorkspaceConsole";
 import Schedules from "../Schedules/Schedules";
 import Soul from "../Soul/Soul";
-import Plans from "../Plans/Plans";
 import CodeGraph from "../CodeGraph/CodeGraph";
 import EverOS from "../EverOS/EverOS";
 import Headroom from "../Headroom/Headroom";
 import SandboxTasks from "../SandboxTasks/SandboxTasks";
-import Mcp from "../Mcp/Mcp";
 import Swarm from "../Swarm/Swarm";
 import Knowledge from "../Knowledge/Knowledge";
-import RuntimeNotice from "../../components/RuntimeNotice";
 import VerifyWarningBanner from "../../components/VerifyWarningBanner";
-import ToolSuggestions from "../../components/ToolSuggestions";
-import cubecloudWordmark from "../../assets/cubecloud-wordmark.svg";
+import cubecloudMark from "../../assets/logo-pack/120X120 反白.svg";
 import {
   ChatBubble,
   Clock,
-  Users,
   Settings as SettingsIcon,
-  Puzzle,
-  Brain,
-  Wrench,
-  Search,
-  Signal,
-  Layers,
-  KeyRound,
-  Timer,
   Download,
-  Sparkles,
+  Home as HomeIcon,
   Plans as PlansIcon,
-  Network,
-  Database,
-  Cable,
+  Boxes,
 } from "../../assets/icons";
 import {
-  FileText as LicensingIcon,
-  GitBranch as SwarmIcon,
-  BookOpen as KnowledgeIcon,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+  AppShell,
+  Button,
+  SideNav,
+  SideNavHeading,
+  SideNavItem,
+  Badge,
+} from "@astryxdesign/core";
+import { FileText as LicensingIcon } from "lucide-react";
 import { useI18n } from "../../components/useI18n";
-
+import HomeScreen from "../Home/Home";
+import RuntimeHub from "../RuntimeHub/Runtime";
+import { RUNTIME_CARD_BY_VIEW, RUNTIME_GROUPS } from "../RuntimeHub/catalog";
+import { useRuntimePins } from "../RuntimeHub/useRuntimePins";
 type View =
+  | "home"
   | "chat"
   | "sessions"
+  | "plans"
+  | "runtime"
   | "agents"
   | "soul"
+  | "skills"
+  | "tools"
+  | "mcp"
   | "models"
   | "providers"
-  | "skills"
   | "memory"
-  | "tools"
-  | "workspace"
-  | "workspaceConsole"
-  | "schedules"
-  | "plans"
   | "codegraph"
   | "everos"
   | "headroom"
-  | "gateway"
-  | "mcp"
-  | "sandboxtasks"
-  | "swarm"
   | "knowledge"
+  | "sandboxtasks"
+  | "workspace"
+  | "workspaceConsole"
+  | "swarm"
+  | "schedules"
+  | "gateway"
   | "settings";
 
-const NAV_ITEMS: {
+const NAV_ITEMS = [
+  { view: "home", icon: HomeIcon, labelKey: "navigation.home" },
+  { view: "chat", icon: ChatBubble, labelKey: "navigation.chat" },
+  { view: "sessions", icon: Clock, labelKey: "navigation.sessions" },
+  { view: "plans", icon: PlansIcon, labelKey: "navigation.plans" },
+  { view: "runtime", icon: Boxes, labelKey: "navigation.runtime" },
+  { view: "settings", icon: SettingsIcon, labelKey: "navigation.settings" },
+] as const satisfies readonly {
   view: View;
-  icon: LucideIcon;
+  icon: typeof HomeIcon;
   labelKey: string;
-  group: "work" | "configure" | "platform";
-}[] = [
-  {
-    view: "chat",
-    icon: ChatBubble,
-    labelKey: "navigation.chat",
-    group: "work",
-  },
-  {
-    view: "sessions",
-    icon: Clock,
-    labelKey: "navigation.sessions",
-    group: "work",
-  },
-  { view: "agents", icon: Users, labelKey: "navigation.agents", group: "work" },
-  { view: "soul", icon: Sparkles, labelKey: "navigation.soul", group: "work" },
-  {
-    view: "plans",
-    icon: PlansIcon,
-    labelKey: "navigation.plans",
-    group: "work",
-  },
-  {
-    view: "codegraph",
-    icon: Network,
-    labelKey: "navigation.codegraph",
-    group: "work",
-  },
-  {
-    view: "everos",
-    icon: Database,
-    labelKey: "navigation.everos",
-    group: "work",
-  },
-  {
-    view: "headroom",
-    icon: Sparkles,
-    labelKey: "navigation.headroom",
-    group: "work",
-  },
-  {
-    view: "sandboxtasks",
-    icon: Network,
-    labelKey: "navigation.sandboxtasks",
-    group: "work",
-  },
-  {
-    view: "swarm",
-    icon: SwarmIcon,
-    labelKey: "navigation.swarm",
-    group: "work",
-  },
-  {
-    view: "knowledge",
-    icon: KnowledgeIcon,
-    labelKey: "navigation.knowledge",
-    group: "work",
-  },
-  {
-    view: "models",
-    icon: Layers,
-    labelKey: "navigation.models",
-    group: "configure",
-  },
-  {
-    view: "providers",
-    icon: KeyRound,
-    labelKey: "navigation.providers",
-    group: "configure",
-  },
-  {
-    view: "skills",
-    icon: Puzzle,
-    labelKey: "navigation.skills",
-    group: "configure",
-  },
-  {
-    view: "memory",
-    icon: Brain,
-    labelKey: "navigation.memory",
-    group: "configure",
-  },
-  {
-    view: "tools",
-    icon: Wrench,
-    labelKey: "navigation.tools",
-    group: "configure",
-  },
-  {
-    view: "workspace",
-    icon: Search,
-    labelKey: "navigation.workspace",
-    group: "configure",
-  },
-  {
-    view: "workspaceConsole",
-    icon: ChatBubble,
-    labelKey: "navigation.workspaceConsole",
-    group: "work",
-  },
-  {
-    view: "schedules",
-    icon: Timer,
-    labelKey: "navigation.schedules",
-    group: "configure",
-  },
-  {
-    view: "gateway",
-    icon: Signal,
-    labelKey: "navigation.gateway",
-    group: "platform",
-  },
-  { view: "mcp", icon: Cable, labelKey: "navigation.mcp", group: "platform" },
-  {
-    view: "settings",
-    icon: SettingsIcon,
-    labelKey: "navigation.settings",
-    group: "platform",
-  },
-];
+}[];
+
+/** Views grouped behind the Runtime hub. The rail keeps a single Runtime
+ *  entry; pinned capabilities are surfaced alongside it via useRuntimePins. */
+const RUNTIME_VIEWS: ReadonlySet<View> = new Set<View>(
+  RUNTIME_GROUPS.flatMap((group) => group.cards.map((card) => card.view)),
+);
 
 const LEGAL_STATUS_POINTS = [
   "Inherited desktop code still remains under the repository MIT license until the replacement boundary is cleared.",
@@ -229,17 +118,15 @@ interface LayoutProps {
   verifyWarning?: boolean;
   onReinstall?: () => void;
   onDismissVerifyWarning?: () => void;
-  onSwitchToLocal?: () => void;
 }
 
 function Layout({
   verifyWarning,
   onReinstall,
   onDismissVerifyWarning,
-  onSwitchToLocal,
 }: LayoutProps = {}): React.JSX.Element {
   const { t } = useI18n();
-  const [view, setView] = useState<View>("chat");
+  const [view, setView] = useState<View>("home");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(
     () => {
@@ -260,14 +147,8 @@ function Layout({
   // Tabs lazy-mount on first visit, then stay mounted (display:none toggle).
   // Keeps IPC refetch / DOM rebuild off the tab-switch hot path.
   const [visitedViews, setVisitedViews] = useState<Set<View>>(
-    () => new Set<View>(["chat"]),
+    () => new Set<View>(["home"]),
   );
-  // Remote-only mode — SSH tunnel has full access; only pure HTTP remote mode restricts screens
-  const [remoteMode, setRemoteMode] = useState(false);
-  // User can dismiss the runtime banner per session. We keep it
-  // dismissable so the chrome doesn't get in the way of the screen
-  // underneath once the user has acknowledged the runtime state.
-  const [runtimeBannerDismissed, setRuntimeBannerDismissed] = useState(false);
   // MCP sidebar badge — shows enabled/total next to the MCP nav item.
   // null means "unknown / not loaded yet"; 0 is a real value.
   const [mcpCount, setMcpCount] = useState<{
@@ -337,42 +218,20 @@ function Layout({
     })();
   }, [restored, currentSessionId]);
 
-  // Re-render the nav item label with a small badge if the item is
-  // the MCP entry and we have a count. Other items render plain.
-  const renderNavLabel = useCallback(
-    (v: View, labelKey: string): React.JSX.Element => {
-      if (v === "mcp" && mcpCount) {
-        return (
-          <span className="sidebar-nav-label-row">
-            <span className="sidebar-nav-label">{t(labelKey)}</span>
-            <span
-              className="sidebar-nav-badge"
-              aria-label={`${mcpCount.enabled} of ${mcpCount.total} enabled`}
-            >
-              {mcpCount.enabled}/{mcpCount.total}
-            </span>
-          </span>
-        );
-      }
-      return <span className="sidebar-nav-label">{t(labelKey)}</span>;
+  const runtimePins = useRuntimePins();
+  const { pins } = runtimePins;
+  const isNavActive = useCallback(
+    (v: View): boolean => {
+      if (v !== "runtime") return view === v;
+      // Runtime owns the umbrella entry only when no pinned shortcut
+      // points at the open capability.
+      return (
+        view === "runtime" ||
+        (RUNTIME_VIEWS.has(view) &&
+          !pins.some((pinned) => pinned === view))
+      );
     },
-    [mcpCount, t],
-  );
-
-  const renderNavItem = useCallback(
-    (v: View, Icon: LucideIcon, labelKey: string): React.JSX.Element => (
-      <button
-        key={v}
-        className={`sidebar-nav-item ${view === v ? "active" : ""}`}
-        onClick={() => goTo(v)}
-        data-view={v}
-      >
-        <Icon size={16} />
-        {renderNavLabel(v, labelKey)}
-      </button>
-    ),
-    // goTo is a stable useCallback above; safe to omit.
-    [renderNavLabel, view],
+    [pins, view],
   );
 
   const paneStyle = (target: View): React.CSSProperties => ({
@@ -402,28 +261,6 @@ function Layout({
     setShowLegalModal(false);
   }, []);
 
-  const handleUseWorkspaceContext = useCallback(
-    (draft: WorkspaceChatDraft) => {
-      setWorkspaceDraft({
-        nonce: `${Date.now()}`,
-        text: draft.text,
-        attachments: draft.attachments,
-      });
-      goTo("chat");
-    },
-    [goTo],
-  );
-
-  // Re-check remote mode on tab switch (picks up Settings changes)
-  useEffect(() => {
-    window.hermesAPI.isRemoteOnlyMode().then((isRemote) => {
-      setRemoteMode(isRemote);
-      // Re-arm the runtime banner so it re-appears when the user
-      // changes connection modes via Settings.
-      setRuntimeBannerDismissed(false);
-    });
-  }, [view]);
-
   useEffect(() => {
     if (!showLegalModal) return;
 
@@ -436,6 +273,18 @@ function Layout({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [showLegalModal]);
+
+  const handleUseWorkspaceContext = useCallback(
+    (draft: WorkspaceChatDraft) => {
+      setWorkspaceDraft({
+        nonce: `${Date.now()}`,
+        text: draft.text,
+        attachments: draft.attachments,
+      });
+      goTo("chat");
+    },
+    [goTo],
+  );
 
   // Auto-update state
   const [updateVersion, setUpdateVersion] = useState<string | null>(null);
@@ -539,73 +388,54 @@ function Layout({
     [goTo],
   );
 
-  return (
-    <div className="layout">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <img
-            src={cubecloudWordmark}
-            className="sidebar-brand-wordmark"
-            alt="Cubecloud Agent Desktop"
-          />
-        </div>
+  const runtimeBadge =
+    mcpCount && mcpCount.total > 0 ? `${mcpCount.enabled}/${mcpCount.total}` : undefined;
+  const pinnedCards = pins
+    .map((view) => RUNTIME_CARD_BY_VIEW.get(view))
+    .filter((card) => card !== undefined);
 
-        <nav className="sidebar-nav" aria-label="Platform navigation">
-          <div className="nav-group">
-            <p className="nav-group-label">{t("navigation.group.work")}</p>
-            {NAV_ITEMS.filter((n) => n.group === "work").map(
-              ({ view: v, icon: Icon, labelKey }) =>
-                renderNavItem(v, Icon, labelKey),
-            )}
-          </div>
-
-          <div className="nav-group">
-            <p className="nav-group-label">{t("navigation.group.configure")}</p>
-            {NAV_ITEMS.filter((n) => n.group === "configure").map(
-              ({ view: v, icon: Icon, labelKey }) =>
-                renderNavItem(v, Icon, labelKey),
-            )}
-          </div>
-
-          <div className="nav-group nav-group-platform">
-            <p className="nav-group-label">{t("navigation.group.platform")}</p>
-            {NAV_ITEMS.filter((n) => n.group === "platform").map(
-              ({ view: v, icon: Icon, labelKey }) =>
-                renderNavItem(v, Icon, labelKey),
-            )}
-          </div>
-        </nav>
-
-        <ToolSuggestions />
-
-        <div className="sidebar-footer">
+  const sideNav = (
+    <SideNav
+      className="cc-sidenav"
+      aria-label={t("navigation.primaryNav")}
+      header={
+        <SideNavHeading
+          icon={
+            <img
+              src={cubecloudMark}
+              className="cc-sidenav-mark"
+              alt=""
+              width={28}
+              height={28}
+            />
+          }
+          heading={t("common.appName")}
+          subheading={
+            activeProfile === "default" ? undefined : activeProfile
+          }
+        />
+      }
+      footer={
+        <div className="cc-sidenav-footer">
           {updateState && (
-            <button
-              className={`sidebar-update-btn ${
-                updateState === "error" ? "error" : ""
-              }`}
+            <Button
+              variant={updateState === "error" ? "destructive" : "primary"}
+              size="sm"
+              className="cc-update-btn"
               onClick={handleUpdate}
-              disabled={updateState === "downloading"}
-              title={updateError ?? undefined}
-            >
-              <Download size={13} />
-              {updateState === "available" && (
-                <span>
-                  {t("common.updateAvailable", { version: updateVersion })}
-                </span>
-              )}
-              {updateState === "downloading" && (
-                <span>
-                  {t("common.downloading", { percent: downloadPercent })}
-                </span>
-              )}
-              {updateState === "ready" && (
-                <span>{t("common.restartToUpdate")}</span>
-              )}
-              {updateState === "error" && (
-                <span>{t("common.updateFailed")}</span>
-              )}
-            </button>
+              isDisabled={updateState === "downloading"}
+              tooltip={updateError ?? undefined}
+              icon={<Download size={13} />}
+              label={
+                updateState === "available"
+                  ? t("common.updateAvailable", { version: updateVersion })
+                  : updateState === "downloading"
+                    ? t("common.downloading", { percent: downloadPercent })
+                    : updateState === "ready"
+                      ? t("common.restartToUpdate")
+                      : t("common.updateFailed")
+              }
+            />
           )}
           <button
             type="button"
@@ -617,13 +447,49 @@ function Layout({
             <LicensingIcon size={13} />
             {t("common.legal.licensingLink")}
           </button>
-          <div className="sidebar-footer-text">
-            {activeProfile === "default" ? t("common.appName") : activeProfile}
-          </div>
         </div>
-      </aside>
+      }
+    >
+      {NAV_ITEMS.map(({ view: v, icon: Icon, labelKey }) => (
+        <SideNavItem
+          key={v}
+          label={t(labelKey)}
+          icon={Icon}
+          isSelected={isNavActive(v)}
+          onClick={() => goTo(v)}
+          data-testid={`nav-${v}`}
+          endContent={
+            v === "runtime" && runtimeBadge ? (
+              <Badge variant="neutral" label={runtimeBadge} />
+            ) : undefined
+          }
+        />
+      ))}
+      {pinnedCards.length > 0 && (
+        <div className="cc-sidenav-pins" role="group" aria-label={t("runtime.pinned")}>
+          {pinnedCards.map((card) => (
+            <SideNavItem
+              key={card.view}
+              label={t(`runtime.${card.titleKey}`)}
+              icon={card.icon}
+              isSelected={view === card.view}
+              onClick={() => goTo(card.view)}
+              data-testid={`nav-pin-${card.view}`}
+            />
+          ))}
+        </div>
+      )}
+    </SideNav>
+  );
 
-      <main className="content">
+  return (
+    <AppShell variant="section" className="cc-shell" sideNav={sideNav} contentPadding={0}>
+      <div className="content">
+        {visitedViews.has("home") && (
+          <div style={paneStyle("home")}>
+            <HomeScreen onNavigate={(dest) => goTo(dest as View)} />
+          </div>
+        )}
         {verifyWarning && onReinstall && onDismissVerifyWarning && (
           <VerifyWarningBanner
             onReinstall={onReinstall}
@@ -636,38 +502,11 @@ function Layout({
             setMessages={setMessages}
             sessionId={currentSessionId}
             profile={activeProfile}
+            
             composerPrefill={workspaceDraft}
             onNewChat={handleNewChat}
           />
         </div>
-
-        {/* Runtime banner — surfaces connection state without blocking
-            the screens below. Only shown in pure remote mode; the
-            user can dismiss it for the current session. */}
-        {remoteMode && !runtimeBannerDismissed && (
-          <div className="layout-runtime-banner">
-            <RuntimeNotice
-              feature="Local-only data"
-              variant="remote"
-              compact
-              onSwitchToLocal={
-                onSwitchToLocal
-                  ? () => {
-                      void onSwitchToLocal();
-                    }
-                  : undefined
-              }
-            />
-            <button
-              type="button"
-              className="layout-runtime-banner-dismiss"
-              onClick={() => setRuntimeBannerDismissed(true)}
-              aria-label="Dismiss runtime notice"
-            >
-              ×
-            </button>
-          </div>
-        )}
 
         {visitedViews.has("sessions") && (
           <div style={paneStyle("sessions")}>
@@ -693,11 +532,6 @@ function Layout({
           </div>
         )}
 
-        {visitedViews.has("soul") && (
-          <div style={paneStyle("soul")}>
-            <Soul profile={activeProfile} />
-          </div>
-        )}
 
         {visitedViews.has("models") && (
           <div style={paneStyle("models")}>
@@ -729,6 +563,25 @@ function Layout({
           </div>
         )}
 
+
+
+
+        {visitedViews.has("plans") && (
+          <div style={paneStyle("plans")}>
+            <Plans visible={view === "plans"} profile={activeProfile} />
+          </div>
+        )}
+
+        {visitedViews.has("runtime") && (
+          <div style={paneStyle("runtime")}>
+            <RuntimeHub onNavigate={(dest) => goTo(dest)} pins={runtimePins} />
+          </div>
+        )}
+
+
+
+
+
         {visitedViews.has("workspace") && (
           <div style={paneStyle("workspace")}>
             <Workspace onOpenInChat={handleUseWorkspaceContext} />
@@ -747,9 +600,9 @@ function Layout({
           </div>
         )}
 
-        {visitedViews.has("plans") && (
-          <div style={paneStyle("plans")}>
-            <Plans visible={view === "plans"} profile={activeProfile} />
+        {visitedViews.has("soul") && (
+          <div style={paneStyle("soul")}>
+            <Soul profile={activeProfile} />
           </div>
         )}
 
@@ -777,6 +630,18 @@ function Layout({
           </div>
         )}
 
+        {visitedViews.has("swarm") && (
+          <div style={paneStyle("swarm")}>
+            <Swarm />
+          </div>
+        )}
+
+        {visitedViews.has("knowledge") && (
+          <div style={paneStyle("knowledge")}>
+            <Knowledge />
+          </div>
+        )}
+
         {visitedViews.has("gateway") && (
           <div style={paneStyle("gateway")}>
             <Gateway profile={activeProfile} />
@@ -789,17 +654,7 @@ function Layout({
           </div>
         )}
 
-        {visitedViews.has("swarm") && (
-          <div style={paneStyle("swarm")}>
-            <Swarm />
-          </div>
-        )}
 
-        {visitedViews.has("knowledge") && (
-          <div style={paneStyle("knowledge")}>
-            <Knowledge />
-          </div>
-        )}
 
         {visitedViews.has("settings") && (
           <div style={paneStyle("settings")}>
@@ -870,8 +725,8 @@ function Layout({
             </div>
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }
 

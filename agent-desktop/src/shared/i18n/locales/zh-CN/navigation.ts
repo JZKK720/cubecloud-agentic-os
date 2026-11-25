@@ -22,9 +22,12 @@ export default {
   plans: "Plans",
   mcp: "MCP",
   settings: "设置",
+  home: "首页",
+  runtime: "运行时",
   group: {
-    work: "工作",
-    configure: "配置",
-    platform: "平台",
+    workbench: "首页与工作",
+    runtime: "运行时与工具",
+    operations: "运维",
   },
+  approvals: "审批",
 } as const;

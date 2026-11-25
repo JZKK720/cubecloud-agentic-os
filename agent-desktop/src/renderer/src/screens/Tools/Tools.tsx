@@ -1,9 +1,23 @@
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useI18n } from "../../components/useI18n";
-import { Refresh, CheckCircle, XCircle, Alert as AlertIcon } from "../../assets/icons";
+import {
+  Refresh,
+  CheckCircle,
+  XCircle,
+  Alert as AlertIcon,
+} from "../../assets/icons";
 import { ManagedAppsPanel } from "../../components/ManagedAppsPanel";
+import { Button } from "@astryxdesign/core/Button";
+import { TextInput } from "@astryxdesign/core/TextInput";
+import { Selector } from "@astryxdesign/core/Selector";
+import { HStack, VStack } from "@astryxdesign/core/Stack";
+import { Heading } from "@astryxdesign/core/Heading";
+import { Text } from "@astryxdesign/core/Text";
+import { Banner } from "@astryxdesign/core/Banner";
 const OfficeCliSheetView = React.lazy(() =>
-  import("../../components/OfficeCliSheetView").then((m) => ({ default: m.OfficeCliSheetView })),
+  import("../../components/OfficeCliSheetView").then((m) => ({
+    default: m.OfficeCliSheetView,
+  })),
 );
 
 interface ToolsetInfo {
@@ -303,11 +317,22 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
   const [officeCliArgs, setOfficeCliArgs] = useState("");
   const [officeCliRunning, setOfficeCliRunning] = useState(false);
   const [officeCliVerb, setOfficeCliVerb] = useState<
-    "get" | "query" | "validate" | "view" | "dump" | "raw" | "create" | "set" | "add" | "remove"
+    | "get"
+    | "query"
+    | "validate"
+    | "view"
+    | "dump"
+    | "raw"
+    | "create"
+    | "set"
+    | "add"
+    | "remove"
   >("view");
   const [officeCliOut, setOfficeCliOut] = useState<string | null>(null);
   const [officeCliErr, setOfficeCliErr] = useState<string | null>(null);
-  const [officeCliSheetJson, setOfficeCliSheetJson] = useState<string | null>(null);
+  const [officeCliSheetJson, setOfficeCliSheetJson] = useState<string | null>(
+    null,
+  );
   const [officeCliViewing, setOfficeCliViewing] = useState(false);
 
   async function openOfficeCliSheet(): Promise<void> {
@@ -322,11 +347,16 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
         args: ["--json"],
       });
       setOfficeCliSheetJson(
-        res.ok ? res.stdout : JSON.stringify({ success: false, error: res.error ?? "unknown" }),
+        res.ok
+          ? res.stdout
+          : JSON.stringify({ success: false, error: res.error ?? "unknown" }),
       );
     } catch (e) {
       setOfficeCliSheetJson(
-        JSON.stringify({ success: false, error: e instanceof Error ? e.message : String(e) }),
+        JSON.stringify({
+          success: false,
+          error: e instanceof Error ? e.message : String(e),
+        }),
       );
     } finally {
       setOfficeCliViewing(false);
@@ -607,7 +637,9 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       await window.hermesAPI.setToolsetEnabled(key, !currentEnabled, profile);
     } catch {
       setToolsets((prev) =>
-        prev.map((t) => (t.key === key ? { ...t, enabled: currentEnabled } : t)),
+        prev.map((t) =>
+          t.key === key ? { ...t, enabled: currentEnabled } : t,
+        ),
       );
     }
   }
@@ -668,7 +700,9 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       <div className="tools-agent-reach">
         <div className="tools-agent-reach-header">
           <h3 className="tools-agent-reach-title">
-            {t("tools.agentReachTitle", { defaultValue: "Internet Capabilities (Agent-Reach)" })}
+            {t("tools.agentReachTitle", {
+              defaultValue: "Internet Capabilities (Agent-Reach)",
+            })}
           </h3>
           <button
             className="btn btn-secondary tools-agent-reach-refresh"
@@ -682,15 +716,16 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           </button>
         </div>
         <p className="tools-agent-reach-subtitle">
-          {t(
-            "tools.agentReachSubtitle",
-            { defaultValue: "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git" },
-          )}
+          {t("tools.agentReachSubtitle", {
+            defaultValue:
+              "Agent-Reach gives your runtime agent internet access — Twitter, Reddit, YouTube, GitHub, RSS, web search, and more. Install it on the gateway machine with: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+          })}
         </p>
         {agentReach?.installed ? (
           <div className="tools-agent-reach-status">
             <span className="tools-agent-reach-installed">
-              <CheckCircle size={14} /> {t("tools.agentReachInstalled", { defaultValue: "Installed" })}
+              <CheckCircle size={14} />{" "}
+              {t("tools.agentReachInstalled", { defaultValue: "Installed" })}
               {agentReach.version && ` (v${agentReach.version})`}
             </span>
             {agentReach.channels.length > 0 && (
@@ -700,16 +735,28 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
                     key={ch.name}
                     className={`tools-agent-reach-channel tools-agent-reach-channel-${ch.status}`}
                   >
-                    <span className="tools-agent-reach-channel-name">{ch.name}</span>
+                    <span className="tools-agent-reach-channel-name">
+                      {ch.name}
+                    </span>
                     {ch.backend && (
-                      <span className="tools-agent-reach-channel-backend">{ch.backend}</span>
+                      <span className="tools-agent-reach-channel-backend">
+                        {ch.backend}
+                      </span>
                     )}
                     {ch.status === "ok" ? (
-                      <CheckCircle size={12} className="tools-agent-reach-channel-ok" />
+                      <CheckCircle
+                        size={12}
+                        className="tools-agent-reach-channel-ok"
+                      />
                     ) : ch.status === "error" ? (
-                      <XCircle size={12} className="tools-agent-reach-channel-err" />
+                      <XCircle
+                        size={12}
+                        className="tools-agent-reach-channel-err"
+                      />
                     ) : (
-                      <span className="tools-agent-reach-channel-pending">—</span>
+                      <span className="tools-agent-reach-channel-pending">
+                        —
+                      </span>
                     )}
                   </div>
                 ))}
@@ -723,10 +770,10 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           </div>
         ) : agentReach ? (
           <div className="tools-agent-reach-not-installed">
-            {t(
-              "tools.agentReachNotInstalled",
-              { defaultValue: "Agent-Reach is not installed. The runtime agent does not have internet capability tools." },
-            )}
+            {t("tools.agentReachNotInstalled", {
+              defaultValue:
+                "Agent-Reach is not installed. The runtime agent does not have internet capability tools.",
+            })}
           </div>
         ) : null}
       </div>
@@ -740,11 +787,10 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           </h3>
         </div>
         <p className="tools-agent-reach-subtitle">
-          AI-agent-led research engine that aggregates what people are
-          saying about any topic across the last 30 days, scored by
-          engagement. Zero pip dependencies, Python 3.12+ stdlib only.
-          Sources: Reddit, HN, YouTube, GitHub, Polymarket, arXiv, Digg,
-          StockTwits — all keyless.
+          AI-agent-led research engine that aggregates what people are saying
+          about any topic across the last 30 days, scored by engagement. Zero
+          pip dependencies, Python 3.12+ stdlib only. Sources: Reddit, HN,
+          YouTube, GitHub, Polymarket, arXiv, Digg, StockTwits — all keyless.
         </p>
         {last30days?.found ? (
           <div className="tools-agent-reach-status">
@@ -758,9 +804,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               </p>
             )}
             {last30days.cliOnPath && !last30days.scriptPath && (
-              <p className="tools-agent-reach-subtitle">
-                CLI on PATH
-              </p>
+              <p className="tools-agent-reach-subtitle">CLI on PATH</p>
             )}
           </div>
         ) : last30days ? (
@@ -805,7 +849,8 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
             <p className="tools-agent-reach-subtitle">{gbrain.summary}</p>
           </div>
         ) : gbrain ? (
-          <div className="tools-agent-reach-not-installed"
+          <div
+            className="tools-agent-reach-not-installed"
             dangerouslySetInnerHTML={{
               __html: t("tools.panels.gbrain.notInstalled"),
             }}
@@ -854,20 +899,23 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               disabled={workspaceLoading}
             >
               <Refresh size={14} />
-              {workspaceLoading ? t("tools.workspace.probing", { defaultValue: "Probing..." }) : t("tools.agentReachRefresh", { defaultValue: "Refresh" })}
+              {workspaceLoading
+                ? t("tools.workspace.probing", { defaultValue: "Probing..." })
+                : t("tools.agentReachRefresh", { defaultValue: "Refresh" })}
             </button>
           </div>
         </div>
         <p className="tools-agent-reach-subtitle">
-          {t(
-            "tools.workspace.subtitle",
-            { defaultValue: "The AI Workspace front interface. The Agentic OS console attaches, supervises, and governs it; chat and files stay in the workspace." },
-          )}
+          {t("tools.workspace.subtitle", {
+            defaultValue:
+              "The AI Workspace front interface. The Agentic OS console attaches, supervises, and governs it; chat and files stay in the workspace.",
+          })}
         </p>
         {workspace?.reachable ? (
           <div className="tools-agent-reach-status">
             <span className="tools-agent-reach-installed">
-              <CheckCircle size={14} /> {t("tools.workspace.reachable", { defaultValue: "Reachable" })}
+              <CheckCircle size={14} />{" "}
+              {t("tools.workspace.reachable", { defaultValue: "Reachable" })}
               {workspace.version ? ` (v${workspace.version})` : ""}
             </span>
             <p className="tools-agent-reach-subtitle">
@@ -877,7 +925,9 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           </div>
         ) : workspace ? (
           <div className="tools-agent-reach-not-installed">
-            {t("tools.workspace.unreachable", { defaultValue: "AI Workspace not reachable on" })}{" "}
+            {t("tools.workspace.unreachable", {
+              defaultValue: "AI Workspace not reachable on",
+            })}{" "}
             <code>{workspace.baseUrl}</code>
             {workspace.error ? ` — ${workspace.error}` : ""}
           </div>
@@ -888,9 +938,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       <div className="tools-section-divider" />
       <div className="tools-agent-reach">
         <div className="tools-agent-reach-header">
-          <h3 className="tools-agent-reach-title">
-            Laya (decision engine)
-          </h3>
+          <h3 className="tools-agent-reach-title">Laya (decision engine)</h3>
         </div>
         <p className="tools-agent-reach-subtitle">
           {t("tools.panels.laya.subtitle", {
@@ -909,12 +957,14 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
             >
               {laya.installed && laya.healthy ? (
                 <>
-                  <CheckCircle size={14} />{' '}
+                  <CheckCircle size={14} />{" "}
                   {t("tools.panels.laya.ready", { defaultValue: "Ready" })}
                   {laya.version ? ` (v${laya.version})` : ""}
                 </>
               ) : laya.installed ? (
-                t("tools.panels.laya.broken", { defaultValue: "Installed but version probe failed" })
+                t("tools.panels.laya.broken", {
+                  defaultValue: "Installed but version probe failed",
+                })
               ) : (
                 laya.summary
               )}
@@ -927,9 +977,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       <div className="tools-section-divider" />
       <div className="tools-agent-reach">
         <div className="tools-agent-reach-header">
-          <h3 className="tools-agent-reach-title">
-            WeKnora (knowledge / RAG)
-          </h3>
+          <h3 className="tools-agent-reach-title">WeKnora (knowledge / RAG)</h3>
         </div>
         <p className="tools-agent-reach-subtitle">
           {t("tools.panels.weknora.subtitle", {
@@ -941,14 +989,18 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           {weknora ? (
             weknora.reachable ? (
               <span className="tools-agent-reach-installed">
-                <CheckCircle size={14} />{' '}
-                {t("tools.panels.weknora.reachable", { defaultValue: "Reachable" })}
+                <CheckCircle size={14} />{" "}
+                {t("tools.panels.weknora.reachable", {
+                  defaultValue: "Reachable",
+                })}
                 {weknora.kbCount !== null ? ` — ${weknora.kbCount} KB` : ""}
                 {weknora.authNote ? ` — ${weknora.authNote}` : ""}
               </span>
             ) : (
               <span className="tools-agent-reach-not-installed">
-                {t("tools.panels.weknora.unreachable", { defaultValue: "Not reachable" })}
+                {t("tools.panels.weknora.unreachable", {
+                  defaultValue: "Not reachable",
+                })}
                 {weknora.error ? ` — ${weknora.error}` : ""}
               </span>
             )
@@ -961,7 +1013,9 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
       <div className="tools-agent-reach">
         <div className="tools-agent-reach-header">
           <h3 className="tools-agent-reach-title">
-            {t("tools.panels.governance.title", { defaultValue: "Workspace governance" })}
+            {t("tools.panels.governance.title", {
+              defaultValue: "Workspace governance",
+            })}
           </h3>
         </div>
         <p className="tools-agent-reach-subtitle">
@@ -983,8 +1037,10 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
               </span>
             ) : (
               <span className="tools-agent-reach-installed">
-                <CheckCircle size={14} />{' '}
-                {t("tools.panels.governance.visible", { defaultValue: "Visible" })}
+                <CheckCircle size={14} />{" "}
+                {t("tools.panels.governance.visible", {
+                  defaultValue: "Visible",
+                })}
                 {governance.policies.length > 0
                   ? ` — ${governance.policies.length} policies`
                   : ""}
@@ -1015,14 +1071,20 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           {openviking ? (
             openviking.reachable ? (
               <span className="tools-agent-reach-installed">
-                <CheckCircle size={14} />{' '}
-                {t("tools.panels.openviking.reachable", { defaultValue: "Reachable" })}
-                {openviking.sessionCount !== null ? ` — ${openviking.sessionCount} sessions` : ""}
+                <CheckCircle size={14} />{" "}
+                {t("tools.panels.openviking.reachable", {
+                  defaultValue: "Reachable",
+                })}
+                {openviking.sessionCount !== null
+                  ? ` — ${openviking.sessionCount} sessions`
+                  : ""}
                 {openviking.authNote ? ` — ${openviking.authNote}` : ""}
               </span>
             ) : (
               <span className="tools-agent-reach-not-installed">
-                {t("tools.panels.openviking.unreachable", { defaultValue: "Not reachable" })}
+                {t("tools.panels.openviking.unreachable", {
+                  defaultValue: "Not reachable",
+                })}
                 {openviking.error ? ` — ${openviking.error}` : ""}
               </span>
             )
@@ -1127,117 +1189,143 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
 
       {/* OfficeCLI — Office document creation/editing */}
       <div className="tools-section-divider" />
-      <div className="tools-agent-reach">
-        <div className="tools-agent-reach-header">
-          <h3 className="tools-agent-reach-title">
-            {t("tools.panels.officecli.title")}
-          </h3>
-        </div>
-        <p className="tools-agent-reach-subtitle">
+      <VStack gap={2} className="tools-agent-reach">
+        <Heading level={3} type="display-3">
+          {t("tools.panels.officecli.title")}
+        </Heading>
+        <Text type="supporting" color="secondary">
           {t("tools.panels.officecli.subtitle")}
-        </p>
+        </Text>
         {officecli?.installed ? (
-          <div className="tools-agent-reach-status">
-            <span className="tools-agent-reach-installed">
-              <CheckCircle size={14} /> {t("tools.panels.officecli.installed")}
-              {officecli.detectedCommand &&
-                ` (${officecli.detectedCommand})`}
-            </span>
-            <p
+          <VStack gap={1}>
+            <HStack gap={1} align="center">
+              <CheckCircle size={14} />
+              <Text type="body" weight="medium">
+                {t("tools.panels.officecli.installed")}
+                {officecli.detectedCommand && ` (${officecli.detectedCommand})`}
+              </Text>
+            </HStack>
+            <span
               className="tools-agent-reach-subtitle"
               dangerouslySetInnerHTML={{
                 __html: t("tools.panels.officecli.hint"),
               }}
             />
-          </div>
+          </VStack>
         ) : officecli ? (
-          <div
-            className="tools-agent-reach-not-installed"
-            dangerouslySetInnerHTML={{
-              __html: t("tools.panels.officecli.notInstalled"),
-            }}
+          <Banner
+            status="warning"
+            title={t("tools.panels.officecli.title")}
+            description={
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: t("tools.panels.officecli.notInstalled"),
+                }}
+              />
+            }
           />
         ) : null}
         {officecli?.installed ? (
-          <div className="officecli-panel">
-            <label className="tools-agent-reach-subtitle" htmlFor="officecli-file">
-              {t("tools.panels.officecli.run.fileLabel")}
-            </label>
-            <input
+          <VStack gap={2}>
+            <TextInput
               id="officecli-file"
-              type="text"
+              label={t("tools.panels.officecli.run.fileLabel")}
               value={officeCliFile}
-              onChange={(e) => setOfficeCliFile(e.target.value)}
+              onChange={(value) => setOfficeCliFile(value)}
               placeholder={t("tools.panels.officecli.run.filePlaceholder")}
-              className="officecli-input"
+              width="100%"
             />
-            <div className="officecli-panel-row">
-              <select
-                aria-label={t("tools.panels.officecli.run.verbLabel")}
+            <HStack gap={2} align="center" wrap="wrap">
+              <Selector
+                label={t("tools.panels.officecli.run.verbLabel")}
+                isLabelHidden
                 value={officeCliVerb}
-                onChange={(e) =>
-                  setOfficeCliVerb(e.target.value as typeof officeCliVerb)
+                onChange={(value) =>
+                  setOfficeCliVerb(value as typeof officeCliVerb)
                 }
-                className="officecli-select"
-              >
-                {["view", "get", "query", "validate", "dump", "raw", "create", "set", "add", "remove"].map(
-                  (v) => (
-                    <option key={v} value={v}>
-                      {v}
-                    </option>
-                  ),
-                )}
-              </select>
-              <input
-                type="text"
-                value={officeCliArgs}
-                onChange={(e) => setOfficeCliArgs(e.target.value)}
-                placeholder={t("tools.panels.officecli.run.argsPlaceholder")}
-                aria-label={t("tools.panels.officecli.run.argsLabel")}
-                className="officecli-input officecli-input--grow"
+                options={[
+                  "view",
+                  "get",
+                  "query",
+                  "validate",
+                  "dump",
+                  "raw",
+                  "create",
+                  "set",
+                  "add",
+                  "remove",
+                ]}
+                size="sm"
+                width="auto"
               />
-              <button
-                type="button"
+              <TextInput
+                label={t("tools.panels.officecli.run.argsLabel")}
+                isLabelHidden
+                value={officeCliArgs}
+                onChange={(value) => setOfficeCliArgs(value)}
+                placeholder={t("tools.panels.officecli.run.argsPlaceholder")}
+                size="sm"
+                width="100%"
+              />
+              <Button
+                label={
+                  officeCliRunning
+                    ? t("tools.panels.officecli.run.running")
+                    : t("tools.panels.officecli.run.submit")
+                }
                 onClick={() => void runOfficeCli()}
-                disabled={officeCliRunning || !officeCliFile.trim()}
-                className="officecli-button"
-              >
-                {officeCliRunning
-                  ? t("tools.panels.officecli.run.running")
-                  : t("tools.panels.officecli.run.submit")}
-              </button>
-            </div>
-            <p className="tools-agent-reach-subtitle">
+                isDisabled={officeCliRunning || !officeCliFile.trim()}
+                isLoading={officeCliRunning}
+                variant="primary"
+                size="sm"
+              />
+            </HStack>
+            <Text type="supporting" color="secondary">
               {t("tools.panels.officecli.run.emptyHint")}
-            </p>
+            </Text>
             {officeCliErr ? (
-              <pre className="officecli-error">{officeCliErr}</pre>
+              <Banner
+                status="error"
+                title={t("tools.panels.officecli.run.title")}
+                description={officeCliErr}
+              />
             ) : null}
             {officeCliOut ? (
-              <pre className="officecli-output">
-                {officeCliOut}
-              </pre>
+              <pre className="officecli-output">{officeCliOut}</pre>
             ) : null}
-            <div className="officecli-panel-row">
-              <button
-                type="button"
+            <HStack gap={2} align="center" wrap="wrap">
+              <Button
+                label={
+                  officeCliViewing
+                    ? t("tools.panels.officecli.view.loading")
+                    : t("tools.panels.officecli.view.button")
+                }
                 onClick={() => void openOfficeCliSheet()}
-                disabled={officeCliViewing || !officeCliFile.trim()}
-                className="officecli-button"
-              >
-                {officeCliViewing ? t("tools.panels.officecli.view.loading") : t("tools.panels.officecli.view.button")}
-              </button>
+                isDisabled={officeCliViewing || !officeCliFile.trim()}
+                isLoading={officeCliViewing}
+                variant="secondary"
+                size="sm"
+              />
               {officeCliSheetJson ? (
                 <div className="officecli-viewer-wrap">
-                  <Suspense fallback={<div className="officecli-viewer-loading">{t("tools.panels.officecli.view.loadingUniver")}</div>}>
-                    <OfficeCliSheetView json={officeCliSheetJson} loading={officeCliViewing} />
+                  <Suspense
+                    fallback={
+                      <div className="officecli-viewer-loading">
+                        {t("tools.panels.officecli.view.loadingUniver")}
+                      </div>
+                    }
+                  >
+                    <OfficeCliSheetView
+                      json={officeCliSheetJson}
+                      loading={officeCliViewing}
+                    />
                   </Suspense>
                 </div>
               ) : null}
-            </div>
-          </div>
+            </HStack>
+          </VStack>
         ) : null}
-      </div>
+      </VStack>
 
       {/* Graphify — concept knowledge graph */}
       <div className="tools-section-divider" />
@@ -1254,8 +1342,7 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
           <div className="tools-agent-reach-status">
             <span className="tools-agent-reach-installed">
               <CheckCircle size={14} /> {t("tools.panels.graphify.installed")}
-              {graphify.detectedCommand &&
-                ` (${graphify.detectedCommand})`}
+              {graphify.detectedCommand && ` (${graphify.detectedCommand})`}
               {graphify.version && ` v${graphify.version}`}
             </span>
             <p
