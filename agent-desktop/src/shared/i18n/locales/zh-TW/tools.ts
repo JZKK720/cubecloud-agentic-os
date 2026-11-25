@@ -2,6 +2,7 @@ export default {
   title: "工具",
   subtitle: "啟用或停用 Agent 在對話期間可使用的工具集",
   empty: "沒有可用的工具集",
+  emptyHint: "閘道執行後，工具集會顯示在這裡。",
   workspace: {
     subtitle:
       "對話式作業作業基礎 — 工作階段、檔案，以及驅動 CLI 轉接器的執行層。想讓主控台管理它時再附加。",
