@@ -21,6 +21,8 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
   const [providers, setProviders] = useState<MemoryProviderInfo[]>([]);
 
   const loadData = useCallback(async () => {
+    setLoading(true);
+    setError("");
     try {
       const [d, provider, provs] = await Promise.all([
         window.hermesAPI.readMemory(profile),
@@ -39,7 +41,6 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
   }, [profile]);
 
   useEffect(() => {
-    setLoading(true);
     loadData();
   }, [loadData]);
 
@@ -51,7 +52,11 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
         <div className="settings-container">
           <h1 className="settings-header">{t("memory.title")}</h1>
           <div className="memory-error">{error}</div>
-          <button className="btn btn-secondary btn-sm" onClick={() => { setLoading(true); void loadData(); }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => void loadData()}
+            disabled={loading}
+          >
             <Refresh size={13} />
           </button>
         </div>

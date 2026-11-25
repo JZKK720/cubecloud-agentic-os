@@ -104,6 +104,29 @@ describe("officecli validator", () => {
     const r = validateArgs("get", ["/Windows/System32/drivers/etc/hosts"], [HOME]);
     expect(r.ok).toBe(false);
   });
+  it("rejects bare OS-root segments even with a predicate", () => {
+    expect(isDocumentSelector("/etc[0]")).toBe(false);
+    expect(isDocumentSelector("/etc")).toBe(false);
+    expect(isDocumentSelector("/var")).toBe(false);
+    expect(isDocumentSelector("/home")).toBe(false);
+    expect(isDocumentSelector("/Windows")).toBe(false);
+    for (const arg of ["/etc[0]", "/etc", "/var", "/home"]) {
+      const r = validateArgs("get", [arg], [HOME]);
+      expect(r.ok, arg).toBe(false);
+    }
+  });
+
+  it("rejects selectors with unbalanced brackets", () => {
+    expect(isDocumentSelector("/slide[1")).toBe(false);
+    expect(isDocumentSelector("/slide]1[")).toBe(false);
+  });
+
+  it("still accepts ordinary selectors with predicates", () => {
+    expect(isDocumentSelector("/slide[1]")).toBe(true);
+    expect(isDocumentSelector("/body/table[1]")).toBe(true);
+    expect(isDocumentSelector("/@name[1]")).toBe(true);
+    expect(isDocumentSelector("/slide")).toBe(true);
+  });
 
   it("contains paths with ../ inside mixed separators", () => {
     expect(resolveWithinRoots("../../etc", [HOME])).toBeNull();

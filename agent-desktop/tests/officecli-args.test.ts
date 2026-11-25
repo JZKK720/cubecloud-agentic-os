@@ -42,6 +42,22 @@ describe("splitShellArgs", () => {
     expect(r.ok).toBe(false);
   });
 
+  it("keeps a backslash before a non-escape letter (Windows path segment)", () => {
+    const r = splitShellArgs("--out C:\\Users\\me\\out.html");
+    expect(r).toEqual({ ok: true, args: ["--out", "C:\\Users\\me\\out.html"] });
+  });
+
+  it("keeps backslashes inside double quotes when not an escape", () => {
+    const r = splitShellArgs('--out "C:\\Users\\me\\My Docs\\out.html"');
+    expect(r).toEqual({ ok: true, args: ["--out", "C:\\Users\\me\\My Docs\\out.html"] });
+  });
+
+  it("treats backslash-space as an escaped space so the path stays one arg", () => {
+    const r = splitShellArgs("--out C:\\My\\ Docs\\out.html");
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.args).toEqual(["--out", "C:\\My Docs\\out.html"]);
+  });
+
   it("returns empty args for empty input", () => {
     expect(splitShellArgs("   ")).toEqual({ ok: true, args: [] });
   });
