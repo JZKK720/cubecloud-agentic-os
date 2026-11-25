@@ -11,9 +11,13 @@
 // file with TypeScript and flatten the resulting object. That is exact:
 // missing keys, extra keys, and shape mismatches all surface.
 //
-// Exit codes: 0 = no drift (and --strict not given, or both clean),
-//             1 = drift, or --strict with any drift, or unreadable file.
-// `--strict` is now the CI default (see .github/workflows/ci.yml).
+// Exit codes:
+//   0 — no drift (regardless of --strict)
+//   1 — drift found AND --strict was passed
+//   2 — the check could not run (TypeScript missing, or a locale file that
+//       threw while loading)
+// Without --strict, drift is reported but exits 0. CI passes --strict
+// (see .github/workflows/ci.yml).
 
 const fs = require('fs');
 const path = require('path');
@@ -54,13 +58,25 @@ function loadModule(file) {
     fileName: path.basename(file),
   }).outputText;
   const mod = { exports: {} };
-  // Locale modules only export an object literal; no side effects.
-  new Function('module', 'exports', 'require', js)(mod, mod.exports, require);
+  // Locale modules are intended to be pure object literals. A real `require`
+  // would let a malformed or hostile locale file execute arbitrary code, so
+  // any import attempt throws instead of resolving. If a locale ever needs
+  // shared constants, hoist them here rather than importing.
+  const rejectingRequire = (id) => {
+    throw new Error(`locale module ${file} attempted to require(${JSON.stringify(id)}); locales must be self-contained`);
+  };
+  new Function('module', 'exports', 'require', js)(mod, mod.exports, rejectingRequire);
   const value = mod.exports && mod.exports.default;
-  if (!value || typeof value !== 'object') {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`locale module ${file} did not export a default object`);
   }
   return value;
+}
+
+function shapeOf(v) {
+  if (v === null) return 'null';
+  if (Array.isArray(v)) return 'array';
+  return typeof v;
 }
 
 function flatten(obj, prefix, out) {
@@ -68,9 +84,10 @@ function flatten(obj, prefix, out) {
     const value = obj[key];
     const pathKey = prefix ? `${prefix}.${key}` : key;
     if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      out.set(pathKey, 'object');
       flatten(value, pathKey, out);
     } else {
-      out.set(pathKey, typeof value);
+      out.set(pathKey, shapeOf(value));
     }
   }
 }
@@ -125,7 +142,11 @@ for (const lang of targetLocales) {
     const tKeys = collectKeys(path.join(dir, f), namespace);
     localKeys += tKeys.size;
     const miss = [];
-    for (const k of enKeys.keys()) if (!tKeys.has(k)) miss.push(k);
+    for (const [k, enShape] of enKeys) {
+      const localShape = tKeys.get(k);
+      if (localShape === undefined) { miss.push(k); continue; }
+      if (localShape !== enShape) { miss.push(`${k} (shape ${localShape} != ${enShape})`); }
+    }
     if (miss.length) missingKeys[f] = miss;
     const extra = [];
     for (const k of tKeys.keys()) if (!enKeys.has(k)) extra.push(k);
