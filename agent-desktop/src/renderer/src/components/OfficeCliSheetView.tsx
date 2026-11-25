@@ -139,14 +139,14 @@ export function OfficeCliSheetView({
   }, [sheet]);
 
   if (loading) {
-    return <div className="officecli-sheet-view-state">{t("tools.officecli.view.loading")}</div>;
+    return <div className="officecli-sheet-view-state">{t("tools.panels.officecli.view.loading")}</div>;
   }
   if (error) {
     return <div className="officecli-sheet-view-state officecli-sheet-view-error">{error}</div>;
   }
   if (!sheet) {
     return (
-      <div className="officecli-sheet-view-state">{t("tools.officecli.view.previewHint")}</div>
+      <div className="officecli-sheet-view-state">{t("tools.panels.officecli.view.previewHint")}</div>
     );
   }
   if (mountError) {
