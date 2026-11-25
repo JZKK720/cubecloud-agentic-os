@@ -131,6 +131,7 @@ export default {
         button: "以試算表檢視",
         loading: "正在載入預覽…",
         loadingUniver: "正在載入 Univer…",
+        previewHint: "執行 `officecli view <檔案> text --json` 即可在此預覽試算表。",
       },
     },
     graphify: {

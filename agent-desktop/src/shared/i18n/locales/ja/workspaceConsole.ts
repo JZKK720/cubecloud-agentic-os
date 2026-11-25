@@ -12,7 +12,7 @@ export default {
   statusUnreachable: "接続不可",
   statusUnknown: "不明",
   version: "バージョン",
-  origin: "Origin",
+  origin: "取得元",
   start: "起動",
   stop: "停止",
   restart: "再起動",

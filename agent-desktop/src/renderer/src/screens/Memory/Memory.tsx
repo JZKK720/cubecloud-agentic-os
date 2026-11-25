@@ -44,6 +44,19 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
   }, [loadData]);
 
   if (loading || !data) {
+    // Surface the failure instead of spinning forever: without this, an
+    // error in loadData leaves data === null and the screen is stuck.
+    if (error) {
+      return (
+        <div className="settings-container">
+          <h1 className="settings-header">{t("memory.title")}</h1>
+          <div className="memory-error">{error}</div>
+          <button className="btn btn-secondary btn-sm" onClick={() => { setLoading(true); void loadData(); }}>
+            <Refresh size={13} />
+          </button>
+        </div>
+      );
+    }
     return (
       <div className="settings-container">
         <h1 className="settings-header">{t("memory.title")}</h1>

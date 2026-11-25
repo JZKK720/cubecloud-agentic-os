@@ -88,9 +88,21 @@ describe("officecli validator", () => {
 
   it("treats /slide[1] as a document selector, not a filesystem path", () => {
     expect(isDocumentSelector("/slide[1]")).toBe(true);
-    expect(isDocumentSelector("/etc/passwd")).toBe(true); // lexically indistinguishable; contained by root check below
     const r = validateArgs("get", ["/slide[1]"], [HOME]);
     expect(r.ok).toBe(true);
+  });
+
+  it("rejects absolute POSIX paths that escape the allowed roots", () => {
+    expect(isDocumentSelector("/etc/passwd")).toBe(false);
+    const r = validateArgs("get", ["/etc/passwd"], [HOME]);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toMatch(/outside allowed roots/);
+  });
+
+  it("rejects /Windows and /Program Files style absolute paths", () => {
+    expect(isDocumentSelector("/Windows/System32/drivers/etc/hosts")).toBe(false);
+    const r = validateArgs("get", ["/Windows/System32/drivers/etc/hosts"], [HOME]);
+    expect(r.ok).toBe(false);
   });
 
   it("contains paths with ../ inside mixed separators", () => {

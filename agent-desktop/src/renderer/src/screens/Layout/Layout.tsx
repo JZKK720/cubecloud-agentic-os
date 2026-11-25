@@ -195,9 +195,16 @@ function Layout({
   // Auto-resume the last active session on mount. Guards against
   // stale IDs (profile switch, DB wipe) by treating an empty DB
   // return as "session no longer exists" and clearing state.
+  // When there is no persisted session id we mark restore complete
+  // immediately — otherwise creating a session later in the session
+  // would trigger this effect and overwrite the live chat.
   const [restored, setRestored] = useState(false);
   useEffect(() => {
-    if (restored || !currentSessionId) return;
+    if (restored) return;
+    if (!currentSessionId) {
+      setRestored(true);
+      return;
+    }
     void (async (): Promise<void> => {
       try {
         const items = (await window.hermesAPI.getSessionMessages(
