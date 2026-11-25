@@ -24,6 +24,7 @@ export default {
   settings: "設定",
   home: "ホーム",
   runtime: "ランタイム",
+  primaryNav: "メインナビゲーション",
   group: {
     workbench: "ホームと作業",
     runtime: "ランタイムとツール",

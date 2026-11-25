@@ -24,6 +24,7 @@ export default {
   settings: "設定",
   home: "首頁",
   runtime: "執行環境",
+  primaryNav: "主導覽",
   group: {
     workbench: "首頁與工作",
     runtime: "執行環境與工具",
