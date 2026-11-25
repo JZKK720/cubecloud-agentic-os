@@ -90,11 +90,11 @@ export default {
       "Modelagem de usuário entre sessões nativa de IA com Q&A dialético e busca semântica",
     hindsight:
       "Memóriaria de longo prazo com grafo de conhecimento e recuperaçãoo multi-estratégiagia",
-    mem0: "Server-side LLM fact extraction with semantic search and auto-deduplication",
-    retaindb: "Cloud memory API with hybrid search and 7 memory types",
-    supermemory: "Semantic long-term memory with profile recall and entity extraction",
-    holographic: "Local SQLite fact store with FTS5 search and trust scoring (no API key needed)",
-    openviking: "Session-managed memory with tiered retrieval and knowledge browsing",
+    mem0: "Extração de fatos no servidor com busca semântica e deduplicação automática",
+    retaindb: "API de memória em nuvem com busca híbrida e 7 tipos de memória",
+    supermemory: "Memória semântica de longo prazo com recuperação de perfil e extração de entidades",
+    holographic: "Armazenamento local SQLite de fatos com busca FTS5 e pontuação de confiança (sem chave de API)",
+    openviking: "Memória gerenciada por sessão com recuperação em camadas e navegação do conhecimento",
     
     byterover: "Árvore de conhecimento persistente com recuperação em camadas via CLI brv",
   },

@@ -54,7 +54,7 @@ export default {
     description: "スケジュールタスクの作成・管理",
   },
   moa: {
-    label: "Mixture of Agents",
+    label: "エージェント混成",
     description: "複数の AI モデルを協調動作させる",
   },
   todo: {
@@ -62,7 +62,7 @@ export default {
     description: "複雑なタスク用の TODO リストを作成・管理",
   },
   file_to_markdown: {
-    label: "File to Markdown",
+    label: "ファイルをMarkdownに",
     description:
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },

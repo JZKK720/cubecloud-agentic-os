@@ -3,8 +3,8 @@ export default {
   "title": "EverOS",
   "summary": "EverOS es una plataforma de memoria a largo plazo respaldada por un servidor EverCore auto-hospedado. Apunta el shell a tu URL base de EverOS para recordar lo que el usuario ha dicho en sesiones anteriores.",
   "notWired": {
-    "title": "Not wired",
-    "body": "EverOS integration is being added. The backend spec is already implemented in main; this screen will light up once the preload bridge is finalised.",
+    "title": "Sin conectar",
+    "body": "La integración de EverOS se está añadiendo. La especificación del backend ya está implementada en main; esta pantalla se activará cuando el puente preload esté finalizado.",
     "addHarness": "Add harness (coming soon)"
   },
   "health": {

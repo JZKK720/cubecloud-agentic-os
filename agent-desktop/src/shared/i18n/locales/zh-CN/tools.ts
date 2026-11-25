@@ -23,7 +23,7 @@ export default {
   moa: { label: "多代理协作", description: "协调多个 AI 模型协同工作" },
   todo: { label: "任务规划", description: "为复杂任务创建和管理待办列表" },
   file_to_markdown: {
-    label: "File to Markdown",
+    label: "文件转 Markdown",
     description:
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },

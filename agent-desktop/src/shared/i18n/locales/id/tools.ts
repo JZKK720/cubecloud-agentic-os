@@ -30,7 +30,7 @@ export default {
     description: "Buat gambar dengan DALL-E dan model lainnya",
   },
   tts: {
-    label: "Text-to-Speech",
+    label: "Teks ke Ucapan",
     description: "Ubah teks menjadi audio suara",
   },
   skills: {
@@ -58,7 +58,7 @@ export default {
     description: "Buat dan kelola tugas terjadwal",
   },
   moa: {
-    label: "Mixture of Agents",
+    label: "Campuran Agen",
     description: "Koordinasikan beberapa model AI bersama-sama",
   },
   todo: {
@@ -66,7 +66,7 @@ export default {
     description: "Buat dan kelola daftar tugas untuk pekerjaan kompleks",
   },
   file_to_markdown: {
-    label: "File to Markdown",
+    label: "Berkas ke Markdown",
     description:
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },

@@ -69,7 +69,7 @@ export default {
     description: "Crea y administra listas de tareas para trabajos complejos",
   },
   file_to_markdown: {
-    label: "File to Markdown",
+    label: "Archivo a Markdown",
     description:
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },

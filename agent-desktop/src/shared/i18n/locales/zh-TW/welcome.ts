@@ -97,16 +97,16 @@ export default {
   designDials: {
     title: "Design Dials",
     subtitle:
-      "Three knobs that nudge the agent's tone. Changes apply to this profile only and can be tuned later from Settings.",
+      "三個旋鈕，微調智能體的語氣。變更僅套用於此設定檔，可稍後在設定中再調整。",
     varianceLabel: "Variance",
     varianceHint:
-      "How expressive the phrasing is. 0 = dry and literal, 100 = metaphorical and colorful.",
+      "措辭的表現力。0 = 平淡直述，100 = 比喻生動。",
     motionLabel: "Motion",
     motionHint:
-      "How structured the response is. 0 = flowing essay, 100 = heavy bullet / step list.",
+      "回應的結構化程度。0 = 流暢的散文，100 = 大量列點清單。",
     densityLabel: "Density",
     densityHint:
-      "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
+      "每段資訊密度。0 = 寬鬆簡短，100 = 緊湊密集。",
     reset: "重設為預設值",
     saved: "已儲存。",
   },

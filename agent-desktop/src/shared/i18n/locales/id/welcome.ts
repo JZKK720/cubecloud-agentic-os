@@ -43,28 +43,28 @@ export default {
   flowStepInstall: "Install",
   flowStepConnect: "Connect",
   flowStepDone: "Start",
-  existingGatewayNote: "A live gateway was detected — install is optional.",
-  addOnRuntimesNote: "Ollama, LM Studio, vLLM, and more are configured in the next step.",
+  existingGatewayNote: "Gateway aktif terdeteksi — instalasi bersifat opsional.",
+  addOnRuntimesNote: "Ollama, LM Studio, vLLM, dan lainnya dikonfigurasi pada langkah berikutnya.",
   dockerScanCopy:
     "Untuk container gateway ({{runtimes}}) yang sudah ada. Lanjutkan dengan instalasi lokal default di bawah ini jika belum ada yang berjalan.",
   dockerScanning: "Memindai Docker Desktop untuk container gateway {{runtime}}...",
   dockerEmpty:
     "Tidak ada gateway ({{runtimes}}) yang siap dihubungkan. Mulai container, publikasikan port lokalnya, lalu pindai ulang.",
-  localGatewayCopy: "If a localhost gateway is already running, Agent Desktop can use it directly. This probe also checks the default OpenClaw loopback port.",
-  localGatewayEmpty: "No live localhost gateway responded on {{ports}}. Install the local {{runtime}} only if no other gateway is reachable.",
+  localGatewayCopy: "Jika gateway localhost sudah berjalan, Agent Desktop dapat langsung menggunakannya. Probe ini juga memeriksa port loopback default OpenClaw.",
+  localGatewayEmpty: "Tidak ada gateway localhost yang merespons di {{ports}}. Instal {{runtime}} lokal hanya jika tidak ada gateway lain yang dapat dijangkau.",
   designDials: {
     title: "Design Dials",
     subtitle:
-      "Three knobs that nudge the agent's tone. Changes apply to this profile only and can be tuned later from Settings.",
+      "Tiga kenop yang mengatur nada agen. Perubahan hanya berlaku untuk profil ini dan bisa diatur lagi nanti dari Pengaturan.",
     varianceLabel: "Variance",
     varianceHint:
-      "How expressive the phrasing is. 0 = dry and literal, 100 = metaphorical and colorful.",
+      "Seberapa ekspresif frasanya. 0 = kering dan harfiah, 100 = metaforis dan penuh warna.",
     motionLabel: "Motion",
     motionHint:
-      "How structured the response is. 0 = flowing essay, 100 = heavy bullet / step list.",
+      "Seberapa terstruktur jawabannya. 0 = esai mengalir, 100 = daftar poin berat.",
     densityLabel: "Density",
     densityHint:
-      "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
+      "Seberapa banyak informasi per paragraf. 0 = lapang dan singkat, 100 = sangat padat.",
     reset: "Setel ulang ke default",
     saved: "Tersimpan.",
   },

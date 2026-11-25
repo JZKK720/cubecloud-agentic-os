@@ -48,16 +48,16 @@ export default {
   designDials: {
     title: "Design Dials",
     subtitle:
-      "Three knobs that nudge the agent's tone. Changes apply to this profile only and can be tuned later from Settings.",
+      "エージェントの口調を調整する 3 つのダイヤルです。変更はこのプロファイルにのみ適用され、後で設定から再調整できます。",
     varianceLabel: "Variance",
     varianceHint:
-      "How expressive the phrasing is. 0 = dry and literal, 100 = metaphorical and colorful.",
+      "言い回しの表現力。0 = 淡々と文字通り、100 = 比喩豊かで華やか。",
     motionLabel: "Motion",
     motionHint:
-      "How structured the response is. 0 = flowing essay, 100 = heavy bullet / step list.",
+      "回答の構造の度合い。0 = 流れるようなエッセイ調、100 = 箇条書き中心。",
     densityLabel: "Density",
     densityHint:
-      "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
+      "段落あたりの情報量。0 = ゆったり簡潔、100 = ぎっしり詰め込む。",
     reset: "デフォルトにリセット",
     saved: "保存しました。",
   },

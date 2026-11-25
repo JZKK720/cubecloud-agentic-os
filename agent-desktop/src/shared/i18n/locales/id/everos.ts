@@ -3,8 +3,8 @@ export default {
   "title": "EverOS",
   "summary": "EverOS adalah landasan memori jangka panjang yang ditenagai oleh server EverCore yang di-host sendiri. Arahkan shell ke URL dasar EverOS Anda untuk mengingat apa yang pengguna katakan di sesi sebelumnya.",
   "notWired": {
-    "title": "Not wired",
-    "body": "EverOS integration is being added. The backend spec is already implemented in main; this screen will light up once the preload bridge is finalised.",
+    "title": "Belum terhubung",
+    "body": "Integrasi EverOS sedang ditambahkan. Spesifikasi backend sudah diimplementasikan di main; layar ini akan aktif setelah preload bridge selesai.",
     "addHarness": "Add harness (coming soon)"
   },
   "health": {

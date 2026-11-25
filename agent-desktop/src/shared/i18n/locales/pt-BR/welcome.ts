@@ -36,28 +36,28 @@ export default {
   flowStepInstall: "Install",
   flowStepConnect: "Connect",
   flowStepDone: "Start",
-  existingGatewayNote: "A live gateway was detected — install is optional.",
-  addOnRuntimesNote: "Ollama, LM Studio, vLLM, and more are configured in the next step.",
+  existingGatewayNote: "Um gateway em execução foi detectado — a instalação é opcional.",
+  addOnRuntimesNote: "Ollama, LM Studio, vLLM e outros são configurados na próxima etapa.",
   dockerScanCopy:
     "Para um contêiner de gateway existente ({{runtimes}}). Continue com a instalação local padrão abaixo se nenhum estiver em execução.",
   dockerScanning: "Escaneando Docker Desktop para contêineres de gateway {{runtime}}...",
   dockerEmpty:
     "Nenhum gateway ({{runtimes}}) estava pronto para conectar. Inicie o contêiner, publique sua porta local e faça uma nova varredura.",
-  localGatewayCopy: "If a localhost gateway is already running, Agent Desktop can use it directly. This probe also checks the default OpenClaw loopback port.",
-  localGatewayEmpty: "No live localhost gateway responded on {{ports}}. Install the local {{runtime}} only if no other gateway is reachable.",
+  localGatewayCopy: "Se um gateway localhost já está em execução, o Agent Desktop pode usá-lo diretamente. Esta sonda também verifica a porta loopback padrão do OpenClaw.",
+  localGatewayEmpty: "Nenhum gateway localhost respondeu em {{ports}}. Instale o {{runtime}} local apenas se nenhum outro gateway estiver acessível.",
   designDials: {
     title: "Design Dials",
     subtitle:
-      "Three knobs that nudge the agent's tone. Changes apply to this profile only and can be tuned later from Settings.",
+      "Três botões que ajustam o tom do agente. As mudanças valem apenas para este perfil e podem ser ajustadas depois em Configurações.",
     varianceLabel: "Variance",
     varianceHint:
-      "How expressive the phrasing is. 0 = dry and literal, 100 = metaphorical and colorful.",
+      "Quão expressiva é a redação. 0 = seca e literal, 100 = metafórica e colorida.",
     motionLabel: "Motion",
     motionHint:
-      "How structured the response is. 0 = flowing essay, 100 = heavy bullet / step list.",
+      "Quão estruturada é a resposta. 0 = ensaio fluido, 100 = lista de marcadores pesada.",
     densityLabel: "Density",
     densityHint:
-      "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
+      "Quanta informação por parágrafo. 0 = arejada e curta, 100 = bem densa.",
     reset: "Restaurar padrões",
     saved: "Salvo.",
   },

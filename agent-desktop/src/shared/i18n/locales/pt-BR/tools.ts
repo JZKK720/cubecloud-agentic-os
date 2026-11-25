@@ -58,7 +58,7 @@ export default {
     description: "Cria e gerencia tarefas agendadas",
   },
   moa: {
-    label: "Mixture of Agents",
+    label: "Mistura de Agentes",
     description: "Coordena vários modelos de IA juntos",
   },
   todo: {
@@ -66,7 +66,7 @@ export default {
     description: "Cria e gerencia listas de afazeres para tarefas complexas",
   },
   file_to_markdown: {
-    label: "File to Markdown",
+    label: "Arquivo para Markdown",
     description:
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },

@@ -107,17 +107,17 @@ export default {
   designDials: {
     title: "Design Dials",
     subtitle:
-      "Three knobs that nudge the agent's tone. Changes apply to this profile only and can be tuned later from Settings.",
+      "三个旋钮，轻微调整智能体的语气。改动仅应用于当前配置文件，可稍后在设置中再调。",
     varianceLabel: "Variance",
     varianceHint:
-      "How expressive the phrasing is. 0 = dry and literal, 100 = metaphorical and colorful.",
+      "措辞表现力。0 = 平淡直白，100 = 比喻生动。",
     motionLabel: "Motion",
     motionHint:
-      "How structured the response is. 0 = flowing essay, 100 = heavy bullet / step list.",
+      "回答结构化程度。0 = 连贯的短文，100 = 大量条列要点。",
     densityLabel: "Density",
     densityHint:
-      "How much information per paragraph. 0 = airy and short, 100 = tightly packed.",
-    reset: "Reset to defaults",
+      "每段信息密度。0 = 疏松简短，100 = 紧凑密集。",
+    reset: "恢复默认",
     saved: "Saved.",
   },
   detectedRuntimesTitle: "发现正在运行的智能体",

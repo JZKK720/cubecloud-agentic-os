@@ -139,15 +139,15 @@ export default {
   localModel: {
     title: "Local model endpoint",
     hint:
-      "The DeepSeek Harness lane runs models through an OpenAI-compatible server. Ollama is the default; LM Studio, llama.cpp and vLLM work the same way. A local server needs no API key. To use a hosted endpoint instead, enter its base URL and add the key below — you can add it later.",
+      "DeepSeek Harness レーンは、OpenAI 互換サーバー経由でモデルを実行します。既定は Ollama です。LM Studio、llama.cpp、vLLM も同様に動作します。ローカルサーバーに API キーは不要です。ホスト型エンドポイントを使う場合は、その base URL を入力し、下にキーを追加してください — 後から追加できます。",
     baseUrl: "Base URL",
     model: "Model id",
     modelHint:
-      "Leave empty to use whatever the server advertises first.",
+      "空欄のままにすると、サーバーが最初に提示するモデルを使います。",
     apiKey: "API key (optional)",
-    apiKeyPlaceholder: "Leave empty for a local server",
+    apiKeyPlaceholder: "ローカルサーバーなら空欄で構いません",
     apiKeyHint:
-      "Stored in this profile's config and passed to the runtime as an environment variable. Never written into a plugin file.",
+      "このプロファイルの設定に保存され、ランタイムへは環境変数として渡されます。プラグインファイルには書き込まれません。",
     clearApiKey: "Remove stored key",
     probe: "Test connection",
     probing: "Testing…",
