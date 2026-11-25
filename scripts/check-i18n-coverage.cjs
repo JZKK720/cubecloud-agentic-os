@@ -1,23 +1,19 @@
 // scripts/check-i18n-coverage.cjs
-// Compare every locale under agent-desktop/src/shared/i18n/locales/<lang>/
-// to the English source. For each non-English locale, list the locale
-// files that are missing, and the missing keys inside present files
-// (so we can see which screens are not translated).
+// Verify every locale under agent-desktop/src/shared/i18n/locales/<lang>/
+// carries exactly the same key set as the English source.
 //
-// Locale files are TypeScript that re-import other files; we do not
-// load the module graph (would need a TS transpiler).  Instead we
-// parse the source text and collect every object-literal key, whether
-// it is quoted (`"repos.empty":`) or bare (`empty:`), and prefix it
-// with the enclosing namespace filename so the comparison matches the
-// `namespace.key` form the renderer actually calls.
+// V3 — EVALUATED, not regexed. The v2 parser counted line-leading
+// `key:` tokens, which (a) under-counted real keys (nested objects whose
+// keys sit on the same line as a parent, quoted keys inside arrays, etc.)
+// and (b) could not see *extra* keys. It reported "no drift" while
+// zh-TW carried a stray top-level `body`. Locale modules are plain
+// `export default { ... }` literals with no imports, so we transpile each
+// file with TypeScript and flatten the resulting object. That is exact:
+// missing keys, extra keys, and shape mismatches all surface.
 //
-// V2.10.82 — the previous regex only matched *quoted* keys, so the 29
-// locale files yielded 57 "parse-keys" out of ~1,470 real keys. That
-// made this gate structurally unable to detect missing copy: it
-// reported "no drift" while 165 renderer keys rendered as raw text.
-//
-// Force UTF-8 throughout.  Exit 0 even if drift is found — drift is
-// informational.  Use --strict to make it a hard fail (CI).
+// Exit codes: 0 = no drift (and --strict not given, or both clean),
+//             1 = drift, or --strict with any drift, or unreadable file.
+// `--strict` is now the CI default (see .github/workflows/ci.yml).
 
 const fs = require('fs');
 const path = require('path');
@@ -26,20 +22,63 @@ const LOCALES_DIR = path.join('agent-desktop', 'src', 'shared', 'i18n', 'locales
 const SOURCE_LOCALE = 'en';
 const STRICT = process.argv.includes('--strict');
 
-// Capture both quoted and bare object keys, ignoring comment lines.
-// `^\s*` keeps us out of inline strings; the negative lookahead skips
-// `// ...` comments and URL-ish `http://` values.
-const KEY_LINE = /^[ \t]+(?:(['"`])([A-Za-z0-9_.\-]+)\1|([A-Za-z_$][A-Za-z0-9_$]*))\s*:\s*(?!\/\/)/gm;
+function loadTypeScript() {
+  for (const candidate of [
+    path.join('agent-desktop', 'node_modules', 'typescript'),
+    path.join('node_modules', 'typescript'),
+  ]) {
+    try {
+      return require(path.resolve(candidate));
+    } catch {
+      /* try next */
+    }
+  }
+  return null;
+}
+
+const ts = loadTypeScript();
+if (!ts) {
+  console.error('error: typescript is required to evaluate locale modules.');
+  console.error('Run `npm install` (root) or `npm install` inside agent-desktop/.');
+  process.exit(2);
+}
+
+function loadModule(file) {
+  const src = fs.readFileSync(file, 'utf8');
+  const js = ts.transpileModule(src, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2020,
+      esModuleInterop: true,
+    },
+    fileName: path.basename(file),
+  }).outputText;
+  const mod = { exports: {} };
+  // Locale modules only export an object literal; no side effects.
+  new Function('module', 'exports', 'require', js)(mod, mod.exports, require);
+  const value = mod.exports && mod.exports.default;
+  if (!value || typeof value !== 'object') {
+    throw new Error(`locale module ${file} did not export a default object`);
+  }
+  return value;
+}
+
+function flatten(obj, prefix, out) {
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+    const pathKey = prefix ? `${prefix}.${key}` : key;
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      flatten(value, pathKey, out);
+    } else {
+      out.set(pathKey, typeof value);
+    }
+  }
+}
 
 function collectKeys(file, namespace) {
-  const text = fs.readFileSync(file, 'utf8');
-  const out = new Set();
-  let m;
-  KEY_LINE.lastIndex = 0;
-  while ((m = KEY_LINE.exec(text))) {
-    const key = m[2] || m[3];
-    out.add(`${namespace}.${key}`);
-  }
+  const obj = loadModule(file);
+  const out = new Map();
+  flatten(obj, namespace, out);
   return out;
 }
 
@@ -50,13 +89,13 @@ const srcKeysByFile = {};
 let totalEnKeys = 0;
 for (const f of srcFiles) {
   const namespace = f.replace(/\.ts$/, '');
-  const k = collectKeys(path.join(srcDir, f), namespace);
-  srcKeysByFile[f] = k;
-  totalEnKeys += k.size;
+  const keys = collectKeys(path.join(srcDir, f), namespace);
+  srcKeysByFile[f] = keys;
+  totalEnKeys += keys.size;
 }
 
 const lines = [];
-lines.push(`English source: ${srcFiles.length} files, ${totalEnKeys} parse-keys`);
+lines.push(`English source: ${srcFiles.length} files, ${totalEnKeys} keys`);
 lines.push('');
 
 const targetLocales = fs
@@ -66,38 +105,54 @@ const targetLocales = fs
   .sort();
 
 let anyDrift = false;
+const problems = [];
 for (const lang of targetLocales) {
   const dir = path.join(LOCALES_DIR, lang);
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.ts')).sort();
   const missing = srcFiles.filter((f) => !files.includes(f));
   if (missing.length) anyDrift = true;
+
   let localKeys = 0;
   const missingKeys = {};
+  const extraKeys = {};
   for (const f of srcFiles) {
     const enKeys = srcKeysByFile[f];
     if (!files.includes(f)) {
-      missingKeys[f] = Array.from(enKeys);
+      missingKeys[f] = [...enKeys.keys()];
       continue;
     }
     const namespace = f.replace(/\.ts$/, '');
     const tKeys = collectKeys(path.join(dir, f), namespace);
     localKeys += tKeys.size;
-    const m = [];
-    for (const k of enKeys) if (!tKeys.has(k)) m.push(k);
-    if (m.length) missingKeys[f] = m;
+    const miss = [];
+    for (const k of enKeys.keys()) if (!tKeys.has(k)) miss.push(k);
+    if (miss.length) missingKeys[f] = miss;
+    const extra = [];
+    for (const k of tKeys.keys()) if (!enKeys.has(k)) extra.push(k);
+    if (extra.length) extraKeys[f] = extra;
   }
   const totalMissing = Object.values(missingKeys).reduce((a, b) => a + b.length, 0);
-  if (totalMissing) anyDrift = true;
+  const totalExtra = Object.values(extraKeys).reduce((a, b) => a + b.length, 0);
+  if (totalMissing || totalExtra) anyDrift = true;
   lines.push(
     `${lang.padEnd(6)} files=${String(files.length).padStart(2)}/${srcFiles.length}  ` +
       `keys=${String(localKeys).padStart(4)}/${totalEnKeys}  ` +
       (missing.length ? `MISSING-FILES=[${missing.join(',')}]  ` : '') +
-      `missing-keys=${totalMissing}`
+      `missing-keys=${totalMissing}  extra-keys=${totalExtra}`
   );
+  for (const [f, keys] of Object.entries(missingKeys)) {
+    problems.push(`${lang}/${f}: missing ${keys.length} -> ${keys.slice(0, 8).join(', ')}${keys.length > 8 ? ' …' : ''}`);
+  }
+  for (const [f, keys] of Object.entries(extraKeys)) {
+    problems.push(`${lang}/${f}: extra   ${keys.length} -> ${keys.slice(0, 8).join(', ')}${keys.length > 8 ? ' …' : ''}`);
+  }
 }
 
 process.stdout.write(lines.join('\n') + '\n');
+if (problems.length) {
+  process.stdout.write('\n' + problems.join('\n') + '\n');
+}
 process.stdout.write('\n');
-process.stdout.write(anyDrift ? '⚠ drift present — see above\n' : '✅ no drift\n');
-if (STRICT && anyDrift) process.exit(1);
+process.stdout.write(anyDrift ? '✗ drift present — see above\n' : '✅ no drift\n');
+if (anyDrift && STRICT) process.exit(1);
 process.exit(0);
