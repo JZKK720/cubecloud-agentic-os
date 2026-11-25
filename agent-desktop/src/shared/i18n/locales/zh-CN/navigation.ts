@@ -24,6 +24,7 @@ export default {
   settings: "设置",
   home: "首页",
   runtime: "运行时",
+  primaryNav: "主导航",
   group: {
     workbench: "首页与工作",
     runtime: "运行时与工具",
