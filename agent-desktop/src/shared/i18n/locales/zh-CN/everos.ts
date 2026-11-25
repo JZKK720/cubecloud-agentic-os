@@ -7,6 +7,10 @@ export default {
     "body": "EverOS 集成正在补齐中。后端接口已在主进程实现,完成 preload 桥接后此界面即可使用。",
     "addHarness": "添加 Harness(即将开放)"
   },
+  "scope": {
+    "label": "作用域",
+    "hint": "本控制台仅在 EverOS 的 agentic-os 应用作用域内读写数据,不会触碰其他作用域(workspace、其他应用)。"
+  },
   "health": {
     "title": "后端",
     "reachable": "已连接",

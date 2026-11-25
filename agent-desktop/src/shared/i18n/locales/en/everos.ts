@@ -7,6 +7,10 @@ export default {
     "body": "EverOS integration is being added. The backend spec is already implemented in main; this screen will light up once the preload bridge is finalised.",
     "addHarness": "Add harness (coming soon)"
   },
+  "scope": {
+    "label": "Scope",
+    "hint": "This console reads and writes only the agentic-os app scope in EverOS. Other scopes (workspace, other apps) are never touched."
+  },
   "health": {
     "title": "Backend",
     "reachable": "Reachable",

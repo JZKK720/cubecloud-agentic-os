@@ -288,6 +288,10 @@ function EverOS({ visible: _visible }: EverOSProps = {}): React.JSX.Element {
           <p className="eyebrow">{t("everos.eyebrow")}</p>
           <h1>{t("everos.title")}</h1>
           <p className="screen-summary">{t("everos.summary")}</p>
+          <p className="everos-scope-badge" title={t("everos.scope.hint")}>
+            <span className="everos-scope-key">{t("everos.scope.label")}</span>
+            <code>agentic-os</code>
+          </p>
         </div>
         <div className="header-actions">
           <button

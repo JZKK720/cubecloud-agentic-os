@@ -7,6 +7,10 @@ export default {
     "body": "Integrasi EverOS sedang ditambahkan. Spesifikasi backend sudah diimplementasikan di main; layar ini akan aktif setelah preload bridge selesai.",
     "addHarness": "Add harness (coming soon)"
   },
+  "scope": {
+    "label": "Cakupan",
+    "hint": "Konsol ini hanya membaca dan menulis cakupan aplikasi agentic-os di EverOS. Cakupan lain (workspace, aplikasi lain) tidak pernah disentuh."
+  },
   "health": {
     "title": "Backend",
     "reachable": "Terjangkau",

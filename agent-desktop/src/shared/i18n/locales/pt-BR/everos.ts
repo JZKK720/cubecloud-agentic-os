@@ -7,6 +7,10 @@ export default {
     "body": "A integração com o EverOS está sendo adicionada. A especificação do backend já está implementada na main; esta tela ficará ativa quando a ponte preload for finalizada.",
     "addHarness": "Add harness (coming soon)"
   },
+  "scope": {
+    "label": "Escopo",
+    "hint": "Este console lê e grava apenas o escopo de app agentic-os no EverOS. Outros escopos (workspace, outros apps) nunca são tocados."
+  },
   "health": {
     "title": "Backend",
     "reachable": "Acessível",

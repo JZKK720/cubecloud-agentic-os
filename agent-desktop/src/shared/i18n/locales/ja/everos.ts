@@ -7,6 +7,10 @@ export default {
     "body": "EverOS の統合は実装中です。バックエンドの仕様は main 側に入っており、preload ブリッジの整備が完了するとこの画面が点灯します。",
     "addHarness": "ハーネスを追加(近日公開)"
   },
+  "scope": {
+    "label": "スコープ",
+    "hint": "このコンソールは EverOS の agentic-os アプリスコープのみを読み書きします。他のスコープ(workspace、他アプリ)には触れません。"
+  },
   "health": {
     "title": "バックエンド",
     "reachable": "到達可能",
