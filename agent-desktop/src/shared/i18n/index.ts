@@ -30,7 +30,6 @@ import workspaceEn from "./locales/en/workspace";
 import firstrunEn from "./locales/en/firstrun";
 import workspaceConsoleEn from "./locales/en/workspaceConsole";
 import codegraphEn from "./locales/en/codegraph";
-import toolSuggestionsEn from "./locales/en/toolSuggestions";
 import worktreeEn from "./locales/en/worktree";
 import commonEs from "./locales/es/common";
 import navigationEs from "./locales/es/navigation";
@@ -248,13 +247,6 @@ import codegraphPtBr from "./locales/pt-BR/codegraph";
 import codegraphPtPt from "./locales/pt-PT/codegraph";
 import codegraphZhCn from "./locales/zh-CN/codegraph";
 import codegraphZhTw from "./locales/zh-TW/codegraph";
-import toolSuggestionsEs from "./locales/es/toolSuggestions";
-import toolSuggestionsId from "./locales/id/toolSuggestions";
-import toolSuggestionsJa from "./locales/ja/toolSuggestions";
-import toolSuggestionsPtBr from "./locales/pt-BR/toolSuggestions";
-import toolSuggestionsPtPt from "./locales/pt-PT/toolSuggestions";
-import toolSuggestionsZhCn from "./locales/zh-CN/toolSuggestions";
-import toolSuggestionsZhTw from "./locales/zh-TW/toolSuggestions";
 import worktreeEs from "./locales/es/worktree";
 import worktreeId from "./locales/id/worktree";
 import worktreeJa from "./locales/ja/worktree";
@@ -262,12 +254,30 @@ import worktreePtBr from "./locales/pt-BR/worktree";
 import worktreePtPt from "./locales/pt-PT/worktree";
 import worktreeZhCn from "./locales/zh-CN/worktree";
 import worktreeZhTw from "./locales/zh-TW/worktree";
+import homeEn from "./locales/en/home";
+import homeEs from "./locales/es/home";
+import homeId from "./locales/id/home";
+import homeJa from "./locales/ja/home";
+import homePtBr from "./locales/pt-BR/home";
+import homePtPt from "./locales/pt-PT/home";
+import homeZhCn from "./locales/zh-CN/home";
+import homeZhTw from "./locales/zh-TW/home";
+import runtimeEn from "./locales/en/runtime";
+import runtimeEs from "./locales/es/runtime";
+import runtimeId from "./locales/id/runtime";
+import runtimeJa from "./locales/ja/runtime";
+import runtimePtBr from "./locales/pt-BR/runtime";
+import runtimePtPt from "./locales/pt-PT/runtime";
+import runtimeZhCn from "./locales/zh-CN/runtime";
+import runtimeZhTw from "./locales/zh-TW/runtime";
 
 export const resources = {
   en: {
     translation: {
       common: commonEn,
       navigation: navigationEn,
+      home: homeEn,
+      runtime: runtimeEn,
       welcome: welcomeEn,
       setup: setupEn,
       chat: chatEn,
@@ -296,7 +306,6 @@ export const resources = {
       mcp: mcpEn,
       firstrun: firstrunEn,
       codegraph: codegraphEn,
-      toolSuggestions: toolSuggestionsEn,
       worktree: worktreeEn,
     },
   },
@@ -304,6 +313,8 @@ export const resources = {
     translation: {
       common: commonEs,
       navigation: navigationEs,
+      home: homeEs,
+      runtime: runtimeEs,
       welcome: welcomeEs,
       setup: setupEs,
       chat: chatEs,
@@ -329,7 +340,6 @@ export const resources = {
       mcp: mcpEs,
       firstrun: firstrunEs,
       codegraph: codegraphEs,
-      toolSuggestions: toolSuggestionsEs,
       worktree: worktreeEs,
     },
   },
@@ -337,6 +347,8 @@ export const resources = {
     translation: {
       common: commonId,
       navigation: navigationId,
+      home: homeId,
+      runtime: runtimeId,
       welcome: welcomeId,
       setup: setupId,
       chat: chatId,
@@ -365,7 +377,6 @@ export const resources = {
       mcp: mcpId,
       firstrun: firstrunId,
       codegraph: codegraphId,
-      toolSuggestions: toolSuggestionsId,
       worktree: worktreeId,
     },
   },
@@ -373,6 +384,8 @@ export const resources = {
     translation: {
       common: commonZh,
       navigation: navigationZh,
+      home: homeZhCn,
+      runtime: runtimeZhCn,
       welcome: welcomeZh,
       setup: setupZh,
       chat: chatZh,
@@ -401,7 +414,6 @@ export const resources = {
       mcp: mcpZhCn,
       firstrun: firstrunZhCn,
       codegraph: codegraphZhCn,
-      toolSuggestions: toolSuggestionsZhCn,
       worktree: worktreeZhCn,
     },
   },
@@ -409,6 +421,8 @@ export const resources = {
     translation: {
       common: commonZhTw,
       navigation: navigationZhTw,
+      home: homeZhTw,
+      runtime: runtimeZhTw,
       welcome: welcomeZhTw,
       setup: setupZhTw,
       chat: chatZhTw,
@@ -437,7 +451,6 @@ export const resources = {
       knowledge: knowledgeZhTw,
       firstrun: firstrunZhTw,
       codegraph: codegraphZhTw,
-      toolSuggestions: toolSuggestionsZhTw,
       worktree: worktreeZhTw,
     },
   },
@@ -445,6 +458,8 @@ export const resources = {
     translation: {
       common: commonPt,
       navigation: navigationPt,
+      home: homePtBr,
+      runtime: runtimePtBr,
       welcome: welcomePt,
       setup: setupPt,
       chat: chatPt,
@@ -473,7 +488,6 @@ export const resources = {
       knowledge: knowledgePtBr,
       firstrun: firstrunPtBr,
       codegraph: codegraphPtBr,
-      toolSuggestions: toolSuggestionsPtBr,
       worktree: worktreePtBr,
     },
   },
@@ -481,6 +495,8 @@ export const resources = {
     translation: {
       common: commonPtPt,
       navigation: navigationPtPt,
+      home: homePtPt,
+      runtime: runtimePtPt,
       welcome: welcomePtPt,
       setup: setupPtPt,
       chat: chatPtPt,
@@ -509,7 +525,6 @@ export const resources = {
       knowledge: knowledgePtPt,
       firstrun: firstrunPtPt,
       codegraph: codegraphPtPt,
-      toolSuggestions: toolSuggestionsPtPt,
       worktree: worktreePtPt,
     },
   },
@@ -517,6 +532,8 @@ export const resources = {
     translation: {
       common: commonJa,
       navigation: navigationJa,
+      home: homeJa,
+      runtime: runtimeJa,
       welcome: welcomeJa,
       setup: setupJa,
       chat: chatJa,
@@ -545,7 +562,6 @@ export const resources = {
       knowledge: knowledgeJa,
       firstrun: firstrunJa,
       codegraph: codegraphJa,
-      toolSuggestions: toolSuggestionsJa,
       worktree: worktreeJa,
     },
   },

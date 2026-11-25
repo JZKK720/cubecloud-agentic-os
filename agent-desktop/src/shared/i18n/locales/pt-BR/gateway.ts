@@ -29,7 +29,8 @@ export default {
     eastern: "Plataformas asiáticas",
     async: "Canais assíncronos",
     home: "Automação residencial",
-  },  runtimes: {
+  },
+  runtimes: {
     title: "Runtimes",
     summary:
       "O mesmo registro de runtimes exibido na tela de boas-vindas. Cada linha mostra se o runtime está pronto nesta máquina.",
@@ -59,4 +60,5 @@ export default {
     rescan: "Re-escanear",
     empty: "Nenhum runtime Docker foi detectado. Instale o Docker Desktop ou inicie um contêiner pareado.",
     scannedAt: "Última varredura {{value}}",
-  },} as const;
+  },
+} as const;

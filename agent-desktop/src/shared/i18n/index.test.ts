@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { t } from "./index";
+import type { AppLocale } from "./types";
 
 describe("shared i18n", () => {
   it("returns English text by default", () => {
@@ -63,21 +64,31 @@ describe("shared i18n", () => {
     expect(t("headroom.quickStart.title", "zh-CN")).toBe("快速开始");
   });
 
-  it("falls back to English for non-zh-CN Headroom locales", () => {
-    // The remaining 6 locales (zh-TW, ja, es, id, pt-BR,
-    // pt-PT) intentionally re-export the en copy. Verify
-    // the fallback path stays intact for them.
-    expect(t("headroom.quickStart.title", "ja")).toBe("Quick start");
-    expect(t("headroom.quickStart.title", "pt-BR")).toBe("Quick start");
-    expect(t("headroom.quickStart.title", "id")).toBe("Quick start");
+  it("provides native copy for translated locales, en fallback otherwise", () => {
+    // All locales now carry their own headroom copy; every locale must
+    // return a non-empty string for the quick-start title.
+    const locales: AppLocale[] = [
+      "en",
+      "zh-CN",
+      "zh-TW",
+      "ja",
+      "es",
+      "id",
+      "pt-BR",
+      "pt-PT",
+    ];
+    for (const locale of locales) {
+      expect(t("headroom.quickStart.title", locale)).toBeTruthy();
+    }
+    expect(t("headroom.quickStart.title", "en")).toBe("Quick start");
   });
 
   it("exposes the dismiss / reset / optimize CTA keys in en", () => {
     expect(t("headroom.quickStart.dismiss")).toBe("Hide this card");
     expect(t("headroom.quickStart.reset")).toBe("Reset quick start");
     expect(t("headroom.quickStart.switchMode")).toBe("Switch to optimize");
-    expect(t("headroom.quickStart.collapsedSummary", "ja")).toBe(
-      "Quick start hidden. Open it any time to re-run the audit → test → optimize walkthrough.",
-    );
+    const jaSummary = t("headroom.quickStart.collapsedSummary", "ja");
+    expect(jaSummary).toBeTruthy();
+    expect(jaSummary).not.toBe("headroom.quickStart.collapsedSummary");
   });
 });

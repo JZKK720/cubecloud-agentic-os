@@ -1,4 +1,11 @@
 export default {
+  // V2.10.44
+  errorKeyAndInsightRequired: "鍵與洞察為必填。",
+  wiki: {
+    setUpYourKnowledgeBase: "設定你的知識庫",
+    editThisPage: "編輯此頁面",
+    allTypes: "所有類型",
+  },
   title: "記憶",
   subtitle: "Hermes 在不同工作階段之間記住的關於你和環境的資訊。",
   sessions: "工作階段",
@@ -120,5 +127,36 @@ export default {
     freshness: "新穎度: {{when}}",
     noSynthesis: "執行綜合以檢視大腦層的答案。",
     citation: "引用",
+  },
+  // Wiki Page Editor (V2.2 — page editing UI for the Knowledge Base)
+  wikiEditor: {
+    noChanges: "沒有需要儲存的變更。",
+    saveFailed: "儲存頁面失敗。",
+    saved: "已儲存。",
+    discardConfirm: "你有未儲存的變更。要捨棄並關閉編輯器嗎？",
+    newFile: "新增頁面",
+    unsaved: "未儲存",
+    modeEdit: "編輯",
+    modeSplit: "分割",
+    modePreview: "預覽",
+    undoHint: "復原 (Ctrl+Z)",
+    closeHint: "關閉 (Esc)",
+    conflictTitle: "頁面已在磁碟上變更",
+    conflictBody:
+      "此頁面在你開始編輯後於磁碟上被修改。請選擇如何解決衝突。",
+    conflictShowDisk: "顯示磁碟版本",
+    conflictTakeTheirs: "從磁碟重新載入（捨棄我的變更）",
+    conflictKeepMine: "保留我的版本（覆寫磁碟）",
+    conflictReloaded: "已從磁碟重新載入。你的編輯已被捨棄。",
+    conflictOverwrite:
+      "保留你的編輯。儲存時將覆寫磁碟版本。",
+    placeholder: "在此撰寫 Markdown…",
+    previewEmpty: "目前沒有可預覽的內容。",
+    cancel: "取消",
+    save: "儲存",
+    create: "建立",
+    saving: "儲存中…",
+    chars: "字元",
+    lines: "行",
   },
 } as const;

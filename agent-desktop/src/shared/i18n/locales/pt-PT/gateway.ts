@@ -28,7 +28,8 @@ export default {
     eastern: "Plataformas asiáticas",
     async: "Canais assíncronos",
     home: "Domótica",
-  },  runtimes: {
+  },
+  runtimes: {
     title: "Runtimes",
     summary:
       "O mesmo registo de runtimes que aparece no ecrã de boas-vindas. Cada linha mostra se o runtime está pronto nesta máquina.",

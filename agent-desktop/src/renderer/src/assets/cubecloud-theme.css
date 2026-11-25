@@ -1,0 +1,380 @@
+/* Cubecloud — Astryx theme (scoped twin of theme-neutral).
+ *
+ * Rather than inventing a new scope, this replaces the neutral theme's
+ * tokens inside the same `@scope ([data-astryx-theme="neutral"]) to (...)`
+ * block astryx uses, so astryx's own component rules keep matching.
+ * Imported AFTER theme-neutral so these declarations win by source order
+ * at equal specificity.
+ *
+ * Only token values change; component classes are not redefined.
+ */
+
+@layer astryx-theme {
+  @scope ([data-astryx-theme="neutral"]) to ([data-astryx-theme]) {
+    :scope {
+      /* Surfaces — warm graphite rather than neutral gray so the brand
+         blue reads as lit by the product, not as generic chrome. */
+      --color-background-body: light-dark(#f4f5f7, #14171d);
+      --color-background-surface: light-dark(#ffffff, #1b1f27);
+      --color-background-card: light-dark(#ffffff, #1b1f27);
+      --color-background-popover: light-dark(#ffffff, #22262f);
+      --color-background-muted: light-dark(#eceef1, #232833);
+
+      /* Accent — brand blue. Light uses the deep wordmark navy for
+         contrast; dark uses the bright mark blue, which survives dark
+         surfaces. Hover/pressed are the two steps already present in the
+         legacy sheet, promoted to tokens. */
+      --color-accent: light-dark(#003f7a, #3277f6);
+      --color-accent-hover: light-dark(#002d58, #53a2ff);
+      --color-accent-pressed: light-dark(#001f3d, #6fb2ff);
+      --color-on-accent: light-dark(#ffffff, #ffffff);
+      --color-accent-muted: light-dark(#d9e5ee, #24344d);
+      --color-text-accent: light-dark(#003f7a, #8fc0ff);
+
+      /* Borders tinted toward the brand hue. */
+      --color-border: light-dark(#00000014, #ffffff1f);
+      --color-border-emphasized: light-dark(#c3ccd8, #3a4356);
+
+      /* Text — a touch bluer than neutral grey. */
+      --color-text-primary: light-dark(#0f1722, #e8edf4);
+      --color-text-secondary: light-dark(#46505f, #9aa6b8);
+      --color-text-disabled: light-dark(#9aa5b4, #5b6678);
+
+      /* Radii — a touch softer than neutral, matching the app's feel. */
+      --radius-inner: 0.5rem;
+      --radius-element: 0.75rem;
+      --radius-container: 0.875rem;
+      --radius-page: 1.75rem;
+    }
+  }
+}
+
+
+/* ------------------------------------------------------------------
+ * Legacy bridge: repoint the pre-astryx token names in main.css at the
+ * astryx tokens above, so the whole existing sheet inherits the brand
+ * palette without rewriting 13k lines. New code should use astryx
+ * tokens directly; this bridge exists for the legacy sheet only.
+ * ---------------------------------------------------------------- */
+:root,
+[data-theme="dark"],
+[data-theme="light"] {
+  --bg-primary: var(--color-background-body);
+  --bg-secondary: var(--color-background-surface);
+  --bg-tertiary: var(--color-background-muted);
+  --bg-elevated: var(--color-background-popover);
+  --bg-hover: var(--color-background-muted);
+  --bg-active: var(--color-accent-muted);
+
+  --accent: var(--color-accent);
+  --accent-hover: var(--color-accent-hover);
+  --accent-subtle: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  --accent-text: var(--color-text-accent);
+
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-disabled);
+
+  --border: var(--color-border);
+  --border-bright: var(--color-border-emphasized);
+  --border-focus: var(--color-accent);
+
+  --success: var(--color-text-success);
+  --success-bg: color-mix(in srgb, var(--color-text-success) 12%, transparent);
+  --error: var(--color-text-error);
+  --error-bg: color-mix(in srgb, var(--color-text-error) 12%, transparent);
+  --warning: var(--color-text-warning);
+  --warning-bg: color-mix(in srgb, var(--color-text-warning) 12%, transparent);
+
+  --user-bubble: var(--color-accent);
+  --user-bubble-text: var(--color-on-accent);
+  --agent-bubble: var(--color-background-card);
+  --agent-bubble-text: var(--color-text-primary);
+
+  --code-bg: var(--color-background-muted);
+  --scrollbar-thumb: var(--color-border-emphasized);
+  --scrollbar-hover: var(--color-text-disabled);
+  --selection: color-mix(in srgb, var(--color-accent) 35%, transparent);
+
+  --radius-sm: var(--radius-inner);
+  --radius-md: var(--radius-element);
+  --radius-lg: var(--radius-container);
+  --radius-xl: var(--radius-page);
+}
+
+/* Cubecloud brand primitives — brand-book values, independent of theme. */
+:root {
+  --cc-navy-950: #04121f;
+  --cc-navy-900: #071a2c;
+  --cc-navy-850: #0a2236;
+  --cc-navy-800: #0d2942;
+  --cc-navy-700: #14324e;
+  --cc-navy-600: #1d4160;
+  --cc-blue-500: #3283f6;
+  --cc-blue-400: #5a9bff;
+  --cc-blue-300: #8fbfff;
+  --cc-text-on-navy: #e8eef6;
+  --cc-text-on-navy-muted: #8fa6bf;
+  --cc-text-on-navy-disabled: #5b7189;
+  --cc-hairline-on-navy: rgba(255, 255, 255, 0.08);
+  --cc-hairline-on-navy-strong: rgba(255, 255, 255, 0.16);
+  --cc-brand-gradient: linear-gradient(180deg, #071a2c 0%, #04121f 100%);
+}
+
+/* Workbench shell — brand navy rail (astryx SideNav) + theme-aware work
+   surface. The rail is a brand surface, not a themed surface: it stays navy in
+   both modes so the product reads as itself, the way Linear/Cursor sidebars
+   do. Astryx renders the rail chrome; we only re-point its tokens at the
+   brand palette and let its own spacing/type scale stand. */
+.cc-shell {
+  height: 100%;
+  min-height: 0;
+}
+
+.cc-sidenav {
+  /* Tokens consumed by astryx's compiled rail styles. */
+  --color-background-surface: var(--cc-navy-850);
+  --color-background-body: var(--cc-navy-950);
+  --color-background-card: var(--cc-navy-800);
+  --color-background-muted: rgba(255, 255, 255, 0.06);
+  --color-background-popover: var(--cc-navy-800);
+  --color-overlay-hover: rgba(255, 255, 255, 0.06);
+  --color-overlay-pressed: rgba(255, 255, 255, 0.1);
+  --color-text-primary: var(--cc-text-on-navy);
+  --color-text-secondary: var(--cc-text-on-navy-muted);
+  --color-text-disabled: var(--cc-text-on-navy-disabled);
+  --color-icon-primary: var(--cc-text-on-navy);
+  --color-icon-secondary: var(--cc-text-on-navy-muted);
+  --color-icon-disabled: var(--cc-text-on-navy-disabled);
+  --color-border: var(--cc-hairline-on-navy);
+  --color-border-emphasized: var(--cc-hairline-on-navy-strong);
+  --color-accent: var(--cc-blue-500);
+  --color-on-accent: #ffffff;
+  --color-accent-muted: rgba(50, 119, 246, 0.22);
+  --color-text-accent: var(--cc-blue-300);
+
+  background: var(--cc-brand-gradient);
+  color: var(--cc-text-on-navy);
+  border-right: 1px solid var(--cc-hairline-on-navy);
+}
+
+/* Selected item: brand blue fill, white glyph, no ambiguity about where you are. */
+.cc-sidenav [aria-current="page"] {
+  background: rgba(50, 119, 246, 0.22);
+  color: #ffffff;
+}
+.cc-sidenav [aria-current="page"] svg {
+  color: var(--cc-blue-400);
+}
+
+.cc-sidenav-mark {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+}
+
+/* The heading row gets a fixed 28px icon + sub-pixel text metrics that clip
+   at 260px; let the wordmark use the remaining width instead of ellipsizing. */
+.cc-sidenav .astryx-side-nav-heading {
+  padding-inline: 12px;
+  min-width: 0;
+}
+.cc-sidenav .astryx-side-nav-heading * {
+  min-width: 0;
+}
+.cc-sidenav .astryx-side-nav-heading span[class*="x18juvz8"] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.cc-sidenav-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--cc-hairline-on-navy);
+}
+
+.cc-update-btn {
+  width: 100%;
+}
+
+.cc-sidenav .sidebar-licensing-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cc-text-on-navy-muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background var(--transition, 150ms ease), color var(--transition, 150ms ease);
+}
+.cc-sidenav .sidebar-licensing-link:hover {
+  background: rgba(50, 119, 246, 0.14);
+  color: var(--cc-text-on-navy);
+}
+.cc-sidenav .sidebar-licensing-link:focus-visible {
+  outline: 2px solid var(--cc-blue-400);
+  outline-offset: 2px;
+}
+
+/* ---- Runtime hub ---- */
+.runtime-hub {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 32px 40px 48px;
+  background: var(--bg-primary);
+}
+.runtime-hub-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 28px;
+  max-width: 70ch;
+}
+.runtime-hub-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1180px;
+}
+.runtime-hub-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.runtime-hub-group-label {
+  letter-spacing: 0.08em;
+}
+.runtime-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.runtime-hub-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--cc-brand-gradient);
+  color: var(--cc-blue-300);
+  flex: 0 0 auto;
+}
+
+/* Work surface: cool paper in light, deep slate in dark. */
+:root,
+[data-theme="light"] {
+  --bg-primary: #f6f8fb;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eef1f6;
+  --bg-elevated: #ffffff;
+  --bg-hover: #eef1f6;
+  --bg-active: #e2e7ef;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0b0f16;
+  --bg-secondary: #111722;
+  --bg-tertiary: #171e2b;
+  --bg-elevated: #1a2231;
+  --bg-hover: #1a2231;
+  --bg-active: #222c3e;
+  --agent-bubble: #171e2b;
+  --code-bg: #0e1420;
+}
+
+/* Home — command surface. */
+.home {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 32px 36px 48px;
+  background: var(--bg-primary);
+}
+
+.home-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.home-runtime {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-bright);
+  min-width: 220px;
+}
+
+.home-actions {
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.home-action-card {
+  flex: 1 1 220px;
+}
+
+
+/* Pinned capability shortcuts on the rail (below the six primary items). */
+.cc-sidenav-pins {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 6px;
+  margin-top: 6px;
+  border-top: 1px solid var(--cc-hairline-on-navy);
+}
+
+/* Hub: pin toggle, aligned to the card's trailing edge. */
+.runtime-hub-pin {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Hub: copyable install command row for tools the operator installs locally. */
+.runtime-hub-install {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--color-background-muted, var(--bg-tertiary));
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  max-width: 100%;
+}
+.runtime-hub-install-command {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  color: var(--color-text-secondary, var(--text-secondary));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 160px;
+  user-select: all;
+}
+.runtime-hub-install-note {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-warning, #b45309);
+}

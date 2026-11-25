@@ -36,10 +36,6 @@ if (!fixture) {
   page.on("pageerror", (err) => pageErrors.push(String(err)));
 
   try {
-    await page.goto("http://localhost:" + (process.env.DEV_PORT || "5173") + "/", {
-      waitUntil: "domcontentloaded",
-      timeout: 60000,
-    });
     await page.waitForSelector('[data-view]', { timeout: 60000 });
 
     // Go to Tools
@@ -76,12 +72,23 @@ if (!fixture) {
     });
     console.log("host:", JSON.stringify(hostInfo));
     check("host has non-zero size", hostInfo.w > 0 && hostInfo.h > 0, `${Math.round(hostInfo.w)}x${Math.round(hostInfo.h)}`);
-    check(
-      "grid painted (canvas or rows)",
-      hostInfo.canvases > 0 || hostInfo.rows > 0,
-      `canvases=${hostInfo.canvases} rows=${hostInfo.rows}`,
+    // (old duplicate call removed)
+    const canvasDetail = await host.evaluate((el) =>
+      [...el.querySelectorAll("canvas")].map((c) => ({
+        w: c.width,
+        h: c.height,
+        styleH: c.style.height,
+        rectH: Math.round(c.getBoundingClientRect().height),
+      })),
     );
-
+    console.log("canvases:", JSON.stringify(canvasDetail));
+    const painted =
+      canvasDetail.some((c) => c.w > 0 && c.h > 0 && c.rectH > 0) || hostInfo.rows > 0;
+    check(
+      "grid painted (a canvas has non-zero size)",
+      painted,
+      canvasDetail.map((c) => `${c.w}x${c.h}/css=${c.styleH}/rect=${c.rectH}`).join(" "),
+    );
     const status = await page.locator(".officecli-sheet-view-status").first().textContent().catch(() => null);
     console.log("status badge:", status);
     check("viewer reported ready", (status || "").trim().toLowerCase() === "ready", `status=${status}`);

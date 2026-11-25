@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "A importação do OpenClaw ainda não está disponível.",
+  errorHostAndUsernameRequired: "O host e o nome de utilizador são obrigatórios",
+  errorPleaseEnterUrl: "Introduza um URL",
+  quickLanguageSwitch: "Mudança rápida de idioma",
   title: "Definições",
   sections: {
     hermesAgent: "Runtime local",
@@ -89,6 +94,13 @@ export default {
     "Use qualquer API compatível com OpenAI (LM Studio, Ollama, vLLM, etc.)",
   modelHint:
     "Nome do modelo predefinido (deixe em branco para usar o predefinido do fornecedor)",
+  refreshModels: "Atualizar lista de modelos",
+  discoveringModels: "A carregar modelos disponíveis…",
+  discoveredCount: "{{count}} modelos disponíveis — comece a escrever para filtrar",
+  discoveryNoKey:
+    "Defina a chave de API deste fornecedor no .env para carregar a lista de modelos disponíveis",
+  discoveryError:
+    "Não foi possível aceder à lista de modelos do fornecedor — ainda pode escrever um nome de modelo",
   customBaseUrlHint: "Endpoint da API compatível com OpenAI",
   poolHint:
     "Adicione várias chaves de API para o mesmo fornecedor para rotação automática e balanceamento de carga. O Hermes alternará entre elas.",
@@ -117,6 +129,16 @@ export default {
   migrationDesc:
     "Encontrámos o OpenClaw em <code>{{path}}</code>. Pode migrar a sua configuração, chaves de API, sessões e competências para o Hermes.",
   migrationDismiss: "Não mostrar novamente",
+  migrationComplete: "Migração concluída.",
+  migrationFailed: "A migração falhou.",
+  runtimeLane: {
+    title: "Lane de runtime",
+    label: "Runtime ativo",
+    hint:
+      "Qual runtime serve os turnos de chat. Os runtimes sem adaptador funcional recorrem ao gateway do Hermes em vez de falharem.",
+    noAdapter: "Este runtime ainda não tem um adaptador funcional; o chat permanece no gateway do Hermes.",
+    saveFailed: "Não foi possível guardar a escolha de runtime.",
+  },
   localModel: {
     title: "Local model endpoint",
     hint:
@@ -192,4 +214,6 @@ export default {
   cancel: "Cancelar envio",
   blockTitle: "Comando bloqueado",
   blockReason: "Este comando está na lista de bloqueios e não pode ser enviado.",
+  noDestructiveCommands: "Sem comandos destrutivos no corpo.",
+  singleCommand: "Comando único",
   },} as const;

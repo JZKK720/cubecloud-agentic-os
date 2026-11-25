@@ -15,5 +15,6 @@ export default {
     qwenDesc: "Gunakan langganan Qwen Anda",
     geminiDesc: "Gunakan paket Google AI Pro / Gemini Anda",
     minimaxDesc: "Gunakan langganan MiniMax Anda",
+    nousDesc: "Masuk dengan langganan Nous Portal Anda",
   },
 } as const;

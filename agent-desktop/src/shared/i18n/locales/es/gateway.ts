@@ -29,7 +29,8 @@ export default {
     eastern: "Plataformas asiáticas",
     async: "Canales asíncronos",
     home: "Automatización del hogar",
-  },  runtimes: {
+  },
+  runtimes: {
     title: "Runtimes",
     summary:
       "El mismo registro de runtimes que aparece en la bienvenida. Cada fila muestra si el runtime está disponible en esta máquina.",

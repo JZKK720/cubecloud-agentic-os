@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "A importação do OpenClaw ainda não está disponível.",
+  errorHostAndUsernameRequired: "Host e nome de usuário são obrigatórios",
+  errorPleaseEnterUrl: "Digite uma URL",
+  quickLanguageSwitch: "Troca rápida de idioma",
   title: "Configurações",
   sections: {
     hermesAgent: "Runtime local",
@@ -62,6 +67,7 @@ export default {
     english: "English",
     indonesian: "Indonesio",
     japanese: "日本語",
+    spanish: "Español",
     chinese: "中文",
     portuguese: "Português",
     hint: "Escolha o idioma da interface",
@@ -124,6 +130,17 @@ export default {
   migrationDesc:
     "Encontramos o OpenClaw em <code>{{path}}</code>. Você pode migrar sua configuração, chaves de API, sessões e habilidades para o Hermes.",
   migrationDismiss: "Não mostrar novamente",
+  migrationComplete: "Migração concluída.",
+  migrationFailed: "Falha na migração.",
+  runtimeLane: {
+    title: "Faixa de runtime",
+    label: "Runtime ativo",
+    hint:
+      "Qual runtime atende os turnos de chat. Runtimes sem um adaptador funcional recorrem ao gateway Hermes em vez de falhar.",
+    noAdapter:
+      "Este runtime ainda não tem um adaptador funcional; o chat permanece no gateway Hermes.",
+    saveFailed: "Não foi possível salvar a escolha de runtime.",
+  },
   localModel: {
     title: "Local model endpoint",
     hint:
@@ -199,4 +216,6 @@ export default {
   cancel: "Cancelar envio",
   blockTitle: "Comando bloqueado",
   blockReason: "Este comando está na lista de bloqueios e não pode ser enviado.",
+  noDestructiveCommands: "Nenhum comando destrutivo no corpo.",
+  singleCommand: "Comando único",
   },} as const;

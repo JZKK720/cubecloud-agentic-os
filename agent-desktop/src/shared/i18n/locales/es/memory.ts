@@ -1,4 +1,10 @@
 export default {
+  errorKeyAndInsightRequired: "La clave y la idea son obligatorias.",
+  wiki: {
+    setUpYourKnowledgeBase: "Configura tu base de conocimiento",
+    editThisPage: "Editar esta página",
+    allTypes: "Todos los tipos",
+  },
   title: "Memoria",
   subtitle: "Lo que Hermes recuerda sobre ti y tu entorno entre sesiones.",
   sessions: "Sesiones",
@@ -44,7 +50,8 @@ export default {
   active: "Activo",
   deactivate: "Desactivar",
   activating: "Activando...",
-  activate: "Activar",  wikiTab: "Base de conocimiento",  learningsTab: "Aprendizajes",
+  activate: "Activar",  wikiTab: "Base de conocimiento",
+  learningsTab: "Aprendizajes",
 
   providers: {
     honcho:
@@ -131,5 +138,37 @@ export default {
     freshness: "Frescura: {{when}}",
     noSynthesis: "Ejecuta una síntesis para ver la respuesta de la capa de cerebro.",
     citation: "cita",
+  },
+
+  wikiEditor: {
+    noChanges: "No hay cambios para guardar.",
+    saveFailed: "No se pudo guardar la página.",
+    saved: "Guardado.",
+    discardConfirm:
+      "Tienes cambios sin guardar. ¿Descartarlos y cerrar el editor?",
+    newFile: "Página nueva",
+    unsaved: "Sin guardar",
+    modeEdit: "Editar",
+    modeSplit: "Dividir",
+    modePreview: "Vista previa",
+    undoHint: "Deshacer (Ctrl+Z)",
+    closeHint: "Cerrar (Esc)",
+    conflictTitle: "La página cambió en el disco",
+    conflictBody:
+      "Esta página fue modificada en el disco después de que empezaras a editarla. Elige cómo resolver el conflicto.",
+    conflictShowDisk: "Mostrar la versión del disco",
+    conflictTakeTheirs: "Recargar desde el disco (descartar la mía)",
+    conflictKeepMine: "Conservar la mía (sobrescribir el disco)",
+    conflictReloaded: "Recargado desde el disco. Tus ediciones se descartaron.",
+    conflictOverwrite:
+      "Se conservarán tus ediciones. La versión del disco se sobrescribirá al guardar.",
+    placeholder: "Escribe markdown aquí…",
+    previewEmpty: "Nada que previsualizar todavía.",
+    cancel: "Cancelar",
+    save: "Guardar",
+    create: "Crear",
+    saving: "Guardando…",
+    chars: "caracteres",
+    lines: "líneas",
   },
 } as const;

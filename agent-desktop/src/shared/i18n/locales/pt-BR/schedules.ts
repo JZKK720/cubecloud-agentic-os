@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorCreateCronJob: "Falha ao criar a tarefa",
+  errorRemoveCronJob: "Falha ao remover a tarefa",
+  errorUpdateCronJob: "Falha ao atualizar a tarefa",
+  errorTriggerCronJob: "Falha ao disparar a tarefa",
   title: "Agendamentos",
   subtitle: "Automatize tarefas com execuções agendadas do agente",
   newTask: "Nova Tarefa",

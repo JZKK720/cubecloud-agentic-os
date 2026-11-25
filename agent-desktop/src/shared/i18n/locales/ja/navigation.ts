@@ -22,4 +22,13 @@ export default {
   plans: "Plans",
   mcp: "MCP",
   settings: "設定",
+  home: "ホーム",
+  runtime: "ランタイム",
+  primaryNav: "メインナビゲーション",
+  group: {
+    workbench: "ホームと作業",
+    runtime: "ランタイムとツール",
+    operations: "オペレーション",
+  },
+  approvals: "承認",
 } as const;

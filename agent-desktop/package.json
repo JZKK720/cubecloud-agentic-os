@@ -65,9 +65,12 @@
     "verify:bundle": "vitest run tests/release-bundle.test.ts"
   },
   "dependencies": {
+    "@astryxdesign/core": "^0.7.17",
+    "@astryxdesign/theme-neutral": "^0.7.17",
     "@cubecloud/platform-core": "file:../packages/platform-core",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
+    "@stylexjs/stylex": "^0.19.2",
     "@types/highlight.js": "^9.12.4",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@univerjs/preset-sheets-core": "^1.6.1",

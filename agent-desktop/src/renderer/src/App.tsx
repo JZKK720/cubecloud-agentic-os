@@ -299,7 +299,6 @@ function App(): React.JSX.Element {
             verifyWarning={verifyWarning}
             onReinstall={handleVerifyReinstall}
             onDismissVerifyWarning={handleDismissVerifyWarning}
-            onSwitchToLocal={handleSwitchToLocal}
           />
         );
     }

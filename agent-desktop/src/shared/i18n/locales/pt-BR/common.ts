@@ -1,4 +1,22 @@
 export default {
+  // V2.10.44 — toasts de status do workspace. Exibidos ao usuário
+  // após cada ação em segundo plano.
+  workspace: {
+    statusRefreshed: "Status do workspace atualizado.",
+    indexInitialized: "Índice inicializado e pronto.",
+    cliInstalled: "CodeGraph CLI instalada. Configure o Hermes em seguida.",
+    configureHermesSuccess:
+      "Configuração MCP do Hermes atualizada. Inicie uma nova sessão do Hermes para carregar as ferramentas do CodeGraph.",
+    contextBundleGenerated: "Pacote de contexto gerado.",
+    contextBundleMovedToChat:
+      "Pacote de contexto movido para o Chat como um rascunho de anexo.",
+    failedToReadWorkspaceStatus: "Falha ao ler o status do workspace.",
+    installCodeGraphLocally: "Instalar o CodeGraph localmente",
+    openCodeGraphDocs: "Abrir a documentação do CodeGraph",
+    contextBundle: "Pacote de contexto",
+    contextBundlePlaceholder:
+      "Descreva a arquitetura ou o caminho de código para o qual você precisa de contexto.",
+  },
   appName: "Cubecloud Agent Desktop",
   continue: "Continuar",
   cancel: "Cancelar",
@@ -24,6 +42,11 @@ export default {
   start: "Iniciar",
   stop: "Parar",
   refresh: "Atualizar",
+  refreshing: "Atualizando…",
+  searching: "Pesquisando…",
+  saving: "Salvando…",
+  yes: "Sim",
+  no: "Não",
   copy: "Copiar",
   settings: "Configurações",
   provider: "Provedor",
@@ -46,4 +69,8 @@ export default {
   errorMessage: "Ocorreu um erro inesperado.",
   tryAgain: "Tentar Novamente",
   copied: "Copiado!",
+  legal: {
+    openPanel: "Abrir painel de direitos autorais e licença",
+    licensingLink: "Licenciamento",
+  },
 } as const;

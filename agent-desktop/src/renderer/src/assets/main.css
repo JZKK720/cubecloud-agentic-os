@@ -3,73 +3,12 @@
    Dark + Light mode, no gradients, flat design
    ======================================================================== */
 
-/* ----- Dark Theme (default) ----- */
-[data-theme="dark"] {
-  --bg-primary: #212121;
-  --bg-secondary: #171717;
-  --bg-tertiary: #2f2f2f;
-  --bg-elevated: #303030;
-  --bg-hover: #3a3a3a;
-  --bg-active: #424242;
-  --accent: #003f7a;
-  --accent-hover: #0055a4;
-  --accent-subtle: rgba(0, 63, 122, 0.15);
-  --accent-text: #006acd;
-  --text-primary: #ececec;
-  --text-secondary: #b4b4b4;
-  --text-muted: #8e8e8e;
-  --border: rgba(255, 255, 255, 0.06);
-  --border-bright: rgba(255, 255, 255, 0.1);
-  --border-focus: #003f7a;
-  --success: #22c55e;
-  --success-bg: rgba(34, 197, 94, 0.1);
-  --error: #ef4444;
-  --error-bg: rgba(239, 68, 68, 0.1);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --user-bubble: #003f7a;
-  --user-bubble-text: #ffffff;
-  --agent-bubble: #2f2f2f;
-  --agent-bubble-text: #ececec;
-  --code-bg: #1a1a1a;
-  --scrollbar-thumb: #424242;
-  --scrollbar-hover: #555555;
-  --selection: rgba(0, 63, 122, 0.4);
-}
+/* ----- Theme token overrides -----
+   Token values now live in cubecloud-theme.css (bridged onto astryx).
+   Selectors kept so descendant [data-theme] references are unchanged. */
+[data-theme=dark] {}
 
-/* ----- Light Theme ----- */
-[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f8f8;
-  --bg-tertiary: #f0f0f0;
-  --bg-elevated: #e8e8e8;
-  --bg-hover: #ebebeb;
-  --bg-active: #e0e0e0;
-  --accent: #003f7a;
-  --accent-hover: #002d58;
-  --accent-subtle: rgba(0, 63, 122, 0.08);
-  --accent-text: #003f7a;
-  --text-primary: #111111;
-  --text-secondary: #555555;
-  --text-muted: #999999;
-  --border: #e5e5e5;
-  --border-bright: #d4d4d4;
-  --border-focus: #003f7a;
-  --success: #16a34a;
-  --success-bg: rgba(22, 163, 74, 0.08);
-  --error: #dc2626;
-  --error-bg: rgba(220, 38, 38, 0.06);
-  --warning: #d97706;
-  --warning-bg: rgba(217, 119, 6, 0.08);
-  --user-bubble: #003f7a;
-  --user-bubble-text: #ffffff;
-  --agent-bubble: #f0f0f0;
-  --agent-bubble-text: #111111;
-  --code-bg: #f5f5f5;
-  --scrollbar-thumb: #d4d4d4;
-  --scrollbar-hover: #bbbbbb;
-  --selection: rgba(0, 63, 122, 0.2);
-}
+[data-theme=light] {}
 
 /* ----- Google Sans ----- */
 @font-face {
@@ -373,122 +312,6 @@ select:focus-visible {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* ── Remote mode notice ── */
-.remote-notice {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 40px;
-  text-align: center;
-}
-
-.remote-notice-icon {
-  color: var(--text-muted);
-  opacity: 0.4;
-  margin-bottom: 4px;
-}
-
-.remote-notice-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.remote-notice-desc {
-  font-size: 13px;
-  color: var(--text-muted);
-  max-width: 360px;
-  line-height: 1.5;
-}
-
-.remote-notice-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* Compact variant: used inside the layout's top-of-content runtime
-   banner so it doesn't dominate the screen below. */
-.remote-notice--compact {
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-  padding: 10px 14px;
-  text-align: left;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-bright);
-  border-radius: var(--radius-md);
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.remote-notice--compact .remote-notice-icon {
-  margin-bottom: 0;
-  opacity: 0.7;
-  color: var(--accent-text);
-  flex-shrink: 0;
-}
-
-.remote-notice--compact .remote-notice-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.remote-notice--compact .remote-notice-desc {
-  font-size: 12px;
-  color: var(--text-muted);
-  max-width: none;
-  margin: 0;
-}
-
-.remote-notice--compact .remote-notice-actions {
-  margin-top: 0;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-.layout-runtime-banner {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  padding: 8px 36px 8px 16px;
-  flex-shrink: 0;
-  z-index: 2;
-}
-
-.layout-runtime-banner-dismiss {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: none;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.layout-runtime-banner-dismiss:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
 }
 
 /* ========================================================================
@@ -1750,298 +1573,7 @@ select:focus-visible {
   margin-top: 20px;
 }
 
-/* ========================================================================
-   LAYOUT (Sidebar + Content)
-   ======================================================================== */
-.layout {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  /* Flex item defaults prevent the layout from shrinking below its
-   * content; the min-* overrides let panes reflow when the window
-   * resizes so feature-card grids don't overflow. */
-  min-width: 0;
-  min-height: 0;
-}
-
-.sidebar {
-  width: 230px;
-  background: var(--bg-secondary);
-  border-right: none;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-
-  border-radius: 16px;
-}
-
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 20px 10px;
-  margin-top: 25px;
-}
-
-.sidebar-brand-wordmark {
-  display: block;
-  width: auto;
-  height: 30px;
-  max-width: 100%;
-}
-
-.sidebar-brand-icon {
-  width: 30px;
-  height: 30px;
-  background: var(--accent);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.sidebar-brand-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 0 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  /* When vertical space is tight (small screens, narrow windows), let
-   * the nav scroll instead of clipping the bottom items (Gateway,
-   * Settings). `min-height: 0` is required so the flex child can
-   * shrink below its content size — without it, `overflow-y: auto`
-   * never activates because the flex item refuses to shrink. #393. */
-  min-height: 0;
-  overflow-y: auto;
-}
-
-.sidebar-nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  font-family: var(--font-sans);
-}
-
-.sidebar-nav-item:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.sidebar-nav-item.active {
-  background: var(--accent-subtle);
-  color: var(--accent-text);
-}
-
-.sidebar-nav-item svg {
-  flex-shrink: 0;
-}
-
-.sidebar-nav-label-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-}
-
-.sidebar-nav-label {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.sidebar-nav-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 9px;
-  font-size: 11px;
-  font-weight: 700;
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  flex-shrink: 0;
-}
-
-.sidebar-nav-item.active .sidebar-nav-badge {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-
-/* ----- Screen containers (resize recalibration) -----
- * Every sidebar screen renders into a root element with one of these
- * classes (`-container` or `workspace-shell`). They are flex column
- * children of a pane that is itself a flex child of `.content` /
- * `.app-content`. Without the min-* overrides they default to
- * `min-width: auto`, refuse to shrink below their intrinsic content
- * width, and clip the right edge when the window is resized. */
-.agents-container,
-.sessions-container,
-.skills-container,
-.tools-container,
-.memory-container,
-.providers-container,
-.schedules-container,
-.soul-container,
-.settings-container,
-.workspace-shell,
-.chat-container,
-.gateway-container,
-.models-container,
-.mcp-container,
-.memory-soul-tab .soul-container {
-  min-width: 0;
-  min-height: 0;
-  box-sizing: border-box;
-}
-
-/* Sidebar footer with theme switcher */
-.sidebar-footer {
-  padding: 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sidebar-footer-text {
-  font-size: 12px;
-  color: var(--text-muted);
-  padding: 0 8px;
-}
-
-/* "Licensing" link inside the sidebar footer — replaces the old
-   floating corner-legal-button so the brand chrome stays in the
-   sidebar rather than floating over feature surfaces. */
-.sidebar-licensing-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 6px 8px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-  font-family: var(--font-sans);
-  transition:
-    background var(--transition),
-    color var(--transition);
-}
-
-.sidebar-licensing-link:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.sidebar-licensing-link:focus-visible {
-  outline: 2px solid var(--border-focus);
-  outline-offset: 2px;
-}
-
-.sidebar-update-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 6px 10px;
-  margin-bottom: 8px;
-  background: var(--accent);
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background var(--transition);
-}
-
-.sidebar-update-btn:hover {
-  background: var(--accent-hover);
-}
-
-.sidebar-update-btn:disabled {
-  cursor: default;
-  opacity: 0.75;
-}
-
-.sidebar-update-btn:disabled:hover {
-  background: var(--accent);
-}
-
-.sidebar-update-btn.error {
-  background: var(--error);
-}
-
-.sidebar-update-btn.error:hover {
-  background: var(--error);
-}
-
-/* Theme Switcher */
-.theme-switcher {
-  display: flex;
-  background: var(--bg-tertiary);
-  border-radius: var(--radius-sm);
-  padding: 2px;
-  gap: 2px;
-}
-
-.theme-switcher-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px 0;
-  border: none;
-  background: transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: all var(--transition);
-}
-
-.theme-switcher-btn:hover {
-  color: var(--text-secondary);
-}
-
-.theme-switcher-btn.active {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-
+/* LAYOUT (AppShell shell + content pane) -- rail is astryx SideNav; see .cc-sidenav in cubecloud-theme.css */
 .content {
   flex: 1;
   overflow: hidden;
@@ -10930,104 +10462,6 @@ select:focus-visible {
   font-size: 0.9em;
 }
 
-/* V2.10.67 — Ambient tool suggestions panel in sidebar */
-.tool-suggestions-panel {
-  padding: 8px 12px;
-  border-top: 1px solid var(--border, #2a2a2a);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.tool-suggestions-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.tool-suggestions-title {
-  font-size: 0.8em;
-  font-weight: 600;
-  color: var(--text-muted, #888);
-  flex: 1;
-}
-.tool-suggestions-dismiss {
-  background: none;
-  border: none;
-  color: var(--text-muted, #888);
-  cursor: pointer;
-  padding: 2px;
-  border-radius: 4px;
-}
-.tool-suggestions-dismiss:hover {
-  color: var(--text, #fff);
-  background: var(--bg-hover, rgba(255, 255, 255, 0.1));
-}
-.tool-suggestions-expand {
-  background: none;
-  border: none;
-  color: var(--accent, #0969da);
-  font-size: 0.75em;
-  cursor: pointer;
-  text-align: left;
-  padding: 4px 0;
-}
-.tool-suggestions-expand:hover {
-  text-decoration: underline;
-}
-.tool-suggestions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-.tool-suggestion-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 6px 0;
-}
-.tool-suggestion-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.tool-suggestion-name {
-  font-size: 0.8em;
-  font-weight: 600;
-}
-.tool-suggestion-desc {
-  font-size: 0.72em;
-  color: var(--text-muted, #888);
-  line-height: 1.3;
-}
-.tool-suggestion-api-key-hint {
-  font-size: 0.68em;
-  color: var(--warning, #d29922);
-}
-.tool-suggestion-install {
-  background: none;
-  border: 1px solid var(--border, #2a2a2a);
-  color: var(--text-muted, #888);
-  font-size: 0.7em;
-  padding: 3px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  white-space: nowrap;
-}
-.tool-suggestion-install:hover {
-  color: var(--text, #fff);
-  border-color: var(--accent, #0969da);
-}
-.tool-suggestions-hint {
-  font-size: 0.68em;
-  color: var(--text-muted, #888);
-  line-height: 1.3;
-  margin: 4px 0 0 0;
-}
 .plans-dispatch:disabled,
 .plans-delete:disabled {
   opacity: 0.4;
@@ -13077,10 +12511,10 @@ select:focus-visible {
 .officecli-sheet-view {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  width: 100%;
   height: 100%;
   min-height: 0;
+  gap: 6px;
+  width: 100%;
   background: var(--bg-secondary);
 }
 
@@ -13112,6 +12546,7 @@ select:focus-visible {
 
 .officecli-sheet-view-host {
   flex: 1 1 auto;
+  height: 100%;
   min-height: 240px;
   width: 100%;
   border: 1px solid var(--border-bright);
@@ -13128,4 +12563,84 @@ select:focus-visible {
 
 .officecli-sheet-view-error {
   color: var(--error);
+}
+
+/* OfficeCLI run panel (Tools screen) — this project ships no utility CSS
+   framework, so these must be real classes. */
+.officecli-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.officecli-panel-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.officecli-input,
+.officecli-select {
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+.officecli-input {
+  width: 100%;
+}
+.officecli-input--grow {
+  flex: 1 1 auto;
+}
+.officecli-input:focus,
+.officecli-select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+.officecli-button {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.officecli-button:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+.officecli-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.officecli-output {
+  max-height: 16rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-size: 12px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.officecli-error {
+  color: var(--error);
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+.officecli-viewer-wrap {
+  margin-top: 8px;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-sm);
+}
+.officecli-viewer-loading {
+  padding: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }

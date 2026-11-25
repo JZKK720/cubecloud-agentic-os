@@ -14,5 +14,6 @@ export default {
     qwenDesc: "Qwen のサブスクリプションを使用",
     geminiDesc: "Google AI Pro / Gemini プランを使用",
     minimaxDesc: "MiniMax のサブスクリプションを使用",
+    nousDesc: "Nous Portal のサブスクリプションでサインイン",
   },
 } as const;

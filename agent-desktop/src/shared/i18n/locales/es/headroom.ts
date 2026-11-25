@@ -1,13 +1,134 @@
-// English-copy fallback. The repo-localized set
-// is en + zh-CN; for the other 6 locales the source of
-// truth lives in en/headroom.ts and the locale files
-// re-export it so operators always see real strings
-// without empty UI. Native-speaker review is a follow-up.
-
-import en from "../en/headroom";
+// Spanish copy for the Headroom screen.
 
 export default {
+  eyebrow: "Compresión de contexto",
+  title: "Headroom",
+  summary:
+    "Headroom se sitúa entre el escritorio y el modelo para recortar los prompts largos antes de que salgan de la máquina. Informa de lo que ha ahorrado y nunca reescribe una petición a menos que lo cambies a optimizar.",
+  errorChooseProjectFolder: "Elige primero una carpeta de proyecto.",
+  errorPickOneProposal: "Elige al menos una propuesta para confirmar.",
+  errorHeadroomLearnFailed: "headroom learn falló.",
   quickStart: {
-    ...en.quickStart,
+    title: "Inicio rápido",
+    body:
+      "Empieza en modo auditoría, verifica los ahorros con la prueba de compresión y luego cambia a optimizar una vez que el proxy esté sano y los resultados tengan buen aspecto.",
+    step1: "Apunta la URL base a un proxy Headroom en ejecución o inicia el sidecar local de abajo.",
+    step2: "Mantén el modo en auditoría primero para que Headroom mida antes de reescribir peticiones.",
+    step3: "Prueba con un log real o un paquete de código antes de habilitar Headroom en un flujo diario.",
+    currentTarget: "Objetivo actual: {{url}}",
+    notReachable:
+      "Headroom aún no es accesible. Inicia el sidecar o edita la URL base primero.",
+    startSidecar: "Iniciar sidecar local",
+    editConnection: "Editar conexión",
+    copyInstall: "Copiar comando de instalación",
+    copyCommand: "Copiar comando",
+    installHint:
+      "Ejecuta esto en una terminal para instalar el runtime de Headroom. El escritorio no lo instala por ti.",
+    installCommand: "pip install \"headroom-ai[all]\"",
+    firstRunTitle: "Configuración inicial",
+    firstRunBody:
+      "Headroom es un proxy local de compresión de contexto. Elige un modo para empezar.",
+    modeAudit: "Auditoría",
+    modeAuditHint: "Solo medir — sin reescritura de peticiones.",
+    modeOptimize: "Optimizar",
+    modeOptimizeHint: "Aplicar transformaciones una vez que los ahorros se vean bien.",
+    dismiss: "Ocultar esta tarjeta",
+    reset: "Restablecer inicio rápido",
+    collapsedSummary:
+      "Inicio rápido oculto. Ábrelo en cualquier momento para volver a ejecutar el recorrido de auditoría → prueba → optimizar.",
+    switchToOptimize:
+      "Los ahorros se ven bien. Cambia a optimizar para comprimir las peticiones de verdad.",
+    switchingToOptimize: "Cambiando...",
+    switchMode: "Cambiar a optimizar",
+    learnWhy: "Por qué importa",
+    learnWhyBody:
+      "En modo auditoría Headroom mide los ahorros pero nunca reescribe las peticiones. En modo optimizar aplica las transformaciones. Empieza en auditoría, valida y luego cambia.",
+  },
+  health: {
+    title: "Estado del proxy",
+    reachable: "Accesible",
+    unreachable: "No accesible",
+    probing: "Sondeando…",
+  },
+  stats: {
+    title: "Ahorros",
+    requests: "Peticiones",
+    tokensSaved: "Tokens ahorrados",
+    avgSavings: "Ahorro medio",
+    ccrEntries: "Entradas CCR",
+    uptime: "Tiempo de actividad",
+  },
+  config: {
+    title: "Conexión",
+    body:
+      "Apunta Headroom a un proxy en ejecución o inicia el sidecar local de abajo. Nada sale de la máquina.",
+    baseUrl: "URL base",
+    apiKey: "API key",
+    mode: "Modo",
+    save: "Guardar",
+    edit: "Configurar",
+    cancel: "Cerrar",
+  },
+  sidecar: {
+    title: "Sidecar local",
+    body: "Headroom no se está ejecutando en {{baseUrl}}. Inicia el sidecar para comprimir desde esta máquina.",
+    reason: "Motivo",
+    lastError: "Último error",
+    pid: "PID",
+    port: "Puerto",
+    mode: "Modo",
+    crashCount: "Caídas",
+    uptime: "Tiempo de actividad",
+    start: "Iniciar sidecar",
+    stop: "Detener sidecar",
+    restart: "Reiniciar",
+    refreshLogs: "Actualizar registros",
+    logsSummary: "Registros ({{count}} líneas)",
+    clearLogs: "Borrar registros",
+  },
+  compress: {
+    title: "Prueba de compresión",
+    body:
+      "Pega un prompt real o un paquete de código y pásalo por Headroom. Obtendrás los recuentos de tokens antes y después sin enviar nada a un modelo.",
+    input: "Entrada de muestra",
+    placeholder: "Pega un prompt largo, un log o un paquete de CodeGraph…",
+    run: "Comprimir",
+    compressing: "Comprimiendo…",
+    compressed: "Comprimido",
+    tokensBefore: "Tokens antes",
+    tokensAfter: "Tokens después",
+    saved: "Ahorrados {{percent}}%",
+  },
+  retrieve: {
+    title: "Recuperar original",
+    body:
+      "El contenido comprimido se sustituye por una referencia. Busca el original por su clave cuando necesites el texto completo.",
+    key: "Clave de referencia",
+    run: "Recuperar",
+    retrieving: "Recuperando…",
+    notFound: "No hay contenido guardado con esa clave.",
+  },
+  learn: {
+    title: "Aprender de las sesiones",
+    body:
+      "Escanea sesiones anteriores en un proyecto y prepara notas duraderas — patrones, trampas, preferencias — que Headroom puede reutilizar. Nada se escribe hasta que confirmes las propuestas que elijas.",
+    projectPath: "Ruta del proyecto",
+    model: "Modelo",
+    agent: "Agente",
+    run: "Ejecutar learn",
+    running: "Aprendiendo de las sesiones…",
+    stop: "Detener",
+    reportSummary:
+      "Se escanearon {{sessionCount}} sesiones en {{durationSec}}s y se prepararon {{proposalCount}} propuestas.",
+    targets: "Destinos escritos",
+    noProposals: "No se encontraron notas duraderas en estas sesiones.",
+    rawOutput: "Salida sin procesar",
+    commit: "Confirmar {{count}} propuestas",
+    committing: "Confirmando…",
+    apply: "Aplicar diffs",
+    applying: "Aplicando…",
+    revert: "Revertir",
+    reverting: "Revirtiendo…",
+    diffSummary: "Diffs pendientes ({{count}})",
   },
 } as const;

@@ -15,5 +15,6 @@ export default {
     qwenDesc: "Use sua assinatura do Qwen",
     geminiDesc: "Use seu plano Google AI Pro / Gemini",
     minimaxDesc: "Use sua assinatura do MiniMax",
+    nousDesc: "Entre com sua assinatura do Nous Portal",
   },
 } as const;

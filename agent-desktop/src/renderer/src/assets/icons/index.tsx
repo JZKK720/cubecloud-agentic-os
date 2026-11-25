@@ -1,5 +1,6 @@
 export {
   ArrowRight,
+  ChevronRight,
   Bot,
   Brain,
   Building,
@@ -24,6 +25,22 @@ export {
   Users,
   Wrench,
   X,
+  Home,
+  Folder,
+  BookOpen,
+  ListTree,
+  TerminalSquare,
+  CircuitBoard,
+  Gauge,
+  Activity,
+  Boxes,
+  SlidersHorizontal,
+  ShieldCheck,
+  Radio,
+  Terminal,
+  Pin,
+  PinOff,
+  Check as CheckIcon,
 } from "lucide-react";
 
 export { RefreshCw as Refresh } from "lucide-react";

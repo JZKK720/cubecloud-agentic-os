@@ -1,4 +1,11 @@
 export default {
+  // V2.10.44
+  errorKeyAndInsightRequired: "A chave e o insight são obrigatórios.",
+  wiki: {
+    setUpYourKnowledgeBase: "Configure sua base de conhecimento",
+    editThisPage: "Editar esta página",
+    allTypes: "Todos os tipos",
+  },
   title: "Memória",
   subtitle: "O que o Hermes lembra sobre você e seu ambiente entre as sessões.",
   sessions: "Sessões",
@@ -43,7 +50,40 @@ export default {
   active: "Ativo",
   deactivate: "Desativar",
   activating: "Ativando...",
-  activate: "Ativar",  wikiTab: "Base de conhecimento",  learningsTab: "Aprendizados",
+  activate: "Ativar",
+  wikiTab: "Base de conhecimento",
+  learningsTab: "Aprendizados",
+  wikiEditor: {
+    noChanges: "Nenhuma alteração para salvar.",
+    saveFailed: "Falha ao salvar a página.",
+    saved: "Salvo.",
+    discardConfirm:
+      "Você tem alterações não salvas. Descartá-las e fechar o editor?",
+    newFile: "Nova página",
+    unsaved: "Não salvo",
+    modeEdit: "Editar",
+    modeSplit: "Dividido",
+    modePreview: "Visualizar",
+    undoHint: "Desfazer (Ctrl+Z)",
+    closeHint: "Fechar (Esc)",
+    conflictTitle: "Página alterada no disco",
+    conflictBody:
+      "Esta página foi modificada no disco depois que você começou a editar. Escolha como resolver o conflito.",
+    conflictShowDisk: "Mostrar versão do disco",
+    conflictTakeTheirs: "Recarregar do disco (descartar a minha)",
+    conflictKeepMine: "Manter a minha (sobrescrever o disco)",
+    conflictReloaded: "Recarregada do disco. Suas alterações foram descartadas.",
+    conflictOverwrite:
+      "Mantendo suas alterações. A versão do disco será sobrescrita ao salvar.",
+    placeholder: "Escreva markdown aqui…",
+    previewEmpty: "Nada para visualizar ainda.",
+    cancel: "Cancelar",
+    save: "Salvar",
+    create: "Criar",
+    saving: "Salvando…",
+    chars: "caracteres",
+    lines: "linhas",
+  },
 
   providers: {
     honcho:

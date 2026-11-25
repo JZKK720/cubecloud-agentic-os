@@ -2,6 +2,8 @@ export default {
   title: "Herramientas",
   subtitle:
     "Activa o desactiva los conjuntos de herramientas que tu agente puede usar durante las conversaciones",
+  empty: "No hay conjuntos de herramientas disponibles",
+  emptyHint: "Los conjuntos de herramientas aparecerán aquí cuando el gateway esté en ejecución.",
   web: {
     label: "Búsqueda web",
     description: "Busca en la web y extrae contenido de URLs",
@@ -77,8 +79,43 @@ export default {
   http: "HTTP",
   stdio: "stdio",
   disabled: "desactivado",
+  workspace: {
+    subtitle:
+      "El tejido operativo conversacional — sesiones, archivos y el tejido runner que impulsa los adaptadores CLI. Conéctalo cuando quieras que la consola lo gobierne.",
+    start: "Iniciar",
+    stop: "Detener",
+    probing: "Sondeando…",
+    reachable: "Accesible",
+    unreachable: "AI Workspace no accesible en",
+    attachedAt: "Conectado el",
+  },
   // V2.10.77 — Paneles de herramientas
   panels: {
+    laya: {
+      subtitle:
+        "Motor de decisiones local de Sistema-1 — decisiones tipadas choice/score/noul con confianza y abstención, expuesto a la consola mediante MCP.",
+      ready: "Listo",
+      broken: "Instalado pero la comprobación de versión falló",
+    },
+    weknora: {
+      subtitle:
+        "Plataforma opcional de conocimiento RAG empresarial. Solo recuperación en el lado de la consola; tu servidor WeKnora es dueño de sus datos.",
+      reachable: "Accesible",
+      unreachable: "No accesible",
+    },
+    governance: {
+      title: "Gobernanza del workspace",
+      subtitle:
+        "Registro de políticas, tareas programadas y compartición desde AI Workspace — la vista de gobernanza de la consola. Los veredictos de aprobación los entregas tú, en el endpoint resolve del workspace.",
+      visible: "Visible",
+      unavailable: "Las superficies de gobernanza no están accesibles",
+    },
+    openviking: {
+      subtitle:
+        "Base de datos opcional de contexto del agente — recursos, memorias y habilidades en un sistema de archivos viking:// navegable (solo interoperabilidad; núcleo AGPL).",
+      reachable: "Accesible",
+      unreachable: "No accesible",
+    },
     gbrain: {
       title: "GBrain (Memoria Persistente)",
       subtitle:
@@ -148,5 +185,24 @@ export default {
       notInstalled:
         "Graphify no está instalado. Instala con: <code>uv tool install 'graphifyy[mcp]'</code> (Python 3.12+).",
     },
+  },
+  agentReachTitle: "Capacidades de Internet (Agent-Reach)",
+  agentReachSubtitle:
+    "Agent-Reach da a tu agente de runtime acceso a internet — Twitter, Reddit, YouTube, GitHub, RSS, búsqueda web y más. Instálalo en la máquina del gateway con: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+  agentReachRefresh: "Actualizar",
+  agentReachScanning: "Escaneando...",
+  agentReachInstalled: "Instalado",
+  agentReachNotInstalled:
+    "Agent-Reach no está instalado. El agente de runtime no tiene herramientas de capacidad de internet.",
+  managedApps: {
+    title: "Apps administradas",
+    subtitle:
+      "Todas las apps a las que el escritorio puede conectarse, con el estado que reporta su adaptador. Solo lectura: el escritorio refleja estos servicios, no los administra.",
+    refresh: "Actualizar",
+    loading: "Leyendo el listado…",
+    empty: "No hay apps administradas registradas.",
+    needsSetup: "requiere configuración",
+    needsAuth: "requiere configuración",
+    unavailable: "El listado de apps administradas no está disponible en esta compilación.",
   },
 } as const;

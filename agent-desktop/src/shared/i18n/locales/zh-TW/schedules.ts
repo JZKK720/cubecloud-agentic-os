@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorCreateCronJob: "建立工作失敗",
+  errorRemoveCronJob: "刪除工作失敗",
+  errorUpdateCronJob: "更新工作失敗",
+  errorTriggerCronJob: "觸發工作失敗",
   title: "排程工作",
   subtitle: "透過排程執行 Agent 來自動完成工作",
   newTask: "新增工作",

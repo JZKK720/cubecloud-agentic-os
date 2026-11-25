@@ -43,10 +43,6 @@ vi.mock("../Tools/Tools", () => ({
   default: () => <div>tools-screen</div>,
 }));
 
-vi.mock("../Workspace/Workspace", () => ({
-  default: () => <div>workspace-screen</div>,
-}));
-
 vi.mock("../Gateway/Gateway", () => ({
   default: () => <div>gateway-screen</div>,
 }));
@@ -59,12 +55,12 @@ vi.mock("../Providers/Providers", () => ({
   default: () => <div>providers-screen</div>,
 }));
 
-vi.mock("../Schedules/Schedules", () => ({
-  default: () => <div>schedules-screen</div>,
-}));
-
 vi.mock("../Mcp/Mcp", () => ({
   default: () => <div>mcp-screen</div>,
+}));
+
+vi.mock("../Home/Home", () => ({
+  default: () => <div>home-screen</div>,
 }));
 
 import Layout from "./Layout";
@@ -145,36 +141,44 @@ function installHermesAPI(
   });
 }
 
-/** All 16 nav items, in the order they appear in the sidebar. Each
- *  test below checks the surface sidebar (not Office / Kanban) and
- *  the per-group labels, the active-state treatment, footer affordances,
- *  and the in-pane rendering of each screen mock. */
-const WORK_GROUP_ITEMS = [
+/** Nav model after the shell redesign: six primary destinations.
+ *  The 18 capability panes are reached through the Runtime hub, not the
+ *  rail. The tests below assert the rail contract and that the hub is the
+ *  way to every capability screen. */
+const NAV_ITEMS = [
+  "navigation.home",
   "navigation.chat",
   "navigation.sessions",
+  "navigation.plans",
+  "navigation.runtime",
+  "navigation.settings",
+] as const;
+
+/** Capabilities only reachable through the Runtime hub. */
+const RUNTIME_CAPABILITIES = [
   "navigation.agents",
   "navigation.soul",
-  "navigation.plans",
+  "navigation.skills",
+  "navigation.tools",
+  "navigation.mcp",
+  "navigation.models",
+  "navigation.providers",
+  "navigation.memory",
   "navigation.codegraph",
   "navigation.everos",
   "navigation.headroom",
+  "navigation.knowledge",
   "navigation.sandboxtasks",
-] as const;
-
-const CONFIGURE_GROUP_ITEMS = [
-  "navigation.models",
-  "navigation.providers",
-  "navigation.skills",
-  "navigation.memory",
-  "navigation.tools",
   "navigation.workspace",
+  "navigation.workspaceConsole",
+  "navigation.swarm",
   "navigation.schedules",
+  "navigation.gateway",
 ] as const;
 
-const PLATFORM_GROUP_ITEMS = [
-  "navigation.gateway",
-  "navigation.settings",
-] as const;
+function navButton(label: string): HTMLButtonElement {
+  return screen.getByRole("button", { name: label }) as HTMLButtonElement;
+}
 
 describe("Layout navigation", () => {
   it("does not expose Office in the Agent Desktop sidebar", async () => {
@@ -186,13 +190,11 @@ describe("Layout navigation", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("navigation.skills")).toBeInTheDocument();
-    expect(screen.getByText("navigation.gateway")).toBeInTheDocument();
-    expect(screen.getByText("navigation.workspace")).toBeInTheDocument();
+    expect(screen.getByText("navigation.home")).toBeInTheDocument();
     expect(screen.queryByText("navigation.office")).not.toBeInTheDocument();
   });
 
-  it("opens a dedicated legal modal from the pinned footer button", async () => {
+  it("opens a dedicated legal modal from the rail footer button", async () => {
     installHermesAPI();
 
     render(<Layout />);
@@ -214,95 +216,41 @@ describe("Layout navigation", () => {
   });
 });
 
-describe("Layout sidebar groups", () => {
+describe("Layout rail", () => {
   beforeEach(() => {
     installHermesAPI();
   });
 
-  it("renders all three group labels in order", async () => {
+  it("renders exactly the six primary destinations, in order", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const labels = screen.getAllByText(/^navigation\.group\./);
-    expect(labels.map((l) => l.textContent)).toEqual([
-      "navigation.group.work",
-      "navigation.group.configure",
-      "navigation.group.platform",
-    ]);
+    const labels = NAV_ITEMS.map((label) =>
+      navButton(label).textContent?.trim(),
+    );
+    expect(labels).toEqual([...NAV_ITEMS]);
   });
 
-  it("renders every nav item in the work group", async () => {
+  it("keeps every capability out of the rail", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
-    for (const key of WORK_GROUP_ITEMS) {
-      expect(screen.getByText(key)).toBeInTheDocument();
+    for (const key of RUNTIME_CAPABILITIES) {
+      expect(screen.queryByRole("button", { name: key })).toBeNull();
     }
   });
 
-  it("renders every nav item in the configure group", async () => {
+  it("exposes an accessible label on the primary nav", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
-    for (const key of CONFIGURE_GROUP_ITEMS) {
-      expect(screen.getByText(key)).toBeInTheDocument();
-    }
-  });
-
-  it("renders every nav item in the platform group", async () => {
-    render(<Layout />);
-    await waitFor(() => {
-      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
-    });
-    for (const key of PLATFORM_GROUP_ITEMS) {
-      expect(screen.getByText(key)).toBeInTheDocument();
-    }
-  });
-
-  it("renders exactly 22 nav items in the sidebar (21 work/configure/platform + MCP)", async () => {
-    render(<Layout />);
-    await waitFor(() => {
-      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
-    });
-    const buttons = screen.getAllByRole("button", { name: /navigation\./ });
-    const navButtons = buttons.filter((b) =>
-      b.classList.contains("sidebar-nav-item"),
-    );
-    expect(navButtons.length).toBe(22);
-  });
-
-  it("renders the MCP nav item in the platform group between Gateway and Settings", async () => {
-    render(<Layout />);
-    await waitFor(() => {
-      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
-    });
-    const navButtons = Array.from(
-      document.querySelectorAll(".sidebar-nav-item"),
-    );
-    const labels = navButtons.map((b) => b.textContent ?? "");
-    expect(labels.find((l) => l.includes("navigation.mcp"))).toBeDefined();
-    // MCP comes after Gateway and before Settings.
-    const idxGateway = labels.findIndex((l) =>
-      l.includes("navigation.gateway"),
-    );
-    const idxMcp = labels.findIndex((l) => l.includes("navigation.mcp"));
-    const idxSettings = labels.findIndex((l) =>
-      l.includes("navigation.settings"),
-    );
-    expect(idxMcp).toBeGreaterThan(idxGateway);
-    expect(idxMcp).toBeLessThan(idxSettings);
-  });
-
-  it("does not expose retired nav items (Office)", async () => {
-    render(<Layout />);
-    await waitFor(() => {
-      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
-    });
-    expect(screen.queryByText("navigation.office")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", { name: "navigation.primaryNav" }),
+    ).toBeInTheDocument();
   });
 });
 
@@ -317,10 +265,10 @@ describe("Layout sidebar active state", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    // Default view is chat, so only chat should have the active class.
-    const activeBefore = document.querySelectorAll(".sidebar-nav-item.active");
+    // Default view is home, so only home should be marked current.
+    const activeBefore = document.querySelectorAll('[aria-current="page"]');
     expect(activeBefore.length).toBe(1);
-    expect(activeBefore[0].textContent).toContain("navigation.chat");
+    expect(activeBefore[0].getAttribute("data-testid")).toBe("nav-home");
   });
 
   it("updates the active class when a different nav item is clicked", async () => {
@@ -329,42 +277,36 @@ describe("Layout sidebar active state", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const skillsButton = screen
-      .getByText("navigation.skills")
-      .closest("button") as HTMLButtonElement;
-    fireEvent.click(skillsButton);
+    fireEvent.click(navButton("navigation.runtime"));
 
     await waitFor(() => {
-      const active = document.querySelectorAll(".sidebar-nav-item.active");
+      expect(screen.getByText("runtime.skills")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "runtime.skills" }));
+
+    await waitFor(() => {
+      const active = document.querySelectorAll('[aria-current="page"]');
       expect(active.length).toBe(1);
-      expect(active[0].textContent).toContain("navigation.skills");
+      expect(active[0].getAttribute("data-testid")).toBe("nav-runtime");
     });
   });
 
-  it("switches between groups without losing active state", async () => {
+  it("switches between rail entries without losing active state", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    // Click into the platform group (settings)
-    const settingsButton = screen
-      .getByText("navigation.settings")
-      .closest("button") as HTMLButtonElement;
-    fireEvent.click(settingsButton);
+    fireEvent.click(navButton("navigation.settings"));
     await waitFor(() => {
-      const active = document.querySelectorAll(".sidebar-nav-item.active");
-      expect(active[0].textContent).toContain("navigation.settings");
+      const active = document.querySelectorAll('[aria-current="page"]');
+      expect(active[0].getAttribute("data-testid")).toBe("nav-settings");
     });
 
-    // Then back to a work-group item (soul)
-    const soulButton = screen
-      .getByText("navigation.soul")
-      .closest("button") as HTMLButtonElement;
-    fireEvent.click(soulButton);
+    fireEvent.click(navButton("navigation.plans"));
     await waitFor(() => {
-      const active = document.querySelectorAll(".sidebar-nav-item.active");
-      expect(active[0].textContent).toContain("navigation.soul");
+      const active = document.querySelectorAll('[aria-current="page"]');
+      expect(active[0].getAttribute("data-testid")).toBe("nav-plans");
     });
   });
 });
@@ -379,8 +321,8 @@ describe("Layout sidebar footer", () => {
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
-    // Default profile is "default" -> shows common.appName
-    expect(screen.getByText("common.appName")).toBeInTheDocument();
+    // Default profile is "default" -> the rail subheading identifies the app.
+    expect(screen.getByText("Agent Desktop")).toBeInTheDocument();
   });
 
   it("does not show the update button when no update is available", async () => {
@@ -389,7 +331,7 @@ describe("Layout sidebar footer", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
     expect(
-      document.querySelector(".sidebar-update-btn"),
+      screen.queryByText(/common\.updateAvailable/),
     ).not.toBeInTheDocument();
   });
 
@@ -411,8 +353,7 @@ describe("Layout sidebar footer", () => {
     });
 
     const updateBtn = await screen.findByText(/common\.updateAvailable/);
-    expect(updateBtn).toBeInTheDocument();
-    expect(updateBtn.closest("button")).toHaveClass("sidebar-update-btn");
+    expect(updateBtn.closest("button")).not.toBeNull();
   });
 
   it("triggers download when the update button is clicked", async () => {
@@ -450,17 +391,15 @@ describe("Layout sidebar keyboard accessibility", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const skillsButton = screen
-      .getByText("navigation.skills")
-      .closest("button") as HTMLButtonElement;
-    // Native <button> elements translate Enter / Space to a click
-    // event automatically. We simulate that here so the test does
-    // not depend on the user-event polyfill.
-    fireEvent.click(skillsButton);
+    fireEvent.click(navButton("navigation.runtime"));
+    await waitFor(() => {
+      expect(screen.getByText("runtime.skills")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "runtime.skills" }));
 
     await waitFor(() => {
-      const active = document.querySelectorAll(".sidebar-nav-item.active");
-      expect(active[0].textContent).toContain("navigation.skills");
+      const active = document.querySelectorAll('[aria-current="page"]');
+      expect(active[0].getAttribute("data-testid")).toBe("nav-runtime");
     });
   });
 
@@ -470,44 +409,49 @@ describe("Layout sidebar keyboard accessibility", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const memoryButton = screen
-      .getByText("navigation.memory")
-      .closest("button") as HTMLButtonElement;
-    fireEvent.click(memoryButton);
+    fireEvent.click(navButton("navigation.runtime"));
+    await waitFor(() => {
+      expect(screen.getByText("runtime.memory")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "runtime.memory" }));
 
     await waitFor(() => {
-      const active = document.querySelectorAll(".sidebar-nav-item.active");
-      expect(active[0].textContent).toContain("navigation.memory");
+      const active = document.querySelectorAll('[aria-current="page"]');
+      expect(active[0].getAttribute("data-testid")).toBe("nav-runtime");
     });
   });
 
-  it("focuses nav items on Tab traversal (DOM order matches visual order)", async () => {
+  it("focuses nav items in rail order (home → settings)", async () => {
     render(<Layout />);
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
-    const navButtons = Array.from(
-      document.querySelectorAll(".sidebar-nav-item"),
-    ) as HTMLButtonElement[];
-    expect(navButtons.length).toBe(22);
-    // The order in the DOM should match the order defined by NAV_ITEMS.
-    // (workspaceConsole sits in the work group after workspace; models is
-    // the first configure item at 12.)
-    expect(navButtons[0].textContent).toContain("navigation.chat");
-    expect(navButtons[6].textContent).toContain("navigation.everos");
-    expect(navButtons[11].textContent).toContain("navigation.workspaceConsole");
-    expect(navButtons[12].textContent).toContain("navigation.models");
-    expect(navButtons[20].textContent).toContain("navigation.mcp");
-    expect(navButtons[21].textContent).toContain("navigation.settings");
+    const order = [
+      "home",
+      "chat",
+      "sessions",
+      "plans",
+      "runtime",
+      "settings",
+    ].map((v) => document.querySelector(`[data-testid="nav-${v}"]`));
+    for (const el of order) expect(el).not.toBeNull();
+    expect(order.map((el) => el!.getAttribute("data-testid"))).toEqual([
+      "nav-home",
+      "nav-chat",
+      "nav-sessions",
+      "nav-plans",
+      "nav-runtime",
+      "nav-settings",
+    ]);
   });
 });
 
-describe("Layout sidebar MCP badge", () => {
+describe("Layout rail Runtime badge", () => {
   beforeEach(() => {
     installHermesAPI();
   });
 
-  it("shows an enabled/total badge on the MCP nav item", async () => {
+  it("shows an enabled/total badge on the Runtime entry", async () => {
     installHermesAPI({
       listMcpServers: vi.fn().mockResolvedValue([
         { name: "github", type: "stdio", enabled: true, detail: "npx" },
@@ -522,14 +466,11 @@ describe("Layout sidebar MCP badge", () => {
     });
     render(<Layout />);
     await waitFor(() => {
-      const badges = document.querySelectorAll(".sidebar-nav-badge");
-      expect(badges.length).toBe(1);
-      expect(badges[0].textContent).toBe("2/3");
+      expect(screen.getByText("2/3")).toBeInTheDocument();
     });
   });
 
-  it("does not show the badge until the list resolves", async () => {
-    // Defer the response so we can observe the loading state.
+  it("hides the badge until the MCP list resolves", async () => {
     let resolve: (
       v: Array<{
         name: string;
@@ -550,12 +491,88 @@ describe("Layout sidebar MCP badge", () => {
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
-    // Resolve with an empty list — the badge is still hidden
-    // because mcpCount is null. (0/0 is a "no servers" state
-    // we don't want to advertise.)
     resolve([]);
     await waitFor(() => {
-      expect(document.querySelector(".sidebar-nav-badge")).toBeNull();
+      expect(screen.queryByText("0/0")).toBeNull();
+    });
+  });
+});
+
+describe("Layout rail pins", () => {
+  beforeEach(() => {
+    installHermesAPI();
+    localStorage.removeItem("cubecloud.runtime-rail-pins");
+  });
+
+  it("pins a runtime capability from the hub onto the rail", async () => {
+    render(<Layout />);
+    await waitFor(() => {
+      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
+    });
+
+    expect(document.querySelector('[data-testid="nav-pin-codegraph"]')).toBeNull();
+
+    fireEvent.click(navButton("navigation.runtime"));
+    await waitFor(() => {
+      expect(screen.getByText("runtime.codegraph")).toBeInTheDocument();
+    });
+
+    const hubGrid = screen
+      .getAllByText("runtime.codegraph")
+      .map((el) => el.closest("[class*=runtime-hub-grid]"))
+      .find((el) => el !== null && el !== undefined);
+    const card = Array.from(hubGrid?.children ?? []).find((el) =>
+      el.textContent?.includes("runtime.codegraph"),
+    );
+    const pin = card?.querySelector(
+      'button[aria-label="runtime.pinToRail"]',
+    ) as HTMLButtonElement | null;
+    expect(pin).not.toBeNull();
+    fireEvent.click(pin as HTMLButtonElement);
+
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-testid="nav-pin-codegraph"]'),
+      ).not.toBeNull();
+    });
+    expect(localStorage.getItem("cubecloud.runtime-rail-pins")).toContain(
+      "codegraph",
+    );
+  });
+
+  it("unpins a capability from the rail via the hub toggle", async () => {
+    localStorage.setItem(
+      "cubecloud.runtime-rail-pins",
+      JSON.stringify(["headroom"]),
+    );
+    render(<Layout />);
+    await waitFor(() => {
+      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
+    });
+
+    expect(
+      document.querySelector('[data-testid="nav-pin-headroom"]'),
+    ).not.toBeNull();
+
+    fireEvent.click(navButton("navigation.runtime"));
+    await waitFor(() => {
+      expect(screen.getAllByText("runtime.headroom").length).toBeGreaterThan(0);
+    });
+
+    const card = screen
+      .getAllByText("runtime.headroom")
+      .map((el) => el.closest("[class*=runtime-hub-grid]"))
+      .find((el) => el !== null);
+    const unpin = card?.querySelector(
+      'button[aria-label="runtime.unpinFromRail"]',
+    ) as HTMLButtonElement | null;
+    expect(unpin).not.toBeNull();
+    fireEvent.click(unpin as HTMLButtonElement);
+
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-testid="nav-pin-headroom"]'),
+      ).toBeNull();
     });
   });
 });
@@ -565,13 +582,13 @@ describe("Layout sidebar content panes", () => {
     installHermesAPI();
   });
 
-  it("mounts the chat pane by default and lazy-mounts others on click", async () => {
+  it("mounts the home pane by default and lazy-mounts others on click", async () => {
     render(<Layout />);
     await waitFor(() => {
-      expect(screen.getByText("navigation.chat")).toBeInTheDocument();
+      expect(screen.getByText("navigation.home")).toBeInTheDocument();
     });
-    // Chat is the default view and should render.
-    expect(screen.getByText("chat-screen")).toBeInTheDocument();
+    // Home is the default view and should render.
+    expect(screen.getByText("home-screen")).toBeInTheDocument();
     // Other screens are not mounted until first visit.
     expect(screen.queryByText("skills-screen")).not.toBeInTheDocument();
     expect(screen.queryByText("settings-screen")).not.toBeInTheDocument();
@@ -584,10 +601,11 @@ describe("Layout sidebar content panes", () => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
 
-    const skillsButton = screen
-      .getByText("navigation.skills")
-      .closest("button") as HTMLButtonElement;
-    fireEvent.click(skillsButton);
+    fireEvent.click(navButton("navigation.runtime"));
+    await waitFor(() => {
+      expect(screen.getByText("runtime.skills")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "runtime.skills" }));
 
     await waitFor(() => {
       expect(screen.getByText("skills-screen")).toBeInTheDocument();
@@ -604,16 +622,23 @@ describe("Layout sidebar content panes", () => {
     // Both should remain mounted (lazy-mount pattern).
     const smoke: Array<[string, string]> = [
       ["navigation.sessions", "sessions-screen"],
-      ["navigation.agents", "agents-screen"],
     ];
     for (const [navLabel, screenText] of smoke) {
-      fireEvent.click(
-        screen.getByText(navLabel).closest("button") as HTMLButtonElement,
-      );
+      fireEvent.click(navButton(navLabel));
       await waitFor(() => {
         expect(screen.getByText(screenText)).toBeInTheDocument();
       });
     }
+
+    // Agents is reachable only through the Runtime hub.
+    fireEvent.click(navButton("navigation.runtime"));
+    await waitFor(() => {
+      expect(screen.getByText("runtime.agents")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "runtime.agents" }));
+    await waitFor(() => {
+      expect(screen.getByText("agents-screen")).toBeInTheDocument();
+    });
 
     // Navigate back to chat.
     fireEvent.click(
@@ -640,8 +665,6 @@ describe("Layout sidebar content panes", () => {
     expect(screen.queryByText("skills-screen")).not.toBeInTheDocument();
     expect(screen.queryByText("memory-screen")).not.toBeInTheDocument();
     expect(screen.queryByText("tools-screen")).not.toBeInTheDocument();
-    expect(screen.queryByText("workspace-screen")).not.toBeInTheDocument();
-    expect(screen.queryByText("schedules-screen")).not.toBeInTheDocument();
     expect(screen.queryByText("gateway-screen")).not.toBeInTheDocument();
     expect(screen.queryByText("settings-screen")).not.toBeInTheDocument();
   });

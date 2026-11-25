@@ -1,5 +1,6 @@
 export default {
   title: "モデル",
+  freeBadge: "（無料）",
   searchPlaceholder: "モデルを検索...",
   empty: "モデルがありません",
   noMatch: "検索条件に一致するモデルがありません",

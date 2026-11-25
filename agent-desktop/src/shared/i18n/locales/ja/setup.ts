@@ -1,4 +1,6 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw のインポートはまだ利用できません。",
   title: "AI プロバイダをセットアップ",
   subtitle: "プロバイダを選んで設定して始めましょう",
   providerCards: {
@@ -43,6 +45,7 @@ export default {
   continue: "続ける",
   saving: "保存中...",
   apiKeyLabel: "{{provider}} API キー",
+  noApiKeyRequired: "{{provider}} は API キーを必要としません。ローカルの CLI / OAuth 設定が使われます。",
   localNoKeyNeeded: "API キー不要",
   localLlm: "ローカル LLM",
   modelBaseUrlPlaceholder: "http://localhost:1234/v1",
@@ -69,4 +72,6 @@ export default {
   openclawNotDetected: "このマシンでは検出されませんでした。",
   cliSectionEmpty: "agent が検出されません。Claude Code、Codex、Gemini CLI、OpenCode などをインストールしてから再スキャンしてください。",
   cliSectionPathHint: "CLI が表示されない場合は、bin ディレクトリが Agent Desktop の PATH に含まれているか確認してください。",
+  launching: "起動中...",
+  opening: "開いています...",
 } as const;

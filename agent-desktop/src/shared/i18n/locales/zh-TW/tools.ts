@@ -1,6 +1,17 @@
 export default {
   title: "工具",
   subtitle: "啟用或停用 Agent 在對話期間可使用的工具集",
+  empty: "沒有可用的工具集",
+  workspace: {
+    subtitle:
+      "對話式作業作業基礎 — 工作階段、檔案，以及驅動 CLI 轉接器的執行層。想讓主控台管理它時再附加。",
+    start: "啟動",
+    stop: "停止",
+    probing: "探測中…",
+    reachable: "可連線",
+    unreachable: "AI Workspace 無法連線於",
+    attachedAt: "附加於",
+  },
   web: { label: "網路搜尋", description: "搜尋網頁並擷取 URL 內容" },
   browser: { label: "瀏覽器", description: "瀏覽、點擊、輸入並與網頁互動" },
   terminal: { label: "終端機", description: "執行 shell 命令和腳本" },
@@ -36,6 +47,31 @@ export default {
   disabled: "已停用",
   // V2.10.77 — 工具面板
   panels: {
+    laya: {
+      subtitle:
+        "本機 System-1 決策引擎 — 具型別的 choice/score/noul 決策，附信心值與棄權，透過 MCP 公開給主控台。",
+      ready: "就緒",
+      broken: "已安裝但版本探測失敗",
+    },
+    weknora: {
+      subtitle:
+        "可選的企業級 RAG 知識平台。主控台端僅提供檢索；你的 WeKnora 伺服器自行管理其資料。",
+      reachable: "可連線",
+      unreachable: "無法連線",
+    },
+    governance: {
+      title: "工作區治理",
+      subtitle:
+        "來自 AI Workspace 的政策登錄、排程工作與共用 — 主控台的治理檢視。核准裁決由你送達至工作區的 resolve 端點。",
+      visible: "可見",
+      unavailable: "治理介面無法連線",
+    },
+    openviking: {
+      subtitle:
+        "可選的代理上下文資料庫 — 資源、記憶與技能，統一於可瀏覽的 viking:// 檔案系統中（僅互通；AGPL 核心）。",
+      reachable: "可連線",
+      unreachable: "無法連線",
+    },
     gbrain: {
       title: "GBrain（持久記憶）",
       subtitle:
@@ -105,5 +141,24 @@ export default {
       notInstalled:
         "Graphify 未安裝。使用 <code>uv tool install 'graphifyy[mcp]'</code> 安裝（Python 3.12+）。",
     },
+  },
+  agentReachTitle: "網路能力（Agent-Reach）",
+  agentReachSubtitle:
+    "Agent-Reach 讓你的執行環境代理具備網路存取能力 — Twitter、Reddit、YouTube、GitHub、RSS、網頁搜尋等等。在安裝閘道器的機器上安裝：python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+  agentReachRefresh: "重新整理",
+  agentReachScanning: "掃描中...",
+  agentReachInstalled: "已安裝",
+  agentReachNotInstalled:
+    "Agent-Reach 未安裝。執行環境代理不具備網路能力工具。",
+  managedApps: {
+    title: "受管理的應用程式",
+    subtitle:
+      "桌面可附加的所有應用程式，以及其轉接器回報的狀態。唯讀：桌面僅反映這些服務，不會管理它們。",
+    refresh: "重新整理",
+    loading: "讀取名單中…",
+    empty: "沒有已註冊的受管理應用程式。",
+    needsSetup: "需要設定",
+    needsAuth: "需要設定",
+    unavailable: "此版本未提供受管理應用程式名單。",
   },
 } as const;

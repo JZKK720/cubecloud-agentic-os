@@ -18,6 +18,8 @@ export default {
   yes: "Ya",
   no: "Tidak",
   deleteTitle: "Hapus agent",
+  empty: "Belum ada profil agent",
+  emptyHint: "Buat profil baru untuk memulai dengan workspace Hermes yang terisolasi.",
   auto: "Otomatis",
   local: "Lokal",
 } as const;

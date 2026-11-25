@@ -1,13 +1,133 @@
-// English-copy fallback. The repo-localized set
-// is en + zh-CN; for the other 6 locales the source of
-// truth lives in en/headroom.ts and the locale files
-// re-export it so operators always see real strings
-// without empty UI. Native-speaker review is a follow-up.
-
-import en from "../en/headroom";
-
+// Headroom 画面の文字列（日本語）。
 export default {
+  eyebrow: "コンテキスト圧縮",
+  title: "Headroom",
+  summary:
+    "Headroom はデスクトップとモデルの間に入って、マシンの外に出る前に長いプロンプトを切り詰めます。節約量を報告し、optimize に切り替えない限りリクエストを書き換えることはありません。",
+  errorChooseProjectFolder: "先にプロジェクトフォルダを選択してください。",
+  errorPickOneProposal: "コミットする提案を少なくとも1つ選んでください。",
+  errorHeadroomLearnFailed: "headroom learn に失敗しました。",
   quickStart: {
-    ...en.quickStart,
+    title: "クイックスタート",
+    body:
+      "まずは audit モードで開始し、圧縮テストで節約効果を確認してから、プロキシが健全で結果が問題なければ optimize に切り替えてください。",
+    step1: "Base URL を稼働中の Headroom プロキシに向けるか、下のローカルサイドカーを起動してください。",
+    step2: "最初は mode を audit にしておき、Headroom がリクエストを書き換える前に計測させてください。",
+    step3: "Headroom を日常のワークフローで有効にする前に、実際のログやコードバンドルでテストしてください。",
+    currentTarget: "現在の接続先: {{url}}",
+    notReachable:
+      "Headroom にまだ到達できません。先にサイドカーを起動するか、Base URL を編集してください。",
+    startSidecar: "ローカルサイドカーを起動",
+    editConnection: "接続を編集",
+    copyInstall: "インストールコマンドをコピー",
+    copyCommand: "コマンドをコピー",
+    installHint:
+      "ターミナルでこれを実行して Headroom ランタイムをインストールしてください。デスクトップは代わりにインストールしません。",
+    installCommand: "pip install \"headroom-ai[all]\"",
+    firstRunTitle: "初回セットアップ",
+    firstRunBody:
+      "Headroom はローカルのコンテキスト圧縮プロキシです。モードを選んで始めてください。",
+    modeAudit: "Audit",
+    modeAuditHint: "計測のみ — リクエストは書き換えません。",
+    modeOptimize: "Optimize",
+    modeOptimizeHint: "節約効果が確認できたら変換を適用します。",
+    dismiss: "このカードを隠す",
+    reset: "クイックスタートをリセット",
+    collapsedSummary:
+      "クイックスタートは非表示です。いつでも開いて audit → test → optimize の手順をやり直せます。",
+    switchToOptimize:
+      "節約効果が見込めます。optimize に切り替えて実際にリクエストを圧縮しましょう。",
+    switchingToOptimize: "切り替え中...",
+    switchMode: "optimize に切り替える",
+    learnWhy: "なぜ重要なのか",
+    learnWhyBody:
+      "audit モードでは Headroom は節約量を計測するだけで、リクエストは書き換えません。optimize モードでは変換を適用します。まず audit で始め、検証してから切り替えてください。",
+  },
+  health: {
+    title: "プロキシの状態",
+    reachable: "到達可能",
+    unreachable: "到達不能",
+    probing: "確認中…",
+  },
+  stats: {
+    title: "節約効果",
+    requests: "リクエスト数",
+    tokensSaved: "削減トークン数",
+    avgSavings: "平均削減率",
+    ccrEntries: "CCR エントリ",
+    uptime: "稼働時間",
+  },
+  config: {
+    title: "接続",
+    body:
+      "Headroom を稼働中のプロキシに向けるか、下のローカルサイドカーを起動してください。データがマシンの外に出ることはありません。",
+    baseUrl: "Base URL",
+    apiKey: "API キー",
+    mode: "モード",
+    save: "保存",
+    edit: "設定",
+    cancel: "閉じる",
+  },
+  sidecar: {
+    title: "ローカルサイドカー",
+    body: "{{baseUrl}} で Headroom が実行されていません。このマシンから圧縮するにはサイドカーを起動してください。",
+    reason: "理由",
+    lastError: "直近のエラー",
+    pid: "PID",
+    port: "ポート",
+    mode: "モード",
+    crashCount: "クラッシュ回数",
+    uptime: "稼働時間",
+    start: "サイドカーを起動",
+    stop: "サイドカーを停止",
+    restart: "再起動",
+    refreshLogs: "ログを更新",
+    logsSummary: "ログ（{{count}} 行）",
+    clearLogs: "ログをクリア",
+  },
+  compress: {
+    title: "圧縮テスト",
+    body:
+      "実際のプロンプトやコードバンドルを貼り付けて Headroom に通してください。モデルに何も送信せずに、前後のトークン数を確認できます。",
+    input: "入力サンプル",
+    placeholder: "長いプロンプト、ログ、CodeGraph バンドルを貼り付けてください…",
+    run: "圧縮",
+    compressing: "圧縮中…",
+    compressed: "圧縮完了",
+    tokensBefore: "圧縮前トークン数",
+    tokensAfter: "圧縮後トークン数",
+    saved: "{{percent}}% 削減",
+  },
+  retrieve: {
+    title: "元の内容を取得",
+    body:
+      "圧縮された内容は参照で置き換えられています。全文が必要なときは、キーを指定して元の内容を取得してください。",
+    key: "参照キー",
+    run: "取得",
+    retrieving: "取得中…",
+    notFound: "そのキーには内容が保存されていません。",
+  },
+  learn: {
+    title: "セッションから学習",
+    body:
+      "プロジェクト内の過去のセッションをスキャンし、Headroom が再利用できる永続的なメモ（パターン、落とし穴、好み）をステージングします。選択した提案をコミットするまで何も書き込まれません。",
+    projectPath: "プロジェクトパス",
+    model: "モデル",
+    agent: "エージェント",
+    run: "学習を実行",
+    running: "セッションから学習中…",
+    stop: "停止",
+    reportSummary:
+      "{{sessionCount}} 件のセッションを {{durationSec}} 秒でスキャンし、{{proposalCount}} 件の提案をステージングしました。",
+    targets: "書き込み先",
+    noProposals: "これらのセッションに永続的なメモは見つかりませんでした。",
+    rawOutput: "生の出力",
+    commit: "{{count}} 件の提案をコミット",
+    committing: "コミット中…",
+    apply: "差分を適用",
+    applying: "適用中…",
+    revert: "取り消し",
+    reverting: "取り消し中…",
+    diffSummary: "保留中の差分（{{count}}）",
   },
 } as const;

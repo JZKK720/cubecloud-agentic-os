@@ -1,4 +1,11 @@
 export default {
+  // V2.10.44
+  errorKeyAndInsightRequired: "Key dan insight wajib diisi.",
+  wiki: {
+    setUpYourKnowledgeBase: "Siapkan basis pengetahuan Anda",
+    editThisPage: "Edit halaman ini",
+    allTypes: "Semua jenis",
+  },
   title: "Memori",
   subtitle:
     "Hal yang diingat Hermes tentang Anda dan lingkungan Anda di berbagai sesi.",
@@ -45,7 +52,8 @@ export default {
   active: "Aktif",
   deactivate: "Nonaktifkan",
   activating: "Mengaktifkan...",
-  activate: "Aktifkan",  wikiTab: "Basis Pengetahuan",  learningsTab: "Pelajaran",
+  activate: "Aktifkan",  wikiTab: "Basis Pengetahuan",
+  learningsTab: "Pelajaran",
 
   providers: {
     honcho:
@@ -132,5 +140,38 @@ export default {
     freshness: "Kesegaran: {{when}}",
     noSynthesis: "Jalankan sintesis untuk melihat jawaban lapisan otak.",
     citation: "kutip",
+  },
+
+  // Wiki Page Editor (V2.2 — page editing UI for the Knowledge Base)
+  wikiEditor: {
+    noChanges: "Tidak ada perubahan untuk disimpan.",
+    saveFailed: "Gagal menyimpan halaman.",
+    saved: "Tersimpan.",
+    discardConfirm:
+      "Anda memiliki perubahan yang belum disimpan. Buang perubahan itu dan tutup editor?",
+    newFile: "Halaman baru",
+    unsaved: "Belum disimpan",
+    modeEdit: "Edit",
+    modeSplit: "Terpisah",
+    modePreview: "Pratinjau",
+    undoHint: "Batalkan (Ctrl+Z)",
+    closeHint: "Tutup (Esc)",
+    conflictTitle: "Halaman berubah di disk",
+    conflictBody:
+      "Halaman ini dimodifikasi di disk setelah Anda mulai mengedit. Pilih cara menyelesaikan konflik.",
+    conflictShowDisk: "Tampilkan versi disk",
+    conflictTakeTheirs: "Muat ulang dari disk (buang milik saya)",
+    conflictKeepMine: "Pertahankan milik saya (timpa disk)",
+    conflictReloaded: "Dimuat ulang dari disk. Perubahan Anda dibuang.",
+    conflictOverwrite:
+      "Mempertahankan suntingan Anda. Versi disk akan ditimpa saat disimpan.",
+    placeholder: "Tulis markdown di sini…",
+    previewEmpty: "Belum ada yang bisa dipratinjau.",
+    cancel: "Batal",
+    save: "Simpan",
+    create: "Buat",
+    saving: "Menyimpan…",
+    chars: "karakter",
+    lines: "baris",
   },
 } as const;

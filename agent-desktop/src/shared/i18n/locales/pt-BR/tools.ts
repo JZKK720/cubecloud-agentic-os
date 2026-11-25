@@ -2,6 +2,8 @@ export default {
   title: "Ferramentas",
   subtitle:
     "Ative ou desative os conjuntos de ferramentas que seu agente pode usar durante as conversas",
+  empty: "Nenhum conjunto de ferramentas disponível",
+  emptyHint: "Os conjuntos de ferramentas aparecerão aqui quando o gateway estiver em execução.",
   web: {
     label: "Pesquisa na Web",
     description: "Pesquisa na web e extrai conteúdo de URLs",
@@ -69,6 +71,16 @@ export default {
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },
   mcpServers: "Servidores MCP",
+  workspace: {
+    subtitle:
+      "O tecido operacional conversacional — sessões, arquivos e o tecido de execução que aciona os adaptadores CLI. Anexe quando quiser que o console o administre.",
+    start: "Iniciar",
+    stop: "Parar",
+    probing: "Verificando…",
+    reachable: "Acessível",
+    unreachable: "AI Workspace não está acessível em",
+    attachedAt: "Anexado em",
+  },
   mcpDescription:
     "Servidores Model Context Protocol configurados no config.yaml. Gerencie via <code>hermes mcp add/remove</code> no terminal.",
   http: "HTTP",
@@ -76,6 +88,31 @@ export default {
   disabled: "desativado",
   // V2.10.77 — Painéis de ferramentas
   panels: {
+    laya: {
+      subtitle:
+        "Motor de decisão local System-1 — decisões tipadas de escolha/pontuação/nula com confiança e abstenção, exposto ao console via MCP.",
+      ready: "Pronto",
+      broken: "Instalado, mas a verificação de versão falhou",
+    },
+    weknora: {
+      subtitle:
+        "Plataforma opcional de conhecimento RAG empresarial. Apenas recuperação no lado do console; o seu servidor WeKnora é dono dos dados dele.",
+      reachable: "Acessível",
+      unreachable: "Não acessível",
+    },
+    governance: {
+      title: "Governança do workspace",
+      subtitle:
+        "Registro de políticas, tarefas agendadas e compartilhamento do AI Workspace — a visão de governança do console. Os vereditos de aprovação são entregues por você, ao endpoint de resolução do workspace.",
+      visible: "Visível",
+      unavailable: "Superfícies de governança não acessíveis",
+    },
+    openviking: {
+      subtitle:
+        "Banco de dados de contexto de agente opcional — recursos, memórias e habilidades em um único sistema de arquivos viking:// navegável (somente interoperabilidade; núcleo AGPL).",
+      reachable: "Acessível",
+      unreachable: "Não acessível",
+    },
     gbrain: {
       title: "GBrain (Memória Persistente)",
       subtitle:
@@ -145,5 +182,24 @@ export default {
       notInstalled:
         "Graphify não está instalado. Instale com: <code>uv tool install 'graphifyy[mcp]'</code> (Python 3.12+).",
     },
+  },
+  agentReachTitle: "Capacidades de Internet (Agent-Reach)",
+  agentReachSubtitle:
+    "O Agent-Reach dá ao seu agente de runtime acesso à internet — Twitter, Reddit, YouTube, GitHub, RSS, busca na web e mais. Instale na máquina do gateway com: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+  agentReachRefresh: "Atualizar",
+  agentReachScanning: "Escaneando...",
+  agentReachInstalled: "Instalado",
+  agentReachNotInstalled:
+    "O Agent-Reach não está instalado. O agente de runtime não tem ferramentas de capacidade de internet.",
+  managedApps: {
+    title: "Aplicativos gerenciados",
+    subtitle:
+      "Todo aplicativo ao qual o desktop pode se conectar, com o estado que o adaptador dele informa. Somente leitura: o desktop espelha esses serviços, não os gerencia.",
+    refresh: "Atualizar",
+    loading: "Lendo a lista…",
+    empty: "Nenhum aplicativo gerenciado registrado.",
+    needsSetup: "requer configuração",
+    needsAuth: "requer configuração",
+    unavailable: "A lista de aplicativos gerenciados não está disponível nesta versão.",
   },
 } as const;
