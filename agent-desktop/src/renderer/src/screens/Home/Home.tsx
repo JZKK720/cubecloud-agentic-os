@@ -113,16 +113,21 @@ export default function Home({ onNavigate }: HomeProps): React.JSX.Element {
             ) : (
               <HStack gap={2} align="center">
                 <StatusDot variant={statusDot} label={runtimeLabel} />
-                <div>
-                  <Text type="body" weight="medium">
+                <VStack gap={0}>
+                  <Text type="body" weight="medium" display="block">
                     {runtimeLabel}
                   </Text>
                   {runtimeDetail ? (
-                    <Text type="supporting" color="secondary">
+                    <Text
+                      type="supporting"
+                      color="secondary"
+                      display="block"
+                      maxLines={1}
+                    >
                       {runtimeDetail}
                     </Text>
                   ) : null}
-                </div>
+                </VStack>
               </HStack>
             )}
           </div>

@@ -5,7 +5,7 @@ export default {
   runtimeReady: "Runtime acessível",
   runtimeOffline: "Runtime inacessível",
   runtimeDetailLocal: "Gateway Hermes local nesta máquina",
-  runtimeDetailRemote: "Remoto: {url}",
+  runtimeDetailRemote: "Remoto: {{url}}",
   runtimeDetailDown: "O desktop não consegue alcançar o runtime configurado.",
   newChatTitle: "Iniciar uma conversa",
   newChatBody: "Peça ao agente para planejar, escrever, pesquisar ou operar suas ferramentas.",

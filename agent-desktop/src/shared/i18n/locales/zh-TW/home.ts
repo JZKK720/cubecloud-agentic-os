@@ -5,7 +5,7 @@ export default {
   runtimeReady: "執行環境可連線",
   runtimeOffline: "無法連線執行環境",
   runtimeDetailLocal: "本機上的 Hermes 閘道",
-  runtimeDetailRemote: "遠端：{url}",
+  runtimeDetailRemote: "遠端：{{url}}",
   runtimeDetailDown: "桌面端無法連線到已設定的執行環境。",
   newChatTitle: "開始對話",
   newChatBody: "讓代理替你規劃、撰寫、搜尋或操作工具。",

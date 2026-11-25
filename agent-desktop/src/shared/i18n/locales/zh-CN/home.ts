@@ -5,7 +5,7 @@ export default {
   runtimeReady: "运行时可达",
   runtimeOffline: "运行时不可达",
   runtimeDetailLocal: "本机上的本地 Hermes 网关",
-  runtimeDetailRemote: "远程：{url}",
+  runtimeDetailRemote: "远程：{{url}}",
   runtimeDetailDown: "桌面端无法连接到已配置的运行时。",
   newChatTitle: "开始对话",
   newChatBody: "让智能体为你规划、撰写、搜索或操作工具。",

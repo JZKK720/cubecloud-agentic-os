@@ -5,7 +5,7 @@ export default {
   runtimeReady: "ランタイムに接続できます",
   runtimeOffline: "ランタイムに接続できません",
   runtimeDetailLocal: "このマシン上のローカル Hermes ゲートウェイ",
-  runtimeDetailRemote: "リモート: {url}",
+  runtimeDetailRemote: "リモート: {{url}}",
   runtimeDetailDown: "デスクトップから設定済みのランタイムに到達できません。",
   newChatTitle: "会話を始める",
   newChatBody: "エージェントに計画・執筆・検索・ツール操作を依頼します。",

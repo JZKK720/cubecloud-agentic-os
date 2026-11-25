@@ -409,10 +409,8 @@ function Layout({
               height={28}
             />
           }
-          heading={t("common.appName")}
-          subheading={
-            activeProfile === "default" ? undefined : activeProfile
-          }
+          heading="Cubecloud"
+          subheading="Agent Desktop"
         />
       }
       footer={

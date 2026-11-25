@@ -5,7 +5,7 @@ export default {
   runtimeReady: "Runtime terjangkau",
   runtimeOffline: "Runtime tidak terjangkau",
   runtimeDetailLocal: "Gateway Hermes lokal di mesin ini",
-  runtimeDetailRemote: "Jarak jauh: {url}",
+  runtimeDetailRemote: "Jarak jauh: {{url}}",
   runtimeDetailDown: "Desktop tidak dapat menjangkau runtime yang dikonfigurasi.",
   newChatTitle: "Mulai percakapan",
   newChatBody: "Minta agen merencanakan, menulis, mencari, atau mengoperasikan alat Anda.",

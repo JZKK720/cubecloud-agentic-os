@@ -321,8 +321,8 @@ describe("Layout sidebar footer", () => {
     await waitFor(() => {
       expect(screen.getByText("navigation.chat")).toBeInTheDocument();
     });
-    // Default profile is "default" -> shows common.appName
-    expect(screen.getByText("common.appName")).toBeInTheDocument();
+    // Default profile is "default" -> the rail subheading identifies the app.
+    expect(screen.getByText("Agent Desktop")).toBeInTheDocument();
   });
 
   it("does not show the update button when no update is available", async () => {
