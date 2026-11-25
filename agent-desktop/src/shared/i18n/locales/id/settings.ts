@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "Impor OpenClaw belum tersedia.",
+  errorHostAndUsernameRequired: "Host dan nama pengguna wajib diisi",
+  errorPleaseEnterUrl: "Silakan masukkan URL",
+  quickLanguageSwitch: "Ganti bahasa cepat",
   title: "Pengaturan",
   sections: {
     hermesAgent: "Runtime lokal",
@@ -122,6 +127,16 @@ export default {
   migrationDesc:
     "OpenClaw ditemukan di <code>{{path}}</code>. Anda dapat memigrasikan konfigurasi, API key, sesi, dan skill ke Hermes.",
   migrationDismiss: "Jangan tampilkan lagi",
+  migrationComplete: "Migrasi selesai.",
+  migrationFailed: "Migrasi gagal.",
+  runtimeLane: {
+    title: "Jalur runtime",
+    label: "Runtime aktif",
+    hint:
+      "Runtime yang melayani turn chat. Runtime tanpa adapter yang berfungsi akan kembali ke gateway Hermes, bukan gagal.",
+    noAdapter: "Runtime ini belum memiliki adapter yang berfungsi; chat tetap berjalan di gateway Hermes.",
+    saveFailed: "Tidak dapat menyimpan pilihan runtime.",
+  },
   localModel: {
     title: "Local model endpoint",
     hint:
@@ -197,4 +212,6 @@ export default {
   cancel: "Batalkan pengiriman",
   blockTitle: "Perintah diblokir",
   blockReason: "Perintah ini ada di daftar blokir dan tidak dapat dikirim.",
+  noDestructiveCommands: "Tidak ada perintah destruktif dalam isi.",
+  singleCommand: "Satu perintah",
   },} as const;

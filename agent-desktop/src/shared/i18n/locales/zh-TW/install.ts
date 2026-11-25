@@ -26,4 +26,5 @@ export default {
   useExistingInvalid: "在該資料夾中未找到可用的本機執行環境安裝。",
   useExistingDone: "已設定現有安裝 — 結束並重新開啟 Cubecloud Desktop 以套用。",
   useExistingQuitBtn: "結束 Cubecloud Desktop",
+  supportChannel: "開啟支援管道",
 } as const;

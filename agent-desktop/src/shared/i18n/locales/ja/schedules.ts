@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorCreateCronJob: "ジョブの作成に失敗しました",
+  errorRemoveCronJob: "ジョブの削除に失敗しました",
+  errorUpdateCronJob: "ジョブの更新に失敗しました",
+  errorTriggerCronJob: "ジョブのトリガーに失敗しました",
   title: "スケジュール",
   subtitle: "スケジュール実行でタスクを自動化",
   newTask: "新規タスク",

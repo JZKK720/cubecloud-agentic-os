@@ -49,7 +49,9 @@ export default {
   container: {
     title: "容器探索",
     summary:
-      "掃描 Docker Desktop 以便發現配對執行階段（IronClaw、OpenClaw 以及任何以 Docker 網關宣傳的提供商）。",    sharedHint: "與歡迎畫面共用同一註冊表。啟動或停止容器後請在此重新掃描。",    statusLabel: "Docker 掃描狀態",
+      "掃描 Docker Desktop 以便發現配對執行階段（IronClaw、OpenClaw 以及任何以 Docker 網關宣傳的提供商）。",
+    sharedHint: "與歡迎畫面共用同一註冊表。啟動或停止容器後請在此重新掃描。",
+    statusLabel: "Docker 掃描狀態",
     refreshAria: "重新掃描 Docker Desktop 執行階段",
     rescan: "重新掃描",
     empty: "未偵測到 Docker 執行階段。安裝 Docker Desktop 或啟動配對容器。",

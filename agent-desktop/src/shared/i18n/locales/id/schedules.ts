@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorCreateCronJob: "Gagal membuat tugas",
+  errorRemoveCronJob: "Gagal menghapus tugas",
+  errorUpdateCronJob: "Gagal memperbarui tugas",
+  errorTriggerCronJob: "Gagal memicu tugas",
   title: "Jadwal",
   subtitle: "Otomatiskan tugas dengan eksekusi agent terjadwal",
   newTask: "Tugas Baru",

@@ -20,6 +20,56 @@ export default {
     "Estas são pistas de gateway direto. {{ironclaw}} é distribuído como um runtime de contentor — selecione-o no painel remoto para anexar à porta publicada.",
   copyInstallCommand: "Copiar comando de instalação",
   dividerOr: "ou",
+  installLaneWindowsShell: "Windows PowerShell",
+  installLaneUnixShell: "WSL / macOS / Linux",
+  connectRemotePanelTitle: "Ligar ao gateway remoto",
+  connectRemoteSubtitleHermes:
+    "Use um URL de runtime existente quando o Agent Desktop deve anexar-se a um gateway {{runtime}} em execução em vez de instalar localmente.",
+  connectRemoteSubtitleOpenclaw:
+    "Anexe-se a um endpoint de compatibilidade {{runtime}} em execução em vez de instalar localmente. O Agent Desktop espera que a superfície de compatibilidade HTTP do OpenClaw esteja ativada.",
+  // IronClaw remote lane (published host port 3231 with /api/health).
+  connectRemoteSubtitleIronclaw:
+    "Anexe-se a um gateway de contentor {{runtime}} WASM-sandbox em execução em vez de instalar localmente. Use a porta do gateway publicada (predefinição 3231) e a superfície /api/health orientada ao operador.",
+  runtimeLane: "Faixa de runtime",
+  sshHost: "Host SSH",
+  sshHostPlaceholder: "192.168.1.100 ou omeuservidor.local",
+  sshPort: "Porta SSH",
+  sshPortPlaceholder: "22",
+  sshUsername: "Nome de utilizador",
+  sshUsernamePlaceholder: "utilizador",
+  sshKeyPath: "Caminho da Chave Privada",
+  sshKeyPathPlaceholder: "~/.ssh/id_rsa",
+  sshKeyPathNote: "(opcional — o predefinido é ~/.ssh/id_rsa)",
+  sshRemotePort: "Porta do Runtime Remoto",
+  sshRemotePortNote: "(predefinido {{port}})",
+  sshRuntimeOpenclawNote:
+    "O {{runtime}} costuma escutar na porta {{port}} e requer que a sua superfície de compatibilidade HTTP esteja ativada antes que o Agent Desktop se possa anexar.",
+  sshRuntimeHermesNote:
+    "O {{runtime}} costuma escutar na porta {{port}} para anexação SSH.",
+  sshRuntimeIronclawNote:
+    "O {{runtime}} costuma escutar na porta {{port}} para anexação SSH e espera que o gateway encaminhado exponha /api/health e os endpoints /v1 compatíveis com OpenAI.",
+  sshSecretIronclawNote:
+    "(opcional a menos que o gateway IronClaw encaminhado imponha GATEWAY_AUTH_TOKEN)",
+  sshSecretOpenclawNote: "(obrigatório quando a autenticação do OpenClaw está ativada)",
+  sshSecretHermesNote: "(opcional a menos que o gateway Hermes remoto imponha autenticação)",
+  testingSshConnection: "A testar a ligação SSH…",
+  connectViaSsh: "Ligar via SSH",
+  sshSystemHint:
+    "Usa o seu SSH do sistema. Certifique-se de que já consegue executar ssh {{user}}@{{host}} sem ser solicitada uma palavra-passe.",
+  errorLocalInstallHeader: "A instalação local precisa de atenção",
+  errorSshHeader: "O túnel SSH para {{runtime}} precisa de atenção",
+  errorRemoteHeader: "A ligação remota a {{runtime}} precisa de atenção",
+  retryLocalInstall: "Tentar instalação local novamente",
+  retrySshConnection: "Tentar ligação SSH novamente",
+  retryRemoteConnection: "Tentar ligação remota novamente",
+  reviewSshSettings: "Rever definições SSH",
+  reviewRemoteSettings: "Rever definições remotas",
+  connectViaSshShort: "Ligar via SSH",
+  connectToRemoteGatewayShort: "Ligar ao gateway remoto",
+  errorPleaseEnterUrl: "Introduza um URL.",
+  errorConnectionTestFailed: "O teste de ligação falhou.",
+  errorHostAndUsernameRequired: "O host e o nome de utilizador são obrigatórios.",
+  errorHostAndUsernameRequiredNoPeriod: "O host e o nome de utilizador são obrigatórios",
   connectRemote: "Ligar ao runtime remoto",
   connectRemoteTitle: "Ligar ao runtime remoto",
   connectRemoteSubtitle:
@@ -67,4 +117,11 @@ export default {
     "Encaminhe um gateway {{runtime}} existente via SSH. A compatibilidade HTTP tem de estar ativada no gateway remoto.",
   connectSshSubtitleIronclaw:
     "Encaminhe um gateway {{runtime}} existente via SSH sem expor a porta do contentor publicada diretamente.",
+  detectedRuntimesTitle: "Encontrámos agentes em execução",
+  detectedRuntimesHealthy:
+    "Escolha um runtime em execução para ligar agora. A instalação de um runtime local é opcional.",
+  detectedRuntimesAuth:
+    "Encontrámos runtimes que requerem uma chave. Escolha um para preencher o formulário de ligação remota.",
+  authRequiredHint:
+    "Estes runtimes estão acessíveis mas requerem uma chave de servidor de API ou token de gateway antes que o Agent Desktop se possa anexar.",
 } as const;

@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorCreateCronJob: "No se pudo crear el trabajo",
+  errorRemoveCronJob: "No se pudo eliminar el trabajo",
+  errorUpdateCronJob: "No se pudo actualizar el trabajo",
+  errorTriggerCronJob: "No se pudo ejecutar el trabajo",
   title: "Programaciones",
   subtitle: "Automatiza tareas con ejecuciones programadas del agente",
   newTask: "Nueva tarea",

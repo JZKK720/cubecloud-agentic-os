@@ -56,5 +56,25 @@ export default {
   "error": {
     "searchFailed": "検索に失敗しました。",
     "recentFailed": "最近のメモリを取得できませんでした。"
+  },
+  "sidecar": {
+    "title": "ローカルサイドカー",
+    "body": "{{baseUrl}} で EverOS が実行されていません。このマシン上でメモリを管理するためにサイドカーを起動してください。",
+    "reason": "理由",
+    "lastError": "直近のエラー",
+    "pid": "PID",
+    "port": "ポート",
+    "crashCount": "クラッシュ回数",
+    "uptime": "稼働時間",
+    "start": "サイドカーを起動",
+    "stop": "サイドカーを停止",
+    "restart": "再起動",
+    "refreshLogs": "ログを更新",
+    "logsSummary": "ログ（{{count}} 行）",
+    "clearLogs": "ログをクリア"
+  },
+  "windowsNote": {
+    "title": "Windows に関する注意",
+    "body": "ローカルの EverOS を管理実行する場合、Windows では依然として WSL またはリモートホストが必要な場合があります。ローカルサイドカーの起動に失敗した場合は、WSL 上またはリモートの EverOS ベース URL を指定してこの画面を使い続けてください。"
   }
-};
+} as const;

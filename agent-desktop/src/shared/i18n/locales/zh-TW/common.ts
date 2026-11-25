@@ -1,4 +1,20 @@
 export default {
+  workspace: {
+    statusRefreshed: "工作區狀態已重新整理。",
+    indexInitialized: "索引已初始化，可以使用。",
+    cliInstalled: "CodeGraph CLI 已安裝。請接著設定 Hermes。",
+    configureHermesSuccess:
+      "Hermes MCP 設定已更新。請開始新的 Hermes 工作階段以載入 CodeGraph 工具。",
+    contextBundleGenerated: "上下文組合包已產生。",
+    contextBundleMovedToChat:
+      "上下文組合包已作為附件草稿移入聊天。",
+    failedToReadWorkspaceStatus: "無法讀取工作區狀態。",
+    installCodeGraphLocally: "在本機安裝 CodeGraph",
+    openCodeGraphDocs: "開啟 CodeGraph 文件",
+    contextBundle: "上下文組合包",
+    contextBundlePlaceholder:
+      "描述你需要上下文的架構或程式碼路徑。",
+  },
   appName: "Cubecloud Agent Desktop",
   continue: "繼續",
   cancel: "取消",
@@ -24,6 +40,9 @@ export default {
   start: "啟動",
   stop: "停止",
   refresh: "重新整理",
+  refreshing: "重新整理中…",
+  searching: "搜尋中…",
+  saving: "儲存中…",
   copy: "複製",
   settings: "設定",
   provider: "供應商",
@@ -46,4 +65,10 @@ export default {
   errorMessage: "發生未預期的錯誤。",
   tryAgain: "重試",
   copied: "已複製！",
+  yes: "是",
+  no: "否",
+  legal: {
+    openPanel: "開啟版權與授權面板",
+    licensingLink: "授權",
+  },
 } as const;

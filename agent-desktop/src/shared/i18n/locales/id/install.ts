@@ -31,4 +31,5 @@ export default {
   useExistingDone:
     "Pemasangan yang ada telah diatur — tutup dan buka kembali Cubecloud Desktop untuk menerapkannya.",
   useExistingQuitBtn: "Keluar dari Cubecloud Desktop",
+  supportChannel: "Buka Kanal Dukungan",
 } as const;

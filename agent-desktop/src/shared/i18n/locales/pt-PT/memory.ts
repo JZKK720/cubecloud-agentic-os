@@ -1,4 +1,11 @@
 export default {
+  // V2.10.44
+  errorKeyAndInsightRequired: "A chave e a análise são obrigatórias.",
+  wiki: {
+    setUpYourKnowledgeBase: "Configure a sua base de conhecimento",
+    editThisPage: "Editar esta página",
+    allTypes: "Todos os tipos",
+  },
   title: "Memória",
   subtitle: "O que o Hermes se lembra sobre si e o seu ambiente entre sessões.",
   sessions: "Sessões",
@@ -43,7 +50,8 @@ export default {
   active: "Activo",
   deactivate: "Desactivar",
   activating: "A activar...",
-  activate: "Activar",  wikiTab: "Base de conhecimento",  learningsTab: "Aprendizagens",
+  activate: "Activar",  wikiTab: "Base de conhecimento",
+  learningsTab: "Aprendizagens",
 
   providers: {
     honcho:
@@ -127,5 +135,38 @@ export default {
     noSynthesis:
       "Execute uma síntese para ver a resposta da camada-cérebro.",
     citation: "cit.",
+  },
+
+  // Wiki Page Editor (V2.2 — page editing UI for the Knowledge Base)
+  wikiEditor: {
+    noChanges: "Sem alterações para guardar.",
+    saveFailed: "Falha ao guardar a página.",
+    saved: "Guardado.",
+    discardConfirm:
+      "Tem alterações por guardar. Descartá-las e fechar o editor?",
+    newFile: "Nova página",
+    unsaved: "Não guardado",
+    modeEdit: "Editar",
+    modeSplit: "Dividir",
+    modePreview: "Pré-visualizar",
+    undoHint: "Anular (Ctrl+Z)",
+    closeHint: "Fechar (Esc)",
+    conflictTitle: "A página foi alterada no disco",
+    conflictBody:
+      "Esta página foi modificada no disco depois de começar a editar. Escolha como resolver o conflito.",
+    conflictShowDisk: "Mostrar versão do disco",
+    conflictTakeTheirs: "Recarregar do disco (descartar a minha)",
+    conflictKeepMine: "Manter a minha (sobrescrever o disco)",
+    conflictReloaded: "Recarregado do disco. As suas alterações foram descartadas.",
+    conflictOverwrite:
+      "A manter as suas alterações. A versão do disco será sobrescrita ao guardar.",
+    placeholder: "Escreva markdown aqui…",
+    previewEmpty: "Nada para pré-visualizar ainda.",
+    cancel: "Cancelar",
+    save: "Guardar",
+    create: "Criar",
+    saving: "A guardar…",
+    chars: "caracteres",
+    lines: "linhas",
   },
 } as const;

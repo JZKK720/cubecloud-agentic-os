@@ -31,4 +31,5 @@ export default {
   useExistingDone:
     "既存のインストールを設定しました。Cubecloud Desktop を終了して再度開くと適用されます。",
   useExistingQuitBtn: "Cubecloud Desktop を終了",
+  supportChannel: "サポートチャンネルを開く",
 } as const;

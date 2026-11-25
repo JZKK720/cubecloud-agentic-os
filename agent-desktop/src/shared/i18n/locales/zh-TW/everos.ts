@@ -57,5 +57,25 @@ export default {
     "searchFailed": "搜尋失敗。",
     "recentFailed": "無法列出最近的記憶。"
   },
+  "sidecar": {
+    "title": "本機 sidecar",
+    "body": "EverOS 目前未在 {{baseUrl}} 執行。啟動 sidecar 以將記憶保留在這台機器上。",
+    "reason": "原因",
+    "lastError": "上次錯誤",
+    "pid": "PID",
+    "port": "連接埠",
+    "crashCount": "當機次數",
+    "uptime": "運行時間",
+    "start": "啟動 sidecar",
+    "stop": "停止 sidecar",
+    "restart": "重新啟動",
+    "refreshLogs": "重新整理記錄",
+    "logsSummary": "記錄（{{count}} 行）",
+    "clearLogs": "清除記錄"
+  },
+  "windowsNote": {
+    "title": "Windows 注意事項",
+    "body": "在 Windows 上，受管理的本機 EverOS 可能仍需要 WSL 或遠端主機。若本機 sidecar 無法啟動，請繼續以指向 WSL 或遠端 EverOS 服務位址的方式使用此畫面。"
+  },
   "body": "EverOS 預設執行於 http://localhost:1995。設定後,所有需要長期記憶的操作都會指向該位址。"
 };

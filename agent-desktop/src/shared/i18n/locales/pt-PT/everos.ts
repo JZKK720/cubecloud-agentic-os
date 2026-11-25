@@ -56,5 +56,25 @@ export default {
   "error": {
     "searchFailed": "Pesquisa falhou.",
     "recentFailed": "Não foi possível listar memórias recentes."
+  },
+  "sidecar": {
+    "title": "Sidecar local",
+    "body": "O EverOS não está em execução em {{baseUrl}}. Inicie o sidecar para manter a memória nesta máquina.",
+    "reason": "Motivo",
+    "lastError": "Último erro",
+    "pid": "PID",
+    "port": "Porta",
+    "crashCount": "Falhas",
+    "uptime": "Tempo de atividade",
+    "start": "Iniciar sidecar",
+    "stop": "Parar sidecar",
+    "restart": "Reiniciar",
+    "refreshLogs": "Atualizar registos",
+    "logsSummary": "Registos ({{count}} linhas)",
+    "clearLogs": "Limpar registos"
+  },
+  "windowsNote": {
+    "title": "Nota para Windows",
+    "body": "O EverOS local gerido pode ainda exigir WSL ou um host remoto no Windows. Se o sidecar local não iniciar, continue a usar este ecrã com um URL base do EverOS alojado em WSL ou remoto."
   }
 };

@@ -1,5 +1,6 @@
 export default {
   title: "Model",
+  freeBadge: "(gratis)",
   searchPlaceholder: "Cari model...",
   empty: "Belum ada model",
   noMatch: "Tidak ada model yang cocok dengan pencarian",

@@ -1,5 +1,7 @@
 export default {
   title: "設定你的 AI 供應商",
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw 匯入功能尚未提供。",
   subtitle: "選擇供應商並完成設定即可開始使用",
   providerCards: {
     openrouter: { name: "OpenRouter", desc: "200+ 模型", tag: "建議" },
@@ -41,6 +43,8 @@ export default {
   continue: "繼續",
   saving: "儲存中...",
   apiKeyLabel: "{{provider}} API Key",
+  noApiKeyRequired:
+    "{{provider}} 不需要 API Key。Hermes 會使用你本機的 CLI / OAuth 設定。",
   localNoKeyNeeded: "無需 API Key",
   localLlm: "本機模型",
   modelBaseUrlPlaceholder: "http://localhost:1234/v1",
@@ -67,4 +71,6 @@ export default {
   openclawNotDetected: "本機未偵測到。",
   cliSectionEmpty: "尚未偵測到任何 agent。請安裝 Claude Code、Codex、Gemini CLI、OpenCode 等支援的 CLI 後按重新掃描。",
   cliSectionPathHint: "若 CLI 仍顯示為缺失，請確認其 bin 目錄已加入 Agent Desktop 繼承的 PATH。",
+  launching: "啟動中...",
+  opening: "正在開啟...",
 } as const;

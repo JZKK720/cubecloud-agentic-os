@@ -18,6 +18,8 @@ export default {
   yes: "是",
   no: "否",
   deleteTitle: "刪除 Agent",
+  empty: "尚未建立任何 Agent 設定檔",
+  emptyHint: "建立新的設定檔，即可開始使用獨立的 Hermes 工作區。",
   auto: "自動",
   local: "本機",
 } as const;

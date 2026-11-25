@@ -1,4 +1,21 @@
 export default {
+  // V2.10.44 — workspace status toasts.
+  workspace: {
+    statusRefreshed: "ワークスペースのステータスを更新しました。",
+    indexInitialized: "インデックスが初期化され、使用可能です。",
+    cliInstalled: "CodeGraph CLI をインストールしました。次に Hermes を設定してください。",
+    configureHermesSuccess:
+      "Hermes の MCP 設定を更新しました。新しい Hermes セッションを開始して CodeGraph ツールを読み込んでください。",
+    contextBundleGenerated: "コンテキストバンドルを生成しました。",
+    contextBundleMovedToChat:
+      "コンテキストバンドルを Chat の添付ドラフトに移動しました。",
+    failedToReadWorkspaceStatus: "ワークスペースのステータスを読み取れませんでした。",
+    installCodeGraphLocally: "CodeGraph をローカルにインストール",
+    openCodeGraphDocs: "CodeGraph ドキュメントを開く",
+    contextBundle: "コンテキストバンドル",
+    contextBundlePlaceholder:
+      "コンテキストが必要なアーキテクチャやコードパスを説明してください。",
+  },
   appName: "Cubecloud Agent Desktop",
   continue: "続行しますか？",
   cancel: "キャンセルしますか？",
@@ -24,6 +41,11 @@ export default {
   start: "開始",
   stop: "停止",
   refresh: "更新",
+  refreshing: "更新中…",
+  searching: "検索中…",
+  saving: "保存中…",
+  yes: "はい",
+  no: "いいえ",
   copy: "コピー",
   settings: "設定",
   provider: "プロバイダー",
@@ -41,8 +63,15 @@ export default {
   updateAvailable: "アップデート v{{version}}",
   downloading: "ダウンロード中 {{percent}}%",
   restartToUpdate: "再起動してアップデート",
+  updateFailed: "アップデートに失敗しました",
   errorTitle: "エラーが発生しました",
   errorMessage: "予期しないエラーが発生しました。",
   tryAgain: "再試行しますか？",
   copied: "コピーしました！",
+  // ブランドとライセンス — サイドバーリンクに移動。
+  legal: {
+    openPanel: "著作権とライセンスのパネルを開く",
+    licensingLink: "ライセンス",
+  },
 } as const;
+

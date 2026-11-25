@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw のインポートはまだ利用できません。",
+  errorHostAndUsernameRequired: "ホストとユーザー名は必須です",
+  errorPleaseEnterUrl: "URL を入力してください",
+  quickLanguageSwitch: "クイック言語切り替え",
   title: "設定",
   sections: {
     hermesAgent: "ローカルランタイム",
@@ -69,6 +74,9 @@ export default {
   notDetected: "検出されません",
   updatedSuccessfully: "更新に成功しました！",
   updateFailed: "更新に失敗しました。",
+  updateSuccess: "Hermes が正常に更新されました。",
+  migrationComplete: "移行が完了しました。",
+  migrationFailed: "移行に失敗しました。",
   version: "v{{version}}",
   proxyPlaceholder: "例：socks5://127.0.0.1:1080 または http://proxy:8080",
   modelNamePlaceholder: "例：anthropic/claude-opus-4.6",
@@ -120,6 +128,14 @@ export default {
   migrationDesc:
     "<code>{{path}}</code> に OpenClaw が見つかりました。設定・API キー・セッション・スキルを Hermes に移行できます。",
   migrationDismiss: "再表示しない",
+  runtimeLane: {
+    title: "ランタイムレーン",
+    label: "アクティブなランタイム",
+    hint:
+      "チャットターンを処理するランタイムを指定します。動作するアダプターがないランタイムは、失敗する代わりに Hermes ゲートウェイにフォールバックします。",
+    noAdapter: "このランタイムにはまだ動作するアダプターがありません。チャットは Hermes ゲートウェイ上にとどまります。",
+    saveFailed: "ランタイムの選択を保存できませんでした。",
+  },
   localModel: {
     title: "Local model endpoint",
     hint:
@@ -195,4 +211,6 @@ export default {
   cancel: "ディスパッチをキャンセル",
   blockTitle: "ブロックされたコマンド",
   blockReason: "このコマンドはブロックリストに登録されており、ディスパッチできません。",
+  noDestructiveCommands: "本文に破壊的コマンドはありません。",
+  singleCommand: "単一コマンド",
   },} as const;

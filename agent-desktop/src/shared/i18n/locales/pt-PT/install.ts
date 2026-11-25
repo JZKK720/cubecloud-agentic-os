@@ -31,4 +31,5 @@ export default {
   useExistingDone:
     "Instalação existente definida — feche e reabra o Cubecloud Desktop para a aplicar.",
   useExistingQuitBtn: "Sair do Cubecloud Desktop",
+  supportChannel: "Abrir canal de suporte",
 } as const;

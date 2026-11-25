@@ -1,4 +1,6 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "Impor OpenClaw belum tersedia.",
   title: "Siapkan Provider AI Anda",
   subtitle: "Pilih provider dan konfigurasikan untuk mulai menggunakan",
   providerCards: {
@@ -46,6 +48,8 @@ export default {
   continue: "Lanjutkan",
   saving: "Menyimpan...",
   apiKeyLabel: "{{provider}} API Key",
+  noApiKeyRequired:
+    "{{provider}} tidak memerlukan API key. Hermes akan menggunakan konfigurasi CLI/OAuth lokal Anda.",
   localNoKeyNeeded: "API key tidak diperlukan",
   localLlm: "LLM Lokal",
   modelBaseUrlPlaceholder: "http://localhost:1234/v1",
@@ -72,4 +76,6 @@ export default {
   openclawNotDetected: "Not detected on this machine.",
   cliSectionEmpty: "No agents detected yet. Install Claude Code, Codex, Gemini CLI, OpenCode, or another supported CLI, then click Rescan.",
   cliSectionPathHint: "If a CLI is missing, ensure its bin directory is on the PATH inherited by Agent Desktop.",
+  launching: "Meluncurkan...",
+  opening: "Membuka...",
 } as const;

@@ -1,6 +1,8 @@
 export default {
   title: "ツール",
   subtitle: "会話中にエージェントが使えるツールセットを有効化／無効化",
+  empty: "利用可能なツールセットはありません",
+  emptyHint: "ツールセットはゲートウェイの起動後にここに表示されます。",
   web: {
     label: "Web 検索",
     description: "Web を検索し、URL からコンテンツを抽出",
@@ -65,13 +67,67 @@ export default {
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },
   mcpServers: "MCP サーバ",
+  workspace: {
+    subtitle:
+      "会話型のオペレーティングファブリック — セッション、ファイル、CLI アダプターを駆動するランナーファブリックです。コンソールで管理したい場合に接続してください。",
+    start: "起動",
+    stop: "停止",
+    probing: "確認中…",
+    reachable: "到達可能",
+    unreachable: "AI Workspace に到達できません",
+    attachedAt: "接続先",
+  },
   mcpDescription:
     "config.yaml で構成された Model Context Protocol サーバ。ターミナルで <code>hermes mcp add/remove</code> から管理します。",
   http: "HTTP",
   stdio: "stdio",
   disabled: "無効",
+  agentReachTitle: "インターネット機能 (Agent-Reach)",
+  agentReachSubtitle:
+    "Agent-Reach は、実行中のエージェントにインターネットアクセス（Twitter、Reddit、YouTube、GitHub、RSS、Web 検索など）を提供します。ゲートウェイマシンで次を実行してインストールしてください: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+  agentReachRefresh: "更新",
+  agentReachScanning: "スキャン中...",
+  agentReachInstalled: "インストール済み",
+  agentReachNotInstalled:
+    "Agent-Reach がインストールされていません。ランタイムエージェントにはインターネット機能ツールがありません。",
+  managedApps: {
+    title: "管理対象アプリ",
+    subtitle:
+      "デスクトップが接続できるすべてのアプリと、各アダプターが報告する状態です。読み取り専用です。デスクトップはこれらのサービスをミラーするだけで、管理は行いません。",
+    refresh: "更新",
+    loading: "一覧を読み込み中…",
+    empty: "登録されている管理対象アプリはありません。",
+    needsSetup: "セットアップが必要",
+    needsAuth: "セットアップが必要",
+    unavailable: "このビルドでは管理対象アプリの一覧を利用できません。",
+  },
   // V2.10.77 — ツールパネル
   panels: {
+    laya: {
+      subtitle:
+        "ローカルの System-1 意思決定エンジン — 確信度と棄権を伴う型付きの choice/score/noul 判定を MCP 経由でコンソールに提供します。",
+      ready: "準備完了",
+      broken: "インストール済みですがバージョンプローブに失敗しました",
+    },
+    weknora: {
+      subtitle:
+        "オプションのエンタープライズ RAG ナレッジプラットフォーム。コンソール側は検索専用です。データはお使いの WeKnora サーバーが管理します。",
+      reachable: "到達可能",
+      unreachable: "到達不能",
+    },
+    governance: {
+      title: "ワークスペースガバナンス",
+      subtitle:
+        "AI Workspace のポリシーレジストリ、スケジュールタスク、共有 — コンソールのガバナンスビューです。承認の判定はワークスペースの resolve エンドポイント宛にあなたが行います。",
+      visible: "表示可能",
+      unavailable: "ガバナンス画面に到達できません",
+    },
+    openviking: {
+      subtitle:
+        "オプションのエージェントコンテキストデータベース — リソース、メモリ、スキルを 1 つの viking:// ファイルシステムで参照できます（相互運用のみ、AGPL コア）。",
+      reachable: "到達可能",
+      unreachable: "到達不能",
+    },
     gbrain: {
       title: "GBrain（永続メモリ）",
       subtitle:

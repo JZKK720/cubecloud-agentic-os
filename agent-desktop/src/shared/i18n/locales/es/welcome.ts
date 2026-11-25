@@ -59,6 +59,63 @@ export default {
     reset: "Restablecer a valores predeterminados",
     saved: "Guardado.",
   },
+  // V2.10.44 — install-lane shell labels (kept as-is per en source)
+  installLaneWindowsShell: "Windows PowerShell",
+  installLaneUnixShell: "WSL / macOS / Linux",
+  connectRemotePanelTitle: "Conectar al gateway remoto",
+  connectRemoteSubtitleHermes:
+    "Usa una URL de runtime existente cuando Agent Desktop deba conectarse a un gateway {{runtime}} en ejecución en lugar de instalarlo localmente.",
+  connectRemoteSubtitleOpenclaw:
+    "Conéctate a un endpoint de compatibilidad {{runtime}} en ejecución en lugar de instalarlo localmente. Agent Desktop espera que la superficie de compatibilidad HTTP de OpenClaw esté habilitada.",
+  connectRemoteSubtitleIronclaw:
+    "Conéctate a un gateway contenedor WASM-sandbox de {{runtime}} en ejecución en lugar de instalarlo localmente. Usa el puerto de gateway publicado (por defecto 3231) y la superficie /api/health para operadores.",
+  runtimeLane: "Carril de runtime",
+  sshHost: "Host SSH",
+  sshHostPlaceholder: "192.168.1.100 o miservidor.local",
+  sshPort: "Puerto SSH",
+  sshPortPlaceholder: "22",
+  sshUsername: "Nombre de usuario",
+  sshUsernamePlaceholder: "usuario",
+  sshKeyPath: "Ruta de la clave privada",
+  sshKeyPathPlaceholder: "~/.ssh/id_rsa",
+  sshKeyPathNote: "(opcional — por defecto ~/.ssh/id_rsa)",
+  sshRemotePort: "Puerto del runtime remoto",
+  sshRemotePortNote: "(por defecto {{port}})",
+  sshRuntimeOpenclawNote:
+    "{{runtime}} suele escuchar en {{port}} y requiere que su superficie de compatibilidad HTTP esté habilitada antes de que Agent Desktop pueda conectarse.",
+  sshRuntimeHermesNote:
+    "{{runtime}} suele escuchar en {{port}} para la conexión SSH.",
+  sshRuntimeIronclawNote:
+    "{{runtime}} suele escuchar en {{port}} para la conexión SSH y espera que el gateway reenviado exponga /api/health más los endpoints /v1 compatibles con OpenAI.",
+  sshSecretIronclawNote:
+    "(opcional a menos que el gateway IronClaw reenviado exija GATEWAY_AUTH_TOKEN)",
+  sshSecretOpenclawNote: "(obligatorio cuando la autenticación de OpenClaw está habilitada)",
+  sshSecretHermesNote: "(opcional a menos que el gateway Hermes remoto exija autenticación)",
+  testingSshConnection: "Probando la conexión SSH…",
+  connectViaSsh: "Conectar por SSH",
+  sshSystemHint:
+    "Usa tu SSH del sistema. Asegúrate de que ya puedes ejecutar ssh {{user}}@{{host}} sin que te pida contraseña.",
+  errorLocalInstallHeader: "La instalación local necesita atención",
+  errorSshHeader: "El túnel SSH a {{runtime}} necesita atención",
+  errorRemoteHeader: "La conexión remota a {{runtime}} necesita atención",
+  retryLocalInstall: "Reintentar la instalación local",
+  retrySshConnection: "Reintentar la conexión SSH",
+  retryRemoteConnection: "Reintentar la conexión remota",
+  reviewSshSettings: "Revisar la configuración SSH",
+  reviewRemoteSettings: "Revisar la configuración remota",
+  connectViaSshShort: "Conectar por SSH",
+  connectToRemoteGatewayShort: "Conectar al gateway remoto",
+  errorPleaseEnterUrl: "Introduce una URL.",
+  errorConnectionTestFailed: "La prueba de conexión falló.",
+  errorHostAndUsernameRequired: "El host y el nombre de usuario son obligatorios.",
+  errorHostAndUsernameRequiredNoPeriod: "El host y el nombre de usuario son obligatorios",
+  detectedRuntimesTitle: "Encontramos agentes en ejecución",
+  detectedRuntimesHealthy:
+    "Elige un runtime en ejecución para conectarte ahora. Instalar un runtime local es opcional.",
+  detectedRuntimesAuth:
+    "Encontramos runtimes que requieren una clave. Elige uno para rellenar el formulario de conexión remota.",
+  authRequiredHint:
+    "Estos runtimes son accesibles pero requieren una clave de API o un token de gateway antes de que Agent Desktop pueda conectarse.",
   // V2.10.77 — SSH panel title + subtitles
   connectSshPanelTitle: "Conectar por SSH",
   connectSshSubtitleHermes:

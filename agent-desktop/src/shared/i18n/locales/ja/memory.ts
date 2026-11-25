@@ -1,4 +1,11 @@
 export default {
+  // V2.10.44
+  errorKeyAndInsightRequired: "キーと洞察の両方が必須です。",
+  wiki: {
+    setUpYourKnowledgeBase: "ナレッジベースをセットアップ",
+    editThisPage: "このページを編集",
+    allTypes: "すべてのタイプ",
+  },
   title: "メモリ",
   subtitle:
     "Hermes がセッションを跨いで覚えているあなたと環境に関する情報です。",
@@ -128,5 +135,38 @@ export default {
     freshness: "鮮度: {{when}}",
     noSynthesis: "ブレイン層の回答を表示するには統合を実行してください。",
     citation: "引用",
+  },
+
+  // Wiki ページエディタ（V2.2 — ナレッジベースのページ編集 UI）
+  wikiEditor: {
+    noChanges: "保存する変更はありません。",
+    saveFailed: "ページの保存に失敗しました。",
+    saved: "保存しました。",
+    discardConfirm:
+      "保存されていない変更があります。破棄してエディタを閉じますか？",
+    newFile: "新規ページ",
+    unsaved: "未保存",
+    modeEdit: "編集",
+    modeSplit: "分割",
+    modePreview: "プレビュー",
+    undoHint: "元に戻す（Ctrl+Z）",
+    closeHint: "閉じる（Esc）",
+    conflictTitle: "ディスク上のページが変更されています",
+    conflictBody:
+      "このページは編集中にディスク上で変更されました。競合の解決方法を選択してください。",
+    conflictShowDisk: "ディスク版を表示",
+    conflictTakeTheirs: "ディスクから再読み込み（自分の編集を破棄）",
+    conflictKeepMine: "自分の編集を保持（ディスクを上書き）",
+    conflictReloaded: "ディスクから再読み込みしました。あなたの編集は破棄されました。",
+    conflictOverwrite:
+      "あなたの編集を保持します。保存するとディスク版が上書きされます。",
+    placeholder: "ここに Markdown を記述してください…",
+    previewEmpty: "まだプレビューする内容がありません。",
+    cancel: "キャンセル",
+    save: "保存",
+    create: "作成",
+    saving: "保存中…",
+    chars: "文字",
+    lines: "行",
   },
 } as const;

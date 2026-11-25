@@ -2,6 +2,8 @@ export default {
   title: "Alat",
   subtitle:
     "Aktifkan atau nonaktifkan toolset yang dapat digunakan agent selama percakapan",
+  empty: "Tidak ada toolset tersedia",
+  emptyHint: "Toolset akan muncul di sini setelah gateway berjalan.",
   web: {
     label: "Pencarian Web",
     description: "Cari di web dan ekstrak konten dari URL",
@@ -68,6 +70,16 @@ export default {
     description:
       "Convert dropped files (PDF, DOCX, PPTX, image, HTML, ...) to clean Markdown for the agent to ingest.",
   },
+  workspace: {
+    subtitle:
+      "Kain kerja percakapan — sesi, file, dan kain runner yang menggerakkan adapter CLI. Lampirkan saat Anda ingin konsol mengaturnya.",
+    start: "Mulai",
+    stop: "Hentikan",
+    probing: "Memeriksa…",
+    reachable: "Dapat dijangkau",
+    unreachable: "AI Workspace tidak dapat dijangkau di",
+    attachedAt: "Terpasang pada",
+  },
   mcpServers: "Server MCP",
   mcpDescription:
     "Server Model Context Protocol yang dikonfigurasi di config.yaml. Kelola melalui <code>hermes mcp add/remove</code> di terminal.",
@@ -76,6 +88,31 @@ export default {
   disabled: "nonaktif",
   // V2.10.77 — Panel alat
   panels: {
+    laya: {
+      subtitle:
+        "Mesin keputusan System-1 lokal — keputusan choice/score dengan confidence dan abstain bertipe, diekspos ke konsol melalui MCP.",
+      ready: "Siap",
+      broken: "Terpasang tetapi pemeriksaan versi gagal",
+    },
+    weknora: {
+      subtitle:
+        "Platform pengetahuan RAG perusahaan opsional. Hanya retrieval di sisi konsol; server WeKnora Anda yang memiliki datanya.",
+      reachable: "Dapat dijangkau",
+      unreachable: "Tidak dapat dijangkau",
+    },
+    governance: {
+      title: "Tata kelola workspace",
+      subtitle:
+        "Registry kebijakan, tugas terjadwal, dan berbagi dari AI Workspace — tampilan tata kelola konsol. Verdict persetujuan diberikan oleh Anda, ke endpoint resolve workspace.",
+      visible: "Terlihat",
+      unavailable: "Permukaan tata kelola tidak dapat dijangkau",
+    },
+    openviking: {
+      subtitle:
+        "Basis data konteks agen opsional — resource, memori, dan skill dalam satu filesystem viking:// yang dapat dijelajahi (interop-only; inti AGPL).",
+      reachable: "Dapat dijangkau",
+      unreachable: "Tidak dapat dijangkau",
+    },
     gbrain: {
       title: "GBrain (Memori Persisten)",
       subtitle:
@@ -145,5 +182,24 @@ export default {
       notInstalled:
         "Graphify belum terpasang. Pasang dengan: <code>uv tool install 'graphifyy[mcp]'</code> (Python 3.12+).",
     },
+  },
+  agentReachTitle: "Kapabilitas Internet (Agent-Reach)",
+  agentReachSubtitle:
+    "Agent-Reach memberi agen runtime Anda akses internet — Twitter, Reddit, YouTube, GitHub, RSS, pencarian web, dan lainnya. Instal di mesin gateway dengan: python -m pip install --user git+https://github.com/Panniantong/Agent-Reach.git",
+  agentReachRefresh: "Muat ulang",
+  agentReachScanning: "Memindai...",
+  agentReachInstalled: "Terpasang",
+  agentReachNotInstalled:
+    "Agent-Reach belum terpasang. Agen runtime tidak memiliki alat kapabilitas internet.",
+  managedApps: {
+    title: "Aplikasi terkelola",
+    subtitle:
+      "Setiap aplikasi yang dapat dipasangkan desktop, beserta status yang dilaporkan adapternya. Hanya baca: desktop mencerminkan layanan ini, tidak mengelolanya.",
+    refresh: "Muat ulang",
+    loading: "Membaca daftar…",
+    empty: "Tidak ada aplikasi terkelola yang terdaftar.",
+    needsSetup: "perlu pengaturan",
+    needsAuth: "perlu pengaturan",
+    unavailable: "Daftar aplikasi terkelola tidak tersedia di build ini.",
   },
 } as const;

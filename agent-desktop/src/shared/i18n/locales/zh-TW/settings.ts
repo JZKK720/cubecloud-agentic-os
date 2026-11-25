@@ -1,4 +1,9 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "OpenClaw 匯入功能尚未提供。",
+  errorHostAndUsernameRequired: "主機與使用者名稱為必填",
+  errorPleaseEnterUrl: "請輸入 URL",
+  quickLanguageSwitch: "快速切換語言",
   title: "設定",
   sections: {
     hermesAgent: "本機執行環境",
@@ -83,6 +88,13 @@ export default {
   providerHint: "選擇推理供應商，或根據 API Key 自動辨識",
   customProviderHint: "使用任何相容 OpenAI 的介面(LM Studio、Ollama、vLLM 等)",
   modelHint: "預設模型名(留空則使用供應商預設值)",
+  refreshModels: "重新整理模型清單",
+  discoveringModels: "正在載入可用模型…",
+  discoveredCount: "{{count}} 個模型可用 — 開始輸入即可篩選",
+  discoveryNoKey:
+    "請在 .env 中設定此供應商的 API Key，以載入可用的模型清單",
+  discoveryError:
+    "無法連線供應商的模型清單 — 你仍然可以直接輸入模型名稱",
   customBaseUrlHint: "相容 OpenAI 的 API 位址",
   poolHint:
     "為同一供應商新增多個 API Key，以便自動輪換和負載均衡。Hermes 會在它們之間輪流使用。",
@@ -110,6 +122,16 @@ export default {
   migrationDesc:
     "在 <code>{{path}}</code> 發現 OpenClaw。你可以將設定、API Key、工作階段和技能遷移到 Hermes。",
   migrationDismiss: "不再顯示",
+  migrationComplete: "遷移完成。",
+  migrationFailed: "遷移失敗。",
+  runtimeLane: {
+    title: "執行環境通道",
+    label: "作用中的執行環境",
+    hint:
+      "哪個執行環境負責處理對話輪次。沒有可用轉接器的執行環境會退回 Hermes 網關，而不會直接失敗。",
+    noAdapter: "此執行環境目前沒有可用的轉接器；對話將維持在 Hermes 網關。",
+    saveFailed: "無法儲存執行環境選擇。",
+  },
   localModel: {
     title: "Local model endpoint",
     hint:
@@ -184,4 +206,6 @@ export default {
   cancel: "取消分派",
   blockTitle: "已封鎖的指令",
   blockReason: "此指令位於封鎖清單中,無法分派。",
+  noDestructiveCommands: "主體中沒有破壞性指令。",
+  singleCommand: "單一指令",
   },} as const;

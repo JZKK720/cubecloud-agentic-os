@@ -18,6 +18,8 @@ export default {
   yes: "はい",
   no: "いいえ",
   deleteTitle: "エージェントを削除",
+  empty: "エージェントプロファイルはまだありません",
+  emptyHint: "新しいプロファイルを作成して、独立した Hermes ワークスペースを始めてください。",
   auto: "自動",
   local: "ローカル",
 } as const;

@@ -1,13 +1,134 @@
-// English-copy fallback. The repo-localized set
-// is en + zh-CN; for the other 6 locales the source of
-// truth lives in en/headroom.ts and the locale files
-// re-export it so operators always see real strings
-// without empty UI. Native-speaker review is a follow-up.
-
-import en from "../en/headroom";
+// Headroom 畫面字串的繁體中文（台灣）翻譯。
 
 export default {
+  eyebrow: "上下文壓縮",
+  title: "Headroom",
+  summary:
+    "Headroom 位於桌面與模型之間，在提示詞送出本機之前先行修剪。它會回報節省了多少，且除非你切換到 optimize 模式，否則不會改寫請求。",
+  errorChooseProjectFolder: "請先選擇專案資料夾。",
+  errorPickOneProposal: "請至少選擇一個提案再提交。",
+  errorHeadroomLearnFailed: "headroom learn 執行失敗。",
   quickStart: {
-    ...en.quickStart,
+    title: "快速開始",
+    body:
+      "先以 audit 模式啟動，用壓縮測試驗證節省效果，確認 Proxy 健康且結果正確後，再切換到 optimize。",
+    step1: "將 Base URL 指向運行中的 Headroom Proxy，或啟動下方的本機 sidecar。",
+    step2: "先維持 audit 模式，讓 Headroom 在改寫請求前先進行測量。",
+    step3: "在正式日常工作流程中啟用 Headroom 前，先用真實的日誌或程式碼套件測試。",
+    currentTarget: "目前目標：{{url}}",
+    notReachable:
+      "Headroom 尚未連上。請先啟動 sidecar 或編輯 Base URL。",
+    startSidecar: "啟動本機 sidecar",
+    editConnection: "編輯連線",
+    copyInstall: "複製安裝指令",
+    copyCommand: "複製指令",
+    installHint:
+      "在終端機中執行此指令以安裝 Headroom 執行環境。桌面應用程式不會為你安裝。",
+    installCommand: "pip install \"headroom-ai[all]\"",
+    firstRunTitle: "首次設定",
+    firstRunBody:
+      "Headroom 是本機的上下文壓縮 Proxy。選擇一種模式即可開始。",
+    modeAudit: "Audit",
+    modeAuditHint: "僅測量 — 不改寫請求。",
+    modeOptimize: "Optimize",
+    modeOptimizeHint: "確認節省效果後再套用轉換。",
+    dismiss: "隱藏此卡片",
+    reset: "重設快速開始",
+    collapsedSummary:
+      "快速開始已隱藏。隨時開啟即可重新執行 audit → 測試 → optimize 流程。",
+    switchToOptimize:
+      "節省效果看起來不錯。切換到 optimize 即可實際壓縮請求。",
+    switchingToOptimize: "切換中...",
+    switchMode: "切換到 optimize",
+    learnWhy: "為什麼這很重要",
+    learnWhyBody:
+      "在 audit 模式中，Headroom 只測量節省量而不改寫請求。在 optimize 模式中，它會套用轉換。先從 audit 開始，驗證後再切換。",
+  },
+  health: {
+    title: "Proxy 健康狀態",
+    reachable: "可連線",
+    unreachable: "無法連線",
+    probing: "探測中…",
+  },
+  stats: {
+    title: "節省量",
+    requests: "請求數",
+    tokensSaved: "已節省的 token",
+    avgSavings: "平均節省",
+    ccrEntries: "CCR 項目",
+    uptime: "運行時間",
+  },
+  config: {
+    title: "連線",
+    body:
+      "將 Headroom 指向正在執行的 Proxy，或啟動下方的本機 sidecar。任何資料都不會離開這台機器。",
+    baseUrl: "Base URL",
+    apiKey: "API 金鑰",
+    mode: "模式",
+    save: "儲存",
+    edit: "設定",
+    cancel: "關閉",
+  },
+  sidecar: {
+    title: "本機 sidecar",
+    body: "Headroom 目前未在 {{baseUrl}} 執行。啟動 sidecar 即可從這台機器進行壓縮。",
+    reason: "原因",
+    lastError: "上次錯誤",
+    pid: "PID",
+    port: "連接埠",
+    mode: "模式",
+    crashCount: "當機次數",
+    uptime: "運行時間",
+    start: "啟動 sidecar",
+    stop: "停止 sidecar",
+    restart: "重新啟動",
+    refreshLogs: "重新整理記錄",
+    logsSummary: "記錄（{{count}} 行）",
+    clearLogs: "清除記錄",
+  },
+  compress: {
+    title: "壓縮測試",
+    body:
+      "貼上真實的提示詞或程式碼套件，並透過 Headroom 執行。你會在不傳送給模型的情況下獲得壓縮前後的 token 數。",
+    input: "範例輸入",
+    placeholder: "貼上一段冗長的提示詞、日誌或 CodeGraph 套件…",
+    run: "壓縮",
+    compressing: "壓縮中…",
+    compressed: "已壓縮",
+    tokensBefore: "壓縮前 token 數",
+    tokensAfter: "壓縮後 token 數",
+    saved: "已節省 {{percent}}%",
+  },
+  retrieve: {
+    title: "取回原始內容",
+    body:
+      "壓縮後的內容會以參照取代。需要完整文字時，可用其鍵值查回原始內容。",
+    key: "參照鍵值",
+    run: "取回",
+    retrieving: "取回中…",
+    notFound: "找不到以該鍵值儲存的內容。",
+  },
+  learn: {
+    title: "從工作階段學習",
+    body:
+      "掃描專案中的過往工作階段，並暫存 Headroom 可重用的持久筆記 — 模式、陷阱、偏好。在你提交選定的提案之前，不會寫入任何內容。",
+    projectPath: "專案路徑",
+    model: "模型",
+    agent: "Agent",
+    run: "執行 learn",
+    running: "正在從工作階段學習…",
+    stop: "停止",
+    reportSummary:
+      "已掃描 {{durationSec}} 秒內的 {{sessionCount}} 個工作階段，並暫存 {{proposalCount}} 個提案。",
+    targets: "寫入目標",
+    noProposals: "這些工作階段中找不到持久筆記。",
+    rawOutput: "原始輸出",
+    commit: "提交 {{count}} 個提案",
+    committing: "提交中…",
+    apply: "套用 diff",
+    applying: "套用中…",
+    revert: "還原",
+    reverting: "還原中…",
+    diffSummary: "待處理的 diff（{{count}}）",
   },
 } as const;

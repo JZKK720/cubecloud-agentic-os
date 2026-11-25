@@ -1,5 +1,6 @@
 export default {
   title: "模型",
+  freeBadge: "(免費)",
   searchPlaceholder: "搜尋模型...",
   empty: "還沒有模型",
   noMatch: "沒有符合的模型",

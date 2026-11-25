@@ -1,4 +1,20 @@
 export default {
+  workspace: {
+    statusRefreshed: "Status workspace diperbarui.",
+    indexInitialized: "Indeks berhasil diinisialisasi dan siap.",
+    cliInstalled: "CodeGraph CLI terpasang. Konfigurasikan Hermes berikutnya.",
+    configureHermesSuccess:
+      "Konfigurasi MCP Hermes diperbarui. Mulai sesi Hermes baru untuk memuat alat CodeGraph.",
+    contextBundleGenerated: "Bundel konteks berhasil dibuat.",
+    contextBundleMovedToChat:
+      "Bundel konteks dipindahkan ke Chat sebagai draf lampiran.",
+    failedToReadWorkspaceStatus: "Gagal membaca status workspace.",
+    installCodeGraphLocally: "Instal CodeGraph secara lokal",
+    openCodeGraphDocs: "Buka dokumentasi CodeGraph",
+    contextBundle: "Bundel konteks",
+    contextBundlePlaceholder:
+      "Jelaskan arsitektur atau jalur kode yang Anda perlukan konteksnya.",
+  },
   appName: "Cubecloud Agent Desktop",
   continue: "Lanjutkan",
   cancel: "Batal",
@@ -24,6 +40,11 @@ export default {
   start: "Mulai",
   stop: "Hentikan",
   refresh: "Muat ulang",
+  refreshing: "Memuat ulang…",
+  searching: "Mencari…",
+  saving: "Menyimpan…",
+  yes: "Ya",
+  no: "Tidak",
   copy: "Salin",
   settings: "Pengaturan",
   provider: "Provider",
@@ -46,4 +67,8 @@ export default {
   errorMessage: "Terjadi kesalahan tak terduga.",
   tryAgain: "Coba Lagi",
   copied: "Tersalin!",
+  legal: {
+    openPanel: "Buka panel copyright dan lisensi",
+    licensingLink: "Lisensi",
+  },
 } as const;

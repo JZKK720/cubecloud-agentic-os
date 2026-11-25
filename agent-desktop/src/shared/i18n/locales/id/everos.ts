@@ -56,5 +56,25 @@ export default {
   "error": {
     "searchFailed": "Pencarian gagal.",
     "recentFailed": "Tidak dapat memuat memori terkini."
+  },
+  "sidecar": {
+    "title": "Sidecar lokal",
+    "body": "EverOS tidak berjalan di {{baseUrl}}. Mulai sidecar untuk menyimpan memori di mesin ini.",
+    "reason": "Alasan",
+    "lastError": "Error terakhir",
+    "pid": "PID",
+    "port": "Port",
+    "crashCount": "Crash",
+    "uptime": "Waktu aktif",
+    "start": "Mulai sidecar",
+    "stop": "Hentikan sidecar",
+    "restart": "Mulai ulang",
+    "refreshLogs": "Muat ulang log",
+    "logsSummary": "Log ({{count}} baris)",
+    "clearLogs": "Bersihkan log"
+  },
+  "windowsNote": {
+    "title": "Catatan Windows",
+    "body": "EverOS lokal terkelola mungkin masih memerlukan WSL atau host remote di Windows. Jika sidecar lokal gagal dimulai, tetap gunakan layar ini dengan base URL EverOS yang di-host di WSL atau remote."
   }
 };

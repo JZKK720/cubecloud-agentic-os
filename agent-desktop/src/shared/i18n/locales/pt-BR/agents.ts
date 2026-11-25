@@ -18,6 +18,8 @@ export default {
   yes: "Sim",
   no: "Não",
   deleteTitle: "Excluir agente",
+  empty: "Nenhum perfil de agente ainda",
+  emptyHint: "Crie um novo perfil para começar com um espaço de trabalho isolado do Hermes.",
   auto: "Auto",
   local: "Local",
 } as const;

@@ -1,4 +1,6 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "A importação do OpenClaw ainda não está disponível.",
   title: "Configure o seu Fornecedor de IA",
   subtitle: "Escolha um fornecedor e configure-o para começar",
   providerCards: {
@@ -50,9 +52,13 @@ export default {
   saving: "A guardar...",
   apiKeyLabel: "Chave da API {{provider}}",
   localNoKeyNeeded: "Não é necessária chave de API",
+  noApiKeyRequired:
+    "{{provider}} não requer uma chave de API. O Hermes usará a sua configuração local de CLI/OAuth.",
   localLlm: "LLM Local",
   modelBaseUrlPlaceholder: "http://localhost:1234/v1",
   modelNamePlaceholder: "ex: llama-3.1-8b",
+  launching: "A iniciar...",
+  opening: "A abrir...",
   stepIndicator: "Step {{step}} of {{total}}",
   stepPickCli: "Pick CLI",
   stepPickProvider: "Pick provider",

@@ -1,4 +1,6 @@
 export default {
+  // V2.10.44
+  errorOpenClawImportUnavailable: "La importación de OpenClaw aún no está disponible.",
   title: "Configura tu proveedor de IA",
   subtitle: "Elige un proveedor y configúralo para empezar",
   providerCards: {
@@ -77,4 +79,6 @@ export default {
   openclawNotDetected: "Not detected on this machine.",
   cliSectionEmpty: "No agents detected yet. Install Claude Code, Codex, Gemini CLI, OpenCode, or another supported CLI, then click Rescan.",
   cliSectionPathHint: "If a CLI is missing, ensure its bin directory is on the PATH inherited by Agent Desktop.",
+  launching: "Iniciando...",
+  opening: "Abriendo...",
 } as const;

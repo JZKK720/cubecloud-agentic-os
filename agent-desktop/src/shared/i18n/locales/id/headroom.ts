@@ -1,13 +1,134 @@
-// English-copy fallback. The repo-localized set
-// is en + zh-CN; for the other 6 locales the source of
-// truth lives in en/headroom.ts and the locale files
-// re-export it so operators always see real strings
-// without empty UI. Native-speaker review is a follow-up.
-
-import en from "../en/headroom";
+// Terjemahan Indonesia untuk string layar Headroom.
 
 export default {
+  eyebrow: "Kompresi konteks",
+  title: "Headroom",
+  summary:
+    "Headroom berada di antara desktop dan model untuk memangkas prompt panjang sebelum keluar dari mesin. Ini melaporkan apa yang dihemat dan tidak pernah menulis ulang permintaan kecuali Anda mengalihkannya ke mode optimasi.",
+  errorChooseProjectFolder: "Pilih folder proyek terlebih dahulu.",
+  errorPickOneProposal: "Pilih minimal satu proposal untuk dikomit.",
+  errorHeadroomLearnFailed: "headroom learn gagal.",
   quickStart: {
-    ...en.quickStart,
+    title: "Mulai cepat",
+    body:
+      "Mulai dalam mode audit, verifikasi penghematan dengan uji kompresi, lalu beralih ke optimasi setelah proxy sehat dan hasilnya sesuai harapan.",
+    step1: "Arahkan Base URL ke proxy Headroom yang berjalan atau mulai sidecar lokal di bawah.",
+    step2: "Biarkan mode tetap audit terlebih dahulu agar Headroom mengukur sebelum menulis ulang permintaan.",
+    step3: "Uji log atau bundel kode nyata sebelum mengaktifkan Headroom dalam alur kerja harian.",
+    currentTarget: "Target saat ini: {{url}}",
+    notReachable:
+      "Headroom belum dapat dijangkau. Mulai sidecar atau edit Base URL terlebih dahulu.",
+    startSidecar: "Mulai sidecar lokal",
+    editConnection: "Edit koneksi",
+    copyInstall: "Salin perintah instalasi",
+    copyCommand: "Salin perintah",
+    installHint:
+      "Jalankan ini di terminal untuk menginstal runtime Headroom. Desktop tidak menginstalnya untuk Anda.",
+    installCommand: "pip install \"headroom-ai[all]\"",
+    firstRunTitle: "Pengaturan pertama kali",
+    firstRunBody:
+      "Headroom adalah proxy kompresi konteks lokal. Pilih mode untuk memulai.",
+    modeAudit: "Audit",
+    modeAuditHint: "Hanya ukur — tanpa penulisan ulang permintaan.",
+    modeOptimize: "Optimasi",
+    modeOptimizeHint: "Terapkan transformasi setelah penghematan terlihat baik.",
+    dismiss: "Sembunyikan kartu ini",
+    reset: "Atur ulang mulai cepat",
+    collapsedSummary:
+      "Mulai cepat disembunyikan. Buka kapan pun untuk menjalankan ulang alur audit → uji → optimasi.",
+    switchToOptimize:
+      "Penghematan terlihat baik. Beralih ke optimasi untuk benar-benar mengompresi permintaan.",
+    switchingToOptimize: "Beralih...",
+    switchMode: "Beralih ke optimasi",
+    learnWhy: "Mengapa ini penting",
+    learnWhyBody:
+      "Dalam mode audit Headroom mengukur penghematan tetapi tidak pernah menulis ulang permintaan. Dalam mode optimasi ia menerapkan transformasi. Mulai dari audit, validasi, lalu beralih.",
+  },
+  health: {
+    title: "Kesehatan proxy",
+    reachable: "Dapat dijangkau",
+    unreachable: "Tidak dapat dijangkau",
+    probing: "Memeriksa…",
+  },
+  stats: {
+    title: "Penghematan",
+    requests: "Permintaan",
+    tokensSaved: "Token dihemat",
+    avgSavings: "Rata-rata penghematan",
+    ccrEntries: "Entri CCR",
+    uptime: "Waktu aktif",
+  },
+  config: {
+    title: "Koneksi",
+    body:
+      "Arahkan Headroom ke proxy yang berjalan, atau mulai sidecar lokal di bawah. Tidak ada yang keluar dari mesin.",
+    baseUrl: "Base URL",
+    apiKey: "Kunci API",
+    mode: "Mode",
+    save: "Simpan",
+    edit: "Konfigurasi",
+    cancel: "Tutup",
+  },
+  sidecar: {
+    title: "Sidecar lokal",
+    body: "Headroom tidak berjalan di {{baseUrl}}. Mulai sidecar untuk mengompresi dari mesin ini.",
+    reason: "Alasan",
+    lastError: "Error terakhir",
+    pid: "PID",
+    port: "Port",
+    mode: "Mode",
+    crashCount: "Crash",
+    uptime: "Waktu aktif",
+    start: "Mulai sidecar",
+    stop: "Hentikan sidecar",
+    restart: "Mulai ulang",
+    refreshLogs: "Muat ulang log",
+    logsSummary: "Log ({{count}} baris)",
+    clearLogs: "Bersihkan log",
+  },
+  compress: {
+    title: "Uji kompresi",
+    body:
+      "Tempel prompt atau bundel kode nyata dan jalankan melalui Headroom. Anda mendapatkan jumlah token sebelum dan sesudah tanpa mengirim apa pun ke model.",
+    input: "Input contoh",
+    placeholder: "Tempel prompt panjang, log, atau bundel CodeGraph…",
+    run: "Kompres",
+    compressing: "Mengompresi…",
+    compressed: "Terkompresi",
+    tokensBefore: "Token sebelum",
+    tokensAfter: "Token sesudah",
+    saved: "Dihemat {{percent}}%",
+  },
+  retrieve: {
+    title: "Ambil asli",
+    body:
+      "Konten yang dikompresi diganti dengan referensi. Cari aslinya dengan key-nya saat Anda memerlukan teks lengkap.",
+    key: "Reference key",
+    run: "Ambil",
+    retrieving: "Mengambil…",
+    notFound: "Tidak ada konten tersimpan di bawah key tersebut.",
+  },
+  learn: {
+    title: "Belajar dari sesi",
+    body:
+      "Pindai sesi-sesi sebelumnya dalam sebuah proyek dan staging catatan tahan-lama — pola, jebakan, preferensi — yang dapat digunakan kembali oleh Headroom. Tidak ada yang ditulis sampai Anda mengommit proposal yang dipilih.",
+    projectPath: "Path proyek",
+    model: "Model",
+    agent: "Agent",
+    run: "Jalankan learn",
+    running: "Belajar dari sesi…",
+    stop: "Berhenti",
+    reportSummary:
+      "Memindai {{sessionCount}} sesi dalam {{durationSec}}s dan menyiapkan {{proposalCount}} proposal.",
+    targets: "Target yang ditulis",
+    noProposals: "Tidak ada catatan tahan-lama yang ditemukan dalam sesi ini.",
+    rawOutput: "Output mentah",
+    commit: "Commit {{count}} proposal",
+    committing: "Mengommit…",
+    apply: "Terapkan diff",
+    applying: "Menerapkan…",
+    revert: "Kembalikan",
+    reverting: "Mengembalikan…",
+    diffSummary: "Diff tertunda ({{count}})",
   },
 } as const;
