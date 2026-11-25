@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { t } from "./index";
+import type { AppLocale } from "./types";
 
 describe("shared i18n", () => {
   it("returns English text by default", () => {
@@ -66,7 +67,17 @@ describe("shared i18n", () => {
   it("provides native copy for translated locales, en fallback otherwise", () => {
     // All locales now carry their own headroom copy; every locale must
     // return a non-empty string for the quick-start title.
-    for (const locale of ["en", "zh-CN", "zh-TW", "ja", "es", "id", "pt-BR", "pt-PT"]) {
+    const locales: AppLocale[] = [
+      "en",
+      "zh-CN",
+      "zh-TW",
+      "ja",
+      "es",
+      "id",
+      "pt-BR",
+      "pt-PT",
+    ];
+    for (const locale of locales) {
       expect(t("headroom.quickStart.title", locale)).toBeTruthy();
     }
     expect(t("headroom.quickStart.title", "en")).toBe("Quick start");
