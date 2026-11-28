@@ -7,6 +7,10 @@ export default {
     "body": "A integração com o EverOS está sendo adicionada. A especificação do backend já está implementada na main; esta tela ficará ativa quando a ponte preload for finalizada.",
     "addHarness": "Add harness (coming soon)"
   },
+  "scope": {
+    "label": "Escopo",
+    "hint": "Este console lê e grava apenas o escopo de app agentic-os no EverOS. Outros escopos (workspace, outros apps) nunca são tocados."
+  },
   "health": {
     "title": "Backend",
     "reachable": "Acessível",
@@ -16,7 +20,7 @@ export default {
   },
   "config": {
     "title": "Conexão",
-    "body": "O EverOS roda em http://localhost:1995 por padrão. O shell aponta para a URL base configurada sempre que o usuário pede memória de longo prazo.",
+    "body": "O EverOS roda em http://localhost:8000 por padrão. O shell aponta para a URL base configurada sempre que o usuário pede memória de longo prazo.",
     "baseUrl": "URL base",
     "apiKey": "Chave de API",
     "userId": "ID do usuário",

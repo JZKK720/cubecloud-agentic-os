@@ -44,7 +44,7 @@
 | **A. Kernel completion** | 405 capabilities as HTTP routes + SSE | ✅ **DONE** | `node console-backend/parity-check-v2.cjs` → `PARITY PASS — 295 kernel capabilities ↔ 291 preload invoke methods (bidirectional)`; 16 push channels ride SSE |
 | **B. ManagedApp framework** | Contract + 16 adapters + config isolation | ✅ **DONE** | `agent-desktop/src/main/managed-apps/{contract,registry,workspace,everos,gateways,tools,config-blocks}.ts`; snapshot test pins the roster |
 | **C. Workspace control panel** | Lifecycle, Settings/Provision, Schedules, Policies, Sessions, Approvals | ✅ **DONE** | `2026-10-13-workspace-control-panel-plan.md` + `2026-10-13-phase-c-quality-gate.md` |
-| **D. EverOS v2 + dashboard** | v2 adapter, scope isolation, dashboard surface | ⏳ **NOT DONE** | `managed-apps/everos.ts` header: *"everos.ts speaks API v1; the v2 rewrite is Phase D"* |
+| **D. EverOS v2 + dashboard** | v2 adapter, scope isolation, dashboard surface | ✅ **IMPLEMENTED 2026-11-25** — PR #11 (open, CI green); see `2026-11-25-phase-d-everos-v2-evidence.md` | `src/main/everos-v2.ts`, `managed-apps/everos.ts` |
 | **E. Renderer de-Electronization** | Remove `window.electron`, drop webview, vite | ✅ **DONE** | commit `f2c4aca`; 8 usages removed |
 | **F. Docker stack** | Console container builds/boots/serves | ✅ **DONE** | `2026-10-13-phase-f-live-verification.md`; commit `1e548bd` |
 | **G. Electron retirement** | Delete packaging surface | 🔶 **ANALYSIS DONE, DELETION NOT PERFORMED** | `2026-10-13-phase-g-readiness-audit.md` — criterion proven (276-module closure, **0** electron imports); deletion is an explicit operator decision |

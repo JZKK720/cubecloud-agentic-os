@@ -7,6 +7,10 @@ export default {
     "body": "EverOS 集成正在补齐中。后端接口已在主进程实现,完成 preload 桥接后此界面即可使用。",
     "addHarness": "添加 Harness(即将开放)"
   },
+  "scope": {
+    "label": "範圍",
+    "hint": "本主控台僅在 EverOS 的 agentic-os 應用範圍內讀寫資料,不會觸及其他範圍(workspace、其他應用)。"
+  },
   "health": {
     "title": "後端",
     "reachable": "已連線",
@@ -16,7 +20,7 @@ export default {
   },
   "config": {
     "title": "連線",
-    "body": "EverOS 默认运行在 http://localhost:1995。配置后,所有需要长期记忆的操作都会指向该地址。",
+    "body": "EverOS 默认运行在 http://localhost:8000。配置后,所有需要长期记忆的操作都会指向该地址。",
     "baseUrl": "服務位址",
     "apiKey": "API 金鑰",
     "userId": "使用者識別",
@@ -76,6 +80,5 @@ export default {
   "windowsNote": {
     "title": "Windows 注意事項",
     "body": "在 Windows 上，受管理的本機 EverOS 可能仍需要 WSL 或遠端主機。若本機 sidecar 無法啟動，請繼續以指向 WSL 或遠端 EverOS 服務位址的方式使用此畫面。"
-  },
-  "body": "EverOS 預設執行於 http://localhost:1995。設定後,所有需要長期記憶的操作都會指向該位址。"
+  }
 };

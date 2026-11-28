@@ -109,10 +109,10 @@ describe("everos-sidecar manager", () => {
     // The sidecar doesn't pre-fill the port on the
     // untouched initial state — it stays `null` until the
     // first start() call sets it. The baseUrl IS set
-    // (defaults to localhost:1995) so the renderer can
+    // (defaults to localhost:8000) so the renderer can
     // surface a useful "would connect here" preview.
     expect(status.port).toBeNull();
-    expect(status.baseUrl).toBe("http://127.0.0.1:1995");
+    expect(status.baseUrl).toBe("http://127.0.0.1:8000");
     expect(status.crashCount).toBe(0);
     expect(status.reason).toBeNull();
   });
@@ -143,13 +143,13 @@ describe("everos-sidecar manager", () => {
     const sidecar = await import("../src/main/everos-sidecar");
     sidecar._setSidecarTestOverrides(
       "C:\\fake\\everos.exe",
-      ["server", "start", "--port", "1995"],
+      ["server", "start", "--port", "8000"],
     );
     const status = sidecar.startEverOsSidecar();
     expect(status.state).toBe("starting");
     expect(status.pid).toBe(12345);
-    expect(status.port).toBe(1995);
-    expect(status.baseUrl).toBe("http://127.0.0.1:1995");
+    expect(status.port).toBe(8000);
+    expect(status.baseUrl).toBe("http://127.0.0.1:8000");
     expect(spawnMock).toHaveBeenCalledTimes(1);
     expect(spawnMock.mock.calls[0]?.[0]).toBe("C:\\fake\\everos.exe");
   });
@@ -284,7 +284,7 @@ describe("everos-sidecar manager", () => {
       "--host",
       "0.0.0.0",
       "--port",
-      "1995",
+      "8000",
     ]);
     const status = sidecar.startEverOsSidecar({
       port: 2000,

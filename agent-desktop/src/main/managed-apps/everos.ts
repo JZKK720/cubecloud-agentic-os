@@ -1,12 +1,13 @@
-// everos adapter — wraps everos.ts (v1 client) + everos-sidecar.ts
+// everos adapter — wraps everos-v2.ts (v2 client) + everos-sidecar.ts
 // (lifecycle) into the ManagedApp contract.
 //
 // Writes: NONE (rule 3 — the dashboard reads/edits through EverOS's
 // own API; the desktop only mirrors). Config block: "everos".
 //
-// NOTE (design §4): everos.ts speaks API v1; the v2 rewrite is Phase D.
-// This adapter wraps the v1 client as-is so the framework lands first;
-// Phase D swaps the wrapped calls without touching the contract.
+// EverOS speaks API v2 (`/api/v2/memory/*`) as of Phase D. The v1
+// client (`../everos.ts`) is retained only for the config block reader
+// and the (now unused by the IPC layer) legacy helpers; new code must
+// call `../everos-v2` instead.
 //
 // Cubecloud original work (2026). Distributed under the repo's dual
 // license per `LICENSE`; see `BRANDING_AND_LICENSE.md` for provenance.
@@ -14,10 +15,13 @@
 import {
   loadEverOsConfig,
   saveEverOsConfig,
-  pingEverOs,
-  listRecentEverOsMemory,
   type EverOsConfig,
 } from "../everos";
+import {
+  pingEverOsV2,
+  getMemoriesV2,
+  toEverOsV2Config,
+} from "../everos-v2";
 import {
   getEverOsSidecarStatus,
   startEverOsSidecar,
@@ -43,6 +47,11 @@ export async function loadEverOsAppConfig(): Promise<EverOsConfig> {
   return loadEverOsConfig(HERMES_HOME);
 }
 
+/** Shared projection of the desktop's everos block onto the v2 wire
+ *  config (see `toEverOsV2Config`). `groupId` carries through as the
+ *  project scope so an existing config keeps partitioning the same way. */
+const toV2Config = toEverOsV2Config;
+
 export function createEverOsApp(): ManagedApp {
   return {
     id: "everos",
@@ -51,7 +60,7 @@ export function createEverOsApp(): ManagedApp {
 
     async discover(): Promise<ManagedAppDiscovery> {
       const cfg = await loadEverOsConfig(HERMES_HOME);
-      const health = await pingEverOs(cfg);
+      const health = await pingEverOsV2(toV2Config(cfg));
       return {
         state: health.reachable ? "found" : "not-found",
         detail: health.reachable
@@ -63,14 +72,14 @@ export function createEverOsApp(): ManagedApp {
 
     async health(): Promise<ManagedAppHealth> {
       const cfg = await loadEverOsConfig(HERMES_HOME);
-      const health = await pingEverOs(cfg);
+      const health = await pingEverOsV2(toV2Config(cfg));
       return {
         ok: health.reachable,
-        // Capability-honest (rule 1): v1 client supports inventory +
+        // Capability-honest (rule 1): v2 client supports inventory +
         // lifecycle + config; governance arrives with the v2 rewrite.
         capabilities: ["inventory", "lifecycle", "config"],
         detail: health.reachable
-          ? `status ${health.status ?? "ok"}`
+          ? `status ${health.status ?? "ok"}${health.version ? ` (v${health.version})` : ""}`
           : (health.detail ?? "unreachable"),
         raw: health,
         scannedAt: health.scannedAt,
@@ -79,10 +88,16 @@ export function createEverOsApp(): ManagedApp {
 
     async inventory(): Promise<ManagedAppInventory> {
       const cfg = await loadEverOsConfig(HERMES_HOME);
-      const recent = await listRecentEverOsMemory(cfg, 20);
+      // Recent episodes for the console's scope. agent_cases/agent_skills
+      // belong to the agent owner and are intentionally not mixed in here.
+      const recent = await getMemoriesV2(toV2Config(cfg), {
+        memoryType: "episode",
+        page: 1,
+        pageSize: 20,
+      });
       return {
         ok: recent.success,
-        data: recent,
+        data: recent.success ? recent.data : null,
         error: recent.success ? null : (recent.error ?? "inventory unavailable"),
       };
     },
