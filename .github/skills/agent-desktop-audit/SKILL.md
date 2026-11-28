@@ -26,8 +26,8 @@ asks any of these questions:
   `agent-desktop/.github/workflows/ci.yml`
 
 The step-by-step ladder lives in the
-[`audit` slash prompt](../../.github/prompts/audit.prompt.md). This
-skill is the durable trigger + context; the slash prompt is the
+[`audit` skill](../audit/SKILL.md). This
+skill is the durable trigger + context; the audit skill is the
 executable recipe.
 
 ## First rule: assert test count > 0
@@ -71,7 +71,7 @@ hard-codes 8281.
 
 `copilot-cli` is one entry in tier 4, not a fourth runtime lane.
 
-## Audit ladder (summary — full recipe in the slash prompt)
+## Audit ladder (summary — full recipe in the audit skill)
 
 1. **Sync** — `git fetch origin main` + `git rev-list --left-right --count HEAD...origin/main`
 2. **Typecheck** — `npm run typecheck --workspace cubecloud-agent-desktop`
@@ -103,10 +103,12 @@ hard-codes 8281.
 
 ## Related files
 
-- Slash prompt (executable recipe): [`../../.github/prompts/audit.prompt.md`](../../.github/prompts/audit.prompt.md)
+- Executable recipe: [`../audit/SKILL.md`](../audit/SKILL.md)
 - Inner workspace rules: [`../../agent-desktop/AGENTS.md`](../../agent-desktop/AGENTS.md) (Validation section)
 - Root workspace rules: [`../../AGENTS.md`](../../AGENTS.md) §5
 - Hermes runbook: [`../../docs/hermes-agent-attach.smoke.md`](../../docs/hermes-agent-attach.smoke.md)
 - IronClaw runbook: [`../../docs/ironclaw-attach.smoke.md`](../../docs/ironclaw-attach.smoke.md)
 - CI workflow: [`../../.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
 - CI fix draft (not applied): [`../../docs/plans/ci-yml-fix.draft.md`](../../docs/plans/ci-yml-fix.draft.md)
+
+

@@ -1,7 +1,8 @@
 ---
-description: Soft, premium, high-end visual design language. Use when the user asks for "premium", "Apple-y", "calm", "expensive", "Linear-style", or "editorial" UI.
+name: taste-soft
+description: "Soft, premium, high-end visual design language. Use when the user asks for \"premium\", \"Apple-y\", \"calm\", \"expensive\", \"Linear-style\", or \"editorial\" UI."
+disable-model-invocation: true
 ---
-
 # /taste-soft — High-end, premium, calm visual design
 
 You are running the `high-end-visual-design` skill (taste-skill v2). Reference: `docs/agent-skills-bundle/taste-skill-ref/soft-skill.SKILL.md` (10 KB).

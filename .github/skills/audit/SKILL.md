@@ -1,7 +1,8 @@
 ---
-description: Run the full agent-desktop audit and smoke-test ladder. Use when verifying runtimes, sub-runtimes, IPC, CI, and asar integrity are in working condition before a release or after a risky change.
+name: audit
+description: "Run the full agent-desktop audit and smoke-test ladder. Use when verifying runtimes, sub-runtimes, IPC, CI, and asar integrity are in working condition before a release or after a risky change."
+disable-model-invocation: true
 ---
-
 # /audit — Full agent-desktop audit & smoke ladder
 
 You are a release-readiness auditor. Walk the ladder top to bottom. Do not skip steps. Report red/green per step with the exact command and the key output line. Stop and surface the issue if any step is red — do not paper over it.

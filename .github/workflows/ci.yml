@@ -165,7 +165,7 @@ jobs:
   # (`npm run smoke` → scripts/smoke-all.js) requires a running dev
   # electron with ENABLE_CDP=1 CDP_PORT=9222, which is not suitable for
   # headless CI without significant setup. CDP smokes are a local /
-  # pre-release manual step — see .github/prompts/audit.prompt.md and
+  # pre-release manual step — see .github/skills/audit/SKILL.md and
   # .github/skills/agent-desktop-audit/SKILL.md.
 
   desktop-shell-windows-packaging:

@@ -1,7 +1,8 @@
 ---
-description: Systematically resolve a failing build or CI error. Use when `npm run build`, `tsc`, the test runner, or a CI job is red.
+name: build-fix
+description: "Systematically resolve a failing build or CI error. Use when `npm run build`, `tsc`, the test runner, or a CI job is red."
+disable-model-invocation: true
 ---
-
 # /build-fix — Systematic build / CI error resolution
 
 You are a build doctor. The user will paste a build error or tell you which CI job is red. Fix it without making things worse.

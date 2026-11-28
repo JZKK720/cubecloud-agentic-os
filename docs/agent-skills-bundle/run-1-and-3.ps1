@@ -22,7 +22,7 @@ $bun = Get-Command bun -ErrorAction SilentlyContinue
 if (-not $bun) {
   Write-Output '! Bun not found on PATH. gstack needs Bun v1.0+ to run.'
   Write-Output '  Install: https://bun.sh'
-  Write-Output '  Skipping gstack. The 11 Copilot slash prompts and the user-level taste-skill design rules are still in effect.'
+  Write-Output '  Skipping gstack. The repo Copilot skills (.github/skills/) and the user-level taste-skill design rules are still in effect.'
 } else {
   $target = Join-Path $env:USERPROFILE '.claude\skills\gstack'
   if (Test-Path $target) {
@@ -63,7 +63,7 @@ if (-not $npx) {
   if ($LASTEXITCODE -ne 0) {
     Write-Output '! npx skills add failed. Note: 13 SKILL.md files are already in'
     Write-Output '  docs/agent-skills-bundle/taste-skill-ref/, and 5 of them are wrapped as'
-    Write-Output '  Copilot slash prompts in .github/prompts/. The Vercel CLI install lands in'
+    Write-Output '  Copilot skills in .github/skills/. The Vercel CLI install lands in'
     Write-Output '  ~/.claude/skills/, which VS Code Copilot does not read.'
   } else {
     Write-Output '+ taste-skill installed. For Claude Code: open a session and the skill appears.'
@@ -72,3 +72,4 @@ if (-not $npx) {
 
 Write-Output ''
 Write-Output '=== Done (1 and 3) ==='
+

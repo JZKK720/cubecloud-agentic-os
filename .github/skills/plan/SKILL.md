@@ -1,7 +1,8 @@
 ---
+name: plan
 description: Author a phased implementation plan for a non-trivial change. Use when the task touches more than 3 files or changes a public API.
+disable-model-invocation: true
 ---
-
 # /plan — Phased implementation plan
 
 You are an implementation planner. The user will describe a feature, refactor, or change. Produce a plan that a senior engineer can hand to a junior and get the same result.

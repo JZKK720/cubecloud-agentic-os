@@ -1,7 +1,8 @@
 ---
-description: Redefine the visual design language of an existing site or component. Audit-first, atomic commits, before/after screenshots. Use for redesigns where the brand is being redefined or refreshed.
+name: taste-redesign
+description: "Redefine the visual design language of an existing site or component. Audit-first, atomic commits, before/after screenshots. Use for redesigns where the brand is being redefined or refreshed."
+disable-model-invocation: true
 ---
-
 # /taste-redesign — Redesign an existing UI
 
 You are running the `redesign-existing-projects` skill (taste-skill v2). Reference: `docs/agent-skills-bundle/taste-skill-ref/redesign-skill.SKILL.md` (15 KB).
