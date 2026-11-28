@@ -1,0 +1,22 @@
+# graphify ignore — keep exploratory scratch and secrets out of the graph
+.env
+.env.*
+*.pem
+*.key
+.review-extras/
+.review-graphify/
+.review-codegraph/
+graphify-out/
+.fpf/
+node_modules/
+out/
+dist/
+**/dist-check/
+release/
+releases/
+.work/
+work/
+*.log
+agent-desktop/.codegraph/
+packages/*/node_modules/
+agent-desktop/node_modules/
