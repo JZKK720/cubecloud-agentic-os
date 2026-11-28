@@ -120,6 +120,21 @@ describe("I18nProvider", () => {
     expect(setLocale).toHaveBeenLastCalledWith(DEFAULT_ACTIVE_LOCALE);
   });
 
+  it("keeps <html lang> in sync with the active locale", async () => {
+    render(
+      <I18nProvider>
+        <LocaleSwitcherProbe />
+      </I18nProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: "Switch to Spanish" }),
+      );
+    });
+
+    expect(document.documentElement.lang).toBe("es");
+  });
   it("does not overwrite the main-process locale with the startup fallback", async () => {
     let resolveMainLocale: (locale: AppLocale) => void = () => {};
     getLocale.mockReturnValue(

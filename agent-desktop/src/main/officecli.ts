@@ -177,9 +177,62 @@ function escapesParent(arg: string): boolean {
   return /(^|[/\\])\.\.([/\\]|$)/.test(arg);
 }
 
-/** Document-internal selectors (e.g. /slide[1], /A1, /body/table[1]) are not filesystem paths. */
+/** Filesystem roots that never appear in a document selector. A leading
+ * segment matching one of these means the argument is a filesystem path,
+ * not a selector, so it falls through to the root-containment check. */
+const FS_ROOT_SEGMENTS = new Set([
+  "etc", "usr", "var", "home", "root", "opt", "bin", "sbin", "lib", "lib64",
+  "tmp", "dev", "proc", "sys", "mnt", "media", "srv", "boot", "run", "snap",
+  "users", "program files", "program files (x86)", "windows", "programdata",
+  "library", "applications", "system", "private", "volumes", "net", "cores",
+]);
+
+function hasBalancedBrackets(t: string): boolean {
+  let depth = 0;
+  for (const ch of t) {
+    if (ch === "[") depth++;
+    else if (ch === "]") {
+      depth--;
+      if (depth < 0) return false;
+    }
+  }
+  return depth === 0;
+}
+
+/**
+ * Document-internal selectors (e.g. /slide[1], /A1, /body/table[1]) are
+ * not filesystem paths. The distinction that keeps the containment check
+ * honest: a selector addresses a node *inside a document*, so it either
+ * carries a predicate (`[1]`, `[@name=...]`) or a single path segment with
+ * no extension. A bare absolute path such as `/etc/passwd` or
+ * `/var/log/app.log` is always treated as a filesystem path and falls
+ * through to the root-containment check.
+ */
 export function isDocumentSelector(arg: string): boolean {
-  return /^\/[A-Za-z0-9_]/.test(arg) && !escapesParent(arg);
+  const t = arg.trim();
+  if (!/^\/[A-Za-z0-9_@]/.test(t)) return false;
+  if (escapesParent(t)) return false;
+  // Selectors never contain a backslash (that is a Windows path separator).
+  if (t.includes("\\")) return false;
+  const rawFirst = t.split("/")[1] ?? "";
+  const firstSegment = rawFirst.replace(/\[.*$/, "").toLowerCase();
+  const segments = t.split("/").filter(Boolean);
+  const firstSegmentNoPredicate = (segments[0] ?? "").replace(/\[.*$/, "").toLowerCase();
+  if (segments.length === 0) return false;
+  if (FS_ROOT_SEGMENTS.has(firstSegment) || FS_ROOT_SEGMENTS.has(firstSegmentNoPredicate)) return false;
+  // A predicate must balance, and its leading segment must not be an OS
+  // root — "/etc[0]" is not a selector we want to honour.
+  if (t.includes("[")) {
+    if (!hasBalancedBrackets(t)) return false;
+    return true;
+  }
+  if (segments.length === 1) {
+    // Single segment: /slide, /A1 — reject anything with an extension.
+    return !/\.[A-Za-z0-9]{1,8}$/.test(segments[0]);
+  }
+  // Multi-segment selectors need a predicate on the last segment
+  // (/body/table[1] handles above) — a plain multi-segment path is a path.
+  return false;
 }
 
 /** Split `--flag=value` so a path inside a joined option is still checked. */
@@ -342,6 +395,9 @@ export function validateArgs(
     if (escapesParent(raw)) {
       return { ok: false, error: `path traversal not allowed: ${raw}` };
     }
+    // Selectors (/slide[1], /body/table[1]) are not filesystem paths.
+    // isDocumentSelector rejects absolute POSIX paths, so anything it
+    // accepts is safe to pass through untouched.
     if (isDocumentSelector(raw)) {
       out.push(raw);
       continue;
@@ -362,7 +418,6 @@ export function validateArgs(
 }
 
 export interface ValidatedInvocation {
-  binary: string;
   argv: string[];
 }
 
@@ -389,7 +444,6 @@ export function validateInvocation(
   return {
     ok: true,
     value: {
-      binary: "", // filled in by runOfficeCliCli once the binary is resolved
       argv: [v, resolvedFile, ...checked.args],
     },
   };

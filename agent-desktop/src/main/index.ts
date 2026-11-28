@@ -76,14 +76,18 @@ import {
 import {
   loadEverOsConfig,
   saveEverOsConfig,
-  pingEverOs,
-  addEverOsMemory,
-  searchEverOsMemory,
-  listRecentEverOsMemory,
   DEFAULT_EVEROS_CONFIG,
   type EverOsConfig,
-  type EverOsMessageInput,
 } from "./everos";
+import {
+  pingEverOsV2,
+  searchMemoriesV2,
+  addMemoryV2,
+  getMemoriesV2,
+  toEverOsV2Config,
+  EVEROS_V2_DEFAULT_USER_ID,
+  type EverOsV2SearchMethod,
+} from "./everos-v2";
 import {
   clearEverOsSidecarLogs,
   getEverOsSidecarLogTail,
@@ -2745,57 +2749,121 @@ function setupIPC(): void {
   ipcMain.handle("everos-save-config", (_event, patch: Partial<EverOsConfig>) =>
     saveEverOsConfig(getHermesHome(), patch),
   );
+  // The renderer still speaks the v1-shaped contract (see preload/index.d.ts).
+  // v2 returns richer records; project them down to what the panel renders.
+  const episodeToLegacy = (ep: {
+    id: string;
+    episode: string;
+    summary: string;
+    timestamp: string;
+    score?: number | undefined;
+    sender_ids: string[];
+    session_id: string | null;
+  }) => ({
+    episodeId: ep.id,
+    content: ep.episode || ep.summary,
+    score: typeof ep.score === "number" ? ep.score : 0,
+    createdAt: ep.timestamp ? Date.parse(ep.timestamp) || null : null,
+    metadata: { sessionId: ep.session_id, senderIds: ep.sender_ids },
+  });
+  const resolveV2 = async (patch?: Partial<EverOsConfig>) =>
+    toEverOsV2Config(
+      patch
+        ? { ...DEFAULT_EVEROS_CONFIG, ...patch }
+        : await loadEverOsConfig(getHermesHome()),
+    );
   ipcMain.handle(
     "everos-ping",
     async (_event, patch?: Partial<EverOsConfig>) => {
       if (patch && Object.keys(patch).length > 0) {
-        // Caller is asking "would this config be reachable?" —merge
-        // with the on-disk config so a partial edit still pings.
-        const merged = { ...DEFAULT_EVEROS_CONFIG, ...patch };
-        return pingEverOs(merged);
+        // Caller is asking "would this config be reachable?" — merge with
+        // the on-disk config so a partial edit still pings.
+        return pingEverOsV2(
+          toEverOsV2Config({ ...DEFAULT_EVEROS_CONFIG, ...patch }),
+        );
       }
-      return pingEverOs(await loadEverOsConfig(getHermesHome()));
+      return pingEverOsV2(toEverOsV2Config(await loadEverOsConfig(getHermesHome())));
     },
   );
   ipcMain.handle(
     "everos-add-memory",
     async (
       _event,
-      messages: EverOsMessageInput[],
+      messages: Array<{
+        role: "user" | "assistant" | "system" | "tool";
+        senderId?: string;
+        senderName?: string;
+        content: string;
+        timestamp?: number;
+      }>,
       patch?: Partial<EverOsConfig>,
-    ) =>
-      addEverOsMemory(
-        patch
-          ? { ...DEFAULT_EVEROS_CONFIG, ...patch }
-          : await loadEverOsConfig(getHermesHome()),
-        messages,
-      ),
+    ) => {
+      const cfg = await resolveV2(patch);
+      const senderId = (cfg.userId ?? EVEROS_V2_DEFAULT_USER_ID).trim();
+      const res = await addMemoryV2(cfg, {
+        sessionId: cfg.projectId ?? "agent-desktop",
+        messages: messages.map((m) => ({
+          sender_id: m.senderId?.trim() || senderId,
+          sender_name: m.senderName ?? null,
+          // v2 has no "system" role; fold it into a user turn so the
+          // server accepts the batch instead of 422ing the whole write.
+          role: m.role === "system" ? "user" : m.role,
+          timestamp: m.timestamp ?? Date.now(),
+          content: m.content,
+        })),
+      });
+      const data = res.data;
+      const accepted =
+        data && "messageCount" in data ? (data.messageCount ?? messages.length) : messages.length;
+      return {
+        success: res.success,
+        storedCount: res.success ? accepted : 0,
+        error: res.error ?? undefined,
+      };
+    },
   );
   ipcMain.handle(
     "everos-search",
     async (
       _event,
       query: string,
-      options?: { topK?: number; method?: "hybrid" | "keyword" | "vector" },
+      options?: { topK?: number; method?: EverOsV2SearchMethod },
       patch?: Partial<EverOsConfig>,
     ) =>
-      searchEverOsMemory(
-        patch
-          ? { ...DEFAULT_EVEROS_CONFIG, ...patch }
-          : await loadEverOsConfig(getHermesHome()),
-        query,
-        options,
-      ),
+      (async () => {
+        const res = await searchMemoriesV2(await resolveV2(patch), query, {
+          topK: options?.topK,
+          method: options?.method,
+        });
+        return {
+          success: res.success,
+          episodes: (res.data?.episodes ?? []).map(episodeToLegacy),
+          pendingMessages: res.data?.unprocessed_messages.length ?? 0,
+          totalEstimated: null as number | null,
+          error: res.error ?? undefined,
+        };
+      })(),
   );
   ipcMain.handle(
     "everos-list-recent",
-    async (_event, limit?: number, patch?: Partial<EverOsConfig>) =>
-      listRecentEverOsMemory(
-        patch
-          ? { ...DEFAULT_EVEROS_CONFIG, ...patch }
-          : await loadEverOsConfig(getHermesHome()),
-        limit,
-      ),
+    async (_event, limit?: number, patch?: Partial<EverOsConfig>) => {
+      const result = await getMemoriesV2(await resolveV2(patch), {
+        memoryType: "episode",
+        page: 1,
+        pageSize: Math.min(Math.max(limit ?? 20, 1), 100),
+      });
+      return {
+        success: result.success,
+        items: (result.data?.episodes ?? []).map((ep) => ({
+          id: ep.id,
+          content: ep.episode || ep.summary,
+          senderId: ep.sender_ids[0] ?? null,
+          role: null as string | null,
+          createdAt: ep.timestamp ? Date.parse(ep.timestamp) || null : null,
+        })),
+        error: result.error ?? undefined,
+      };
+    },
   );
 
   // EverOS sidecar (lifecycle manager around the

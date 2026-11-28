@@ -127,6 +127,7 @@ export default {
         button: "以电子表格查看",
         loading: "正在加载预览…",
         loadingUniver: "正在加载 Univer…",
+        previewHint: "运行 `officecli view <文件> text --json` 即可在此预览电子表格。",
       },
     },
     graphify: {

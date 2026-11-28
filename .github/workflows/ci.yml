@@ -76,13 +76,12 @@ jobs:
       - name: Verify no U+FFFD or CP1252 markers in tracked files
         run: node scripts/check-mojibake.cjs
 
-  # i18n coverage gate: fail any PR that drops a locale file or
-  # introduces drift between an EN source key and a translated
-  # value.  Pure Node, no install step required.  `--strict` mode
-  # (see scripts/check-i18n-coverage.cjs) makes missing locale
-  # files a hard fail.  In default mode (drift informational) the
-  # job still reports the table; the strict mode is opt-in for
-  # release branches.
+  # i18n coverage gate: fails any PR that drops a locale file, adds a
+  # key to the English source without translating it, or leaves a stray
+  # key in a locale. The script evaluates the locale modules through the
+  # TypeScript compiler rather than regex-scraping them, so nested keys
+  # are counted correctly (the previous regex under-counted by ~75 keys
+  # and could not see extra keys at all). Drift is a hard fail.
   check-i18n-coverage:
     name: Verify i18n locale coverage
     runs-on: ubuntu-latest
@@ -95,8 +94,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Verify all locales have all locale files
-        run: node scripts/check-i18n-coverage.cjs
+      - name: Install workspace dependencies (for typescript)
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify every locale matches the English key set
+        run: node scripts/check-i18n-coverage.cjs --strict
 
   desktop-shell-checks:
     runs-on: ubuntu-latest

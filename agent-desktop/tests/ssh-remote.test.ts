@@ -89,10 +89,11 @@ describe("ssh remote config writes", () => {
 
 describe("ssh Hermes command quoting", () => {
   // The shim below spawns bash and writes the args NUL-separated back
-  // through stdout. Measured on Windows, `bash -lc` alone costs ~3.9s to
-  // Headroom for a loaded CI runner. The shim is `bash -c`, which starts in
-  // well under a second alone and ~1s under full-suite contention; 60s is a
-  // bound for pathological load, not an operating point.
+  // through stdout. On Windows, `bash -lc` (login shell) sources the user
+  // profile and costs ~3.9s before the command runs, which is enough to blow
+  // the default 5s test timeout on a loaded CI runner. The shim therefore
+  // uses `bash -c`, which starts in well under a second alone and ~1s under
+  // full-suite contention; the 60s bound covers pathological load only.
   vi.setConfig({ testTimeout: 60_000 });
   it("shell-quotes the whole bash script without dropping per-argument quoting", () => {
     const command = buildRemoteHermesCmd([
