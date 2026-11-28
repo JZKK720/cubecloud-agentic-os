@@ -21,6 +21,8 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
   const [providers, setProviders] = useState<MemoryProviderInfo[]>([]);
 
   const loadData = useCallback(async () => {
+    setLoading(true);
+    setError("");
     try {
       const [d, provider, provs] = await Promise.all([
         window.hermesAPI.readMemory(profile),
@@ -39,11 +41,27 @@ function Memory({ profile }: { profile?: string }): React.JSX.Element {
   }, [profile]);
 
   useEffect(() => {
-    setLoading(true);
     loadData();
   }, [loadData]);
 
   if (loading || !data) {
+    // Surface the failure instead of spinning forever: without this, an
+    // error in loadData leaves data === null and the screen is stuck.
+    if (error) {
+      return (
+        <div className="settings-container">
+          <h1 className="settings-header">{t("memory.title")}</h1>
+          <div className="memory-error">{error}</div>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => void loadData()}
+            disabled={loading}
+          >
+            <Refresh size={13} />
+          </button>
+        </div>
+      );
+    }
     return (
       <div className="settings-container">
         <h1 className="settings-header">{t("memory.title")}</h1>

@@ -171,6 +171,7 @@ export default {
         button: "Ver como folha de cálculo",
         loading: "A carregar pré-visualização…",
         loadingUniver: "A carregar o Univer…",
+        previewHint: "Execute `officecli view <ficheiro> text --json` para pré-visualizar uma folha de cálculo aqui.",
       },
     },
     graphify: {

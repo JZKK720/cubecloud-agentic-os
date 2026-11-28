@@ -12669,3 +12669,11 @@ select:focus-visible {
 .everos-scope-key {
   text-transform: uppercase;
 }
+.soul-error {
+  background: var(--error-bg);
+  color: var(--error);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}

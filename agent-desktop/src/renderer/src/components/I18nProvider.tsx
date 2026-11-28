@@ -83,6 +83,14 @@ export function I18nProvider({
   useEffect(() => {
     if (!mainLocaleLoaded && !userSelectedLocale.current) return;
 
+    // Keep <html lang> in sync so screen readers/selectors that key off the
+    // document language (not the i18n catalog) see the active locale.
+    try {
+      document.documentElement.lang = locale;
+    } catch {
+      /* ignore — document may be unavailable in test renderers */
+    }
+
     if (sharedI18n.language !== locale) {
       setSharedLocale(locale);
     }

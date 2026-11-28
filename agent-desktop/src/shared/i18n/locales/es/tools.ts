@@ -174,6 +174,7 @@ export default {
         button: "Ver como hoja de cálculo",
         loading: "Cargando vista previa…",
         loadingUniver: "Cargando Univer…",
+        previewHint: "Ejecuta `officecli view <archivo> text --json` para previsualizar una hoja de cálculo aquí.",
       },
     },
     graphify: {

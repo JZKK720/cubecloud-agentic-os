@@ -12,7 +12,7 @@ export default {
   statusUnreachable: "Tidak dapat dijangkau",
   statusUnknown: "Tidak diketahui",
   version: "Versi",
-  origin: "Origin",
+  origin: "Sumber",
   start: "Mulai",
   stop: "Hentikan",
   restart: "Mulai ulang",
