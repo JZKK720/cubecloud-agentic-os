@@ -1928,7 +1928,10 @@ function Settings({ profile }: { profile?: string }): React.JSX.Element {
           </div>
         </div>
       </div>
+      </section>
 
+      {/* ─── Privacy group ─── */}
+      <section data-group="privacy">
       <div className="settings-section">
         <div className="settings-section-title">
           {t("settings.sections.privacy")}

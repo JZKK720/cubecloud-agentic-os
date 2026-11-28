@@ -7,10 +7,10 @@ This folder holds the install scripts, status checker, and notes for the six age
 | Repo | What it is | Status |
 |---|---|---|
 | [JZKK720/andrej-karpathy-skills](https://github.com/JZKK720/andrej-karpathy-skills) | Karpathy's 4 coding principles as a `CLAUDE.md` | **Done.** Distilled into `.github/copilot-instructions.md`. Upstream `CLAUDE.md` fetched to `andrej-karpathy-skills.CLAUDE.md` (2,357 bytes) for diffing. |
-| [JZKK720/ECC](https://github.com/JZKK720/ECC) | Cross-harness performance system (63 agents / 251 skills / 79 commands) | **Done.** Distilled into `.github/copilot-instructions.md` and 6 `.github/prompts/*.prompt.md`. |
+| [JZKK720/ECC](https://github.com/JZKK720/ECC) | Cross-harness performance system (63 agents / 251 skills / 79 commands) | **Done.** Distilled into `.github/copilot-instructions.md` and the ported skills under `.github/skills/`. |
 | [JZKK720/gstack](https://github.com/JZKK720/gstack) | 23-skill engineering workflow harness | **Deferred.** Requires Bun + Claude Code, neither on this machine. |
 | [JZKK720/gbrain](https://github.com/JZKK720/gbrain) | MCP server for persistent agent memory | **Deferred.** Requires Bun. |
-| [JZKK720/taste-skill](https://github.com/JZKK720/taste-skill) | Anti-slop frontend design rules | **Done.** All 13 upstream `SKILL.md` files installed to `.agents/skills/` via the Vercel `npx skills add` CLI. The CLI is now Copilot-aware and the `universal` install path includes GitHub Copilot. Plus 13 reference copies in `taste-skill-ref/`, 5 slash prompts in `.github/prompts/`, and a user-level distill at `%APPDATA%\Code\User\prompts\taste-skill-design-rules.instructions.md`. |
+| [JZKK720/taste-skill](https://github.com/JZKK720/taste-skill) | Anti-slop frontend design rules | **Done.** All 13 upstream `SKILL.md` files installed to `.agents/skills/` via the Vercel `npx skills add` CLI. The CLI is now Copilot-aware and the `universal` install path includes GitHub Copilot. Plus 13 reference copies in `taste-skill-ref/`, the taste skills under `.github/skills/taste-*`, and a user-level distill at `%APPDATA%\Code\User\prompts\taste-skill-design-rules.instructions.md`. |
 | [JZKK720/AI-Engineering-Coach](https://github.com/JZKK720/AI-Engineering-Coach) | VS Code extension for AI session analytics | **Done.** Built `ai-engineer-coach-0.1.0.vsix` (3.08 MB) from `main` and installed via `code --install-extension`. |
 
 ## Repo-authored workflow add-ons
@@ -161,3 +161,4 @@ The `.agents/skills/` directory created by the Vercel `npx skills add` CLI is in
 - AI-Engineering-Coach: `microsoft/AI-Engineering-Coach` (MIT)
 
 All four upstream projects are MIT-licensed. Rules are distilled and adapted for this workspace; upstream files (the Karpathy `CLAUDE.md` and the 13 taste-skill `SKILL.md` files in `taste-skill-ref/`) are committed verbatim as reference material. The 13 taste-skill SKILL.md files in `.agents/skills/` are installed verbatim by the Vercel CLI. The AI-Engineering-Coach extension is built from upstream source with no modifications.
+

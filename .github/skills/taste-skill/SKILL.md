@@ -1,7 +1,8 @@
 ---
-description: Anti-slop frontend skill (taste-skill flagship). Use when designing or reviewing a landing page, portfolio, or marketing site. Reads the brief, infers the design language, then applies the three dials (VARIANCE / MOTION / DENSITY) and the full anti-slop rule set.
+name: taste-skill
+description: "Anti-slop frontend skill (taste-skill flagship). Use when designing or reviewing a landing page, portfolio, or marketing site. Reads the brief, infers the design language, then applies the three dials (VARIANCE / MOTION / DENSITY) and the full anti-slop rule set."
+disable-model-invocation: true
 ---
-
 # /taste-skill — Anti-slop frontend design
 
 You are running the `design-taste-frontend` skill (taste-skill v2, Leonxlnx). Full reference text: `docs/agent-skills-bundle/taste-skill-ref/taste-skill.SKILL.md` (87 KB, read on demand, do not paste in full into your response). Use the rules below as the operating summary; defer to the reference for edge cases.

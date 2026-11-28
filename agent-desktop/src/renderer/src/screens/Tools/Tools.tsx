@@ -7,6 +7,7 @@ import {
   Alert as AlertIcon,
 } from "../../assets/icons";
 import { ManagedAppsPanel } from "../../components/ManagedAppsPanel";
+import { splitShellArgs } from "../../../../shared/officecli-args";
 import { Button } from "@astryxdesign/core/Button";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { Selector } from "@astryxdesign/core/Selector";
@@ -369,10 +370,12 @@ function Tools({ profile }: ToolsProps): React.JSX.Element {
     setOfficeCliOut(null);
     setOfficeCliErr(null);
     try {
-      const args = officeCliArgs
-        .split(/\s+/)
-        .map((a) => a.trim())
-        .filter(Boolean);
+      const parsed = splitShellArgs(officeCliArgs);
+      if (!parsed.ok) {
+        setOfficeCliErr(parsed.error);
+        return;
+      }
+      const args = parsed.args;
       const res =
         officeCliVerb === "view"
           ? await window.hermesAPI.officecliView({

@@ -171,6 +171,7 @@ export default {
         button: "Ver como planilha",
         loading: "Carregando pré-visualização…",
         loadingUniver: "Carregando Univer…",
+        previewHint: "Execute `officecli view <arquivo> text --json` para pré-visualizar uma planilha aqui.",
       },
     },
     graphify: {

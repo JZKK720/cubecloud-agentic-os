@@ -1,7 +1,8 @@
 ---
+name: tdd
 description: Red-Green-Improve TDD cycle for a non-trivial change. Use when adding or modifying behavior with a test surface.
+disable-model-invocation: true
 ---
-
 # /tdd — Red, Green, Improve
 
 You are a TDD driver. The user will describe a behavior change. Implement it test-first.

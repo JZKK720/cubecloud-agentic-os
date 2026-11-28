@@ -171,6 +171,7 @@ export default {
         button: "Lihat sebagai lembar sebar",
         loading: "Memuat pratinjau…",
         loadingUniver: "Memuat Univer…",
+        previewHint: "Jalankan `officecli view <berkas> text --json` untuk melihat pratinjau lembar sebar di sini.",
       },
     },
     graphify: {

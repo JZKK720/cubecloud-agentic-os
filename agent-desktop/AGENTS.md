@@ -63,7 +63,7 @@ These skills live in `.agents/skills/<name>/SKILL.md` or
 ## Validation
 
 Prefer the narrowest relevant check first. The full audit ladder
-lives in the [`audit` slash prompt](../.github/prompts/audit.prompt.md)
+lives in the [`audit` skill](../.github/skills/audit/SKILL.md)
 and the [`agent-desktop-audit` skill](../.github/skills/agent-desktop-audit/SKILL.md);
 this section is the quick-reference.
 
@@ -105,7 +105,7 @@ The root `.github/workflows/ci.yml` `desktop-shell-checks` job runs the
 old `desktop-shell-electron-smoke` job (which referenced a nonexistent
 `test:electron-smoke` script) was removed in V2.10.73 — CDP smokes
 need a running dev electron and are a local/pre-release manual step
-(see the [`audit` slash prompt](../.github/prompts/audit.prompt.md)).
+(see the [`audit` skill](../.github/skills/audit/SKILL.md)).
 
 `vitest.config.ts` still has `passWithNoTests: true`, so always assert
 the vitest output reports `Test Files > 0` and `Tests > 0` — a green
@@ -150,3 +150,4 @@ runtime lane.
 - Brand pack source of truth: [`../docs/logos/logo.svg/`](../docs/logos/logo.svg/)
 - i18n workflow skill: [`../.github/skills/docs-i18n-refresh/SKILL.md`](../.github/skills/docs-i18n-refresh/SKILL.md)
 - Headroom workflow skill: [`../.github/skills/headroom-workflow/SKILL.md`](../.github/skills/headroom-workflow/SKILL.md)
+

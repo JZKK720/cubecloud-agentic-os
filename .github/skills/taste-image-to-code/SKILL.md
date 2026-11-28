@@ -1,7 +1,8 @@
 ---
-description: Image-first pipeline: generate site references, analyze them, then implement the frontend to match. Use when the user has a visual direction but no spec.
+name: taste-image-to-code
+description: "Image-first pipeline: generate site references, analyze them, then implement the frontend to match. Use when the user has a visual direction but no spec."
+disable-model-invocation: true
 ---
-
 # /taste-image-to-code — Reference image to working frontend
 
 You are running the `image-to-code` skill (taste-skill v2). Reference: `docs/agent-skills-bundle/taste-skill-ref/image-to-code-skill.SKILL.md` (36 KB).

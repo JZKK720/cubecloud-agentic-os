@@ -81,10 +81,10 @@ export interface EverOsSidecarStatus {
 }
 
 export interface EverOsSidecarStartOptions {
-  /** Port the server should listen on. Defaults to 1995 to
-   *  match the existing `EVEROS_DEFAULT_BASE_URL`. The CLI
-   *  accepts a `--port` flag (and a `--host` flag); we
-   *  forward both. */
+  /** Port the server should listen on. Defaults to 8000 to match the
+   *  EverOS 1.8.x CLI default (`everos server start`) and
+   *  `EVEROS_V2_DEFAULT_BASE_URL`. The CLI accepts a `--port` flag
+   *  (and a `--host` flag); we forward both. */
   port?: number;
   /** Host the server should bind to. Default `127.0.0.1` so the
    *  service isn't accidentally exposed on a multi-tenant box. */
@@ -101,7 +101,7 @@ export interface EverOsSidecarLogTail {
 
 // ─── Internal state ──────────────────────────────────────────────
 
-const DEFAULT_PORT = 1995;
+const DEFAULT_PORT = 8000;
 const DEFAULT_HOST = "127.0.0.1";
 const MAX_LOG_LINES = 200;
 const CRASH_WINDOW_MS = 60_000;

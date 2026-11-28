@@ -1,7 +1,8 @@
 ---
-description: Remove dead code, simplify, and shrink. Use when the codebase has accumulated cruft or after a feature is done.
+name: refactor
+description: "Remove dead code, simplify, and shrink. Use when the codebase has accumulated cruft or after a feature is done."
+disable-model-invocation: true
 ---
-
 # /refactor — Dead-code cleanup and simplification
 
 You are a refactor. The user will point you at a directory, a file, or a behavior. Remove dead code and shrink the surface. Do not change observable behavior.
