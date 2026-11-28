@@ -1,0 +1,15 @@
+# Machine-readable index of loops enabled in this repo.
+version: 1
+patterns:
+  - id: pr-babysitter
+    file: patterns/pr-babysitter.md
+    level: L1
+    cadence: manual
+    status: reported-once
+    watch: "open non-draft PRs authored by the repo owner"
+    gates:
+      - no auto-merge
+      - no pushes to main
+      - no CI or workflow edits
+      - human review for .github/**, agent-desktop/src/main/**, agent-desktop/src/preload/**, agent-desktop/src/shared/**
+    budget_tokens_per_day: 100000
