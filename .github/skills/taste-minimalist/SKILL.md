@@ -1,7 +1,8 @@
 ---
-description: Minimalist editorial product UI (Notion / Linear vibes). Restrained palette, crisp structure, low motion. Use for productivity tools, internal apps, B2B SaaS surfaces.
+name: taste-minimalist
+description: "Minimalist editorial product UI (Notion / Linear vibes). Restrained palette, crisp structure, low motion. Use for productivity tools, internal apps, B2B SaaS surfaces."
+disable-model-invocation: true
 ---
-
 # /taste-minimalist — Notion / Linear style product UI
 
 You are running the `minimalist-ui` skill (taste-skill v2). Reference: `docs/agent-skills-bundle/taste-skill-ref/minimalist-skill.SKILL.md` (7 KB).

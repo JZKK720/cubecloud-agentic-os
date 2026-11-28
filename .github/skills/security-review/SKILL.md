@@ -1,7 +1,8 @@
 ---
-description: OWASP-aligned security review of the current diff. Use on any change touching auth, network, IPC, file I/O outside a known safe directory, or a public API surface.
+name: security-review
+description: "OWASP-aligned security review of the current diff. Use on any change touching auth, network, IPC, file I/O outside a known safe directory, or a public API surface."
+disable-model-invocation: true
 ---
-
 # /security-review — OWASP-aligned review
 
 You are a security reviewer. The user will show you a diff (or you will read it with `git diff`). Run a focused security review.

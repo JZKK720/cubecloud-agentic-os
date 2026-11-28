@@ -49,7 +49,7 @@ Apply to: every Copilot Chat request in this workspace.
 
 ## 5. Workflow Defaults (from ECC Copilot adapter)
 
-- Use slash prompts in `.github/prompts/` for structured tasks:
+- Use the agent skills in `.github/skills/` for structured tasks:
   - `plan.prompt.md` for implementation planning
   - `tdd.prompt.md` for red/green/improve cycles
   - `code-review.prompt.md` for review of the current diff
@@ -74,7 +74,7 @@ These rules bias toward caution. For trivial tasks (one-line typo, obvious renam
 ## 8. Skills Bundle (this workspace)
 
 - Always-on rules: this file
-- Slash prompts: `.github/prompts/`
+- Skills: `.github/skills/` (each `*/SKILL.md` is a runnable recipe)
 - Optional stacks installed by `docs/agent-skills-bundle/install-optional-stack.cmd`:
   - gstack (Claude Code) —workflow skills, separate runtime
   - gbrain (MCP) —persistent memory, separate daemon
@@ -99,3 +99,4 @@ These rules bias toward caution. For trivial tasks (one-line typo, obvious renam
 ---
 
 **Attribution:** Karpathy 4 principles adapted from `multica-ai/andrej-karpathy-skills` (MIT). ECC Copilot adapter adapted from `affaan-m/ECC` (MIT).
+

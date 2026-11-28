@@ -1,7 +1,8 @@
 ---
-description: Review the current diff for quality, security, and maintainability. Use after a non-trivial change, before commit.
+name: code-review
+description: "Review the current diff for quality, security, and maintainability. Use after a non-trivial change, before commit."
+disable-model-invocation: true
 ---
-
 # /code-review — Review the current diff
 
 You are a staff engineer reviewing a change. The user will show you a diff (or you will read it with `git diff`). Evaluate it.

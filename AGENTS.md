@@ -192,7 +192,7 @@ vitest output reports `Test Files > 0` and `Tests > 0`. For the
 real audit/smoke ladder (typecheck → full suite → asar integrity →
 IPC audit → operator CLI smokes → CDP smokes → doc/i18n checks),
 see [`agent-desktop/AGENTS.md`](agent-desktop/AGENTS.md) Validation
-and the [`audit` slash prompt](.github/prompts/audit.prompt.md).
+and the `audit` skill (`.github/skills/audit/SKILL.md`).
 
 ## 6. Project-Specific Rules
 
@@ -257,19 +257,18 @@ carry-over from another workspace and is not a valid skill to load.
   `git show b981611:<path>` if the source is still clean. The
   FFFD character must never appear in tracked files.
 
-### 6.5 Slash prompts
+### 6.5 Agent skills
 
-Use the structured prompts in `.github/prompts/` for multi-step
-tasks:
+Use the repo skills in `.github/skills/` for multi-step tasks (each is a `SKILL.md`):
 
-- `plan.prompt.md` for implementation planning
-- `tdd.prompt.md` for red/green/improve cycles
-- `code-review.prompt.md` for review of the current diff
-- `security-review.prompt.md` for OWASP-aligned review
-- `build-fix.prompt.md` for failing builds
-- `refactor.prompt.md` for dead-code cleanup
-- `audit.prompt.md` for the full agent-desktop audit/smoke ladder
-- The 5 `taste-*.prompt.md` files for design-led work
+- `plan/` for implementation planning
+- `tdd/` for red/green/improve cycles
+- `code-review/` for review of the current diff
+- `security-review/` for OWASP-aligned review
+- `build-fix/` for failing builds
+- `refactor/` for dead-code cleanup
+- `audit/` for the full agent-desktop audit/smoke ladder
+- The 10 `taste-*` skills for design-led work
 
 ### 6.6 Security floor
 
@@ -323,7 +322,7 @@ treat them as two separate edits, not one.
 | `packages/platform-core/` | Shared TypeScript contracts. |
 | `.agents/skills/` | 35 first-class open-source skills adapted from 8 upstream repos. |
 | `.github/skills/` | Repo-authored Copilot / VS Code workflow skills (docs-i18n-refresh, headroom-workflow). |
-| `.github/prompts/` | Slash prompts for structured agent work. |
+| `.github/skills/` | Agent skills for structured agent work. |
 | `.github/copilot-instructions.md` | Copilot-specific instruction file. The Karpathy/ECC generic principles. |
 | `docs/` | Handbook, threat model, runtime plans, legal policies, transition history. |
 | `scripts/` | One-off + reusable Node scripts (combined-PDF, brand-pack mirror, etc.). |
@@ -360,3 +359,6 @@ simple tasks.
 **Attribution:** Karpathy 4 principles adapted from
 `multica-ai/andrej-karpathy-skills` (MIT). ECC Copilot adapter
 adapted from `affaan-m/ECC` (MIT).
+
+
+
