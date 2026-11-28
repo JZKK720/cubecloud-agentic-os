@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "@univerjs/preset-sheets-core/lib/index.css";
 import { parseOfficeCliTextJson, type OfficeCliTextView } from "../../../shared/officecli-text";
+import { useI18n } from "./useI18n";
 
 /**
  * Read-only Univer grid fed by `officecli view <file> text --json`.
@@ -21,6 +22,7 @@ export function OfficeCliSheetView({
   loading = false,
   error = null,
 }: OfficeCliSheetViewProps): React.JSX.Element {
+  const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [status, setStatus] = useState<"idle" | "mounting" | "ready" | "failed">("idle");
   const [mountError, setMountError] = useState<string | null>(null);
@@ -137,16 +139,14 @@ export function OfficeCliSheetView({
   }, [sheet]);
 
   if (loading) {
-    return <div className="officecli-sheet-view-state">Loading preview…</div>;
+    return <div className="officecli-sheet-view-state">{t("tools.panels.officecli.view.loading")}</div>;
   }
   if (error) {
     return <div className="officecli-sheet-view-state officecli-sheet-view-error">{error}</div>;
   }
   if (!sheet) {
     return (
-      <div className="officecli-sheet-view-state">
-        Run <code>officecli view &lt;file&gt; text --json</code> for a spreadsheet to preview it here.
-      </div>
+      <div className="officecli-sheet-view-state">{t("tools.panels.officecli.view.previewHint")}</div>
     );
   }
   if (mountError) {

@@ -167,6 +167,7 @@ export default {
         button: "View as spreadsheet",
         loading: "Loading preview…",
         loadingUniver: "Loading Univer…",
+        previewHint: "Run `officecli view <file> text --json` to preview a spreadsheet here.",
       },
     },
     graphify: {
