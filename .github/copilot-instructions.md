@@ -50,13 +50,13 @@ Apply to: every Copilot Chat request in this workspace.
 ## 5. Workflow Defaults (from ECC Copilot adapter)
 
 - Use the agent skills in `.github/skills/` for structured tasks:
-  - `plan.prompt.md` for implementation planning
-  - `tdd.prompt.md` for red/green/improve cycles
-  - `code-review.prompt.md` for review of the current diff
-  - `security-review.prompt.md` for OWASP-aligned review
-  - `build-fix.prompt.md` for failing builds
-  - `refactor.prompt.md` for dead-code cleanup
-- Plan before you build. If a task will touch more than 3 files or change a public API, run `plan.prompt.md` first and stop after the user approves.
+  - `plan/` for implementation planning
+  - `tdd/` for red/green/improve cycles
+  - `code-review/` for review of the current diff
+  - `security-review/` for OWASP-aligned review
+  - `build-fix/` for failing builds
+  - `refactor/` for dead-code cleanup
+- Plan before you build. If a task will touch more than 3 files or change a public API, run the `plan` skill first and stop after the user approves.
 - TDD by default. Every non-trivial change ships with a test.
 - No drive-by refactors. Format-only changes belong in a separate commit.
 
@@ -65,7 +65,7 @@ Apply to: every Copilot Chat request in this workspace.
 - Never write secrets, tokens, or PEM blocks into source files. If a value looks like a secret, refuse to inline it and suggest Key Vault / env / managed identity instead.
 - Never disable a linter, type checker, or hook to make a build pass. Fix the underlying issue.
 - Treat user input as untrusted. Validate at the boundary, escape at the render boundary.
-- Run `security-review.prompt.md` on any change that touches auth, network, IPC, file I/O outside a known safe directory, or a public API surface.
+- Run the `security-review` skill on any change that touches auth, network, IPC, file I/O outside a known safe directory, or a public API surface.
 
 ## 7. Tradeoff Note
 

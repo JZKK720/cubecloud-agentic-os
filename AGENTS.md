@@ -268,7 +268,7 @@ Use the repo skills in `.github/skills/` for multi-step tasks (each is a `SKILL.
 - `build-fix/` for failing builds
 - `refactor/` for dead-code cleanup
 - `audit/` for the full agent-desktop audit/smoke ladder
-- The 10 `taste-*` skills for design-led work
+- The 5 `taste-*` skills for design-led work
 
 ### 6.6 Security floor
 
@@ -278,7 +278,7 @@ Use the repo skills in `.github/skills/` for multi-step tasks (each is a `SKILL.
   pass. Fix the underlying issue.
 - Treat user input as untrusted. Validate at the boundary,
   escape at the render boundary.
-- Run `security-review.prompt.md` on any change that touches auth,
+- Run the `security-review` skill (`.github/skills/security-review/SKILL.md`) on any change that touches auth,
   network, IPC, file I/O outside a known safe directory, or a
   public API surface.
 - See `SECURITY.md` and `THREAT_MODEL.md` for the full threat
@@ -321,8 +321,7 @@ treat them as two separate edits, not one.
 | `apps/desktop-shell/` | **Retired in V2.10.67** (commit `06a10b9`). The `desktop-shell/` subdir is gone. References to it in older docs and READMEs are stale — treat them as `agent-desktop/` for build purposes. |
 | `packages/platform-core/` | Shared TypeScript contracts. |
 | `.agents/skills/` | 35 first-class open-source skills adapted from 8 upstream repos. |
-| `.github/skills/` | Repo-authored Copilot / VS Code workflow skills (docs-i18n-refresh, headroom-workflow). |
-| `.github/skills/` | Agent skills for structured agent work. |
+| `.github/skills/` | Repo-authored Copilot / VS Code workflow skills (audit, build-fix, code-review, plan, refactor, security-review, tdd, taste-*, agent-desktop-audit, docs-i18n-refresh, headroom-workflow). |
 | `.github/copilot-instructions.md` | Copilot-specific instruction file. The Karpathy/ECC generic principles. |
 | `docs/` | Handbook, threat model, runtime plans, legal policies, transition history. |
 | `scripts/` | One-off + reusable Node scripts (combined-PDF, brand-pack mirror, etc.). |
