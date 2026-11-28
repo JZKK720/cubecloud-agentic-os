@@ -186,6 +186,7 @@ export default {
         button: "スプレッドシートとして表示",
         loading: "プレビューを読み込み中…",
         loadingUniver: "Univer を読み込み中…",
+        previewHint: "ここでスプレッドシートをプレビューするには、`officecli view <ファイル> text --json` を実行してください。",
       },
     },
     graphify: {
